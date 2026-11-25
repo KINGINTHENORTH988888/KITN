@@ -1,0 +1,39 @@
+[
+  {
+    "id": "kitn_abe0401f4c9c3bfa",
+    "titre_original": "Data on rare earth element leaching from Moroccan phosphate tailings using citric and malic acids",
+    "auteurs": [
+      "ouafae daoudi",
+      "Mouna Fahr",
+      "Perrine Chaurand",
+      "Bernard Angeletti",
+      "Adrien DUVIER",
+      "Danielle borschneck",
+      "Abdelaziz SMOUNI",
+      "Clement Levard"
+    ],
+    "date_publication": "2027-10-12",
+    "langue_originale": "en",
+    "source_id": "openalex_maroc",
+    "source_nom": "OpenAlex — Travaux liés au Maroc",
+    "resume": null,
+    "url_publication": "https://data.mendeley.com/datasets/yn282n5kr9/1",
+    "doi": "10.17632/yn282n5kr9",
+    "pdf_direct": null,
+    "verification_liens": {
+      "url_statut": "verifie",
+      "url_content_type": "text/html",
+      "pdf_statut": "non_fourni",
+      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+    },
+    "type_document": "publication_scientifique",
+    "pole": "recherche_scientifique",
+    "confiance_classification": "faible",
+    "pertinence_maroc": {
+      "score": 60,
+      "justification": "Lien pertinent avec le Maroc identifié via : moroccan."
+    },
+    "statut_validation": "valide",
+    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+  }
+]

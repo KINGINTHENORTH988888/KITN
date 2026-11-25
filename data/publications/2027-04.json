@@ -1,0 +1,37 @@
+[
+  {
+    "id": "kitn_6781e69e5a1cb6c1",
+    "titre_original": "Multi-objective optimization and decision-making for renewable energy production and enhancement of wind turbine selection in Morocco",
+    "auteurs": [
+      "Mourad Yessef",
+      "Youness Hakam",
+      "Mohamed Tabaa",
+      "Lhoussaine Ahessab",
+      "Mohammed F. Allehyani",
+      "Husam S. Samkari"
+    ],
+    "date_publication": "2027-04",
+    "langue_originale": "en",
+    "source_id": "crossref_maroc",
+    "source_nom": "Crossref — Publications indexées Maroc",
+    "resume": null,
+    "url_publication": "https://linkinghub.elsevier.com/retrieve/pii/S0378779626015543",
+    "doi": "10.1016/j.epsr.2026.114269",
+    "pdf_direct": null,
+    "verification_liens": {
+      "url_statut": "verifie",
+      "url_content_type": "text/html",
+      "pdf_statut": "non_fourni",
+      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+    },
+    "type_document": "publication_scientifique",
+    "pole": "recherche_scientifique",
+    "confiance_classification": "faible",
+    "pertinence_maroc": {
+      "score": 60,
+      "justification": "Lien pertinent avec le Maroc identifié via : morocco."
+    },
+    "statut_validation": "valide",
+    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+  }
+]

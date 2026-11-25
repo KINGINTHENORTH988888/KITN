@@ -1,0 +1,37 @@
+[
+  {
+    "id": "kitn_511633a25bb71c8c",
+    "titre_original": "Upwelling and flood-driven regulation of coastal diatom assemblages along the southern Moroccan Atlantic margin: environmental forcing, community structure, and amnesic shellfish poisoning risk within the Canary Current Upwelling System",
+    "auteurs": [
+      "Ahmed Harat",
+      "Fatima Boudarfa",
+      "Hassan Oulad Ali",
+      "Mohamed El Hafa",
+      "Ahmed Aamiri",
+      "El Mahjoub Gallouli"
+    ],
+    "date_publication": "2026-12",
+    "langue_originale": "en",
+    "source_id": "hal_maroc",
+    "source_nom": "HAL Archives Ouvertes — Maroc",
+    "resume": "Eastern boundary upwelling systems sustain among the highest marine primary productivity globally, yet diatom assemblage responses to persistent upwelling and episodic hydroclimatic disturbances remain critically under­ characterised along the North African Atlantic margin. This study examines diatom spatiotemporal dynamics along the Aglou–Sidi Ifni coastline (~29◦N, Moroccan Atlantic), a transitional sector of the Canary Current Upwelling System, over two annual cycles (2014–2016) at three coastal stations. A total of 126 diatom taxa were identified among 233 phytoplankton species (54% of total richness). Taxo­ nomic revision against WoRMS and AlgaeBase yielded 20 nomenclatural updates. Total phytoplankton cell density exhibited a pronounced seasonal pattern, peaking in spring 2015 (65,890 cells L−1), exceeding spring 2014 by 24–31%. This amplification coincided with elevated nitrate (up to 390.6 μg L−1) and phosphate (up to 147.8 μg L−1), consistent with a flood-driven nutrient priming hypothesis, although single-event design precludes causal attribution. Molar N:P ratios ranged 2.58–6.32 (station means: 4.17–4.28), remaining below Redfield (16:1), evidencing chronic nitrogen limitation. Absent dissolved silicate data preclude complete bloom stoichiometry characteri­ sation. Multivariate analysis explained 58.6% variance, with temperature and nitrate as primary community drivers. A southward gradient in diatom dominance (46–52%) and richness was consistent with spatial upwelling intensity differences. Six Pseudo-nitzschia morpho-groups were recorded, including P. multiseries near Massa Marine Protected Area. Confirmatory transmission electron microscopy (TEM), quantitative PCR (qPCR), and shellfish domoic acid as­ says are required before regulatory conclusions; this study provides a preliminary precautionary baseline signal.",
+    "url_publication": "https://hal.science/hal-05724374v1",
+    "doi": "10.1016/j.marpolbul.2026.120244",
+    "pdf_direct": null,
+    "verification_liens": {
+      "url_statut": "verifie",
+      "url_content_type": "text/html",
+      "pdf_statut": "non_fourni",
+      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+    },
+    "type_document": "publication_scientifique",
+    "pole": "recherche_scientifique",
+    "confiance_classification": "faible",
+    "pertinence_maroc": {
+      "score": 60,
+      "justification": "Lien pertinent avec le Maroc identifié via : moroccan."
+    },
+    "statut_validation": "valide",
+    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+  }
+]

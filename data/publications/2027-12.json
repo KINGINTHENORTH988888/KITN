@@ -1,0 +1,30 @@
+[
+  {
+    "id": "kitn_1f4e7211af24b298",
+    "titre_original": "Chapter 2. Between Portuguese Expansionism and Muslim Morocco: Abravanel’s Response to the Conquest of Arzila and Tangier",
+    "auteurs": [],
+    "date_publication": "2027-12-31",
+    "langue_originale": "en",
+    "source_id": "crossref_maroc",
+    "source_nom": "Crossref — Publications indexées Maroc",
+    "resume": null,
+    "url_publication": "https://www.degruyterbrill.com/document/doi/10.9783/9781512830644-004/html",
+    "doi": "10.9783/9781512830644-004",
+    "pdf_direct": null,
+    "verification_liens": {
+      "url_statut": "verifie",
+      "url_content_type": "text/html",
+      "pdf_statut": "non_fourni",
+      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+    },
+    "type_document": "publication_scientifique",
+    "pole": "recherche_scientifique",
+    "confiance_classification": "faible",
+    "pertinence_maroc": {
+      "score": 60,
+      "justification": "Lien pertinent avec le Maroc identifié via : morocco."
+    },
+    "statut_validation": "valide",
+    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+  }
+]

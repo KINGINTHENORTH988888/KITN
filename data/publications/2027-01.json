@@ -1,0 +1,33 @@
+[
+  {
+    "id": "kitn_70e625cb0043f439",
+    "titre_original": "National Implementation of International Economic Law: Morocco",
+    "auteurs": [
+      "Ali Kairouani",
+      "Karim Zaouaq"
+    ],
+    "date_publication": "2027-01-28",
+    "langue_originale": "en",
+    "source_id": "crossref_maroc",
+    "source_nom": "Crossref — Publications indexées Maroc",
+    "resume": null,
+    "url_publication": "https://doi.org/10.4337/9781800882324.morocco",
+    "doi": "10.4337/9781800882324.morocco",
+    "pdf_direct": null,
+    "verification_liens": {
+      "url_statut": "http_405",
+      "url_content_type": null,
+      "pdf_statut": "non_fourni",
+      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+    },
+    "type_document": "publication_scientifique",
+    "pole": "recherche_scientifique",
+    "confiance_classification": "faible",
+    "pertinence_maroc": {
+      "score": 60,
+      "justification": "Lien pertinent avec le Maroc identifié via : morocco."
+    },
+    "statut_validation": "a_verifier",
+    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+  }
+]

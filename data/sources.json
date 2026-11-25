@@ -1,0 +1,26 @@
+[
+  {
+    "id": "openalex_maroc",
+    "name": "OpenAlex — Travaux liés au Maroc",
+    "type": "api_openalex",
+    "url": "https://api.openalex.org/works?search=Morocco&per-page=15&sort=publication_date:desc",
+    "default_doc_type": "publication_scientifique",
+    "enabled": true
+  },
+  {
+    "id": "hal_maroc",
+    "name": "HAL Archives Ouvertes — Maroc",
+    "type": "api_hal",
+    "url": "https://api.archives-ouvertes.fr/search/?q=Maroc&wt=json&rows=15&sort=producedDate_tdate+desc&fl=docid,title_s,authFullName_s,producedDate_s,abstract_s,language_s,uri_s,doiId_s,fileMain_s",
+    "default_doc_type": "publication_scientifique",
+    "enabled": true
+  },
+  {
+    "id": "crossref_maroc",
+    "name": "Crossref — Publications indexées Maroc",
+    "type": "api_crossref",
+    "url": "https://api.crossref.org/works?query=Morocco&rows=15&sort=published&order=desc",
+    "default_doc_type": "publication_scientifique",
+    "enabled": true
+  }
+]

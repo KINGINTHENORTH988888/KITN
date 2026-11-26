@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadSearchIndex } from '../lib/data';
+import { DOC_TYPE_LABELS, POLE_LABELS, UI_TEXT } from '../lib/i18n';
+
+const indexData = loadSearchIndex();
+---
+
+<BaseLayout title="Fiche analytique" activeNav="watch">
+  <div class="top-bar">
+    <a href="/veille" class="btn-secondary" data-i18n="ficheBack">{UI_TEXT.fr.ficheBack}</a>
+  </div>
+
+  <section id="fiche-container" class="card fiche-card"></section>
+
+  <script
+    is:inline
+    define:vars={{
+      allItems: indexData.items,
+      poleLabels: POLE_LABELS,
+      docTypeLabels: DOC_TYPE_LABELS,
+      uiText: UI_TEXT
+    }}
+  >
+    const container = document.getElementById('fiche-container');
+
+    function getLang() {
+      return document.documentElement.getAttribute('data-lang') === 'ar' ? 'ar' : 'fr';
+    }
+
+    function getFavs() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('kitn_favorites') || '[]');
+        return new Set(Array.isArray(raw) ? raw : []);
+      } catch {
+        return new Set();
+      }
+    }
+
+    function toggleFav(id) {
+      const favs = getFavs();
+      if (favs.has(id)) favs.delete(id);
+      else favs.add(id);
+      localStorage.setItem('kitn_favorites', JSON.stringify([...favs]));
+      renderFiche();
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderFiche() {
+      if (!container) return;
+      const lang = getLang();
+      const t = uiText[lang];
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      const item = allItems.find((x) => x.id === id) || allItems[0];
+      if (!item) {
+        container.innerHTML = `<p class="muted">${escapeHtml(t.noResults)}</p>`;
+        return;
+      }
+
+      const poleText = poleLabels[item.pole]?.[lang] || item.pole;
+      const typeText = docTypeLabels[item.type_document]?.[lang] || item.type_document;
+      const isFav = getFavs().has(item.id);
+      const authorsList =
+        Array.isArray(item.auteurs) && item.auteurs.length
+          ? item.auteurs.join(', ')
+          : '—';
+
+      container.innerHTML = `
+        <div class="fiche-badges">
+          <span class="badge">${escapeHtml(poleText)}</span>
+          <span class="badge">${escapeHtml(typeText)}</span>
+          <span class="badge badge-score">Score ${escapeHtml(item.score_pertinence)} / 100</span>
+        </div>
+
+        <h1>${escapeHtml(item.titre_original)}</h1>
+
+        <dl class="meta-grid">
+          <div>
+            <dt>${escapeHtml(t.ficheAuthors)}</dt>
+            <dd>${escapeHtml(authorsList)}</dd>
+          </div>
+          <div>
+            <dt>${escapeHtml(t.ficheDate)}</dt>
+            <dd>${escapeHtml(item.date_publication || '—')}</dd>
+          </div>
+          <div>
+            <dt>${escapeHtml(t.ficheSource)}</dt>
+            <dd>${escapeHtml(item.source_nom || '—')}</dd>
+          </div>
+          <div>
+            <dt>${escapeHtml(t.ficheDoi)}</dt>
+            <dd>${escapeHtml(item.doi || '—')}</dd>
+          </div>
+          <div>
+            <dt>${escapeHtml(t.ficheLinkStatus)}</dt>
+            <dd>${escapeHtml(item.statut_lien || '—')}</dd>
+          </div>
+          <div>
+            <dt>${escapeHtml(t.ficheRelevance)}</dt>
+            <dd>${escapeHtml(item.justification_pertinence || '—')}</dd>
+          </div>
+        </dl>
+
+        <div class="abstract-box">
+          <h2>${escapeHtml(t.ficheAbstract)}</h2>
+          <p>${escapeHtml(item.resume && item.resume.trim() ? item.resume : t.noAbstract)}</p>
+        </div>
+
+        <div class="fiche-actions">
+          ${
+            item.url_publication
+              ? `<a href="${escapeHtml(item.url_publication)}" target="_blank" rel="noopener noreferrer" class="btn-secondary">${escapeHtml(t.openSource)}</a>`
+              : ''
+          }
+          ${
+            item.pdf_direct
+              ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer" class="btn-primary">${escapeHtml(t.openPdf)}</a>`
+              : ''
+          }
+          <button type="button" id="fiche-fav-btn" class="btn-secondary">
+            ${isFav ? '★ ' + escapeHtml(t.savedFav) : '☆ ' + escapeHtml(t.saveFav)}
+          </button>
+        </div>
+      `;
+
+      const favBtn = document.getElementById('fiche-fav-btn');
+      if (favBtn) {
+        favBtn.addEventListener('click', () => toggleFav(item.id));
+      }
+    }
+
+    window.addEventListener('kitn:lang-change', renderFiche);
+    renderFiche();
+  </script>
+</BaseLayout>
+
+<style>
+  .top-bar {
+    margin-bottom: 1rem;
+  }
+
+  :global(.fiche-card) {
+    padding: 1.8rem;
+  }
+
+  :global(.fiche-badges) {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+  }
+
+  :global(.fiche-card h1) {
+    margin: 0 0 1.35rem;
+    font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+    line-height: 1.3;
+  }
+
+  :global(.meta-grid) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 0 0 1.5rem;
+    padding: 1.1rem;
+    background: var(--surface-alt);
+    border-radius: 12px;
+  }
+
+  :global(.meta-grid dt) {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  :global(.meta-grid dd) {
+    margin: 0;
+    font-size: 0.92rem;
+  }
+
+  :global(.abstract-box h2) {
+    margin: 0 0 0.5rem;
+    font-size: 1.08rem;
+  }
+
+  :global(.abstract-box p) {
+    margin: 0;
+    color: var(--text);
+  }
+
+  :global(.fiche-actions) {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    :global(.meta-grid) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

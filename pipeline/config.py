@@ -1,121 +1,121 @@
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-PUBLICATIONS_DIR = DATA_DIR / "publications"
-INDEX_DIR = DATA_DIR / "index"
-ACADEMY_DIR = DATA_DIR / "academy"
-
+ROOT_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = ROOT_DIR / "data"
+PUBLIC_DIR = ROOT_DIR / "public"
 SOURCES_FILE = DATA_DIR / "sources.json"
-HEALTH_FILE = DATA_DIR / "sources-health.json"
-SEARCH_INDEX_FILE = INDEX_DIR / "search-index.json"
-ACADEMY_FILE = ACADEMY_DIR / "academy.json"
+MANUAL_CONTRIBUTIONS_FILE = DATA_DIR / "manual_contributions.json"
+INDEX_DIR = DATA_DIR / "index"
+INDEX_FILE = INDEX_DIR / "search-index.json"
+PUBLIC_INDEX_FILE = PUBLIC_DIR / "data" / "index" / "search-index.json"
+SOURCES_HEALTH_FILE = DATA_DIR / "sources-health.json"
+ACADEMY_FILE = DATA_DIR / "academy" / "academy.json"
 
-# Identifiant de contact requis pour les requêtes polies vers les APIs scientifiques
-CONTACT_EMAIL = "kitn-veille@example.org"
-USER_AGENT = f"KITN-Veille/1.0 (Maroc; mailto:{CONTACT_EMAIL})"
-
-REQUEST_TIMEOUT = 15
-MAX_RETRIES = 2
-SUPPORTED_LANGUAGES = ("fr", "ar", "en", "es")
+SUPPORTED_LANGUAGES = ("fr", "ar", "en")
 
 DOCUMENT_TYPES = (
-    "article_presse",
-    "rapport_institutionnel",
     "publication_scientifique",
-    "document_juridique",
     "statistique",
-    "contenu_pedagogique",
+    "rapport",
+    "rapport_institutionnel",
+    "document_juridique",
+    "article",
+    "article_presse",
+    "concours",
+    "ressource_pedagogique",
 )
 
 POLES = (
     "institutions_gouvernance",
     "economie_finances_publiques",
     "societe_developpement_humain",
+    "relations_internationales_geopolitique",
     "securite_affaires_interieures",
     "recherche_scientifique",
-    "relations_internationales_geopolitique",
+)
+
+SPACES = (
+    "veille",
+    "science",
+    "chiffres",
+    "academy",
+    "bibliotheque",
 )
 
 MOROCCO_STRONG_SIGNALS = (
     "maroc",
-    "marocain",
-    "marocaine",
-    "marocains",
-    "marocaines",
     "morocco",
-    "moroccan",
     "المغرب",
-    "المغربي",
-    "المغربية",
-    "المغاربة",
+    "مغربي",
+    "مغربية",
     "rabat",
     "casablanca",
+    "الدار البيضاء",
+    "الرباط",
+    "marrakech",
     "fès",
     "fes",
-    "marrakech",
     "tanger",
     "agadir",
     "oujda",
     "laâyoune",
     "dakhla",
-    "dgsn",
-    "irat",
-    "bank al-maghrib",
     "haut-commissariat au plan",
     "hcp",
-    "tgr",
+    "bank al-maghrib",
+    "bam",
     "cour des comptes",
+    "conseil économique, social et environnemental",
     "cese",
-    "sgg",
-    "emploi public",
-    "imist",
-    "prsm",
-    "cnrst",
-    "tanger med",
-    "casablanca finance city",
+    "dgsn",
+    "irat",
+    "ministère de l'intérieur",
+    "finances publiques",
     "dirham",
-    "loi de finances",
+    "mad",
     "régionalisation avancée",
-    "sahara marocain",
+    "الجهوية المتقدمة",
+    "المالية العمومية",
+    "المجلس الأعلى للحسابات",
     "المندوبية السامية للتخطيط",
     "بنك المغرب",
-    "الدرهم",
-    "المجلس الاقتصادي والاجتماعي",
 )
 
 POLE_KEYWORDS = {
     "institutions_gouvernance": (
-        "constitution", "parlement", "gouvernement", "ministère", "administration publique",
-        "collectivités territoriales", "régionalisation", "décentralisation", "gouvernance",
-        "service public", "transparence", "corruption", "concours", "bulletin officiel", "décret",
-        "حكامة", "الجهوية", "الإدارة", "البرلمان", "مباراة", "الجريدة الرسمية"
+        "gouvernance", "institution", "institutions", "administration", "ministère",
+        "parlement", "réforme", "décentralisation", "régionalisation", "service public",
+        "fonction publique", "décret", "loi organique", "الحكامة", "المؤسسات",
+        "الإدارة", "السياسات العمومية", "اللامركزية", "الجهوية", "المرفق العام",
     ),
     "economie_finances_publiques": (
-        "économie", "budget", "loi de finances", "dette publique", "fiscalité", "impôt",
-        "investissement", "emploi", "chômage", "inflation", "pouvoir d'achat", "banque centrale",
-        "statistiques", "conjoncture", "balance commerciale", "trésorerie",
-        "اقتصاد", "المالية العمومية", "قانون المالية", "التضخم", "الاستثمار", "الشغل", "إحصاء"
+        "économie", "économique", "finance", "finances publiques", "budget", "fiscal",
+        "inflation", "croissance", "pib", "emploi", "chômage", "investissement",
+        "commerce extérieur", "dirham", "banque", "dette", "الاقتصاد", "المالية العمومية",
+        "الميزانية", "الضرائب", "التضخم", "النمو", "التشغيل", "البطالة", "الاستثمار",
     ),
     "societe_developpement_humain": (
-        "éducation", "enseignement supérieur", "université", "santé publique", "protection sociale",
-        "démographie", "jeunesse", "pauvreté", "migration", "développement humain", "numérique",
-        "التعليم", "الصحة", "الحماية الاجتماعية", "الشباب", "الهجرة", "التنمية البشرية"
-    ),
-    "securite_affaires_interieures": (
-        "dgsn", "sûreté nationale", "sécurité intérieure", "police", "criminalité",
-        "cybersécurité", "terrorisme", "sécurité routière", "protection civile", "crise",
-        "administration territoriale", "prévention", "frontières",
-        "الأمن الوطني", "السلامة الطرقية", "الأمن السيبراني", "الوقاية المدنية", "الداخلية"
-    ),
-    "recherche_scientifique": (
-        "université", "laboratoire", "chercheur", "thèse", "doctorat", "revue scientifique",
-        "working paper", "étude académique", "colloque", "publication scientifique",
-        "بحث علمي", "جامعة", "أطروحة", "باحث", "مجلة علمية"
+        "développement humain", "société", "social", "éducation", "santé",
+        "protection sociale", "pauvreté", "inégalités", "jeunesse", "famille",
+        "urbanisation", "logement", "التنمية البشرية", "المجتمع", "التربية",
+        "الصحة", "الحماية الاجتماعية", "الشباب", "السكن", "التمدن",
     ),
     "relations_internationales_geopolitique": (
-        "diplomatie", "relations internationales", "géopolitique", "coopération",
-        "union européenne", "afrique", "onu", "souveraineté", "sécurité régionale",
-        "الدبلوماسية", "العلاقات الدولية", "الجيوسياسة", "التعاون", "إفريقيا"
+        "géopolitique", "relations internationales", "diplomatie", "coopération",
+        "afrique", "méditerranée", "union européenne", "atlantique", "souveraineté",
+        "frontière", "الجيوسياسة", "العلاقات الدولية", "الدبلوماسية", "التعاون",
+        "إفريقيا", "المتوسط", "الاتحاد الأوروبي", "السيادة",
+    ),
+    "securite_affaires_interieures": (
+        "sécurité", "ordre public", "police", "dgsn", "affaires intérieures",
+        "administration territoriale", "prévention", "criminalité", "protection civile",
+        "cybersécurité", "territoire", "الأمن", "النظام العام", "الشرطة",
+        "الشؤون الداخلية", "الإدارة الترابية", "الوقاية", "الأمن السيبراني",
+    ),
+    "recherche_scientifique": (
+        "recherche", "scientifique", "université", "académique", "étude",
+        "analyse", "méthodologie", "publication", "laboratoire", "données",
+        "statistique", "indicateur", "البحث العلمي", "الجامعة", "أكاديمي",
+        "دراسة", "تحليل", "منشور", "بيانات", "إحصائيات", "مؤشر",
     ),
 }

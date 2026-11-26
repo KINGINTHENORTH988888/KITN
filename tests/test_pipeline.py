@@ -138,6 +138,68 @@ class TestPipelineProcessors(unittest.TestCase):
         rec_b = {"id": id1, "titre_original": "Titre A", "resume": "Résumé 1", "collecte_le": "2026-11-26T12:00:00Z"}
         self.assertEqual(_content_fingerprint(rec_a), _content_fingerprint(rec_b))
 
+
+    def test_collect_crossref_api_mocked(self):
+        payload = {
+            "message": {
+                "items": [{
+                    "DOI": "10.1000/example.2026",
+                    "title": ["Public policy evaluation in Morocco"],
+                    "author": [{"given": "Rachid", "family": "Essedik"}],
+                    "published": {"date-parts": [[2025, 6, 13]]},
+                    "URL": "https://doi.org/10.1000/example.2026",
+                    "publisher": "Policy Press",
+                    "container-title": ["Public Policy Evaluation"],
+                    "abstract": "<jats:p>Policy evaluation in Morocco.</jats:p>",
+                    "subject": ["Public policy"],
+                }]
+            }
+        }
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)):
+            items = collect_from_source({
+                "id": "crossref_maroc", "type": "crossref",
+                "url": "https://api.crossref.org/works?query=Morocco",
+                "default_doc_type": "publication_scientifique",
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Public policy evaluation in Morocco")
+        self.assertEqual(items[0]["published_date"], "2025-06-13")
+        self.assertEqual(items[0]["authors"], ["Rachid Essedik"])
+        self.assertEqual(items[0]["doi"], "10.1000/example.2026")
+
+    def test_collect_hal_api_mocked(self):
+        payload = {
+            "response": {
+                "docs": [{
+                    "docid": "123456",
+                    "title_s": ["Gouvernance territoriale au Maroc"],
+                    "abstract_s": ["Étude sur les politiques publiques territoriales au Maroc."],
+                    "authFullName_s": ["Auteur Test"],
+                    "producedDateY_i": 2024,
+                    "uri_s": "https://hal.science/hal-0123456v1",
+                }]
+            }
+        }
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)):
+            items = collect_from_source({
+                "id": "hal_science_morocco", "type": "hal_api",
+                "url": "https://api.archives-ouvertes.fr/search/?q=morocco",
+                "default_doc_type": "publication_scientifique",
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Gouvernance territoriale au Maroc")
+        self.assertEqual(items[0]["published_date"], "2024")
+        self.assertEqual(items[0]["authors"], ["Auteur Test"])
+
+    def test_research_aggregators_do_not_get_national_source_boost(self):
+        aggregate = evaluate_morocco_relevance(
+            "Research methods in astronomy",
+            "A comparative research paper with no Moroccan policy focus.",
+            {"id": "crossref_maroc", "type": "crossref"},
+        )
+        self.assertFalse(aggregate["is_relevant"])
+        self.assertEqual(aggregate["score"], 0)
+
     def test_collect_rss_atom_mocked(self):
         sample_rss = """<?xml version="1.0" encoding="UTF-8"?>
         <rss version="2.0">

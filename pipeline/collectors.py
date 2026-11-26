@@ -543,90 +543,88 @@ def collect_hcp(source: dict) -> list[dict]:
     return enriched[:max_items]
 
 
+
 def collect_html_links(source: dict) -> list[dict]:
     src_id = str(source.get("id") or "").lower()
     base_url = source.get("url") or ""
     if src_id == "hcp_maroc" or "hcp.ma" in base_url.lower():
         return collect_hcp(source)
-
     if not base_url:
         return []
+
     max_items = int(source.get("max_items", 20))
-
-    try:
-        html_body = _fetch_text(base_url)
-    except HTTPError as exc:
-        if exc.code == 403 and "bkam.ma" in base_url.lower():
-            fallback_urls = [
-                urljoin(base_url, "/fr"),
-                urljoin(base_url, "/Publications-et-recherche"),
-            ]
-            html_body = ""
-            for fb in fallback_urls:
-                try:
-                    html_body = _fetch_text(fb, referer=base_url)
-                    if html_body:
-                        base_url = fb
-                        break
-                except Exception:
-                    continue
-            if not html_body:
-                raise
-        else:
-            raise
-
-    parser = _AnchorExtractor()
-    parser.feed(html_body)
-
-    base_host = (urlsplit(base_url).hostname or "").lower()
+    min_anchor_length = int(source.get("min_anchor_length", 16))
+    include_tokens = [str(token).lower() for token in (source.get("include_title_tokens") or [])]
+    listing_urls = source.get("listing_urls") or [base_url]
     seen_urls: set[str] = set()
     items: list[dict] = []
 
-    for href, anchor_text in parser.links:
-        if href.startswith(("#", "mailto:", "tel:", "javascript:")):
-            continue
-        if len(anchor_text) < 16:
-            continue
-        abs_url = sanitize_url(urljoin(base_url, href))
-        if not abs_url or abs_url == sanitize_url(base_url) or abs_url in seen_urls:
-            continue
+    for page_url in listing_urls:
+        try:
+            html_body = _fetch_text(page_url)
+        except HTTPError as exc:
+            if exc.code == 403 and "bkam.ma" in page_url.lower():
+                fallback_urls = [urljoin(page_url, "/fr"), urljoin(page_url, "/Publications-et-recherche")]
+                html_body = ""
+                for fb in fallback_urls:
+                    try:
+                        html_body = _fetch_text(fb, referer=page_url)
+                        if html_body:
+                            page_url = fb
+                            break
+                    except Exception:
+                        continue
+                if not html_body:
+                    raise
+            else:
+                raise
 
-        parsed = urlsplit(abs_url)
-        host = (parsed.hostname or "").lower()
-        path_lower = parsed.path.lower()
+        parser = _AnchorExtractor()
+        parser.feed(html_body)
+        base_host = (urlsplit(page_url).hostname or "").lower()
 
-        if base_host and host != base_host and not _DOC_EXT_RE.search(abs_url):
-            continue
-        if any(tok in path_lower for tok in _NOISE_PATH_TOKENS):
-            continue
-
-        is_doc_file = bool(_DOC_EXT_RE.search(abs_url))
-        has_deep_path = len([seg for seg in parsed.path.split("/") if seg]) >= 2
-        if not is_doc_file and not has_deep_path:
-            continue
-
-        seen_urls.add(abs_url)
-        is_pdf = path_lower.endswith(".pdf")
-        date_hint = _extract_date_hint(anchor_text, abs_url)
-
-        items.append({
-            "title": anchor_text,
-            "abstract": f"Publication ou document extrait depuis {source.get('name') or base_host} : {anchor_text}.",
-            "authors": [source.get("name")] if source.get("name") else [],
-            "venue": source.get("name") or base_host,
-            "keywords": [],
-            "published_date": date_hint,
-            "url": abs_url,
-            "doi": None,
-            "pdf_url": abs_url if is_pdf else None,
-            "texte_integral_disponible": is_doc_file,
-            "source_lang_hint": source.get("lang_hint"),
-            "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
-        })
-        if len(items) >= max_items:
-            break
-
-    return items
+        for href, anchor_text in parser.links:
+            if href.startswith(("#", "mailto:", "tel:", "javascript:")):
+                continue
+            title = clean_text(anchor_text)
+            if len(title) < min_anchor_length:
+                continue
+            if include_tokens and not any(token in title.lower() for token in include_tokens):
+                continue
+            abs_url = sanitize_url(urljoin(page_url, href))
+            if not abs_url or abs_url == sanitize_url(page_url) or abs_url in seen_urls:
+                continue
+            parsed = urlsplit(abs_url)
+            host = (parsed.hostname or "").lower()
+            path_lower = parsed.path.lower()
+            if base_host and host != base_host and not _DOC_EXT_RE.search(abs_url):
+                continue
+            if any(tok in path_lower for tok in _NOISE_PATH_TOKENS):
+                continue
+            is_doc_file = bool(_DOC_EXT_RE.search(abs_url))
+            has_deep_path = len([seg for seg in parsed.path.split("/") if seg]) >= 2
+            if not is_doc_file and not has_deep_path:
+                continue
+            seen_urls.add(abs_url)
+            is_pdf = path_lower.endswith(".pdf")
+            date_hint = _extract_date_hint(title, abs_url)
+            items.append({
+                "title": title,
+                "abstract": f"Notice documentaire référencée par {source.get('name') or base_host}. Consulter la page institutionnelle pour le résumé, les conclusions et le document intégral.",
+                "authors": [],
+                "venue": source.get("name") or base_host,
+                "keywords": [],
+                "published_date": date_hint,
+                "url": abs_url,
+                "doi": None,
+                "pdf_url": abs_url if is_pdf else None,
+                "texte_integral_disponible": is_doc_file,
+                "source_lang_hint": source.get("lang_hint"),
+                "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
+            })
+            if len(items) >= max_items:
+                return items[:max_items]
+    return items[:max_items]
 
 
 def _strip_ns(tag: str) -> str:
@@ -693,12 +691,85 @@ def collect_rss_atom(source: dict) -> list[dict]:
     return items
 
 
+
+def collect_world_bank_api(source: dict) -> list[dict]:
+    """Fetch Morocco time series from the World Bank Indicators API."""
+    base_url = str(source.get("url") or "https://api.worldbank.org/v2/country/MAR/indicator/").rstrip("/") + "/"
+    specs = source.get("indicators") or []
+    max_items = int(source.get("max_items", len(specs) or 10))
+    items: list[dict] = []
+    for spec in specs[:max_items]:
+        code = str(spec.get("code") or "").strip()
+        if not code:
+            continue
+        endpoint = f"{base_url}{code}?format=json&per_page=12"
+        payload = json.loads(_fetch_text(endpoint))
+        if not isinstance(payload, list) or len(payload) < 2 or not isinstance(payload[1], list):
+            continue
+        history = []
+        for row in payload[1]:
+            if not isinstance(row, dict) or row.get("value") is None:
+                continue
+            try:
+                value = float(row["value"])
+                year = int(row["date"])
+            except (TypeError, ValueError):
+                continue
+            history.append({"year": year, "value": value})
+        history.sort(key=lambda point: point["year"])
+        if not history:
+            continue
+        latest = history[-1]
+        previous = history[-2] if len(history) > 1 else None
+        label = clean_text(spec.get("label_fr") or code)
+        description = clean_text(spec.get("description_fr") or "")
+        source_url = f"https://api.worldbank.org/v2/country/MAR/indicator/{code}?format=json"
+        series = {
+            "id": code,
+            "indicator_code": code,
+            "label_fr": label,
+            "label_ar": clean_text(spec.get("label_ar") or label),
+            "description_fr": description,
+            "description_ar": clean_text(spec.get("description_ar") or description),
+            "unit_fr": clean_text(spec.get("unit_fr") or ""),
+            "unit_ar": clean_text(spec.get("unit_ar") or spec.get("unit_fr") or ""),
+            "scale_divisor": float(spec.get("scale_divisor") or 1),
+            "precision": int(spec.get("precision", 1)),
+            "category": clean_text(spec.get("category") or ""),
+            "pole": clean_text(spec.get("pole") or ""),
+            "latest": latest,
+            "previous": previous,
+            "history": history,
+            "source_name": "Banque mondiale — World Development Indicators",
+            "source_url": source_url,
+            "last_updated": clean_text((payload[0] or {}).get("lastupdated") if isinstance(payload[0], dict) else ""),
+        }
+        items.append({
+            "title": f"{label} — Maroc",
+            "abstract": description,
+            "authors": [],
+            "venue": "Banque mondiale — World Development Indicators",
+            "keywords": ["Maroc", "indicateur", code],
+            "published_date": str(latest["year"]),
+            "url": source_url,
+            "doi": None,
+            "espace": "chiffres",
+            "pole": series["pole"],
+            "default_doc_type": "statistique",
+            "statistics_series": series,
+            "source_lang_hint": "fr",
+        })
+    return items
+
+
 def collect_from_source(source: dict) -> list[dict]:
     stype = (source.get("type") or "").lower()
     if stype == "openalex":
         return collect_openalex(source)
     if stype == "crossref":
         return collect_crossref(source)
+    if stype == "world_bank_api":
+        return collect_world_bank_api(source)
     if stype == "hal_api":
         return collect_hal_api(source)
     if stype == "html_links":

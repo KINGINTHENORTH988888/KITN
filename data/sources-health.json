@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-26T19:12:49Z",
-  "active_sources": 1,
-  "total_fetched": 15,
-  "total_accepted": 4,
+  "updated_at": "2026-11-26T19:22:32Z",
+  "active_sources": 2,
+  "total_fetched": 16,
+  "total_accepted": 5,
   "sources": [
     {
       "source_id": "openalex_morocco_policy",
@@ -16,7 +16,21 @@
       "fetched": 15,
       "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T19:12:49Z"
+      "checked_at": "2026-11-26T19:22:32Z"
+    },
+    {
+      "source_id": "hcp_maroc",
+      "source_name": "Haut-Commissariat au Plan (HCP)",
+      "domain": "www.hcp.ma",
+      "target_space": "chiffres",
+      "type": "html_links",
+      "enabled": true,
+      "status": "ok",
+      "stage": "collecte_effectuee",
+      "fetched": 1,
+      "accepted": 1,
+      "error": null,
+      "checked_at": "2026-11-26T19:22:32Z"
     }
   ]
 }

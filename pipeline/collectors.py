@@ -131,6 +131,88 @@ def _extract_date_hint(text: str, url: str = "") -> str | None:
     return None
 
 
+
+def _crossref_date(item: dict) -> str:
+    for field in ("published-online", "published-print", "published", "issued"):
+        date_parts = ((item.get(field) or {}).get("date-parts") or [])
+        if date_parts and date_parts[0]:
+            parts = date_parts[0]
+            if len(parts) >= 3:
+                return f"{int(parts[0]):04d}-{int(parts[1]):02d}-{int(parts[2]):02d}"
+            if len(parts) == 2:
+                return f"{int(parts[0]):04d}-{int(parts[1]):02d}"
+            return f"{int(parts[0]):04d}"
+    return ""
+
+
+def collect_crossref(source: dict) -> list[dict]:
+    url = source.get("url")
+    if not url:
+        return []
+    payload = json.loads(_fetch_text(url))
+    message = payload.get("message") or {}
+    items: list[dict] = []
+    for work in (message.get("items") or [])[: int(source.get("max_items", 20))]:
+        if not isinstance(work, dict):
+            continue
+        titles = work.get("title") or []
+        title = clean_text(titles[0] if titles else "")
+        if len(title) < 4:
+            continue
+        authors = []
+        for author in work.get("author") or []:
+            if isinstance(author, dict):
+                name = clean_text(" ".join(filter(None, [author.get("given"), author.get("family")])))
+                if name:
+                    authors.append(name)
+        container = work.get("container-title") or []
+        abstract = clean_text(work.get("abstract") or "")
+        items.append({
+            "title": title,
+            "abstract": abstract,
+            "authors": authors,
+            "venue": clean_text(container[0] if container else work.get("publisher") or ""),
+            "keywords": [clean_text(value) for value in (work.get("subject") or []) if clean_text(value)],
+            "published_date": _crossref_date(work),
+            "url": work.get("URL") or (f"https://doi.org/{work.get('DOI')}" if work.get("DOI") else ""),
+            "doi": work.get("DOI"),
+            "source_lang_hint": source.get("lang_hint") or "en",
+            "default_doc_type": source.get("default_doc_type", "publication_scientifique"),
+        })
+    return items
+
+
+def collect_hal_api(source: dict) -> list[dict]:
+    url = source.get("url")
+    if not url:
+        return []
+    payload = json.loads(_fetch_text(url))
+    response = payload.get("response") or {}
+    items: list[dict] = []
+    for doc in (response.get("docs") or [])[: int(source.get("max_items", 20))]:
+        if not isinstance(doc, dict):
+            continue
+        titles = doc.get("title_s") or []
+        abstracts = doc.get("abstract_s") or []
+        title = clean_text(titles[0] if titles else "")
+        if len(title) < 4:
+            continue
+        authors = doc.get("authFullName_s") or []
+        year = doc.get("producedDateY_i")
+        items.append({
+            "title": title,
+            "abstract": clean_text(abstracts[0] if abstracts else ""),
+            "authors": [clean_text(a) for a in authors if clean_text(a)],
+            "venue": clean_text(doc.get("journalTitle_s") or ""),
+            "keywords": [clean_text(k) for k in (doc.get("keyword_s") or []) if clean_text(k)],
+            "published_date": str(year) if year else "",
+            "url": doc.get("uri_s") or "",
+            "source_lang_hint": source.get("lang_hint") or "fr",
+            "default_doc_type": source.get("default_doc_type", "publication_scientifique"),
+        })
+    return items
+
+
 def collect_openalex(source: dict) -> list[dict]:
     url = source.get("url")
     if not url:
@@ -604,6 +686,10 @@ def collect_from_source(source: dict) -> list[dict]:
     stype = (source.get("type") or "").lower()
     if stype == "openalex":
         return collect_openalex(source)
+    if stype == "crossref":
+        return collect_crossref(source)
+    if stype == "hal_api":
+        return collect_hal_api(source)
     if stype == "html_links":
         return collect_html_links(source)
     if stype == "rss_atom":

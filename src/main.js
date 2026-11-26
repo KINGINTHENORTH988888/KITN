@@ -201,6 +201,19 @@ const CONFIDENCE_LABELS = {
   }
 };
 
+const LANG_LABELS = {
+  fr: {
+    fr: "Français",
+    en: "Anglais",
+    ar: "Arabe"
+  },
+  ar: {
+    fr: "الفرنسية",
+    en: "الإنجليزية",
+    ar: "العربية"
+  }
+};
+
 const PRINCIPLES = {
   fr: [
     { num: "01", title: "Vérifier avant de conclure", text: "Croiser les sources académiques, institutionnelles et statistiques avant de retenir un fait." },
@@ -255,10 +268,12 @@ const COPY = {
     searchPlaceholder: "Rechercher par titre, auteur, pôle, type ou résumé...",
     allTypes: "Tous les types",
     allConfidence: "Toutes confiances",
+    allDocLangs: "Toutes langues",
     sortNewest: "Date : plus récent",
     sortOldest: "Date : plus ancien",
     sortScore: "Pertinence : score décroissant",
     resetFilters: "Réinitialiser",
+    exportJson: "Exporter JSON",
     savedOnly: "Favoris uniquement",
     saveBtn: "Enregistrer",
     savedBtn: "Enregistré",
@@ -274,6 +289,7 @@ const COPY = {
     labelDate: "Date de publication",
     labelPole: "Pôle",
     labelType: "Type de document",
+    labelDocLang: "Langue",
     labelConfidence: "Fiabilité",
     labelScore: "Score",
     labelDoi: "DOI",
@@ -320,10 +336,12 @@ const COPY = {
     searchPlaceholder: "ابحث بالعنوان أو المؤلف أو القطب أو نوع الوثيقة...",
     allTypes: "كل الأنواع",
     allConfidence: "كل مستويات الموثوقية",
+    allDocLangs: "كل اللغات",
     sortNewest: "التاريخ: الأحدث",
     sortOldest: "التاريخ: الأقدم",
     sortScore: "الملاءمة: الأعلى أولاً",
     resetFilters: "إعادة الضبط",
+    exportJson: "تصدير JSON",
     savedOnly: "المحفوظات فقط",
     saveBtn: "حفظ",
     savedBtn: "محفوظ",
@@ -339,6 +357,7 @@ const COPY = {
     labelDate: "تاريخ النشر",
     labelPole: "القطب",
     labelType: "نوع الوثيقة",
+    labelDocLang: "اللغة",
     labelConfidence: "الموثوقية",
     labelScore: "النتيجة",
     labelDoi: "المعرّف DOI",
@@ -375,6 +394,7 @@ let selectedPolesFilter = null;
 let activePoleLabel = "";
 let selectedTypeFilter = "";
 let selectedConfidenceFilter = "";
+let selectedDocLangFilter = "";
 let sortOrder = "newest";
 let selectedPrincipleIndex = 0;
 let selectedAcademyIndex = 0;
@@ -411,6 +431,11 @@ function formatConfidence(conf) {
   return CONFIDENCE_LABELS[lang]?.[conf] || conf;
 }
 
+function formatDocLang(code) {
+  if (!code) return "";
+  return LANG_LABELS[lang]?.[code] || code.toUpperCase();
+}
+
 function toggleFavorite(item) {
   const key = getItemKey(item);
   if (!key) return;
@@ -428,6 +453,7 @@ function resetAllFilters() {
   activePoleLabel = "";
   selectedTypeFilter = "";
   selectedConfidenceFilter = "";
+  selectedDocLangFilter = "";
   sortOrder = "newest";
   searchQuery = "";
   futureDatesOnly = false;
@@ -442,6 +468,7 @@ function getFilteredItems() {
     if (!matchesPole) return false;
     if (selectedTypeFilter && item.type_document !== selectedTypeFilter) return false;
     if (selectedConfidenceFilter && item.confiance_classification !== selectedConfidenceFilter) return false;
+    if (selectedDocLangFilter && item.langue_originale !== selectedDocLangFilter) return false;
     if (futureDatesOnly && !isFutureDate(item)) return false;
     if (favoritesOnly && !favorites.includes(getItemKey(item))) return false;
     if (!q) return true;
@@ -473,6 +500,22 @@ function getFilteredItems() {
   });
 }
 
+function exportFilteredJson() {
+  const items = getFilteredItems();
+  const payload = {
+    exported_at: new Date().toISOString(),
+    total: items.length,
+    items
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "kitn-export.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function renderModal() {
   const existing = document.getElementById("notice-modal");
   if (existing) existing.remove();
@@ -502,6 +545,7 @@ function renderModal() {
         <div><dt>${escapeHtml(c.labelAuthor)}</dt><dd>${escapeHtml(authorsText)}</dd></div>
         <div><dt>${escapeHtml(c.labelDate)}</dt><dd>${escapeHtml(item.date_publication || "—")}</dd></div>
         <div><dt>${escapeHtml(c.labelPole)}</dt><dd>${escapeHtml(item.pole || "—")}</dd></div>
+        ${item.langue_originale ? `<div><dt>${escapeHtml(c.labelDocLang)}</dt><dd>${escapeHtml(formatDocLang(item.langue_originale))}</dd></div>` : ""}
         ${item.confiance_classification ? `<div><dt>${escapeHtml(c.labelConfidence)}</dt><dd>${escapeHtml(formatConfidence(item.confiance_classification))}</dd></div>` : ""}
         ${typeof item.score_pertinence === "number" ? `<div><dt>${escapeHtml(c.labelScore)}</dt><dd>${escapeHtml(String(item.score_pertinence))}</dd></div>` : ""}
         ${item.doi ? `<div><dt>${escapeHtml(c.labelDoi)}</dt><dd>${escapeHtml(item.doi)}</dd></div>` : ""}
@@ -631,6 +675,7 @@ function render() {
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
   const availableConfidence = [...new Set(indexItems.map((it) => it.confiance_classification).filter(Boolean))];
+  const availableDocLangs = [...new Set(indexItems.map((it) => it.langue_originale).filter(Boolean))];
 
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -863,6 +908,14 @@ function render() {
               )
               .join("")}
           </select>
+          <select id="doc-lang-filter" class="filter-select">
+            <option value="">${escapeHtml(c.allDocLangs)}</option>
+            ${availableDocLangs
+              .map(
+                (dl) => `<option value="${escapeHtml(dl)}" ${selectedDocLangFilter === dl ? "selected" : ""}>${escapeHtml(formatDocLang(dl))}</option>`
+              )
+              .join("")}
+          </select>
           <select id="confidence-filter" class="filter-select">
             <option value="">${escapeHtml(c.allConfidence)}</option>
             ${availableConfidence
@@ -877,6 +930,7 @@ function render() {
             <option value="score" ${sortOrder === "score" ? "selected" : ""}>${escapeHtml(c.sortScore)}</option>
           </select>
           <button type="button" class="reset-btn" id="reset-filters-btn">${escapeHtml(c.resetFilters)}</button>
+          <button type="button" class="reset-btn" id="export-json-btn">${escapeHtml(c.exportJson)}</button>
         </div>
         <div class="filter-checks-row">
           <label class="filter-check">
@@ -957,6 +1011,11 @@ function render() {
     renderResults();
   });
 
+  document.getElementById("doc-lang-filter")?.addEventListener("change", (e) => {
+    selectedDocLangFilter = e.target.value || "";
+    renderResults();
+  });
+
   document.getElementById("confidence-filter")?.addEventListener("change", (e) => {
     selectedConfidenceFilter = e.target.value || "";
     renderResults();
@@ -969,6 +1028,10 @@ function render() {
 
   document.getElementById("reset-filters-btn")?.addEventListener("click", () => {
     resetAllFilters();
+  });
+
+  document.getElementById("export-json-btn")?.addEventListener("click", () => {
+    exportFilteredJson();
   });
 
   document.getElementById("favorites-toggle")?.addEventListener("change", (e) => {

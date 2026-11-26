@@ -82,6 +82,97 @@ const THEMES = {
   ]
 };
 
+const ACADEMY_TRACKS = {
+  fr: [
+    {
+      id: "dgsn",
+      label: "DGSN",
+      title: "Concours DGSN — Sécurité & ordre public",
+      sheet: "Police de proximité, coopération sécuritaire, digitalisation des services et protection des droits.",
+      question: "Quel principe résume le mieux la doctrine moderne de sécurité publique au Maroc ?",
+      options: [
+        "La prévention, la proximité citoyenne et la légalité",
+        "L'isolement administratif des services",
+        "L'absence de coordination territoriale"
+      ],
+      answer: 0,
+      correction: "La sécurité moderne repose sur la prévention, la proximité avec le citoyen, l'efficacité opérationnelle et le respect de la loi."
+    },
+    {
+      id: "irat",
+      label: "IRAT",
+      title: "IRAT — Administration territoriale & gouvernance",
+      sheet: "Déconcentration administrative, régionalisation avancée, coordination locale et politiques publiques.",
+      question: "Quel levier renforce l'efficacité de l'action publique au niveau territorial ?",
+      options: [
+        "La déconcentration et la convergence des programmes locaux",
+        "La multiplication des procédures sans coordination",
+        "L'absence d'évaluation des politiques publiques"
+      ],
+      answer: 0,
+      correction: "La déconcentration administrative et la cohérence territoriale permettent de mieux adapter les politiques publiques aux réalités locales."
+    },
+    {
+      id: "admin",
+      label: "Concours admin",
+      title: "Concours administratifs — Finances & réformes",
+      sheet: "Budgétisation axée sur la performance, protection sociale, transition numérique et service public.",
+      question: "Que vise principalement la réforme de la gestion publique axée sur les résultats ?",
+      options: [
+        "L'efficacité de la dépense, la redevabilité et la qualité du service",
+        "La suppression du contrôle budgétaire",
+        "La réduction de la transparence"
+      ],
+      answer: 0,
+      correction: "La gestion axée sur les résultats lie les moyens engagés aux objectifs et à l'impact réel pour l'usager."
+    }
+  ],
+  ar: [
+    {
+      id: "dgsn",
+      label: "الأمن الوطني DGSN",
+      title: "مباريات الأمن الوطني — الأمن والنظام العام",
+      sheet: "شرطة القرب، التعاون الأمني، رقمنة الخدمات وحماية الحقوق.",
+      question: "ما المبدأ الذي يلخص بأفضل شكل المقاربة الحديثة للأمن العمومي بالمغرب؟",
+      options: [
+        "الوقاية والقرب من المواطن واحترام القانون",
+        "انغلاق المصالح الإدارية",
+        "غياب التنسيق الترابي"
+      ],
+      answer: 0,
+      correction: "يرتكز العمل الأمني الحديث على الوقاية والقرب من المواطن والنجاعة الميدانية وسيادة القانون."
+    },
+    {
+      id: "irat",
+      label: "الإدارة الترابية IRAT",
+      title: "الإدارة الترابية والحكامة",
+      sheet: "اللاتمركز الإداري، الجهوية المتقدمة، التنسيق المحلي والسياسات العمومية.",
+      question: "ما الآلية التي تعزز نجاعة العمل العمومي على المستوى الترابي؟",
+      options: [
+        "اللاتمركز وتكامل البرامج المحلية",
+        "تعدد المساطر دون تنسيق",
+        "غياب تقييم السياسات العمومية"
+      ],
+      answer: 0,
+      correction: "يساعد اللاتمركز الإداري والالتقائية الترابية على ملاءمة السياسات العمومية مع خصوصيات كل مجال."
+    },
+    {
+      id: "admin",
+      label: "المباريات الإدارية",
+      title: "المباريات الإدارية — المالية والإصلاحات",
+      sheet: "الميزانية المبنية على النجاعة، الحماية الاجتماعية، التحول الرقمي والمرفق العام.",
+      question: "ما الهدف الأساسي لإصلاح التدبير العمومي القائم على النتائج؟",
+      options: [
+        "نجاعة الإنفاق والمساءلة وجودة الخدمة للمرتفق",
+        "إلغاء المراقبة الميزانياتية",
+        "تقليص الشفافية"
+      ],
+      answer: 0,
+      correction: "يربط التدبير القائم على النتائج الاعتمادات المرصودة بالأهداف والأثر الفعلي على المواطن."
+    }
+  ]
+};
+
 const DOC_TYPES = {
   fr: {
     publication_scientifique: "Publication scientifique",
@@ -94,159 +185,3 @@ const DOC_TYPES = {
     statistique: "إحصائية / مجموعة بيانات",
     rapport: "تقرير",
     article: "مقال"
-  }
-};
-
-const PRINCIPLES = {
-  fr: [
-    { num: "01", title: "Vérifier avant de conclure", text: "Croiser les sources académiques, institutionnelles et statistiques avant de retenir un fait." },
-    { num: "02", title: "Structurer plutôt qu'empiler", text: "Classer chaque notice par pôle, type de document et date pour retrouver l'essentiel vite." },
-    { num: "03", title: "Relier l'analyse au terrain", text: "Lire les transformations du Maroc à travers leurs effets concrets sur l'économie et la société." }
-  ],
-  ar: [
-    { num: "01", title: "التحقق قبل الاستنتاج", text: "مقاطعة المصادر الأكاديمية والمؤسساتية والإحصائية قبل اعتماد أي معطى." },
-    { num: "02", title: "الهيكلة بدل التكديس", text: "تصنيف كل مادة حسب القطب ونوع الوثيقة والتاريخ للوصول السريع إلى الجوهر." },
-    { num: "03", title: "ربط التحليل بالواقع", text: "قراءة تحولات المغرب عبر آثارها الملموسة على الاقتصاد والمجتمع." }
-  ]
-};
-
-const COPY = {
-  fr: {
-    langBtn: "العربية",
-    navThemes: "Thématiques",
-    navAcademy: "KITN Academy",
-    navMethod: "Méthode",
-    navResearch: "Recherche",
-    eyebrow: "Centre de veille & de connaissances",
-    heroTitle: "Comprendre le Maroc. <span>Anticiper</span> ses transformations.",
-    heroIntro: "Une plateforme indépendante pour suivre les évolutions du Maroc, explorer les travaux de recherche et transformer l'information en connaissance utile.",
-    heroPrimary: "Explorer la plateforme ↗",
-    heroSecondary: "Découvrir KITN →",
-    heroNote: "UNE LECTURE STRUCTURÉE DU MAROC",
-    card1Top: "01 / MAROC",
-    card1Map: "MA",
-    card2Top: "KNOWLEDGE / 2026",
-    card2Cap: "<strong>Information</strong> → Connaissance",
-    chip: "✦ Perspective marocaine",
-    themesEyebrow: "Les grands enjeux",
-    themesTitle: "Explorer par thématique",
-    themesSub: "Des sujets essentiels, organisés pour aller au-delà de l'actualité et comprendre les dynamiques de fond.",
-    openPole: "Filtrer les notices de ce pôle →",
-    allPoles: "Tous les pôles",
-    academyEyebrow: "KITN Academy",
-    academyTitle: "Apprendre avec méthode, pas dans la précipitation.",
-    academyText: "Des repères clairs, des synthèses structurées et des ressources pour approfondir les grands dossiers et préparer les échéances exigeantes.",
-    academyBtn: "Accéder à KITN Academy →",
-    academyPageTop: "KITN",
-    academyPageTitle: "Academy",
-    academyPageSub: "Méthode & repères",
-    methodEyebrow: "Notre approche",
-    methodTitle: "La connaissance commence par une bonne question.",
-    methodText: "KITN privilégie la clarté, la vérification et la mise en perspective plutôt que le bruit informationnel.",
-    researchEyebrow: "Index documentaire",
-    researchTitle: "Travaux & publications indexés",
-    searchPlaceholder: "Rechercher par titre, auteur, pôle, type ou résumé...",
-    allTypes: "Tous les types",
-    sortNewest: "Date : plus récent",
-    sortOldest: "Date : plus ancien",
-    savedOnly: "Favoris uniquement",
-    saveBtn: "Enregistrer",
-    savedBtn: "Enregistré",
-    futureOnly: "Dates postérieures au 26/11/2026 uniquement",
-    futureBadge: "Date > 26/11/2026 (à vérifier)",
-    noAbstract: "Résumé non fourni par la source.",
-    detailsBtn: "Fiche détaillée",
-    noResults: "Aucune notice ne correspond à votre recherche.",
-    sourceLink: "Consulter la source ↗",
-    pdfLink: "PDF ↗",
-    closeBtn: "Fermer",
-    labelAuthor: "Auteurs",
-    labelDate: "Date de publication",
-    labelPole: "Pôle",
-    labelType: "Type de document",
-    labelDoi: "DOI",
-    labelAbstract: "Résumé",
-    footerCopy: "© 2026 KITN — Centre de veille & de connaissances."
-  },
-  ar: {
-    langBtn: "Français",
-    navThemes: "المحاور",
-    navAcademy: "أكاديمية KITN",
-    navMethod: "المنهجية",
-    navResearch: "البحث",
-    eyebrow: "مركز الرصد والمعرفة",
-    heroTitle: "فهم المغرب. <span>واستشراف</span> تحولاته.",
-    heroIntro: "منصة مستقلة لمتابعة تطورات المغرب واستكشاف الأبحاث وتحويل المعلومة إلى معرفة مفيدة.",
-    heroPrimary: "استكشاف المنصة ↗",
-    heroSecondary: "اكتشف KITN ←",
-    heroNote: "قراءة مهيكلة للمغرب",
-    card1Top: "01 / المغرب",
-    card1Map: "MA",
-    card2Top: "المعرفة / 2026",
-    card2Cap: "<strong>المعلومة</strong> ← المعرفة",
-    chip: "✦ رؤية مغربية",
-    themesEyebrow: "القضايا الكبرى",
-    themesTitle: "الاستكشاف حسب المحور",
-    themesSub: "مواضيع أساسية منظمة لتجاوز الأخبار اليومية وفهم الديناميات العميقة.",
-    openPole: "تصفية المواد حسب هذا القطب ←",
-    allPoles: "كل الأقطاب",
-    academyEyebrow: "أكاديمية KITN",
-    academyTitle: "التعلم بمنهجية، لا بتسرع.",
-    academyText: "معالم واضحة وملخصات مهيكلة وموارد لتعميق الملفات الكبرى والاستعداد للاستحقاقات الدقيقة.",
-    academyBtn: "ولوج أكاديمية KITN ←",
-    academyPageTop: "KITN",
-    academyPageTitle: "Academy",
-    academyPageSub: "المنهجية والمعالم",
-    methodEyebrow: "مقاربتنا",
-    methodTitle: "المعرفة تبدأ بسؤال جيد.",
-    methodText: "تُقدّم KITN الوضوح والتحقق والربط السياقي بدل ضجيج المعلومات.",
-    researchEyebrow: "الفهرس الوثائقي",
-    researchTitle: "الأعمال والمنشورات المفهرسة",
-    searchPlaceholder: "ابحث بالعنوان أو المؤلف أو القطب أو نوع الوثيقة...",
-    allTypes: "كل الأنواع",
-    sortNewest: "التاريخ: الأحدث",
-    sortOldest: "التاريخ: الأقدم",
-    savedOnly: "المحفوظات فقط",
-    saveBtn: "حفظ",
-    savedBtn: "محفوظ",
-    futureOnly: "التواريخ بعد 26/11/2026 فقط",
-    futureBadge: "تاريخ بعد 26/11/2026 (للمراجعة)",
-    noAbstract: "الملخص غير متوفر في المصدر.",
-    detailsBtn: "بطاقة تفصيلية",
-    noResults: "لا توجد مواد مطابقة لبحثك.",
-    sourceLink: "عرض المصدر ↗",
-    pdfLink: "ملف PDF ↗",
-    closeBtn: "إغلاق",
-    labelAuthor: "المؤلفون",
-    labelDate: "تاريخ النشر",
-    labelPole: "القطب",
-    labelType: "نوع الوثيقة",
-    labelDoi: "المعرّف DOI",
-    labelAbstract: "الملخص",
-    footerCopy: "© 2026 KITN — مركز الرصد والمعرفة."
-  }
-};
-
-function loadFavorites() {
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveFavorites(list) {
-  try {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
-  } catch {
-    // ignore storage quota errors
-  }
-}
-
-function getItemKey(item) {
-  return String(item.id || item.doi || item.url_publication || item.titre_original || "");
-}
-
-let lang = "fr";

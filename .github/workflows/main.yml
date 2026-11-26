@@ -41,6 +41,8 @@ jobs:
         run: PYTHONPATH=. python -m unittest discover -s tests -v
 
       - name: Run KITN pipeline
+        env:
+          BKAM_API_KEY: ${{ secrets.BKAM_API_KEY }}
         run: PYTHONPATH=. python -m pipeline.run_pipeline
 
       - name: Sync search index to public for Vite production build

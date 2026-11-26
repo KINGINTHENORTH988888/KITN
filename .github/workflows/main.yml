@@ -48,11 +48,7 @@ jobs:
 
       - name: Verify root Vite build
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          npm install
           npm run build
 
       - name: Commit and push updated data

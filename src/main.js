@@ -15,22 +15,22 @@ const REFERENCE_DATE = getDynamicReferenceDate();
 
 const SPACES = {
   fr: [
-    { id: "all", label: "Tous les espaces" },
+    { id: "all", label: "Portail & Vue globale" },
     { id: "veille", label: "Actualité & veille" },
     { id: "science", label: "Articles scientifiques" },
     { id: "chiffres", label: "Maroc en chiffres" },
     { id: "academy", label: "Concours & Academy" },
     { id: "bibliotheque", label: "Bibliothèque" },
-    { id: "contribuer", label: "Contribution manuelle" }
+    { id: "contribuer", label: "Administration & contributions" }
   ],
   ar: [
-    { id: "all", label: "كل الفضاءات" },
+    { id: "all", label: "البوابة والنظرة العامة" },
     { id: "veille", label: "الأخبار والرصد" },
     { id: "science", label: "المقالات العلمية" },
     { id: "chiffres", label: "المغرب بالأرقام" },
     { id: "academy", label: "المباريات والأكاديمية" },
     { id: "bibliotheque", label: "المكتبة الوثائقية" },
-    { id: "contribuer", label: "إضافة يدوية" }
+    { id: "contribuer", label: "الإدارة والمساهمات" }
   ]
 };
 
@@ -137,8 +137,13 @@ const ACADEMY_TRACKS = {
     {
       id: "dgsn",
       label: "DGSN",
+      level: "Supérieur / Cadres",
+      domain: "Sécurité publique & ordre public",
+      deadline: "Session annuelle — selon annonce officielle",
       title: "Concours DGSN — Sécurité & ordre public",
       sheet: "Police de proximité, coopération sécuritaire, digitalisation des services et protection des droits.",
+      methodology: "Structurer l'analyse autour du cadre juridique, de la prévention de proximité et de la coordination territoriale.",
+      past_topics: ["La police de proximité et la confiance citoyenne"],
       question: "Quel principe résume le mieux la doctrine moderne de sécurité publique au Maroc ?",
       options: [
         "La prévention, la proximité citoyenne et la légalité",
@@ -151,8 +156,13 @@ const ACADEMY_TRACKS = {
     {
       id: "irat",
       label: "IRAT",
+      level: "Administrateurs / Cadres territoriaux",
+      domain: "Administration territoriale & gouvernance",
+      deadline: "Session annuelle — selon annonce officielle",
       title: "IRAT — Administration territoriale & gouvernance",
       sheet: "Déconcentration administrative, régionalisation avancée, coordination locale et politiques publiques.",
+      methodology: "Croiser le cadre de la déconcentration, les collectivités territoriales et la cohérence locale.",
+      past_topics: ["La déconcentration administrative au service des politiques territoriales"],
       question: "Quel levier renforce l'efficacité de l'action publique au niveau territorial ?",
       options: [
         "La déconcentration et la convergence des programmes locaux",
@@ -165,8 +175,13 @@ const ACADEMY_TRACKS = {
     {
       id: "admin",
       label: "Concours admin",
+      level: "Administration publique",
+      domain: "Finances publiques & réformes",
+      deadline: "Selon annonces Emploi Public & ministères",
       title: "Concours administratifs — Finances & réformes",
       sheet: "Budgétisation axée sur la performance, protection sociale, transition numérique et service public.",
+      methodology: "Analyser l'enjeu stratégique, le dispositif budgétaire/juridique et l'impact sur l'usager.",
+      past_topics: ["Performance de la dépense publique et qualité du service"],
       question: "Que vise principalement la réforme de la gestion publique axée sur les résultats ?",
       options: [
         "L'efficacité de la dépense, la redevabilité et la qualité du service",
@@ -181,8 +196,13 @@ const ACADEMY_TRACKS = {
     {
       id: "dgsn",
       label: "الأمن الوطني DGSN",
+      level: "أطر عليا / أمني",
+      domain: "الأمن العمومي والنظام العام",
+      deadline: "حسب الإعلان الرسمي للمباراة",
       title: "مباريات الأمن الوطني — الأمن والنظام العام",
       sheet: "شرطة القرب، التعاون الأمني، رقمنة الخدمات وحماية الحقوق.",
+      methodology: "هيكلة التحليل حول الإطار القانوني والوقاية القريبة والتنسيق الترابي.",
+      past_topics: ["شرطة القرب وتعزيز الثقة مع المواطن"],
       question: "ما المبدأ الذي يلخص بأفضل شكل المقاربة الحديثة للأمن العمومي بالمغرب؟",
       options: [
         "الوقاية والقرب من المواطن واحترام القانون",
@@ -195,8 +215,13 @@ const ACADEMY_TRACKS = {
     {
       id: "irat",
       label: "الإدارة الترابية IRAT",
+      level: "أطر الإدارة الترابية",
+      domain: "الإدارة الترابية والحكامة",
+      deadline: "حسب الإعلان الرسمي للمباراة",
       title: "الإدارة الترابية والحكامة",
       sheet: "اللاتمركز الإداري، الجهوية المتقدمة، التنسيق المحلي والسياسات العمومية.",
+      methodology: "الربط بين ميثاق اللاتمركز وأدوار الجماعات الترابية والتقائية السياسات العمومية.",
+      past_topics: ["اللاتمركز الإداري في خدمة انسجام السياسات الترابية"],
       question: "ما الآلية التي تعزز نجاعة العمل العمومي على المستوى الترابي؟",
       options: [
         "اللاتمركز وتكامل البرامج المحلية",
@@ -209,8 +234,13 @@ const ACADEMY_TRACKS = {
     {
       id: "admin",
       label: "المباريات الإدارية",
+      level: "الإدارة العمومية",
+      domain: "المالية العمومية والإصلاحات",
+      deadline: "حسب إعلانات التشغيل العمومي والوزارات",
       title: "المباريات الإدارية — المالية والإصلاحات",
       sheet: "الميزانية المبنية على النجاعة، الحماية الاجتماعية، التحول الرقمي والمرفق العام.",
+      methodology: "تحديد الرهان الاستراتيجي وتحليل الآلية المالية أو التنظيمية والأثر على المرتفق.",
+      past_topics: ["نجاعة الإنفاق العمومي وجودة الخدمة المقدمة للمرتفق"],
       question: "ما الهدف الأساسي لإصلاح التدبير العمومي القائم على النتائج؟",
       options: [
         "نجاعة الإنفاق والمساءلة وجودة الخدمة للمرتفق",
@@ -232,7 +262,8 @@ const DOC_TYPES = {
     document_juridique: "Document juridique",
     article: "Article",
     article_presse: "Article de presse",
-    concours: "Concours / Ressource"
+    concours: "Concours / Ressource",
+    ressource_pedagogique: "Ressource pédagogique"
   },
   ar: {
     publication_scientifique: "منشور علمي",
@@ -242,7 +273,8 @@ const DOC_TYPES = {
     document_juridique: "وثيقة قانونية",
     article: "مقال",
     article_presse: "مقال صحفي",
-    concours: "مباراة / مورد"
+    concours: "مباراة / مورد",
+    ressource_pedagogique: "مورد بيداغوجي"
   }
 };
 
@@ -275,12 +307,12 @@ const LANG_LABELS = {
 const PRINCIPLES = {
   fr: [
     { num: "01", title: "Vérifier avant de conclure", text: "Croiser les sources académiques, institutionnelles et statistiques avant de retenir un fait." },
-    { num: "02", title: "Structurer plutôt qu'empiler", text: "Classer chaque notice par pôle, type de document et date pour retrouver l'essentiel vite." },
+    { num: "02", title: "Structurer plutôt qu'empiler", text: "Classer chaque notice par espace, pôle, type de document et date pour retrouver l'essentiel vite." },
     { num: "03", title: "Relier l'analyse au terrain", text: "Lire les transformations du Maroc à travers leurs effets concrets sur l'économie et la société." }
   ],
   ar: [
     { num: "01", title: "التحقق قبل الاستنتاج", text: "مقاطعة المصادر الأكاديمية والمؤسساتية والإحصائية قبل اعتماد أي معطى." },
-    { num: "02", title: "الهيكلة بدل التكديس", text: "تصنيف كل مادة حسب القطب ونوع الوثيقة والتاريخ للوصول السريع إلى الجوهر." },
+    { num: "02", title: "الهيكلة بدل التكديس", text: "تصنيف كل مادة حسب الفضاء والقطب ونوع الوثيقة والتاريخ للوصول السريع إلى الجوهر." },
     { num: "03", title: "ربط التحليل بالواقع", text: "قراءة تحولات المغرب عبر آثارها الملموسة على الاقتصاد والمجتمع." }
   ]
 };
@@ -293,17 +325,24 @@ const COPY = {
     navAcademy: "KITN Academy",
     navMethod: "Méthode",
     navResearch: "Espaces & Index",
-    eyebrow: "Centre de veille & de connaissances · De l'information à la maîtrise",
+    eyebrow: "Plateforme marocaine de veille stratégique, recherche, données & concours",
     heroTitle: "Comprendre le Maroc. <span>Anticiper</span> ses transformations.",
-    heroIntro: "Une plateforme indépendante pour suivre les évolutions du Maroc, explorer les travaux de recherche, consulter les chiffres clés et préparer les concours.",
-    heroPrimary: "Explorer les espaces ↗",
-    heroSecondary: "Découvrir KITN →",
-    heroNote: "UNE LECTURE STRUCTURÉE DU MAROC",
+    heroIntro: "De l'information à la maîtrise : un outil structuré pour la veille stratégique, les publications scientifiques, les indicateurs du Maroc, la bibliothèque documentaire et la préparation aux concours.",
+    heroPrimary: "Accéder aux espaces ↗",
+    heroSecondary: "Découvrir la méthode →",
+    heroNote: "DE L'INFORMATION À LA MAÎTRISE · MAROC",
     card1Top: "01 / MAROC",
     card1Map: "MA",
-    card2Top: "KNOWLEDGE / 2026",
-    card2Cap: "<strong>Information</strong> → Connaissance",
+    card2Top: "KITN / 2026",
+    card2Cap: "<strong>Information</strong> → Maîtrise",
     chip: "✦ De l'information à la maîtrise",
+    hubTitle: "Accès direct par espace",
+    hubSub: "Chaque rubrique dispose de son périmètre, de ses repères et de son filtrage dédié.",
+    openSpaceBtn: "Ouvrir l'espace →",
+    statTotal: "Notices indexées",
+    statScience: "Articles scientifiques",
+    statStats: "Chiffres & données",
+    statLibrary: "Bibliothèque & rapports",
     themesEyebrow: "Les grands enjeux",
     themesTitle: "Explorer par thématique",
     themesSub: "Des sujets essentiels, organisés pour aller au-delà de l'actualité et comprendre les dynamiques de fond.",
@@ -311,21 +350,21 @@ const COPY = {
     activePoleBanner: "Filtre actif sur le pôle :",
     allPoles: "Tous les pôles",
     allPolesSelect: "Tous les pôles (6)",
-    academyEyebrow: "KITN Academy",
+    academyEyebrow: "KITN Academy & Concours",
     academyTitle: "Apprendre avec méthode, pas dans la précipitation.",
-    academyText: "Des repères clairs, des synthèses structurées et des QCM pour approfondir les grands dossiers et préparer les concours.",
-    academyBtn: "Ouvrir l'espace Concours & Academy →",
+    academyText: "Conditions, échéances, anciens sujets, méthodologie, fiches de révision et QCM pour préparer les concours.",
+    academyLevelLabel: "Profil / Niveau",
+    academyDomainLabel: "Domaine",
+    academyDeadlineLabel: "Échéance / Repère",
     academySheetLabel: "Fiche de révision",
+    academyMethodLabel: "Méthodologie & anciens sujets",
     academyQuizLabel: "QCM d'entraînement",
-    academyPageTop: "KITN",
-    academyPageTitle: "Academy",
-    academyPageSub: "Méthode & repères",
     methodEyebrow: "Notre approche",
     methodTitle: "La connaissance commence par une bonne question.",
-    methodText: "KITN privilégie la clarté, la vérification et la mise en perspective plutôt que le bruit informationnel.",
+    methodText: "KITN privilégie la clarté, la vérification, le respect des droits d'auteur et la mise en perspective.",
     researchEyebrow: "Espaces dédiés & Index documentaire",
     researchTitle: "Navigation par espace & notices",
-    searchPlaceholder: "Rechercher par titre, auteur, pôle, type ou résumé...",
+    searchPlaceholder: "Rechercher par titre, auteur, institution, mot-clé, pôle ou résumé...",
     dateFromLabel: "Du",
     dateToLabel: "Au",
     allTypes: "Tous les types",
@@ -342,36 +381,52 @@ const COPY = {
     futureOnly: "Dates futures à vérifier uniquement",
     futureBadge: "Date future (à vérifier)",
     unverifiedBadge: "À vérifier",
+    archivedBadge: "Archivé",
     noAbstract: "Résumé non fourni par la source.",
     detailsBtn: "Fiche détaillée",
     noResults: "Aucune notice ne correspond à votre recherche ou à cet espace.",
     sourceLink: "Consulter la source ↗",
-    pdfLink: "PDF ↗",
+    pdfLink: "PDF / Texte intégral ↗",
     closeBtn: "Fermer",
     labelAuthor: "Auteurs",
+    labelVenue: "Revue / Institution",
+    labelKeywords: "Mots-clés",
     labelDate: "Date de publication",
+    labelCollected: "Collecté le",
+    labelUpdated: "Mis à jour le",
     labelPole: "Pôle",
+    labelSpace: "Espace",
     labelStatus: "Statut éditorial",
     labelType: "Type de document",
     labelDocLang: "Langue",
     labelConfidence: "Fiabilité",
     labelScore: "Score",
     labelDoi: "DOI",
+    labelAnalysis: "Analyse stratégique",
     labelAbstract: "Résumé",
-    statusValid: "Vérifié",
+    statusValid: "Vérifié / Publié",
     statusReview: "À vérifier",
-    manualTitle: "Studio de contribution manuelle (local)",
-    manualSub: "Ajoutez manuellement une actualité, un article, une statistique, un concours ou un document de référence. Exportez ensuite le JSON pour l'intégrer au dépôt.",
+    statusArchived: "Archivé",
+    validateBtn: "Valider",
+    archiveBtn: "Archiver",
+    deleteBtn: "Supprimer",
+    manualTitle: "Espace d'administration & contributions (local)",
+    manualSub: "Ajoutez, validez, archivez ou supprimez un article, une actualité, un concours, un document, une étude, une statistique ou une ressource pédagogique, puis exportez le JSON.",
     manualLabelTitle: "Titre *",
     manualLabelType: "Type",
+    manualLabelSpace: "Espace cible",
     manualLabelPole: "Pôle principal",
     manualLabelDate: "Date (YYYY-MM-DD)",
+    manualLabelVenue: "Revue / Institution",
+    manualLabelKeywords: "Mots-clés (séparés par virgule)",
     manualLabelUrl: "Lien source (URL)",
+    manualLabelPdf: "Lien PDF / Texte intégral (URL)",
     manualLabelResume: "Résumé / Note",
-    manualAddBtn: "Ajouter à la base locale",
+    manualLabelAnalysis: "Analyse stratégique (optionnel)",
+    manualAddBtn: "Publier dans la base locale",
     manualExportBtn: "Exporter contributions JSON",
     manualClearBtn: "Vider contributions locales",
-    manualAddedMsg: "Notice ajoutée localement et visible dans l'index.",
+    manualAddedMsg: "Contribution enregistrée localement et intégrée dans l'index.",
     footerCopy: "© 2026 KITN — De l'information à la maîtrise."
   },
   ar: {
@@ -381,17 +436,24 @@ const COPY = {
     navAcademy: "أكاديمية KITN",
     navMethod: "المنهجية",
     navResearch: "الفضاءات والفهرس",
-    eyebrow: "مركز الرصد والمعرفة · من المعلومة إلى التمكن",
+    eyebrow: "المنصة المغربية للرصد الاستراتيجي والبحث والبيانات والمباريات",
     heroTitle: "فهم المغرب. <span>واستشراف</span> تحولاته.",
-    heroIntro: "منصة مستقلة لمتابعة تطورات المغرب واستكشاف الأبحاث والاطلاع على الأرقام والمباريات.",
-    heroPrimary: "استكشاف الفضاءات ↗",
-    heroSecondary: "اكتشف KITN ←",
-    heroNote: "قراءة مهيكلة للمغرب",
+    heroIntro: "من المعلومة إلى التمكن: أداة مهيكلة للرصد الاستراتيجي والمنشورات العلمية والمؤشرات المغربية والمكتبة الوثائقية والاستعداد للمباريات.",
+    heroPrimary: "الولوج إلى الفضاءات ↗",
+    heroSecondary: "اكتشف المنهجية ←",
+    heroNote: "من المعلومة إلى التمكن · المغرب",
     card1Top: "01 / المغرب",
     card1Map: "MA",
-    card2Top: "المعرفة / 2026",
-    card2Cap: "<strong>المعلومة</strong> ← المعرفة",
+    card2Top: "KITN / 2026",
+    card2Cap: "<strong>المعلومة</strong> ← التمكن",
     chip: "✦ من المعلومة إلى التمكن",
+    hubTitle: "وصول مباشر حسب الفضاء",
+    hubSub: "لكل فضاء اختصاصه ومعالمه وآليات التصفية الخاصة به.",
+    openSpaceBtn: "فتح الفضاء ←",
+    statTotal: "المواد المفهرسة",
+    statScience: "المقالات العلمية",
+    statStats: "الأرقام والبيانات",
+    statLibrary: "المكتبة والتقارير",
     themesEyebrow: "القضايا الكبرى",
     themesTitle: "الاستكشاف حسب المحور",
     themesSub: "مواضيع أساسية منظمة لتجاوز الأخبار اليومية وفهم الديناميات العميقة.",
@@ -399,21 +461,21 @@ const COPY = {
     activePoleBanner: "تصفية نشطة حسب القطب:",
     allPoles: "كل الأقطاب",
     allPolesSelect: "كل الأقطاب (6)",
-    academyEyebrow: "أكاديمية KITN",
+    academyEyebrow: "أكاديمية KITN والمباريات",
     academyTitle: "التعلم بمنهجية، لا بتسرع.",
-    academyText: "معالم واضحة وملخصات مهيكلة واختبارات لتعميق الملفات الكبرى والاستعداد للمباريات.",
-    academyBtn: "فتح فضاء المباريات والأكاديمية ←",
+    academyText: "شروط الترشيح والآجال والمواضيع السابقة والمنهجية وبطاقات المراجعة والاختبارات للاستعداد للمباريات.",
+    academyLevelLabel: "الإطار / المستوى",
+    academyDomainLabel: "المجال",
+    academyDeadlineLabel: "الآجال / معلم",
     academySheetLabel: "بطاقة مراجعة",
+    academyMethodLabel: "المنهجية والمواضيع السابقة",
     academyQuizLabel: "اختبار تفاعلي",
-    academyPageTop: "KITN",
-    academyPageTitle: "Academy",
-    academyPageSub: "المنهجية والمعالم",
     methodEyebrow: "مقاربتنا",
     methodTitle: "المعرفة تبدأ بسؤال جيد.",
-    methodText: "تُقدّم KITN الوضوح والتحقق والربط السياقي بدل ضجيج المعلومات.",
+    methodText: "تُقدّم KITN الوضوح والتحقق واحترام حقوق النشر والربط السياقي.",
     researchEyebrow: "الفضاءات المتخصصة والفهرس الوثائقي",
     researchTitle: "التنقل حسب الفضاء والمواد",
-    searchPlaceholder: "ابحث بالعنوان أو المؤلف أو القطب أو نوع الوثيقة...",
+    searchPlaceholder: "ابحث بالعنوان أو المؤلف أو المؤسسة أو الكلمات المفتاحية أو القطب...",
     dateFromLabel: "من",
     dateToLabel: "إلى",
     allTypes: "كل الأنواع",
@@ -430,36 +492,52 @@ const COPY = {
     futureOnly: "التواريخ المستقبلية للمراجعة فقط",
     futureBadge: "تاريخ مستقبلي (للمراجعة)",
     unverifiedBadge: "للمراجعة",
+    archivedBadge: "مؤرشف",
     noAbstract: "الملخص غير متوفر في المصدر.",
     detailsBtn: "بطاقة تفصيلية",
     noResults: "لا توجد مواد مطابقة لبحثك أو لهذا الفضاء.",
     sourceLink: "عرض المصدر ↗",
-    pdfLink: "ملف PDF ↗",
+    pdfLink: "ملف PDF / النص الكامل ↗",
     closeBtn: "إغلاق",
     labelAuthor: "المؤلفون",
+    labelVenue: "المجلة / المؤسسة",
+    labelKeywords: "الكلمات المفتاحية",
     labelDate: "تاريخ النشر",
+    labelCollected: "تاريخ الجمع",
+    labelUpdated: "تاريخ التحديث",
     labelPole: "القطب",
+    labelSpace: "الفضاء",
     labelStatus: "الحالة التحريرية",
     labelType: "نوع الوثيقة",
     labelDocLang: "اللغة",
     labelConfidence: "الموثوقية",
     labelScore: "النتيجة",
     labelDoi: "المعرّف DOI",
+    labelAnalysis: "تحليل استراتيجي",
     labelAbstract: "الملخص",
-    statusValid: "متحقق منه",
+    statusValid: "متحقق منه / منشور",
     statusReview: "للمراجعة",
-    manualTitle: "فضاء الإضافة اليدوية (محلي)",
-    manualSub: "أضف يدوياً خبراً أو مقالاً أو إحصائية أو مباراة أو وثيقة مرجعية ثم صدّر ملف JSON.",
+    statusArchived: "مؤرشف",
+    validateBtn: "اعتماد",
+    archiveBtn: "أرشفة",
+    deleteBtn: "حذف",
+    manualTitle: "فضاء الإدارة والمساهمات (محلي)",
+    manualSub: "أضف أو اعتمد أو أرشف أو احذف مقالاً أو خبراً أو مباراة أو وثيقة أو دراسة أو إحصائية أو مورداً بيداغوجياً ثم صدّر JSON.",
     manualLabelTitle: "العنوان *",
     manualLabelType: "النوع",
+    manualLabelSpace: "الفضاء المستهدف",
     manualLabelPole: "القطب الرئيسي",
     manualLabelDate: "التاريخ (YYYY-MM-DD)",
+    manualLabelVenue: "المجلة / المؤسسة",
+    manualLabelKeywords: "الكلمات المفتاحية (مفصولة بفاصلة)",
     manualLabelUrl: "رابط المصدر (URL)",
+    manualLabelPdf: "رابط PDF / النص الكامل (URL)",
     manualLabelResume: "الملخص / ملاحظة",
-    manualAddBtn: "إضافة إلى القاعدة المحلية",
-    manualExportBtn: "تصدير الإضافات JSON",
-    manualClearBtn: "مسح الإضافات المحلية",
-    manualAddedMsg: "تمت إضافة المادة محلياً وظهرت في الفهرس.",
+    manualLabelAnalysis: "تحليل استراتيجي (اختياري)",
+    manualAddBtn: "نشر في القاعدة المحلية",
+    manualExportBtn: "تصدير المساهمات JSON",
+    manualClearBtn: "مسح المساهمات المحلية",
+    manualAddedMsg: "تم تسجيل المساهمة محلياً وإدراجها في الفهرس.",
     footerCopy: "© 2026 KITN — من المعلومة إلى التمكن."
   }
 };
@@ -522,6 +600,17 @@ function getItemKey(item) {
   return getDedupeKeys(item)[0] || String(item.titre_original || "");
 }
 
+function resolveItemSpace(item) {
+  if (item?.espace) return String(item.espace);
+  const t = String(item?.type_document || "").toLowerCase();
+  const p = String(item?.pole || "").toLowerCase();
+  if (t === "concours" || t === "ressource_pedagogique") return "academy";
+  if (t === "publication_scientifique" || p === "recherche_scientifique") return "science";
+  if (t === "statistique") return "chiffres";
+  if (["rapport", "rapport_institutionnel", "document_juridique"].includes(t)) return "bibliotheque";
+  return "veille";
+}
+
 let lang = "fr";
 let activeSpace = "all";
 let mobileMenuOpen = false;
@@ -543,6 +632,7 @@ let futureDatesOnly = false;
 let favoritesOnly = false;
 let favorites = loadJsonStorage(FAVORITES_KEY, []);
 let manualItems = loadJsonStorage(MANUAL_ITEMS_KEY, []);
+let statusOverrides = {};
 let activeModalItem = null;
 let remoteItems = [];
 let indexItems = [];
@@ -603,6 +693,40 @@ function formatDocLang(code) {
   return LANG_LABELS[lang]?.[code] || code.toUpperCase();
 }
 
+function getEffectiveStatus(item) {
+  const k = getItemKey(item);
+  if (statusOverrides[k]) return statusOverrides[k];
+  return item.statut_validation || "valide";
+}
+
+function setItemStatus(item, nextStatus) {
+  const k = getItemKey(item);
+  if (!k) return;
+  statusOverrides[k] = nextStatus;
+  if (item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_")) {
+    manualItems = manualItems.map((m) => (getItemKey(m) === k ? { ...m, statut_validation: nextStatus } : m));
+    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+  }
+  rebuildCombinedIndex();
+  renderResults();
+  if (activeModalItem && getItemKey(activeModalItem) === k) {
+    activeModalItem = { ...activeModalItem, statut_validation: nextStatus };
+    renderModal();
+  }
+}
+
+function deleteManualItem(item) {
+  const k = getItemKey(item);
+  manualItems = manualItems.filter((m) => getItemKey(m) !== k);
+  saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+  rebuildCombinedIndex();
+  renderResults();
+  if (activeModalItem && getItemKey(activeModalItem) === k) {
+    activeModalItem = null;
+    renderModal();
+  }
+}
+
 function rebuildCombinedIndex() {
   const seen = new Set();
   const merged = [];
@@ -610,21 +734,18 @@ function rebuildCombinedIndex() {
     const keys = getDedupeKeys(item);
     if (!keys.length || keys.some((k) => seen.has(k))) continue;
     keys.forEach((k) => seen.add(k));
-    merged.push(item);
+    const st = statusOverrides[keys[0]] || item.statut_validation || "valide";
+    merged.push({ ...item, statut_validation: st });
   }
   indexItems = merged;
 }
 
 function matchesSpace(item, space) {
   if (!space || space === "all") return true;
-  const t = String(item.type_document || "").toLowerCase();
-  const p = String(item.pole || "").toLowerCase();
-  if (space === "science") return t === "publication_scientifique" || p === "recherche_scientifique";
-  if (space === "chiffres") return t === "statistique" || p === "economie_finances_publiques";
-  if (space === "academy") return t === "concours" || p === "institutions_gouvernance" || p === "securite_affaires_interieures";
-  if (space === "bibliotheque") return ["rapport", "rapport_institutionnel", "document_juridique", "statistique", "publication_scientifique"].includes(t);
-  if (space === "veille") return true;
-  return true;
+  if (space === "contribuer") return item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_");
+  const itemSpace = resolveItemSpace(item);
+  if (space === "veille") return itemSpace === "veille" || space === activeSpace;
+  return itemSpace === space;
 }
 
 function toggleFavorite(item) {
@@ -677,20 +798,26 @@ function getFilteredItems() {
 
     const title = (item.titre_original || "").toLowerCase();
     const authors = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
+    const venue = (item.revue_ou_institution || item.source_nom || "").toLowerCase();
+    const keywords = Array.isArray(item.mots_cles) ? item.mots_cles.join(" ").toLowerCase() : "";
     const pole = (item.pole || "").toLowerCase();
     const poleLabel = formatPole(item.pole).toLowerCase();
     const docType = (item.type_document || "").toLowerCase();
     const docTypeLabel = formatDocType(item.type_document).toLowerCase();
     const resume = (item.resume || "").toLowerCase();
+    const analysis = (item.analyse_strategique || "").toLowerCase();
 
     return (
       title.includes(q) ||
       authors.includes(q) ||
+      venue.includes(q) ||
+      keywords.includes(q) ||
       pole.includes(q) ||
       poleLabel.includes(q) ||
       docType.includes(q) ||
       docTypeLabel.includes(q) ||
-      resume.includes(q)
+      resume.includes(q) ||
+      analysis.includes(q)
     );
   });
 
@@ -726,18 +853,23 @@ function renderModal() {
 
   const c = COPY[lang];
   const item = activeModalItem;
+  const st = getEffectiveStatus(item);
   const authorsText = Array.isArray(item.auteurs) && item.auteurs.length
     ? item.auteurs.join(", ")
     : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
+  const keywordsText = Array.isArray(item.mots_cles) && item.mots_cles.length
+    ? item.mots_cles.join(" · ")
+    : "";
   const resumeText = item.resume && String(item.resume).trim()
     ? item.resume
     : c.noAbstract;
-  const statusLabel = item.statut_validation === "valide" && !isFutureDate(item)
-    ? c.statusValid
-    : c.statusReview;
+  const statusLabel = st === "archive"
+    ? c.statusArchived
+    : (st === "valide" && !isFutureDate(item) ? c.statusValid : c.statusReview);
 
   const safeUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
   const safePdf = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
+  const isManual = item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_");
 
   const modal = document.createElement("div");
   modal.id = "notice-modal";
@@ -752,21 +884,34 @@ function renderModal() {
       ${isFutureDate(item) ? `<span class="flag-warn">${escapeHtml(c.futureBadge)}</span>` : ""}
       <dl class="modal-meta">
         <div><dt>${escapeHtml(c.labelAuthor)}</dt><dd>${escapeHtml(authorsText)}</dd></div>
+        ${item.revue_ou_institution || item.source_nom ? `<div><dt>${escapeHtml(c.labelVenue)}</dt><dd>${escapeHtml(item.revue_ou_institution || item.source_nom)}</dd></div>` : ""}
         <div><dt>${escapeHtml(c.labelDate)}</dt><dd>${escapeHtml(item.date_publication || "—")}</dd></div>
+        ${item.collecte_le ? `<div><dt>${escapeHtml(c.labelCollected)}</dt><dd>${escapeHtml(String(item.collecte_le).slice(0, 10))}</dd></div>` : ""}
+        ${item.mis_a_jour_le ? `<div><dt>${escapeHtml(c.labelUpdated)}</dt><dd>${escapeHtml(String(item.mis_a_jour_le).slice(0, 10))}</dd></div>` : ""}
         <div><dt>${escapeHtml(c.labelPole)}</dt><dd>${escapeHtml(formatPole(item.pole) || "—")}</dd></div>
         <div><dt>${escapeHtml(c.labelStatus)}</dt><dd>${escapeHtml(statusLabel)}</dd></div>
         ${item.langue_originale ? `<div><dt>${escapeHtml(c.labelDocLang)}</dt><dd>${escapeHtml(formatDocLang(item.langue_originale))}</dd></div>` : ""}
         ${item.confiance_classification ? `<div><dt>${escapeHtml(c.labelConfidence)}</dt><dd>${escapeHtml(formatConfidence(item.confiance_classification))}</dd></div>` : ""}
         ${typeof item.score_pertinence === "number" ? `<div><dt>${escapeHtml(c.labelScore)}</dt><dd>${escapeHtml(String(item.score_pertinence))}</dd></div>` : ""}
         ${item.doi ? `<div><dt>${escapeHtml(c.labelDoi)}</dt><dd>${escapeHtml(item.doi)}</dd></div>` : ""}
+        ${keywordsText ? `<div><dt>${escapeHtml(c.labelKeywords)}</dt><dd>${escapeHtml(keywordsText)}</dd></div>` : ""}
       </dl>
       <div class="modal-resume">
         <strong>${escapeHtml(c.labelAbstract)}</strong>
         <p>${escapeHtml(resumeText)}</p>
       </div>
+      ${item.analyse_strategique ? `
+        <div class="modal-resume">
+          <strong>${escapeHtml(c.labelAnalysis)}</strong>
+          <p>${escapeHtml(item.analyse_strategique)}</p>
+        </div>
+      ` : ""}
       <div class="result-actions">
         ${safeUrl ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceLink)}</a>` : ""}
         ${safePdf ? `<a href="${escapeHtml(safePdf)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.pdfLink)}</a>` : ""}
+        <button type="button" class="link-btn" id="modal-validate-btn">${escapeHtml(c.validateBtn)}</button>
+        <button type="button" class="link-btn" id="modal-archive-btn">${escapeHtml(c.archiveBtn)}</button>
+        ${isManual ? `<button type="button" class="link-btn" id="modal-delete-btn">${escapeHtml(c.deleteBtn)}</button>` : ""}
       </div>
     </div>
   `;
@@ -782,6 +927,9 @@ function renderModal() {
       renderModal();
     }
   });
+  document.getElementById("modal-validate-btn")?.addEventListener("click", () => setItemStatus(item, "valide"));
+  document.getElementById("modal-archive-btn")?.addEventListener("click", () => setItemStatus(item, "archive"));
+  document.getElementById("modal-delete-btn")?.addEventListener("click", () => deleteManualItem(item));
 }
 
 function renderResults() {
@@ -820,16 +968,20 @@ function renderResults() {
   container.innerHTML = filtered
     .map((item, idx) => {
       const isSaved = favorites.includes(getItemKey(item));
+      const st = getEffectiveStatus(item);
       const authorsText = Array.isArray(item.auteurs) && item.auteurs.length
         ? item.auteurs.join(", ")
         : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
+      const venueText = item.revue_ou_institution || item.source_nom || "";
       const metaLeft = escapeHtml(item.date_publication || "");
       const metaRight = escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || "");
-      const futureFlag = isFutureDate(item)
-        ? `<span class="flag-warn">${escapeHtml(COPY[lang].futureBadge)}</span>`
-        : (item.statut_validation === "a_verifier"
-            ? `<span class="flag-warn">${escapeHtml(COPY[lang].unverifiedBadge)}</span>`
-            : "");
+      const statusFlag = st === "archive"
+        ? `<span class="flag-warn">${escapeHtml(COPY[lang].archivedBadge)}</span>`
+        : (isFutureDate(item)
+            ? `<span class="flag-warn">${escapeHtml(COPY[lang].futureBadge)}</span>`
+            : (st === "a_verifier"
+                ? `<span class="flag-warn">${escapeHtml(COPY[lang].unverifiedBadge)}</span>`
+                : ""));
       const resumeSnippet = item.resume && String(item.resume).trim()
         ? `<p class="result-resume">${escapeHtml(item.resume)}</p>`
         : "";
@@ -848,9 +1000,9 @@ function renderResults() {
             <span>${metaLeft}</span>
             <span>${metaRight}</span>
           </div>
-          ${futureFlag}
+          ${statusFlag}
           <h3>${escapeHtml(item.titre_original || "")}</h3>
-          <p class="result-authors">${escapeHtml(authorsText)}</p>
+          <p class="result-authors">${escapeHtml(authorsText)}${venueText ? ` · ${escapeHtml(venueText)}` : ""}</p>
           ${resumeSnippet}
           <div class="result-actions">
             ${sourceHtml}
@@ -891,6 +1043,13 @@ function render() {
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
   const availableConfidence = [...new Set(indexItems.map((it) => it.confiance_classification).filter(Boolean))];
   const availableDocLangs = [...new Set(indexItems.map((it) => it.langue_originale).filter(Boolean))];
+
+  const visibleItems = indexItems.filter((it) => !isFutureDate(it));
+  const scienceCount = visibleItems.filter((it) => resolveItemSpace(it) === "science").length;
+  const statsCount = visibleItems.filter((it) => resolveItemSpace(it) === "chiffres").length;
+  const libraryCount = visibleItems.filter((it) => resolveItemSpace(it) === "bibliotheque").length;
+
+  const hubCards = spaces.filter((s) => s.id !== "all");
 
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
@@ -964,6 +1123,44 @@ function render() {
       </div>
     </section>
 
+    <section class="section" id="portal-hub">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">${escapeHtml(c.hubTitle)}</span>
+          <h2>${escapeHtml(c.hubTitle)}</h2>
+        </div>
+        <p>${escapeHtml(c.hubSub)}</p>
+      </div>
+
+      <div class="principles-grid">
+        <div class="principle-card is-active">
+          <span>${visibleItems.length}</span>
+          <h3>${escapeHtml(c.statTotal)}</h3>
+        </div>
+        <div class="principle-card">
+          <span>${scienceCount}</span>
+          <h3>${escapeHtml(c.statScience)}</h3>
+        </div>
+        <div class="principle-card">
+          <span>${statsCount}</span>
+          <h3>${escapeHtml(c.statStats)}</h3>
+        </div>
+        <div class="principle-card">
+          <span>${libraryCount}</span>
+          <h3>${escapeHtml(c.statLibrary)}</h3>
+        </div>
+      </div>
+
+      <div class="themes-grid">
+        ${hubCards.map((sp) => `
+          <div class="theme-card ${activeSpace === sp.id ? "is-active" : ""}">
+            <h3>${escapeHtml(sp.label)}</h3>
+            <button type="button" class="link-btn" data-jump-space="${sp.id}">${escapeHtml(c.openSpaceBtn)}</button>
+          </div>
+        `).join("")}
+      </div>
+    </section>
+
     <section class="section" id="themes">
       <div class="section-head">
         <div>
@@ -1018,6 +1215,11 @@ function render() {
           <span class="mini-label">${escapeHtml(c.academySheetLabel)}</span>
           <h3>${escapeHtml(activeTrack.title)}</h3>
           <p>${escapeHtml(activeTrack.sheet)}</p>
+          ${activeTrack.level ? `<p><strong>${escapeHtml(c.academyLevelLabel)} :</strong> ${escapeHtml(activeTrack.level)}</p>` : ""}
+          ${activeTrack.domain ? `<p><strong>${escapeHtml(c.academyDomainLabel)} :</strong> ${escapeHtml(activeTrack.domain)}</p>` : ""}
+          ${activeTrack.deadline ? `<p><strong>${escapeHtml(c.academyDeadlineLabel)} :</strong> ${escapeHtml(activeTrack.deadline)}</p>` : ""}
+          ${activeTrack.methodology ? `<p><strong>${escapeHtml(c.academyMethodLabel)} :</strong> ${escapeHtml(activeTrack.methodology)}</p>` : ""}
+          ${Array.isArray(activeTrack.past_topics) && activeTrack.past_topics.length ? `<p>${escapeHtml(activeTrack.past_topics.join(" · "))}</p>` : ""}
         </div>
         <div>
           <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
@@ -1087,6 +1289,12 @@ function render() {
               </select>
             </label>
             <label>
+              <span>${escapeHtml(c.manualLabelSpace)}</span>
+              <select id="m-space">
+                ${spaces.filter((s) => !["all", "contribuer"].includes(s.id)).map((s) => `<option value="${s.id}">${escapeHtml(s.label)}</option>`).join("")}
+              </select>
+            </label>
+            <label>
               <span>${escapeHtml(c.manualLabelPole)}</span>
               <select id="m-pole">
                 ${allPoleKeys.map((pk) => `<option value="${pk}">${escapeHtml(formatPole(pk))}</option>`).join("")}
@@ -1097,13 +1305,29 @@ function render() {
               <input type="date" id="m-date" value="${REFERENCE_DATE}" />
             </label>
             <label>
+              <span>${escapeHtml(c.manualLabelVenue)}</span>
+              <input type="text" id="m-venue" />
+            </label>
+            <label>
+              <span>${escapeHtml(c.manualLabelKeywords)}</span>
+              <input type="text" id="m-keywords" />
+            </label>
+            <label>
               <span>${escapeHtml(c.manualLabelUrl)}</span>
               <input type="url" id="m-url" placeholder="https://..." />
+            </label>
+            <label>
+              <span>${escapeHtml(c.manualLabelPdf)}</span>
+              <input type="url" id="m-pdf" placeholder="https://..." />
             </label>
           </div>
           <label class="manual-resume-field">
             <span>${escapeHtml(c.manualLabelResume)}</span>
             <textarea id="m-resume" rows="3"></textarea>
+          </label>
+          <label class="manual-resume-field">
+            <span>${escapeHtml(c.manualLabelAnalysis)}</span>
+            <textarea id="m-analysis" rows="2"></textarea>
           </label>
           <div class="manual-actions">
             <button type="submit" class="btn primary">${escapeHtml(c.manualAddBtn)}</button>
@@ -1187,6 +1411,14 @@ function render() {
     });
   });
 
+  document.querySelectorAll("[data-jump-space]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeSpace = btn.getAttribute("data-jump-space") || "all";
+      render();
+      document.getElementById("research")?.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
   document.querySelectorAll("[data-theme-idx]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedThemeIndex = Number(btn.getAttribute("data-theme-idx")) || 0;
@@ -1236,16 +1468,29 @@ function render() {
     const titleVal = (document.getElementById("m-title")?.value || "").trim();
     if (!titleVal) return;
     const typeVal = document.getElementById("m-type")?.value || "article";
+    const spaceVal = document.getElementById("m-space")?.value || "veille";
     const poleVal = document.getElementById("m-pole")?.value || "institutions_gouvernance";
     const dateVal = document.getElementById("m-date")?.value || REFERENCE_DATE;
+    const venueVal = (document.getElementById("m-venue")?.value || "").trim();
+    const keywordsVal = (document.getElementById("m-keywords")?.value || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
     const urlVal = (document.getElementById("m-url")?.value || "").trim();
+    const pdfVal = (document.getElementById("m-pdf")?.value || "").trim();
     const resumeVal = (document.getElementById("m-resume")?.value || "").trim();
+    const analysisVal = (document.getElementById("m-analysis")?.value || "").trim();
+    const nowIso = new Date().toISOString();
 
     const newEntry = {
       id: `kitn_manual_${Date.now()}`,
       titre_original: titleVal,
       auteurs: [lang === "ar" ? "إضافة يدوية" : "Contribution manuelle"],
+      revue_ou_institution: venueVal || (lang === "ar" ? "إضافة يدوية KITN" : "Contribution manuelle KITN"),
+      mots_cles: keywordsVal,
       date_publication: dateVal,
+      collecte_le: nowIso,
+      mis_a_jour_le: nowIso,
       date_statut: "date_confirmee",
       date_anomalie: false,
       statut_validation: "valide",
@@ -1253,14 +1498,18 @@ function render() {
       source_id: "manual_studio",
       source_nom: lang === "ar" ? "إضافة يدوية KITN" : "Contribution manuelle KITN",
       type_document: typeVal,
+      espace: spaceVal,
       pole: poleVal,
       poles_secondaires: [],
       confiance_classification: "eleve",
       score_pertinence: 90,
       url_publication: isSafeHttpUrl(urlVal) ? urlVal : null,
       doi: null,
-      pdf_direct: null,
-      resume: resumeVal
+      pdf_direct: isSafeHttpUrl(pdfVal) ? pdfVal : null,
+      texte_integral_disponible: Boolean(isSafeHttpUrl(pdfVal)),
+      resume: resumeVal,
+      analyse_strategique: analysisVal,
+      origine: "manuel"
     };
 
     manualItems = [newEntry, ...manualItems];

@@ -1,0 +1,457 @@
+{
+  "generated_at": "2026-11-26T22:11:41Z",
+  "source": "Banque mondiale — World Development Indicators",
+  "source_url": "https://data.worldbank.org/country/morocco",
+  "indicators": [
+    {
+      "id": "NY.GDP.MKTP.CD",
+      "indicator_code": "NY.GDP.MKTP.CD",
+      "label_fr": "PIB nominal",
+      "label_ar": "الناتج الداخلي الإجمالي الاسمي",
+      "description_fr": "Produit intérieur brut aux prix courants, en milliards de dollars US.",
+      "description_ar": "الناتج الداخلي الإجمالي بالأسعار الجارية، بمليارات الدولارات الأمريكية.",
+      "unit_fr": "Md USD",
+      "unit_ar": "مليار دولار",
+      "scale_divisor": 1000000000.0,
+      "precision": 1,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": 2025,
+        "value": 182374250612.28
+      },
+      "previous": {
+        "year": 2024,
+        "value": 160610994054.734
+      },
+      "history": [
+        {
+          "year": 2014,
+          "value": 119130841411.664
+        },
+        {
+          "year": 2015,
+          "value": 110413823841.592
+        },
+        {
+          "year": 2016,
+          "value": 111572947004.917
+        },
+        {
+          "year": 2017,
+          "value": 118540573367.844
+        },
+        {
+          "year": 2018,
+          "value": 127341147581.818
+        },
+        {
+          "year": 2019,
+          "value": 128920266409.458
+        },
+        {
+          "year": 2020,
+          "value": 121353645057.144
+        },
+        {
+          "year": 2021,
+          "value": 142022058447.231
+        },
+        {
+          "year": 2022,
+          "value": 131245312804.483
+        },
+        {
+          "year": 2023,
+          "value": 146036093666.762
+        },
+        {
+          "year": 2024,
+          "value": 160610994054.734
+        },
+        {
+          "year": 2025,
+          "value": 182374250612.28
+        }
+      ],
+      "source_name": "Banque mondiale — World Development Indicators",
+      "source_url": "https://api.worldbank.org/v2/country/MAR/indicator/NY.GDP.MKTP.CD?format=json",
+      "last_updated": "2026-11-11"
+    },
+    {
+      "id": "NY.GDP.MKTP.KD.ZG",
+      "indicator_code": "NY.GDP.MKTP.KD.ZG",
+      "label_fr": "Croissance du PIB",
+      "label_ar": "نمو الناتج الداخلي الإجمالي",
+      "description_fr": "Variation annuelle du PIB réel, en pourcentage.",
+      "description_ar": "التغير السنوي للناتج الداخلي الإجمالي الحقيقي، بالنسبة المئوية.",
+      "unit_fr": "%",
+      "unit_ar": "٪",
+      "scale_divisor": 1.0,
+      "precision": 1,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": 2025,
+        "value": 4.59524349182247
+      },
+      "previous": {
+        "year": 2024,
+        "value": 3.79336515978963
+      },
+      "history": [
+        {
+          "year": 2014,
+          "value": 2.7192440802029
+        },
+        {
+          "year": 2015,
+          "value": 4.34458297635238
+        },
+        {
+          "year": 2016,
+          "value": 0.52118550608968
+        },
+        {
+          "year": 2017,
+          "value": 5.05789816173446
+        },
+        {
+          "year": 2018,
+          "value": 3.06564133025955
+        },
+        {
+          "year": 2019,
+          "value": 2.89097476137077
+        },
+        {
+          "year": 2020,
+          "value": -7.17820744246774
+        },
+        {
+          "year": 2021,
+          "value": 8.15473889823681
+        },
+        {
+          "year": 2022,
+          "value": 1.81269242194809
+        },
+        {
+          "year": 2023,
+          "value": 3.65564411017931
+        },
+        {
+          "year": 2024,
+          "value": 3.79336515978963
+        },
+        {
+          "year": 2025,
+          "value": 4.59524349182247
+        }
+      ],
+      "source_name": "Banque mondiale — World Development Indicators",
+      "source_url": "https://api.worldbank.org/v2/country/MAR/indicator/NY.GDP.MKTP.KD.ZG?format=json",
+      "last_updated": "2026-11-11"
+    },
+    {
+      "id": "FP.CPI.TOTL.ZG",
+      "indicator_code": "FP.CPI.TOTL.ZG",
+      "label_fr": "Inflation",
+      "label_ar": "التضخم",
+      "description_fr": "Variation annuelle de l'indice des prix à la consommation, en pourcentage.",
+      "description_ar": "التغير السنوي لمؤشر أسعار الاستهلاك، بالنسبة المئوية.",
+      "unit_fr": "%",
+      "unit_ar": "٪",
+      "scale_divisor": 1.0,
+      "precision": 1,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": 2025,
+        "value": 0.701902154839544
+      },
+      "previous": {
+        "year": 2024,
+        "value": 0.985256592004506
+      },
+      "history": [
+        {
+          "year": 2014,
+          "value": 0.442310053557047
+        },
+        {
+          "year": 2015,
+          "value": 1.5579071134626
+        },
+        {
+          "year": 2016,
+          "value": 1.63531114327064
+        },
+        {
+          "year": 2017,
+          "value": 0.754663249323618
+        },
+        {
+          "year": 2018,
+          "value": 1.80391671141895
+        },
+        {
+          "year": 2019,
+          "value": 0.303386036590383
+        },
+        {
+          "year": 2020,
+          "value": 0.70596866133826
+        },
+        {
+          "year": 2021,
+          "value": 1.40195883962005
+        },
+        {
+          "year": 2022,
+          "value": 6.65704202759066
+        },
+        {
+          "year": 2023,
+          "value": 6.0911415250414
+        },
+        {
+          "year": 2024,
+          "value": 0.985256592004506
+        },
+        {
+          "year": 2025,
+          "value": 0.701902154839544
+        }
+      ],
+      "source_name": "Banque mondiale — World Development Indicators",
+      "source_url": "https://api.worldbank.org/v2/country/MAR/indicator/FP.CPI.TOTL.ZG?format=json",
+      "last_updated": "2026-11-11"
+    },
+    {
+      "id": "SL.UEM.TOTL.ZS",
+      "indicator_code": "SL.UEM.TOTL.ZS",
+      "label_fr": "Chômage (estimation OIT)",
+      "label_ar": "البطالة (تقديرات منظمة العمل الدولية)",
+      "description_fr": "Part de la population active au chômage, estimation modélisée de l'OIT.",
+      "description_ar": "نسبة العاطلين من مجموع السكان النشيطين، وفق تقديرات منظمة العمل الدولية.",
+      "unit_fr": "%",
+      "unit_ar": "٪",
+      "scale_divisor": 1.0,
+      "precision": 1,
+      "category": "societe_developpement_humain",
+      "pole": "societe_developpement_humain",
+      "latest": {
+        "year": 2025,
+        "value": 9.0
+      },
+      "previous": {
+        "year": 2024,
+        "value": 9.103
+      },
+      "history": [
+        {
+          "year": 2014,
+          "value": 9.7
+        },
+        {
+          "year": 2015,
+          "value": 9.46
+        },
+        {
+          "year": 2016,
+          "value": 9.3
+        },
+        {
+          "year": 2017,
+          "value": 9.22
+        },
+        {
+          "year": 2018,
+          "value": 9.272
+        },
+        {
+          "year": 2019,
+          "value": 9.191
+        },
+        {
+          "year": 2020,
+          "value": 11.189
+        },
+        {
+          "year": 2021,
+          "value": 10.551
+        },
+        {
+          "year": 2022,
+          "value": 9.413
+        },
+        {
+          "year": 2023,
+          "value": 8.896
+        },
+        {
+          "year": 2024,
+          "value": 9.103
+        },
+        {
+          "year": 2025,
+          "value": 9.0
+        }
+      ],
+      "source_name": "Banque mondiale — World Development Indicators",
+      "source_url": "https://api.worldbank.org/v2/country/MAR/indicator/SL.UEM.TOTL.ZS?format=json",
+      "last_updated": "2026-11-11"
+    },
+    {
+      "id": "SP.POP.TOTL",
+      "indicator_code": "SP.POP.TOTL",
+      "label_fr": "Population totale",
+      "label_ar": "مجموع السكان",
+      "description_fr": "Estimation de la population totale, en millions d'habitants.",
+      "description_ar": "تقدير مجموع السكان، بملايين السكان.",
+      "unit_fr": "millions",
+      "unit_ar": "مليون نسمة",
+      "scale_divisor": 1000000.0,
+      "precision": 2,
+      "category": "societe_developpement_humain",
+      "pole": "societe_developpement_humain",
+      "latest": {
+        "year": 2025,
+        "value": 38430770.0
+      },
+      "previous": {
+        "year": 2024,
+        "value": 38081173.0
+      },
+      "history": [
+        {
+          "year": 2014,
+          "value": 34204780.0
+        },
+        {
+          "year": 2015,
+          "value": 34607588.0
+        },
+        {
+          "year": 2016,
+          "value": 35023457.0
+        },
+        {
+          "year": 2017,
+          "value": 35446392.0
+        },
+        {
+          "year": 2018,
+          "value": 35839760.0
+        },
+        {
+          "year": 2019,
+          "value": 36210898.0
+        },
+        {
+          "year": 2020,
+          "value": 36584208.0
+        },
+        {
+          "year": 2021,
+          "value": 36954442.0
+        },
+        {
+          "year": 2022,
+          "value": 37329064.0
+        },
+        {
+          "year": 2023,
+          "value": 37712505.0
+        },
+        {
+          "year": 2024,
+          "value": 38081173.0
+        },
+        {
+          "year": 2025,
+          "value": 38430770.0
+        }
+      ],
+      "source_name": "Banque mondiale — World Development Indicators",
+      "source_url": "https://api.worldbank.org/v2/country/MAR/indicator/SP.POP.TOTL?format=json",
+      "last_updated": "2026-11-11"
+    },
+    {
+      "id": "BX.KLT.DINV.CD.WD",
+      "indicator_code": "BX.KLT.DINV.CD.WD",
+      "label_fr": "Investissements directs étrangers",
+      "label_ar": "الاستثمارات الأجنبية المباشرة",
+      "description_fr": "Entrées nettes d'investissements directs étrangers, en milliards de dollars US.",
+      "description_ar": "صافي تدفقات الاستثمارات الأجنبية المباشرة، بمليارات الدولارات الأمريكية.",
+      "unit_fr": "Md USD",
+      "unit_ar": "مليار دولار",
+      "scale_divisor": 1000000000.0,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": 2025,
+        "value": 3318381811.58155
+      },
+      "previous": {
+        "year": 2024,
+        "value": 1748257753.80527
+      },
+      "history": [
+        {
+          "year": 2014,
+          "value": 3525384612.43801
+        },
+        {
+          "year": 2015,
+          "value": 3252913902.35666
+        },
+        {
+          "year": 2016,
+          "value": 2153363904.93515
+        },
+        {
+          "year": 2017,
+          "value": 2680109856.21237
+        },
+        {
+          "year": 2018,
+          "value": 3544387229.27821
+        },
+        {
+          "year": 2019,
+          "value": 1720825003.13095
+        },
+        {
+          "year": 2020,
+          "value": 1418713118.61153
+        },
+        {
+          "year": 2021,
+          "value": 2264148625.4107
+        },
+        {
+          "year": 2022,
+          "value": 2294356059.17333
+        },
+        {
+          "year": 2023,
+          "value": 1060023610.0797
+        },
+        {
+          "year": 2024,
+          "value": 1748257753.80527
+        },
+        {
+          "year": 2025,
+          "value": 3318381811.58155
+        }
+      ],
+      "source_name": "Banque mondiale — World Development Indicators",
+      "source_url": "https://api.worldbank.org/v2/country/MAR/indicator/BX.KLT.DINV.CD.WD?format=json",
+      "last_updated": "2026-11-11"
+    }
+  ]
+}\n

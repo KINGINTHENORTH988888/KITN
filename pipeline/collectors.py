@@ -703,7 +703,10 @@ def collect_world_bank_api(source: dict) -> list[dict]:
         if not code:
             continue
         endpoint = f"{base_url}{code}?format=json&per_page=12"
-        payload = json.loads(_fetch_text(endpoint))
+        try:
+            payload = json.loads(_fetch_text(endpoint))
+        except Exception:
+            continue
         if not isinstance(payload, list) or len(payload) < 2 or not isinstance(payload[1], list):
             continue
         history = []

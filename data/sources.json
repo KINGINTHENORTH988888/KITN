@@ -57,7 +57,16 @@
     "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
-    "max_items": 15
+    "max_items": 15,
+    "listing_urls": [
+      "/Marche-du-travail_r423.html",
+      "/Actualite-marche-du-travail_r424.html",
+      "/Publications-Marche-du-travail_r425.html",
+      "/Economie_r327.html",
+      "/Population-demographie_r513.html",
+      "/Communiques-de-presse_r7.html",
+      "/downloads/?tag=Derni%C3%A8res+parutions"
+    ]
   },
   {
     "id": "bank_al_maghrib",
@@ -66,7 +75,7 @@
     "target_space": "chiffres",
     "type": "html_links",
     "url": "https://www.bkam.ma/",
-    "enabled": true,
+    "enabled": false,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
     "max_items": 15

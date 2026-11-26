@@ -691,6 +691,8 @@ def collect_rss_atom(source: dict) -> list[dict]:
     if not url:
         return []
     max_items = int(source.get("max_items", 20))
+    include_tokens = [str(token).lower() for token in (source.get("include_title_tokens") or []) if str(token).strip()]
+    exclude_tokens = [str(token).lower() for token in (source.get("exclude_title_tokens") or []) if str(token).strip()]
     xml_text = _fetch_text(url)
     root = ET.fromstring(xml_text)
 
@@ -700,7 +702,7 @@ def collect_rss_atom(source: dict) -> list[dict]:
             entries.append(elem)
 
     items: list[dict] = []
-    for entry in entries[:max_items]:
+    for entry in entries:
         title = ""
         link = ""
         summary = ""
@@ -731,6 +733,12 @@ def collect_rss_atom(source: dict) -> list[dict]:
         if not title:
             continue
 
+        searchable = f"{title} {summary}".lower()
+        if include_tokens and not any(token in searchable for token in include_tokens):
+            continue
+        if exclude_tokens and any(token in searchable for token in exclude_tokens):
+            continue
+
         items.append({
             "title": title,
             "abstract": summary,
@@ -744,7 +752,10 @@ def collect_rss_atom(source: dict) -> list[dict]:
             "texte_integral_disponible": link.lower().endswith(".pdf"),
             "source_lang_hint": source.get("lang_hint"),
             "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
+            "espace": source.get("target_space") or source.get("space"),
         })
+        if len(items) >= max_items:
+            break
 
     return items
 

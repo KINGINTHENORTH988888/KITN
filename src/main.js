@@ -5,7 +5,7 @@ const THEMES = {
     {
       num: "01",
       symbol: "⌘",
-      pole: "institutions_gouvernance",
+      poles: ["institutions_gouvernance"],
       title: "Institutions & gouvernance",
       desc: "Politiques publiques, institutions, administration et réformes.",
       detail: "Analyse des politiques publiques, de l'action administrative, de la décentralisation et de la gouvernance institutionnelle au Maroc.",
@@ -14,16 +14,16 @@ const THEMES = {
     {
       num: "02",
       symbol: "◎",
-      pole: "economie_finances_publiques",
+      poles: ["economie_finances_publiques", "societe_developpement_humain"],
       title: "Économie & société",
       desc: "Indicateurs, emploi, développement humain et mutations sociales.",
-      detail: "Lecture des dynamiques économiques, chaînes de valeur, finances publiques, transitions sectorielles et mutations sociales.",
-      tags: ["Économie", "Finances publiques", "Chaînes de valeur", "Mutations sociales"]
+      detail: "Lecture des dynamiques économiques, chaînes de valeur, finances publiques, développement humain et mutations sociales.",
+      tags: ["Économie", "Finances publiques", "Société & développement humain", "Mutations sociales"]
     },
     {
       num: "03",
       symbol: "⊕",
-      pole: "relations_internationales_geopolitique",
+      poles: ["relations_internationales_geopolitique"],
       title: "Sécurité, territoires & géopolitique",
       desc: "Sécurité publique, prévention, territoires, ressources et enjeux stratégiques.",
       detail: "Suivi des dynamiques territoriales, des ressources, de la sécurité et du positionnement stratégique du Maroc.",
@@ -32,7 +32,7 @@ const THEMES = {
     {
       num: "04",
       symbol: "✧",
-      pole: "recherche_scientifique",
+      poles: ["recherche_scientifique"],
       title: "Recherche & études",
       desc: "Publications académiques, jeux de données et analyses de fond.",
       detail: "Indexation des travaux scientifiques, études sectorielles et données de référence sur le Maroc.",
@@ -43,7 +43,7 @@ const THEMES = {
     {
       num: "01",
       symbol: "⌘",
-      pole: "institutions_gouvernance",
+      poles: ["institutions_gouvernance"],
       title: "المؤسسات والحكامة",
       desc: "السياسات العمومية، المؤسسات، الإدارة والإصلاحات.",
       detail: "تحليل السياسات العمومية والعمل الإداري واللامركزية والحكامة المؤسساتية في المغرب.",
@@ -52,16 +52,16 @@ const THEMES = {
     {
       num: "02",
       symbol: "◎",
-      pole: "economie_finances_publiques",
+      poles: ["economie_finances_publiques", "societe_developpement_humain"],
       title: "الاقتصاد والمجتمع",
       desc: "المؤشرات، الشغل، التنمية البشرية والتحولات الاجتماعية.",
-      detail: "قراءة الديناميات الاقتصادية وسلاسل القيمة والمالية العمومية والتحولات الاجتماعية.",
-      tags: ["الاقتصاد", "المالية العمومية", "سلاسل القيمة", "التحولات الاجتماعية"]
+      detail: "قراءة الديناميات الاقتصادية وسلاسل القيمة والمالية العمومية والتنمية البشرية والتحولات الاجتماعية.",
+      tags: ["الاقتصاد", "المالية العمومية", "المجتمع والتنمية البشرية", "التحولات الاجتماعية"]
     },
     {
       num: "03",
       symbol: "⊕",
-      pole: "relations_internationales_geopolitique",
+      poles: ["relations_internationales_geopolitique"],
       title: "الأمن والمجالات والجيوسياسة",
       desc: "الأمن العمومي، الوقاية، المجالات الترابية والموارد والقضايا الاستراتيجية.",
       detail: "تتبع الديناميات الترابية والموارد والأمن والموقع الاستراتيجي للمغرب.",
@@ -70,13 +70,28 @@ const THEMES = {
     {
       num: "04",
       symbol: "✧",
-      pole: "recherche_scientifique",
+      poles: ["recherche_scientifique"],
       title: "البحث والدراسات",
       desc: "منشورات أكاديمية، قواعد بيانات وتحليلات معمقة.",
       detail: "فهرسة الأعمال العلمية والدراسات القطاعية والبيانات المرجعية حول المغرب.",
       tags: ["منشورات", "بيانات", "دراسات", "رصد"]
     }
   ]
+};
+
+const DOC_TYPES = {
+  fr: {
+    publication_scientifique: "Publication scientifique",
+    statistique: "Statistique / Jeu de données",
+    rapport: "Rapport",
+    article: "Article"
+  },
+  ar: {
+    publication_scientifique: "منشور علمي",
+    statistique: "إحصائية / مجموعة بيانات",
+    rapport: "تقرير",
+    article: "مقال"
+  }
 };
 
 const PRINCIPLES = {
@@ -177,7 +192,7 @@ const COPY = {
 
 let lang = "fr";
 let selectedThemeIndex = 0;
-let selectedPoleFilter = null;
+let selectedPolesFilter = null;
 let selectedPrincipleIndex = 0;
 let searchQuery = "";
 let indexItems = [];
@@ -190,10 +205,15 @@ function escapeHtml(str = "") {
     .replaceAll('"', "&quot;");
 }
 
+function formatDocType(type) {
+  if (!type) return "";
+  return DOC_TYPES[lang]?.[type] || type;
+}
+
 function getFilteredItems() {
   const q = searchQuery.trim().toLowerCase();
   return indexItems.filter((item) => {
-    const matchesPole = !selectedPoleFilter || item.pole === selectedPoleFilter;
+    const matchesPole = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
     if (!matchesPole) return false;
     if (!q) return true;
 
@@ -201,6 +221,7 @@ function getFilteredItems() {
     const authors = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
     const pole = (item.pole || "").toLowerCase();
     const docType = (item.type_document || "").toLowerCase();
+    const docTypeLabel = formatDocType(item.type_document).toLowerCase();
     const resume = (item.resume || "").toLowerCase();
 
     return (
@@ -208,6 +229,7 @@ function getFilteredItems() {
       authors.includes(q) ||
       pole.includes(q) ||
       docType.includes(q) ||
+      docTypeLabel.includes(q) ||
       resume.includes(q)
     );
   });
@@ -233,7 +255,7 @@ function renderResults() {
         ? item.auteurs.join(", ")
         : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
       const metaLeft = escapeHtml(item.date_publication || "");
-      const metaRight = escapeHtml(item.type_document || item.pole || "");
+      const metaRight = escapeHtml(formatDocType(item.type_document) || item.pole || "");
       const pdfHtml = item.pdf_direct
         ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer">${escapeHtml(COPY[lang].pdfLink)}</a>`
         : "";
@@ -365,7 +387,7 @@ function render() {
           <strong>${activeTheme.num} — ${escapeHtml(activeTheme.title)}</strong>
           <div>
             <a href="#research" id="filter-by-theme">${c.openPole}</a>
-            ${selectedPoleFilter ? ` · <a href="#research" id="reset-pole-filter">${c.allPoles}</a>` : ""}
+            ${selectedPolesFilter ? ` · <a href="#research" id="reset-pole-filter">${c.allPoles}</a>` : ""}
           </div>
         </div>
         <p>${escapeHtml(activeTheme.detail)}</p>
@@ -464,12 +486,12 @@ function render() {
   });
 
   document.getElementById("filter-by-theme")?.addEventListener("click", () => {
-    selectedPoleFilter = activeTheme.pole;
+    selectedPolesFilter = activeTheme.poles;
     renderResults();
   });
 
   document.getElementById("reset-pole-filter")?.addEventListener("click", () => {
-    selectedPoleFilter = null;
+    selectedPolesFilter = null;
     renderResults();
   });
 

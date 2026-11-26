@@ -1267,6 +1267,25 @@ function render() {
   renderModal();
 }
 
+async function initAcademy() {
+  try {
+    const res = await fetch("/data/academy/academy.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data?.tracks && typeof data.tracks === "object") {
+      if (Array.isArray(data.tracks.fr) && data.tracks.fr.length) {
+        ACADEMY_TRACKS.fr = data.tracks.fr;
+      }
+      if (Array.isArray(data.tracks.ar) && data.tracks.ar.length) {
+        ACADEMY_TRACKS.ar = data.tracks.ar;
+      }
+      render();
+    }
+  } catch {
+    // Fallback sur les pistes intégrées par défaut
+  }
+}
+
 async function initIndex() {
   try {
     const res = await fetch("/data/index/search-index.json", { cache: "no-store" });
@@ -1282,4 +1301,5 @@ async function initIndex() {
 }
 
 render();
+initAcademy();
 initIndex();

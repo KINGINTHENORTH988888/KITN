@@ -1,5 +1,6 @@
 import json
 import re
+import time
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.error import HTTPError
@@ -59,6 +60,18 @@ _HCP_RELEVANT_TOKENS = (
     "haut-commissariat",
     "pdf",
     "xls",
+    "marché",
+    "marche",
+    "économie",
+    "economie",
+    "population",
+    "prix",
+    "inflation",
+    "revenu",
+    "taux",
+    "indicateur",
+    "résultat",
+    "resultat",
 )
 
 
@@ -78,10 +91,21 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
         "Sec-Fetch-Site": "same-origin" if referer else "none",
     }
     req = Request(url, headers=headers)
-    with urlopen(req, timeout=timeout) as resp:
-        raw = resp.read()
-        charset = resp.headers.get_content_charset() or "utf-8"
-        return raw.decode(charset, errors="replace")
+    for attempt in range(3):
+        try:
+            with urlopen(req, timeout=timeout) as resp:
+                raw = resp.read()
+                charset = resp.headers.get_content_charset() or "utf-8"
+                return raw.decode(charset, errors="replace")
+        except HTTPError as exc:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
+                raise
+            retry_after = exc.headers.get("Retry-After") if exc.headers else None
+            try:
+                delay = min(20, max(1, int(retry_after))) if retry_after else 2 ** attempt
+            except (TypeError, ValueError):
+                delay = 2 ** attempt
+            time.sleep(delay)
 
 
 def _reconstruct_openalex_abstract(inverted_index: dict | None) -> str:
@@ -207,6 +231,118 @@ class _AnchorExtractor(HTMLParser):
             self._buf = []
 
 
+class _HCPDetailExtractor(HTMLParser):
+    """Extract useful metadata and short text excerpts from an HCP article page."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.meta: dict[str, str] = {}
+        self.title = ""
+        self.heading = ""
+        self.published_time = ""
+        self.paragraphs: list[str] = []
+        self._active_tag = ""
+        self._active_parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attr = {k.lower(): (v or "").strip() for k, v in attrs}
+        if tag.lower() == "meta":
+            key = (attr.get("property") or attr.get("name") or "").lower()
+            value = attr.get("content", "")
+            if key and value:
+                self.meta[key] = clean_text(value)
+        elif tag.lower() == "time" and attr.get("datetime"):
+            self.published_time = attr["datetime"]
+        elif tag.lower() in ("title", "h1", "p"):
+            self._active_tag = tag.lower()
+            self._active_parts = []
+
+    def handle_data(self, data: str) -> None:
+        if self._active_tag:
+            self._active_parts.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        if tag == self._active_tag:
+            value = clean_text(" ".join(self._active_parts))
+            if value:
+                if tag == "title" and not self.title:
+                    self.title = value
+                elif tag == "h1" and not self.heading:
+                    self.heading = value
+                elif tag == "p" and len(value) >= 35:
+                    self.paragraphs.append(value)
+            self._active_tag = ""
+            self._active_parts = []
+
+
+def _extract_hcp_detail(page_url: str, source: dict) -> dict | None:
+    html_body = _fetch_text(page_url)
+    parser = _HCPDetailExtractor()
+    parser.feed(html_body)
+
+    title = clean_text(parser.meta.get("og:title") or parser.title or parser.heading)
+    paragraphs: list[str] = []
+    seen_paragraphs: set[str] = set()
+    for paragraph in parser.paragraphs:
+        key = paragraph.casefold()
+        if key not in seen_paragraphs and not any(
+            noise in key for noise in ("cookies", "navigation", "mentions légales")
+        ):
+            seen_paragraphs.add(key)
+            paragraphs.append(paragraph)
+
+    body = " ".join(paragraphs)
+    description = clean_text(parser.meta.get("og:description") or parser.meta.get("description"))
+    excerpt = description if len(description) >= 60 else body[:900]
+    if not title or len(excerpt) < 40:
+        return None
+
+    published = (
+        parser.meta.get("article:published_time")
+        or parser.meta.get("article:modified_time")
+        or parser.published_time
+        or _extract_date_hint(body, page_url)
+    )
+    if not published:
+        months = {
+            "janvier": "01", "février": "02", "fevrier": "02", "mars": "03",
+            "avril": "04", "mai": "05", "juin": "06", "juillet": "07",
+            "août": "08", "aout": "08", "septembre": "09", "octobre": "10",
+            "novembre": "11", "décembre": "12", "decembre": "12",
+        }
+        match = re.search(
+            r"\b(\d{1,2})\s+(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s+(20\d{2})\b",
+            body,
+            re.IGNORECASE,
+        )
+        if match:
+            published = f"{match.group(3)}-{months[match.group(2).lower()]}-{int(match.group(1)):02d}"
+
+    probe = f"{title} {page_url}".lower()
+    statistical_terms = (
+        "marché", "marche", "emploi", "chômage", "chomage", "population",
+        "démograph", "demograph", "prix", "inflation", "pib", "comptes",
+        "indicateur", "enquête", "enquete", "revenu", "taux",
+    )
+    doc_type = "statistique" if any(term in probe for term in statistical_terms) else "rapport_institutionnel"
+    author = parser.meta.get("author") or source.get("name") or "Haut-Commissariat au Plan (HCP)"
+    return {
+        "title": title,
+        "abstract": excerpt[:1200],
+        "authors": [author],
+        "venue": source.get("name") or "Haut-Commissariat au Plan (HCP)",
+        "keywords": [],
+        "published_date": published,
+        "url": page_url,
+        "doi": None,
+        "pdf_url": None,
+        "texte_integral_disponible": False,
+        "source_lang_hint": source.get("lang_hint") or "fr",
+        "default_doc_type": doc_type,
+    }
+
+
 def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -> list[dict]:
     html_body = _fetch_text(page_url)
     parser = _AnchorExtractor()
@@ -235,8 +371,8 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
             continue
 
         is_doc_file = bool(_DOC_EXT_RE.search(abs_url))
-        segments = [seg for seg in parsed.path.split("/") if seg]
-        if not is_doc_file and len(segments) < 1:
+        is_article_page = bool(re.search(r"_a\d+\.html$", path_lower))
+        if not is_doc_file and not is_article_page:
             continue
 
         combined_probe = f"{anchor_text.lower()} {path_lower}"
@@ -270,34 +406,48 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
 def collect_hcp(source: dict) -> list[dict]:
     base_url = source.get("url") or "https://www.hcp.ma/"
     max_items = int(source.get("max_items", 15))
-
-    collected = _collect_hcp_page(base_url, source, strict_tokens=True)
-    if not collected:
-        collected = _collect_hcp_page(base_url, source, strict_tokens=False)
-
-    candidate_pages = [
-        urljoin(base_url, "/Publications"),
-        urljoin(base_url, "/Notes-d-information"),
-        urljoin(base_url, "/Communiques"),
-        urljoin(base_url, "/Comptes-nationaux"),
-        urljoin(base_url, "/Indice-des-prix-a-la-consommation"),
+    default_listing_urls = [
+        "/Marche-du-travail_r423.html",
+        "/Actualite-marche-du-travail_r424.html",
+        "/Publications-Marche-du-travail_r425.html",
+        "/Economie_r327.html",
+        "/Population-demographie_r513.html",
+        "/Communiques-de-presse_r7.html",
+        "/downloads/?tag=Derni%C3%A8res+parutions",
     ]
-    seen = {it["url"] for it in collected if it.get("url")}
-    for sub_url in candidate_pages:
-        if len(collected) >= max_items:
-            break
+    listing_urls = source.get("listing_urls") or default_listing_urls
+    pages = [urljoin(base_url, page) for page in listing_urls] + [base_url]
+
+    candidates: list[dict] = []
+    seen_urls: set[str] = set()
+    for page_url in pages:
         try:
-            extra = _collect_hcp_page(sub_url, source, strict_tokens=True)
-            for item in extra:
-                if item.get("url") and item["url"] not in seen:
-                    seen.add(item["url"])
-                    collected.append(item)
-                    if len(collected) >= max_items:
-                        break
+            for item in _collect_hcp_page(page_url, source, strict_tokens=True):
+                item_url = item.get("url")
+                if item_url and item_url not in seen_urls:
+                    seen_urls.add(item_url)
+                    candidates.append(item)
         except Exception:
             continue
+        if len(candidates) >= max_items * 3:
+            break
 
-    return collected[:max_items]
+    enriched: list[dict] = []
+    for item in candidates:
+        item_url = item.get("url") or ""
+        if _DOC_EXT_RE.search(item_url):
+            enriched.append(item)
+        else:
+            try:
+                detail = _extract_hcp_detail(item_url, source)
+            except Exception:
+                detail = None
+            if detail:
+                enriched.append(detail)
+        if len(enriched) >= max_items:
+            break
+
+    return enriched[:max_items]
 
 
 def collect_html_links(source: dict) -> list[dict]:

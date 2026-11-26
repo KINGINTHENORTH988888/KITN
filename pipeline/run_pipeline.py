@@ -365,12 +365,12 @@ def run() -> dict:
     SOURCES_HEALTH_FILE.write_text(json.dumps(health_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     _sync_public_index(INDEX_FILE, PUBLIC_INDEX_FILE)
-    if not statistics_series and STATISTICS_FILE.exists():
+    if STATISTICS_FILE.exists():
         try:
             previous_statistics = json.loads(STATISTICS_FILE.read_text(encoding="utf-8"))
             for previous in previous_statistics.get("indicators", []):
                 if isinstance(previous, dict) and previous.get("indicator_code"):
-                    statistics_series[str(previous["indicator_code"])] = previous
+                    statistics_series.setdefault(str(previous["indicator_code"]), previous)
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
     statistics_payload = {

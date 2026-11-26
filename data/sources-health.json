@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T20:33:57Z",
+  "updated_at": "2026-11-26T20:41:40Z",
   "active_sources": 3,
   "total_fetched": 55,
   "total_accepted": 33,
@@ -16,7 +16,7 @@
       "fetched": 15,
       "accepted": 9,
       "error": null,
-      "checked_at": "2026-11-26T20:33:57Z"
+      "checked_at": "2026-11-26T20:41:40Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -30,7 +30,7 @@
       "fetched": 20,
       "accepted": 20,
       "error": null,
-      "checked_at": "2026-11-26T20:33:57Z"
+      "checked_at": "2026-11-26T20:41:40Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -44,7 +44,7 @@
       "fetched": 20,
       "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T20:33:57Z"
+      "checked_at": "2026-11-26T20:41:40Z"
     }
   ]
 }

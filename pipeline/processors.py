@@ -308,12 +308,20 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
         hint=raw.get("source_lang_hint") or source.get("lang_hint"),
     )
 
+    source_space = source.get("target_space") or source.get("space")
+    # The HCP publishes both statistical releases and institutional news.
+    # Its configured default space applies to statistics, not to every article.
+    if str(source.get("id") or "").lower() == "hcp_maroc":
+        incoming_type = raw.get("default_doc_type") or source.get("default_doc_type")
+        if incoming_type != "statistique":
+            source_space = None
+
     classification = classify_document(
         title,
         abstract,
         default_doc_type=raw.get("default_doc_type") or source.get("default_doc_type"),
         explicit_pole=raw.get("pole"),
-        explicit_space=raw.get("espace") or source.get("target_space") or source.get("space"),
+        explicit_space=raw.get("espace") or source_space,
     )
 
     authors_raw = raw.get("authors")

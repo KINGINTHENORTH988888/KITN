@@ -325,6 +325,7 @@ const COPY = {
     navAcademy: "KITN Academy",
     navMethod: "Méthode",
     navResearch: "Espaces & Index",
+    backPortalBtn: "← Retour au portail",
     eyebrow: "Plateforme marocaine de veille stratégique, recherche, données & concours",
     heroTitle: "Comprendre le Maroc. <span>Anticiper</span> ses transformations.",
     heroIntro: "De l'information à la maîtrise : un outil structuré pour la veille stratégique, les publications scientifiques, les indicateurs du Maroc, la bibliothèque documentaire et la préparation aux concours.",
@@ -436,6 +437,7 @@ const COPY = {
     navAcademy: "أكاديمية KITN",
     navMethod: "المنهجية",
     navResearch: "الفضاءات والفهرس",
+    backPortalBtn: "العودة إلى البوابة →",
     eyebrow: "المنصة المغربية للرصد الاستراتيجي والبحث والبيانات والمباريات",
     heroTitle: "فهم المغرب. <span>واستشراف</span> تحولاته.",
     heroIntro: "من المعلومة إلى التمكن: أداة مهيكلة للرصد الاستراتيجي والمنشورات العلمية والمؤشرات المغربية والمكتبة الوثائقية والاستعداد للمباريات.",
@@ -1039,6 +1041,8 @@ function render() {
   const spaces = SPACES[lang];
   const activeTheme = themes[selectedThemeIndex] || themes[0];
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
+  const activeSpaceObj = spaces.find((s) => s.id === activeSpace) || spaces[0];
+  const isDedicatedSpace = activeSpace !== "all";
   const allPoleKeys = Object.keys(POLE_LABELS[lang]);
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
   const availableConfidence = [...new Set(indexItems.map((it) => it.confiance_classification).filter(Boolean))];
@@ -1048,7 +1052,6 @@ function render() {
   const scienceCount = visibleItems.filter((it) => resolveItemSpace(it) === "science").length;
   const statsCount = visibleItems.filter((it) => resolveItemSpace(it) === "chiffres").length;
   const libraryCount = visibleItems.filter((it) => resolveItemSpace(it) === "bibliotheque").length;
-
   const hubCards = spaces.filter((s) => s.id !== "all");
 
   document.documentElement.lang = lang;
@@ -1061,7 +1064,7 @@ function render() {
 
   app.innerHTML = `
     <header class="topbar">
-      <a href="#" class="brand">
+      <a href="#" class="brand" id="brand-home">
         <span class="brand-mark">K</span>
         <span>KITN<span class="brand-dot">.</span></span>
       </a>
@@ -1072,197 +1075,204 @@ function render() {
         <a href="#research">${c.navResearch}</a>
       </nav>
       <div class="topbar-actions">
+        ${isDedicatedSpace ? `<button type="button" class="lang" id="back-portal-top">${escapeHtml(c.backPortalBtn)}</button>` : ""}
         <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="${mobileMenuOpen}">${c.menuBtn}</button>
         <button type="button" class="lang" id="lang-toggle">${c.langBtn}</button>
       </div>
     </header>
 
-    <section class="hero">
-      <div class="hero-orb orb-one"></div>
-      <div>
-        <span class="eyebrow"><span class="eyebrow-dot"></span>${c.eyebrow}</span>
-        <h1>${c.heroTitle}</h1>
-        <p class="hero-intro">${c.heroIntro}</p>
-        <div class="hero-actions">
-          <a href="#research" class="btn primary">${c.heroPrimary}</a>
-          <a href="#method" class="text-link">${c.heroSecondary}</a>
-        </div>
-        <div class="hero-note">
-          <span class="note-line"></span>
-          <span>${c.heroNote}</span>
-        </div>
-      </div>
-
-      <div class="hero-art">
-        <div class="art-card card-back">
-          <div class="art-top">
-            <span>${c.card1Top}</span>
-            <span class="live-dot"></span>
-          </div>
-          <div class="art-lines">
-            <i></i>
-            <i style="width:72%"></i>
-            <i style="width:86%"></i>
-          </div>
-          <div class="art-map">
-            <span>${c.card1Map}</span>
-            <span class="map-shape"></span>
-          </div>
-        </div>
-
-        <div class="art-card card-front">
-          <div class="art-top"><span>${c.card2Top}</span></div>
-          <div class="art-number">01 <span>→</span> 04</div>
-          <div class="art-caption">${c.card2Cap}</div>
-          <div class="art-bars">
-            <i></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
-        </div>
-
-        <div class="floating-chip">${c.chip}</div>
-      </div>
-    </section>
-
-    <section class="section" id="portal-hub">
-      <div class="section-head">
+    ${!isDedicatedSpace ? `
+      <section class="hero">
+        <div class="hero-orb orb-one"></div>
         <div>
-          <span class="eyebrow">${escapeHtml(c.hubTitle)}</span>
-          <h2>${escapeHtml(c.hubTitle)}</h2>
-        </div>
-        <p>${escapeHtml(c.hubSub)}</p>
-      </div>
-
-      <div class="principles-grid">
-        <div class="principle-card is-active">
-          <span>${visibleItems.length}</span>
-          <h3>${escapeHtml(c.statTotal)}</h3>
-        </div>
-        <div class="principle-card">
-          <span>${scienceCount}</span>
-          <h3>${escapeHtml(c.statScience)}</h3>
-        </div>
-        <div class="principle-card">
-          <span>${statsCount}</span>
-          <h3>${escapeHtml(c.statStats)}</h3>
-        </div>
-        <div class="principle-card">
-          <span>${libraryCount}</span>
-          <h3>${escapeHtml(c.statLibrary)}</h3>
-        </div>
-      </div>
-
-      <div class="themes-grid">
-        ${hubCards.map((sp) => `
-          <div class="theme-card ${activeSpace === sp.id ? "is-active" : ""}">
-            <h3>${escapeHtml(sp.label)}</h3>
-            <button type="button" class="link-btn" data-jump-space="${sp.id}">${escapeHtml(c.openSpaceBtn)}</button>
+          <span class="eyebrow"><span class="eyebrow-dot"></span>${c.eyebrow}</span>
+          <h1>${c.heroTitle}</h1>
+          <p class="hero-intro">${c.heroIntro}</p>
+          <div class="hero-actions">
+            <a href="#research" class="btn primary">${c.heroPrimary}</a>
+            <a href="#method" class="text-link">${c.heroSecondary}</a>
           </div>
-        `).join("")}
-      </div>
-    </section>
-
-    <section class="section" id="themes">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">${c.themesEyebrow}</span>
-          <h2>${c.themesTitle}</h2>
+          <div class="hero-note">
+            <span class="note-line"></span>
+            <span>${c.heroNote}</span>
+          </div>
         </div>
-        <p>${c.themesSub}</p>
-      </div>
 
-      <div class="themes-grid">
-        ${themes.map((th, i) => `
-          <button type="button" class="theme-card ${i === selectedThemeIndex ? "is-active" : ""}" data-theme-idx="${i}">
-            <div class="theme-top">
-              <span>${th.num}</span>
-              <span>${th.symbol}</span>
+        <div class="hero-art">
+          <div class="art-card card-back">
+            <div class="art-top">
+              <span>${c.card1Top}</span>
+              <span class="live-dot"></span>
             </div>
-            <h3>${escapeHtml(th.title)}</h3>
-            <p>${escapeHtml(th.desc)}</p>
-          </button>
-        `).join("")}
-      </div>
+            <div class="art-lines">
+              <i></i>
+              <i style="width:72%"></i>
+              <i style="width:86%"></i>
+            </div>
+            <div class="art-map">
+              <span>${c.card1Map}</span>
+              <span class="map-shape"></span>
+            </div>
+          </div>
 
-      <div class="theme-detail">
-        <div>
-          <h3>${escapeHtml(activeTheme.title)}</h3>
-          <p>${escapeHtml(activeTheme.detail)}</p>
-          <div class="theme-tags">
-            ${activeTheme.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
+          <div class="art-card card-front">
+            <div class="art-top"><span>${c.card2Top}</span></div>
+            <div class="art-number">01 <span>→</span> 04</div>
+            <div class="art-caption">${c.card2Cap}</div>
+            <div class="art-bars">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+
+          <div class="floating-chip">${c.chip}</div>
+        </div>
+      </section>
+
+      <section class="section" id="portal-hub">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">${escapeHtml(c.hubTitle)}</span>
+            <h2>${escapeHtml(c.hubTitle)}</h2>
+          </div>
+          <p>${escapeHtml(c.hubSub)}</p>
+        </div>
+
+        <div class="principles-grid">
+          <div class="principle-card is-active">
+            <span>${visibleItems.length}</span>
+            <h3>${escapeHtml(c.statTotal)}</h3>
+          </div>
+          <div class="principle-card">
+            <span>${scienceCount}</span>
+            <h3>${escapeHtml(c.statScience)}</h3>
+          </div>
+          <div class="principle-card">
+            <span>${statsCount}</span>
+            <h3>${escapeHtml(c.statStats)}</h3>
+          </div>
+          <div class="principle-card">
+            <span>${libraryCount}</span>
+            <h3>${escapeHtml(c.statLibrary)}</h3>
           </div>
         </div>
-        <button type="button" class="btn primary" id="filter-by-theme">${escapeHtml(c.openPole)}</button>
-      </div>
-    </section>
 
-    <section class="section" id="academy">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">${c.academyEyebrow}</span>
-          <h2>${c.academyTitle}</h2>
+        <div class="themes-grid">
+          ${hubCards.map((sp) => `
+            <div class="theme-card ${activeSpace === sp.id ? "is-active" : ""}">
+              <h3>${escapeHtml(sp.label)}</h3>
+              <button type="button" class="link-btn" data-jump-space="${sp.id}">${escapeHtml(c.openSpaceBtn)}</button>
+            </div>
+          `).join("")}
         </div>
-        <p>${c.academyText}</p>
-      </div>
+      </section>
 
-      <div class="academy-tabs">
-        ${tracks.map((tr, idx) => `
-          <button type="button" class="tab-btn ${idx === selectedAcademyIndex ? "is-active" : ""}" data-academy-idx="${idx}">${escapeHtml(tr.label)}</button>
-        `).join("")}
-      </div>
-
-      <div class="academy-card">
-        <div>
-          <span class="mini-label">${escapeHtml(c.academySheetLabel)}</span>
-          <h3>${escapeHtml(activeTrack.title)}</h3>
-          <p>${escapeHtml(activeTrack.sheet)}</p>
-          ${activeTrack.level ? `<p><strong>${escapeHtml(c.academyLevelLabel)} :</strong> ${escapeHtml(activeTrack.level)}</p>` : ""}
-          ${activeTrack.domain ? `<p><strong>${escapeHtml(c.academyDomainLabel)} :</strong> ${escapeHtml(activeTrack.domain)}</p>` : ""}
-          ${activeTrack.deadline ? `<p><strong>${escapeHtml(c.academyDeadlineLabel)} :</strong> ${escapeHtml(activeTrack.deadline)}</p>` : ""}
-          ${activeTrack.methodology ? `<p><strong>${escapeHtml(c.academyMethodLabel)} :</strong> ${escapeHtml(activeTrack.methodology)}</p>` : ""}
-          ${Array.isArray(activeTrack.past_topics) && activeTrack.past_topics.length ? `<p>${escapeHtml(activeTrack.past_topics.join(" · "))}</p>` : ""}
-        </div>
-        <div>
-          <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
-          <p class="quiz-question">${escapeHtml(activeTrack.question)}</p>
-          <div class="quiz-options">
-            ${activeTrack.options.map((opt, oIdx) => `
-              <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}">${escapeHtml(opt)}</button>
-            `).join("")}
+      <section class="section" id="themes">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">${c.themesEyebrow}</span>
+            <h2>${c.themesTitle}</h2>
           </div>
-          ${selectedQuizOption !== null ? `
-            <p class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
-              ${escapeHtml(activeTrack.correction)}
-            </p>
-          ` : ""}
+          <p>${c.themesSub}</p>
         </div>
-      </div>
-    </section>
 
-    <section class="section" id="method">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">${c.methodEyebrow}</span>
-          <h2>${c.methodTitle}</h2>
+        <div class="themes-grid">
+          ${themes.map((th, i) => `
+            <button type="button" class="theme-card ${i === selectedThemeIndex ? "is-active" : ""}" data-theme-idx="${i}">
+              <div class="theme-top">
+                <span>${th.num}</span>
+                <span>${th.symbol}</span>
+              </div>
+              <h3>${escapeHtml(th.title)}</h3>
+              <p>${escapeHtml(th.desc)}</p>
+            </button>
+          `).join("")}
         </div>
-        <p>${c.methodText}</p>
-      </div>
 
-      <div class="principles-grid">
-        ${principles.map((pr, idx) => `
-          <button type="button" class="principle-card ${idx === selectedPrincipleIndex ? "is-active" : ""}" data-principle-idx="${idx}">
-            <span>${pr.num}</span>
-            <h3>${escapeHtml(pr.title)}</h3>
-            <p>${escapeHtml(pr.text)}</p>
-          </button>
-        `).join("")}
-      </div>
-    </section>
+        <div class="theme-detail">
+          <div>
+            <h3>${escapeHtml(activeTheme.title)}</h3>
+            <p>${escapeHtml(activeTheme.detail)}</p>
+            <div class="theme-tags">
+              ${activeTheme.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
+            </div>
+          </div>
+          <button type="button" class="btn primary" id="filter-by-theme">${escapeHtml(c.openPole)}</button>
+        </div>
+      </section>
+    ` : ""}
+
+    ${(!isDedicatedSpace || activeSpace === "academy") ? `
+      <section class="section" id="academy">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">${c.academyEyebrow}</span>
+            <h2>${c.academyTitle}</h2>
+          </div>
+          <p>${c.academyText}</p>
+        </div>
+
+        <div class="academy-tabs">
+          ${tracks.map((tr, idx) => `
+            <button type="button" class="tab-btn ${idx === selectedAcademyIndex ? "is-active" : ""}" data-academy-idx="${idx}">${escapeHtml(tr.label)}</button>
+          `).join("")}
+        </div>
+
+        <div class="academy-card">
+          <div>
+            <span class="mini-label">${escapeHtml(c.academySheetLabel)}</span>
+            <h3>${escapeHtml(activeTrack.title)}</h3>
+            <p>${escapeHtml(activeTrack.sheet)}</p>
+            ${activeTrack.level ? `<p><strong>${escapeHtml(c.academyLevelLabel)} :</strong> ${escapeHtml(activeTrack.level)}</p>` : ""}
+            ${activeTrack.domain ? `<p><strong>${escapeHtml(c.academyDomainLabel)} :</strong> ${escapeHtml(activeTrack.domain)}</p>` : ""}
+            ${activeTrack.deadline ? `<p><strong>${escapeHtml(c.academyDeadlineLabel)} :</strong> ${escapeHtml(activeTrack.deadline)}</p>` : ""}
+            ${activeTrack.methodology ? `<p><strong>${escapeHtml(c.academyMethodLabel)} :</strong> ${escapeHtml(activeTrack.methodology)}</p>` : ""}
+            ${Array.isArray(activeTrack.past_topics) && activeTrack.past_topics.length ? `<p>${escapeHtml(activeTrack.past_topics.join(" · "))}</p>` : ""}
+          </div>
+          <div>
+            <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
+            <p class="quiz-question">${escapeHtml(activeTrack.question)}</p>
+            <div class="quiz-options">
+              ${activeTrack.options.map((opt, oIdx) => `
+                <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}">${escapeHtml(opt)}</button>
+              `).join("")}
+            </div>
+            ${selectedQuizOption !== null ? `
+              <p class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
+                ${escapeHtml(activeTrack.correction)}
+              </p>
+            ` : ""}
+          </div>
+        </div>
+      </section>
+    ` : ""}
+
+    ${!isDedicatedSpace ? `
+      <section class="section" id="method">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">${c.methodEyebrow}</span>
+            <h2>${c.methodTitle}</h2>
+          </div>
+          <p>${c.methodText}</p>
+        </div>
+
+        <div class="principles-grid">
+          ${principles.map((pr, idx) => `
+            <button type="button" class="principle-card ${idx === selectedPrincipleIndex ? "is-active" : ""}" data-principle-idx="${idx}">
+              <span>${pr.num}</span>
+              <h3>${escapeHtml(pr.title)}</h3>
+              <p>${escapeHtml(pr.text)}</p>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+    ` : ""}
 
     <section class="section" id="research">
       <div class="section-head">
         <div>
-          <span class="eyebrow">${c.researchEyebrow}</span>
-          <h2>${c.researchTitle}</h2>
+          <span class="eyebrow">${escapeHtml(isDedicatedSpace ? activeSpaceObj.label : c.researchEyebrow)}</span>
+          <h2>${escapeHtml(isDedicatedSpace ? activeSpaceObj.label : c.researchTitle)}</h2>
         </div>
         <span class="count-badge" id="index-count">0</span>
       </div>
@@ -1394,6 +1404,18 @@ function render() {
     </footer>
   `;
 
+  document.getElementById("brand-home")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    activeSpace = "all";
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("back-portal-top")?.addEventListener("click", () => {
+    activeSpace = "all";
+    render();
+  });
+
   document.getElementById("lang-toggle")?.addEventListener("click", () => {
     lang = lang === "fr" ? "ar" : "fr";
     render();
@@ -1407,6 +1429,7 @@ function render() {
   document.querySelectorAll("#main-nav a").forEach((a) => {
     a.addEventListener("click", () => {
       mobileMenuOpen = false;
+      if (activeSpace !== "all") activeSpace = "all";
       render();
     });
   });
@@ -1415,7 +1438,7 @@ function render() {
     btn.addEventListener("click", () => {
       activeSpace = btn.getAttribute("data-jump-space") || "all";
       render();
-      document.getElementById("research")?.scrollIntoView({ behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 

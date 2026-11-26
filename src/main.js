@@ -635,6 +635,7 @@ let sortOrder = "newest";
 let selectedPrincipleIndex = 0;
 let selectedAcademyIndex = 0;
 let selectedQuizOption = null;
+let selectedQuizQuestionIndex = 0;
 let searchQuery = "";
 let futureDatesOnly = false;
 let favoritesOnly = false;
@@ -1046,6 +1047,10 @@ function render() {
   const spaces = SPACES[lang];
   const activeTheme = themes[selectedThemeIndex] || themes[0];
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
+  const quizQuestions = Array.isArray(activeTrack.questions) && activeTrack.questions.length
+    ? activeTrack.questions
+    : [{ question: activeTrack.question, options: activeTrack.options, answer: activeTrack.answer, correction: activeTrack.correction }];
+  const activeQuizQuestion = quizQuestions[Math.min(selectedQuizQuestionIndex, quizQuestions.length - 1)];
   const activeSpaceObj = spaces.find((s) => s.id === activeSpace) || spaces[0];
   const isDedicatedSpace = activeSpace !== "all";
   const allPoleKeys = Object.keys(POLE_LABELS[lang]);
@@ -1065,7 +1070,7 @@ function render() {
   const app = document.getElementById("app");
   if (!app) return;
 
-  const isCorrect = selectedQuizOption === activeTrack.answer;
+  const isCorrect = selectedQuizOption === activeQuizQuestion.answer;
 
   app.innerHTML = `
     <header class="topbar">
@@ -1235,15 +1240,21 @@ function render() {
           </div>
           <div>
             <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
-            <p class="quiz-question">${escapeHtml(activeTrack.question)}</p>
+            <div class="quiz-question-nav" aria-label="${lang === "ar" ? "اختيار السؤال" : "Choisir une question"}">
+              ${quizQuestions.map((question, qIdx) => `
+                <button type="button" class="quiz-step ${qIdx === selectedQuizQuestionIndex ? "is-active" : ""}" data-quiz-question="${qIdx}" aria-label="${lang === "ar" ? "السؤال" : "Question"} ${qIdx + 1}">${qIdx + 1}</button>
+              `).join("")}
+            </div>
+            <p class="quiz-progress">${lang === "ar" ? "السؤال" : "Question"} ${Math.min(selectedQuizQuestionIndex + 1, quizQuestions.length)} / ${quizQuestions.length}</p>
+            <p class="quiz-question">${escapeHtml(activeQuizQuestion.question)}</p>
             <div class="quiz-options">
-              ${activeTrack.options.map((opt, oIdx) => `
+              ${activeQuizQuestion.options.map((opt, oIdx) => `
                 <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}">${escapeHtml(opt)}</button>
               `).join("")}
             </div>
             ${selectedQuizOption !== null ? `
               <p class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
-                ${escapeHtml(activeTrack.correction)}
+                ${escapeHtml(activeQuizQuestion.correction)}
               </p>
             ` : ""}
           </div>
@@ -1469,6 +1480,15 @@ function render() {
   document.querySelectorAll("[data-academy-idx]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedAcademyIndex = Number(btn.getAttribute("data-academy-idx")) || 0;
+      selectedQuizQuestionIndex = 0;
+      selectedQuizOption = null;
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-quiz-question]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectedQuizQuestionIndex = Number(btn.getAttribute("data-quiz-question")) || 0;
       selectedQuizOption = null;
       render();
     });

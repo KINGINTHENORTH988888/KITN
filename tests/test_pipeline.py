@@ -139,6 +139,13 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(_content_fingerprint(rec_a), _content_fingerprint(rec_b))
 
 
+
+    def test_crossref_date_handles_null_month_and_day(self):
+        from pipeline.collectors import _crossref_date
+        self.assertEqual(_crossref_date({"published": {"date-parts": [[2025, None, None]]}}), "2025")
+        self.assertEqual(_crossref_date({"published": {"date-parts": [[2025, 6, None]]}}), "2025-06")
+        self.assertEqual(_crossref_date({"published": {"date-parts": [[None, None, None]]}}), "")
+
     def test_collect_crossref_api_mocked(self):
         payload = {
             "message": {

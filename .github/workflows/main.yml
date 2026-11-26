@@ -50,6 +50,13 @@ jobs:
             cp data/index/search-index.json public/data/index/search-index.json
           fi
 
+      - name: Sync Academy content to public for Vite production build
+        run: |
+          if [ -f data/academy/academy.json ]; then
+            mkdir -p public/data/academy
+            cp data/academy/academy.json public/data/academy/academy.json
+          fi
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:

@@ -1,8 +1,487 @@
 {
-  "generated_at": "2026-11-26T22:58:05Z",
-  "source": "Banque mondiale — World Development Indicators",
+  "generated_at": "2026-11-26T22:59:12Z",
+  "source": "Sources officielles — Banque mondiale et Bank Al-Maghrib",
+  "sources": [
+    "Bank Al-Maghrib",
+    "Banque mondiale — World Development Indicators"
+  ],
   "source_url": "https://data.worldbank.org/country/morocco",
   "indicators": [
+    {
+      "id": "BAM_M3_STOCK",
+      "indicator_code": "BAM_M3_STOCK",
+      "label_fr": "Masse monétaire M3",
+      "label_ar": "Masse monétaire M3",
+      "description_fr": "Encours de la masse monétaire au sens large, en milliards de dirhams.",
+      "description_ar": "Encours de la masse monétaire au sens large, en milliards de dirhams.",
+      "unit_fr": "MMDH",
+      "unit_ar": "MMDH",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 2237.9
+      },
+      "previous": null,
+      "history": [
+        {
+          "year": "2026-09",
+          "value": 2237.9
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport à la période précédente",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "relative",
+      "change_unit": "%"
+    },
+    {
+      "id": "BAM_M3_GROWTH",
+      "indicator_code": "BAM_M3_GROWTH",
+      "label_fr": "Croissance annuelle de M3",
+      "label_ar": "Croissance annuelle de M3",
+      "description_fr": "Variation en glissement annuel de la masse monétaire M3.",
+      "description_ar": "Variation en glissement annuel de la masse monétaire M3.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 12.2
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 11.9
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 11.9
+        },
+        {
+          "year": "2026-09",
+          "value": 12.2
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_RESERVES_GROWTH",
+      "indicator_code": "BAM_RESERVES_GROWTH",
+      "label_fr": "Croissance des avoirs officiels de réserve",
+      "label_ar": "Croissance des avoirs officiels de réserve",
+      "description_fr": "Variation annuelle des avoirs officiels de réserve.",
+      "description_ar": "Variation annuelle des avoirs officiels de réserve.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 21.2
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 21.7
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 21.7
+        },
+        {
+          "year": "2026-09",
+          "value": 21.2
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_NET_CLAIMS_GOV_GROWTH",
+      "indicator_code": "BAM_NET_CLAIMS_GOV_GROWTH",
+      "label_fr": "Créances nettes sur l'administration centrale",
+      "label_ar": "Créances nettes sur l'administration centrale",
+      "description_fr": "Variation annuelle des créances nettes des institutions de dépôt sur l'administration centrale.",
+      "description_ar": "Variation annuelle des créances nettes des institutions de dépôt sur l'administration centrale.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 6.7
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 7.2
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 7.2
+        },
+        {
+          "year": "2026-09",
+          "value": 6.7
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_CREDIT_NFS_GROWTH",
+      "indicator_code": "BAM_CREDIT_NFS_GROWTH",
+      "label_fr": "Croissance du crédit au secteur non financier",
+      "label_ar": "Croissance du crédit au secteur non financier",
+      "description_fr": "Variation annuelle du crédit bancaire au secteur non financier.",
+      "description_ar": "Variation annuelle du crédit bancaire au secteur non financier.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 11.2
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 10.4
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 10.4
+        },
+        {
+          "year": "2026-09",
+          "value": 11.2
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_PRIVATE_CREDIT_GROWTH",
+      "indicator_code": "BAM_PRIVATE_CREDIT_GROWTH",
+      "label_fr": "Crédit aux entreprises privées",
+      "label_ar": "Crédit aux entreprises privées",
+      "description_fr": "Variation annuelle des concours bancaires aux sociétés non financières privées.",
+      "description_ar": "Variation annuelle des concours bancaires aux sociétés non financières privées.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 13.8
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 11.4
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 11.4
+        },
+        {
+          "year": "2026-09",
+          "value": 13.8
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_HOUSEHOLD_CREDIT_GROWTH",
+      "indicator_code": "BAM_HOUSEHOLD_CREDIT_GROWTH",
+      "label_fr": "Crédit aux ménages",
+      "label_ar": "Crédit aux ménages",
+      "description_fr": "Variation annuelle des concours bancaires aux ménages.",
+      "description_ar": "Variation annuelle des concours bancaires aux ménages.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 3.5
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 3.3
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 3.3
+        },
+        {
+          "year": "2026-09",
+          "value": 3.5
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_NPL_GROWTH",
+      "indicator_code": "BAM_NPL_GROWTH",
+      "label_fr": "Croissance des créances en souffrance",
+      "label_ar": "Croissance des créances en souffrance",
+      "description_fr": "Variation annuelle des créances en souffrance.",
+      "description_ar": "Variation annuelle des créances en souffrance.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 26.3
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 29.7
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 29.7
+        },
+        {
+          "year": "2026-09",
+          "value": 26.3
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_NPL_RATIO",
+      "indicator_code": "BAM_NPL_RATIO",
+      "label_fr": "Ratio des créances en souffrance",
+      "label_ar": "Ratio des créances en souffrance",
+      "description_fr": "Part des créances en souffrance dans le crédit bancaire.",
+      "description_ar": "Part des créances en souffrance dans le crédit bancaire.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-09",
+        "value": 7.9
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 8.2
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 8.2
+        },
+        {
+          "year": "2026-09",
+          "value": 7.9
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs",
+      "comparison_label_fr": "par rapport au mois précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_MONIA_RATE",
+      "indicator_code": "BAM_MONIA_RATE",
+      "label_fr": "Indice MONIA",
+      "label_ar": "Indice MONIA",
+      "description_fr": "Taux moyen pondéré des opérations de pension livrée au jour le jour, publié par Bank Al-Maghrib.",
+      "description_ar": "Taux moyen pondéré des opérations de pension livrée au jour le jour, publié par Bank Al-Maghrib.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-11-25",
+        "value": 2.195
+      },
+      "previous": {
+        "year": "2026-11-24",
+        "value": 2.139
+      },
+      "history": [
+        {
+          "year": "2026-11-11",
+          "value": 2.154
+        },
+        {
+          "year": "2026-11-12",
+          "value": 2.141
+        },
+        {
+          "year": "2026-11-13",
+          "value": 2.179
+        },
+        {
+          "year": "2026-11-16",
+          "value": 2.176
+        },
+        {
+          "year": "2026-11-17",
+          "value": 2.196
+        },
+        {
+          "year": "2026-11-19",
+          "value": 2.203
+        },
+        {
+          "year": "2026-11-20",
+          "value": 2.22
+        },
+        {
+          "year": "2026-11-23",
+          "value": 2.169
+        },
+        {
+          "year": "2026-11-24",
+          "value": 2.139
+        },
+        {
+          "year": "2026-11-25",
+          "value": 2.195
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-monetaire/Indice-monia-moroccan-overnight-index-average",
+      "comparison_label_fr": "par rapport au jour précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "absolute",
+      "change_unit": "pt"
+    },
+    {
+      "id": "BAM_MONIA_VOLUME",
+      "indicator_code": "BAM_MONIA_VOLUME",
+      "label_fr": "Volume des opérations MONIA",
+      "label_ar": "Volume des opérations MONIA",
+      "description_fr": "Volume des opérations au jour le jour ayant servi au calcul de l'indice MONIA.",
+      "description_ar": "Volume des opérations au jour le jour ayant servi au calcul de l'indice MONIA.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 0,
+      "category": "Monétaire et financier",
+      "pole": "economie",
+      "latest": {
+        "year": "2026-11-25",
+        "value": 12709.0
+      },
+      "previous": {
+        "year": "2026-11-24",
+        "value": 13888.0
+      },
+      "history": [
+        {
+          "year": "2026-11-11",
+          "value": 16184.0
+        },
+        {
+          "year": "2026-11-12",
+          "value": 15824.0
+        },
+        {
+          "year": "2026-11-13",
+          "value": 13363.0
+        },
+        {
+          "year": "2026-11-16",
+          "value": 16249.0
+        },
+        {
+          "year": "2026-11-17",
+          "value": 14680.0
+        },
+        {
+          "year": "2026-11-19",
+          "value": 11320.0
+        },
+        {
+          "year": "2026-11-20",
+          "value": 11324.0
+        },
+        {
+          "year": "2026-11-23",
+          "value": 13343.0
+        },
+        {
+          "year": "2026-11-24",
+          "value": 13888.0
+        },
+        {
+          "year": "2026-11-25",
+          "value": 12709.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib",
+      "source_url": "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-monetaire/Indice-monia-moroccan-overnight-index-average",
+      "comparison_label_fr": "par rapport au jour précédent",
+      "comparison_label_ar": "مقارنة بالفترة السابقة",
+      "change_mode": "relative",
+      "change_unit": "%"
+    },
     {
       "id": "NY.GDP.MKTP.CD",
       "indicator_code": "NY.GDP.MKTP.CD",

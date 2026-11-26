@@ -326,6 +326,8 @@ const COPY = {
     researchEyebrow: "Espaces dédiés & Index documentaire",
     researchTitle: "Navigation par espace & notices",
     searchPlaceholder: "Rechercher par titre, auteur, pôle, type ou résumé...",
+    dateFromLabel: "Du",
+    dateToLabel: "Au",
     allTypes: "Tous les types",
     allConfidence: "Toutes confiances",
     allDocLangs: "Toutes langues",
@@ -412,6 +414,8 @@ const COPY = {
     researchEyebrow: "الفضاءات المتخصصة والفهرس الوثائقي",
     researchTitle: "التنقل حسب الفضاء والمواد",
     searchPlaceholder: "ابحث بالعنوان أو المؤلف أو القطب أو نوع الوثيقة...",
+    dateFromLabel: "من",
+    dateToLabel: "إلى",
     allTypes: "كل الأنواع",
     allConfidence: "كل مستويات الموثوقية",
     allDocLangs: "كل اللغات",
@@ -528,6 +532,8 @@ let selectedSinglePoleFilter = "";
 let selectedTypeFilter = "";
 let selectedConfidenceFilter = "";
 let selectedDocLangFilter = "";
+let dateFromFilter = "";
+let dateToFilter = "";
 let sortOrder = "newest";
 let selectedPrincipleIndex = 0;
 let selectedAcademyIndex = 0;
@@ -565,6 +571,16 @@ function isFutureDate(item) {
   const clean = String(item?.date_publication || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return false;
   return clean > REFERENCE_DATE;
+}
+
+function matchesDateRange(item) {
+  if (!dateFromFilter && !dateToFilter) return true;
+  const rawDate = String(item?.date_publication || "").trim();
+  if (!rawDate) return false;
+  const comparable = rawDate.slice(0, 10);
+  if (dateFromFilter && comparable < dateFromFilter) return false;
+  if (dateToFilter && comparable > dateToFilter) return false;
+  return true;
 }
 
 function formatPole(poleCode) {
@@ -631,6 +647,8 @@ function resetAllFilters() {
   selectedTypeFilter = "";
   selectedConfidenceFilter = "";
   selectedDocLangFilter = "";
+  dateFromFilter = "";
+  dateToFilter = "";
   sortOrder = "newest";
   searchQuery = "";
   futureDatesOnly = false;
@@ -648,6 +666,7 @@ function getFilteredItems() {
     if (selectedTypeFilter && item.type_document !== selectedTypeFilter) return false;
     if (selectedConfidenceFilter && item.confiance_classification !== selectedConfidenceFilter) return false;
     if (selectedDocLangFilter && item.langue_originale !== selectedDocLangFilter) return false;
+    if (!matchesDateRange(item)) return false;
     if (futureDatesOnly) {
       if (!isFutureDate(item)) return false;
     } else if (isFutureDate(item)) {
@@ -867,7 +886,6 @@ function render() {
   const tracks = ACADEMY_TRACKS[lang];
   const spaces = SPACES[lang];
   const activeTheme = themes[selectedThemeIndex] || themes[0];
-  const activePrinciple = principles[selectedPrincipleIndex] || principles[0];
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
   const allPoleKeys = Object.keys(POLE_LABELS[lang]);
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
@@ -1100,6 +1118,14 @@ function render() {
 
       <div class="filters-bar">
         <input type="search" id="search-input" placeholder="${escapeHtml(c.searchPlaceholder)}" value="${escapeHtml(searchQuery)}" />
+        <label class="date-range-field">
+          <span>${escapeHtml(c.dateFromLabel)}</span>
+          <input type="date" id="date-from-input" value="${escapeHtml(dateFromFilter)}" />
+        </label>
+        <label class="date-range-field">
+          <span>${escapeHtml(c.dateToLabel)}</span>
+          <input type="date" id="date-to-input" value="${escapeHtml(dateToFilter)}" />
+        </label>
         <select id="pole-select">
           <option value="">${escapeHtml(c.allPolesSelect)}</option>
           ${allPoleKeys.map((pk) => `<option value="${pk}" ${selectedSinglePoleFilter === pk ? "selected" : ""}>${escapeHtml(formatPole(pk))}</option>`).join("")}
@@ -1258,6 +1284,16 @@ function render() {
 
   document.getElementById("search-input")?.addEventListener("input", (e) => {
     searchQuery = e.target.value || "";
+    renderResults();
+  });
+
+  document.getElementById("date-from-input")?.addEventListener("change", (e) => {
+    dateFromFilter = e.target.value || "";
+    renderResults();
+  });
+
+  document.getElementById("date-to-input")?.addEventListener("change", (e) => {
+    dateToFilter = e.target.value || "";
     renderResults();
   });
 

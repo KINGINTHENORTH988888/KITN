@@ -545,6 +545,51 @@ def collect_hcp(source: dict) -> list[dict]:
 
 
 
+
+def _extract_institutional_detail(page_url: str, source: dict) -> dict | None:
+    """Enrich a report notice with metadata and an excerpt from its official detail page."""
+    html_body = _fetch_text(page_url)
+    parser = _HCPDetailExtractor()
+    parser.feed(html_body)
+
+    title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title)
+    title = re.sub(r"\\s+[|–-]\\s+(Cour des comptes|IRES)\\s*$", "", title, flags=re.IGNORECASE)
+    paragraphs: list[str] = []
+    seen: set[str] = set()
+    for paragraph in parser.paragraphs:
+        key = paragraph.casefold()
+        if key not in seen and not any(noise in key for noise in ("cookies", "navigation", "mentions légales")):
+            seen.add(key)
+            paragraphs.append(paragraph)
+    body = " ".join(paragraphs)
+    description = clean_text(parser.meta.get("og:description") or parser.meta.get("description"))
+    excerpt = description if len(description) >= 60 else body[:1200]
+    if not title or len(excerpt) < 40:
+        return None
+
+    published = (
+        parser.meta.get("article:published_time")
+        or parser.meta.get("article:modified_time")
+        or parser.published_time
+        or _extract_date_hint(body, page_url)
+    )
+    author = parser.meta.get("author")
+    return {
+        "title": title,
+        "abstract": excerpt[:1500],
+        "authors": [author] if author else [],
+        "venue": source.get("name") or "",
+        "keywords": [],
+        "published_date": published or None,
+        "url": page_url,
+        "doi": None,
+        "pdf_url": None,
+        "texte_integral_disponible": False,
+        "source_lang_hint": source.get("lang_hint") or "fr",
+        "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
+    }
+
+
 def collect_html_links(source: dict) -> list[dict]:
     src_id = str(source.get("id") or "").lower()
     base_url = source.get("url") or ""
@@ -609,7 +654,7 @@ def collect_html_links(source: dict) -> list[dict]:
             seen_urls.add(abs_url)
             is_pdf = path_lower.endswith(".pdf")
             date_hint = _extract_date_hint(title, abs_url)
-            items.append({
+            item = {
                 "title": title,
                 "abstract": f"Notice documentaire référencée par {source.get('name') or base_host}. Consulter la page institutionnelle pour le résumé, les conclusions et le document intégral.",
                 "authors": [],
@@ -622,7 +667,15 @@ def collect_html_links(source: dict) -> list[dict]:
                 "texte_integral_disponible": is_doc_file,
                 "source_lang_hint": source.get("lang_hint"),
                 "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
-            })
+            }
+            if source.get("fetch_details") and not is_doc_file:
+                try:
+                    enriched = _extract_institutional_detail(abs_url, source)
+                except Exception:
+                    enriched = None
+                if enriched:
+                    item = enriched
+            items.append(item)
             if len(items) >= max_items:
                 return items[:max_items]
     return items[:max_items]

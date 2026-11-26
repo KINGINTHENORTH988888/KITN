@@ -1687,7 +1687,9 @@ async function initIndex() {
     remoteItems = [];
   }
   rebuildCombinedIndex();
-  renderResults();
+  // Refresh the full portal after remote data arrives so its summary counters
+  // are computed from the loaded index, not the initial empty state.
+  render();
 }
 
 render();

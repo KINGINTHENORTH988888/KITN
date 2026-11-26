@@ -313,7 +313,7 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
         abstract,
         default_doc_type=raw.get("default_doc_type") or source.get("default_doc_type"),
         explicit_pole=raw.get("pole"),
-        explicit_space=raw.get("espace"),
+        explicit_space=raw.get("espace") or source.get("target_space") or source.get("space"),
     )
 
     authors_raw = raw.get("authors")

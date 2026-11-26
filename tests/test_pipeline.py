@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from pipeline.collectors import collect_from_source, collect_world_bank_api
+from pipeline.collectors import collect_bank_al_maghrib, collect_from_source, collect_world_bank_api
 from pipeline.processors import (
     build_stable_id,
     classify_document,
@@ -283,6 +283,43 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["title"], "Rapport annuel sur les finances publiques")
         self.assertIn("contrôle de l'exécution", items[0]["abstract"])
         self.assertEqual(items[0]["published_date"], "2026-07-08T11:12:24+00:00")
+
+
+    def test_collect_bank_al_maghrib_extracts_monthly_indicators_and_monia(self):
+        monthly_html = """
+        <html><body>
+        <h2>Principaux indicateurs du mois de Septembre 2026</h2>
+        <p>En septembre 2026, la masse monétaire a marqué une hausse, en glissement annuel, de 12,2% après 11,9% le mois dernier pour atteindre 2 237,9 MMDH.</p>
+        <p>Au niveau des contreparties de M3, les avoirs officiels de réserve et les créances nettes sur l'Administration Centrale ont enregistré des hausses respectives de 21,2% après 21,7% et de 6,7% après 7,2%.</p>
+        <p>Le crédit bancaire au secteur non financier s'est accru de 11,2% après 10,4%, reflétant la progression des concours aux sociétés non financières privées de 13,8% après 11,4% et aux ménages de 3,5% après 3,3%.</p>
+        <p>Les créances en souffrance ont décéléré de 3,7% à 2,3% et leur ratio au crédit bancaire s'est établi à 7,9% contre 8,2% en août 2026.</p>
+        </body></html>
+        """
+        monia_html = """
+        <html><body><table>
+          <tr><th>Indice MONIA</th><th>Volume JJ</th><th>Date de référence</th><th>Date de publication</th></tr>
+          <tr><td>2,195 %</td><td>12709</td><td>25/11/2026</td><td>26/11/2026</td></tr>
+          <tr><td>2,139 %</td><td>13888</td><td>24/11/2026</td><td>25/11/2026</td></tr>
+        </table></body></html>
+        """
+        source = {
+            "id": "bank_al_maghrib",
+            "name": "Bank Al-Maghrib",
+            "statistics_pages": [
+                {"kind": "monthly_indicators", "url": "https://www.bkam.ma/fr/Statistiques/Principaux-indicateurs"},
+                {"kind": "monia", "url": "https://www.bkam.ma/Marches/MONIA"},
+            ],
+        }
+        with patch("pipeline.collectors._fetch_text", side_effect=[monthly_html, monia_html]):
+            items = collect_bank_al_maghrib(source)
+        series = {item["statistics_series"]["indicator_code"]: item["statistics_series"] for item in items}
+        self.assertIn("BAM_M3_STOCK", series)
+        self.assertEqual(series["BAM_M3_STOCK"]["latest"]["value"], 2237.9)
+        self.assertEqual(series["BAM_M3_GROWTH"]["latest"]["value"], 12.2)
+        self.assertEqual(series["BAM_CREDIT_NFS_GROWTH"]["latest"]["value"], 11.2)
+        self.assertEqual(series["BAM_NPL_RATIO"]["latest"]["value"], 7.9)
+        self.assertEqual(series["BAM_MONIA_RATE"]["latest"], {"year": "2026-11-25", "value": 2.195})
+        self.assertEqual(series["BAM_MONIA_VOLUME"]["latest"]["value"], 12709)
 
     def test_collect_world_bank_api_builds_historical_series(self):
         payload = [

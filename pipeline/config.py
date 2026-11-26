@@ -9,6 +9,8 @@ INDEX_DIR = DATA_DIR / "index"
 INDEX_FILE = INDEX_DIR / "search-index.json"
 PUBLIC_INDEX_FILE = PUBLIC_DIR / "data" / "index" / "search-index.json"
 SOURCES_HEALTH_FILE = DATA_DIR / "sources-health.json"
+STATISTICS_FILE = DATA_DIR / "statistics.json"
+PUBLIC_STATISTICS_FILE = PUBLIC_DIR / "data" / "statistics.json"
 ACADEMY_FILE = DATA_DIR / "academy" / "academy.json"
 
 SUPPORTED_LANGUAGES = ("fr", "ar", "en")

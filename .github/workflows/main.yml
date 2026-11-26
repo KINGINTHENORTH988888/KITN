@@ -74,7 +74,18 @@ jobs:
           git add -- data/ public/data/
           if ! git diff --staged --quiet; then
             git commit -m "chore(data): mise à jour automatique de la veille KITN"
-            git push
+            branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+            for attempt in 1 2 3; do
+              git fetch origin "$branch"
+              git pull --rebase origin "$branch"
+              if git push origin "HEAD:$branch"; then
+                exit 0
+              fi
+              echo "Push concurrent détecté (tentative $attempt/3)."
+              sleep $((attempt * 2))
+            done
+            echo "Impossible de pousser les données après trois tentatives."
+            exit 1
           else
             echo "Aucun changement détecté à pousser."
           fi

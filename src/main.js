@@ -961,7 +961,7 @@ function renderStatisticsDashboard() {
           <summary>${isAr ? "عرض البيانات التاريخية" : "Voir les valeurs historiques"}</summary>
           <div class="stat-history-table-wrap"><table class="stat-history-table"><tbody>${historyRows}</tbody></table></div>
         </details>
-        <div class="stat-card-foot"><span>${indicator.last_updated ? `${isAr ? "المصدر محيّن في" : "Source actualisée le"} ${escapeHtml(indicator.last_updated)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Source originale"} ↗</a>` : `<span>${escapeHtml(sourceLabel)}</span>`}</div>
+        <div class="stat-card-foot"><span>${escapeHtml(sourceLabel)}${indicator.last_updated ? ` · ${isAr ? "تحديث" : "mise à jour"} ${escapeHtml(indicator.last_updated)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "السلسلة الأصلية" : "Série originale"} ↗</a>` : ""}</div>
       </article>`;
   }).join("");
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";

@@ -1,23 +1,9 @@
 {
-  "updated_at": "2026-11-26T20:12:01Z",
-  "active_sources": 2,
-  "total_fetched": 15,
-  "total_accepted": 9,
+  "updated_at": "2026-11-26T20:30:49Z",
+  "active_sources": 3,
+  "total_fetched": 35,
+  "total_accepted": 26,
   "sources": [
-    {
-      "source_id": "openalex_morocco_policy",
-      "source_name": "OpenAlex — Recherche & politiques publiques (Maroc)",
-      "domain": "api.openalex.org",
-      "target_space": "science",
-      "type": "openalex",
-      "enabled": true,
-      "status": "error",
-      "stage": "erreur_collecte",
-      "fetched": 0,
-      "accepted": 0,
-      "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-26T20:12:01Z"
-    },
     {
       "source_id": "hcp_maroc",
       "source_name": "Haut-Commissariat au Plan (HCP)",
@@ -30,7 +16,35 @@
       "fetched": 15,
       "accepted": 9,
       "error": null,
-      "checked_at": "2026-11-26T20:12:01Z"
+      "checked_at": "2026-11-26T20:30:49Z"
+    },
+    {
+      "source_id": "hal_science_morocco",
+      "source_name": "HAL Archives Ouvertes — Maroc",
+      "domain": "api.archives-ouvertes.fr",
+      "target_space": "science",
+      "type": "hal_api",
+      "enabled": true,
+      "status": "ok",
+      "stage": "collecte_effectuee",
+      "fetched": 20,
+      "accepted": 17,
+      "error": null,
+      "checked_at": "2026-11-26T20:30:49Z"
+    },
+    {
+      "source_id": "crossref_maroc",
+      "source_name": "Crossref — Publications scientifiques sur le Maroc",
+      "domain": "api.crossref.org",
+      "target_space": "science",
+      "type": "crossref",
+      "enabled": true,
+      "status": "error",
+      "stage": "erreur_collecte",
+      "fetched": 0,
+      "accepted": 0,
+      "error": "int() argument must be a string, a bytes-like object or a real number, not 'NoneType'",
+      "checked_at": "2026-11-26T20:30:49Z"
     }
   ]
 }

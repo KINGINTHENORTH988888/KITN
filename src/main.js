@@ -1,6 +1,7 @@
 import "./style.css";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
+const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
 
 function getDynamicReferenceDate() {
   const now = new Date();
@@ -11,6 +12,27 @@ function getDynamicReferenceDate() {
 }
 
 const REFERENCE_DATE = getDynamicReferenceDate();
+
+const SPACES = {
+  fr: [
+    { id: "all", label: "Tous les espaces" },
+    { id: "veille", label: "Actualité & veille" },
+    { id: "science", label: "Articles scientifiques" },
+    { id: "chiffres", label: "Maroc en chiffres" },
+    { id: "academy", label: "Concours & Academy" },
+    { id: "bibliotheque", label: "Bibliothèque" },
+    { id: "contribuer", label: "Contribution manuelle" }
+  ],
+  ar: [
+    { id: "all", label: "كل الفضاءات" },
+    { id: "veille", label: "الأخبار والرصد" },
+    { id: "science", label: "المقالات العلمية" },
+    { id: "chiffres", label: "المغرب بالأرقام" },
+    { id: "academy", label: "المباريات والأكاديمية" },
+    { id: "bibliotheque", label: "المكتبة الوثائقية" },
+    { id: "contribuer", label: "إضافة يدوية" }
+  ]
+};
 
 const THEMES = {
   fr: [
@@ -208,7 +230,9 @@ const DOC_TYPES = {
     rapport: "Rapport",
     rapport_institutionnel: "Rapport institutionnel",
     document_juridique: "Document juridique",
-    article: "Article"
+    article: "Article",
+    article_presse: "Article de presse",
+    concours: "Concours / Ressource"
   },
   ar: {
     publication_scientifique: "منشور علمي",
@@ -216,7 +240,9 @@ const DOC_TYPES = {
     rapport: "تقرير",
     rapport_institutionnel: "تقرير مؤسساتي",
     document_juridique: "وثيقة قانونية",
-    article: "مقال"
+    article: "مقال",
+    article_presse: "مقال صحفي",
+    concours: "مباراة / مورد"
   }
 };
 
@@ -266,18 +292,18 @@ const COPY = {
     navThemes: "Thématiques",
     navAcademy: "KITN Academy",
     navMethod: "Méthode",
-    navResearch: "Recherche",
-    eyebrow: "Centre de veille & de connaissances",
+    navResearch: "Espaces & Index",
+    eyebrow: "Centre de veille & de connaissances · De l'information à la maîtrise",
     heroTitle: "Comprendre le Maroc. <span>Anticiper</span> ses transformations.",
-    heroIntro: "Une plateforme indépendante pour suivre les évolutions du Maroc, explorer les travaux de recherche et transformer l'information en connaissance utile.",
-    heroPrimary: "Explorer la plateforme ↗",
+    heroIntro: "Une plateforme indépendante pour suivre les évolutions du Maroc, explorer les travaux de recherche, consulter les chiffres clés et préparer les concours.",
+    heroPrimary: "Explorer les espaces ↗",
     heroSecondary: "Découvrir KITN →",
     heroNote: "UNE LECTURE STRUCTURÉE DU MAROC",
     card1Top: "01 / MAROC",
     card1Map: "MA",
     card2Top: "KNOWLEDGE / 2026",
     card2Cap: "<strong>Information</strong> → Connaissance",
-    chip: "✦ Perspective marocaine",
+    chip: "✦ De l'information à la maîtrise",
     themesEyebrow: "Les grands enjeux",
     themesTitle: "Explorer par thématique",
     themesSub: "Des sujets essentiels, organisés pour aller au-delà de l'actualité et comprendre les dynamiques de fond.",
@@ -287,8 +313,8 @@ const COPY = {
     allPolesSelect: "Tous les pôles (6)",
     academyEyebrow: "KITN Academy",
     academyTitle: "Apprendre avec méthode, pas dans la précipitation.",
-    academyText: "Des repères clairs, des synthèses structurées et des ressources pour approfondir les grands dossiers et préparer les échéances exigeantes.",
-    academyBtn: "Explorer les ressources documentaires →",
+    academyText: "Des repères clairs, des synthèses structurées et des QCM pour approfondir les grands dossiers et préparer les concours.",
+    academyBtn: "Ouvrir l'espace Concours & Academy →",
     academySheetLabel: "Fiche de révision",
     academyQuizLabel: "QCM d'entraînement",
     academyPageTop: "KITN",
@@ -297,8 +323,8 @@ const COPY = {
     methodEyebrow: "Notre approche",
     methodTitle: "La connaissance commence par une bonne question.",
     methodText: "KITN privilégie la clarté, la vérification et la mise en perspective plutôt que le bruit informationnel.",
-    researchEyebrow: "Index documentaire",
-    researchTitle: "Travaux & publications indexés",
+    researchEyebrow: "Espaces dédiés & Index documentaire",
+    researchTitle: "Navigation par espace & notices",
     searchPlaceholder: "Rechercher par titre, auteur, pôle, type ou résumé...",
     allTypes: "Tous les types",
     allConfidence: "Toutes confiances",
@@ -316,7 +342,7 @@ const COPY = {
     unverifiedBadge: "À vérifier",
     noAbstract: "Résumé non fourni par la source.",
     detailsBtn: "Fiche détaillée",
-    noResults: "Aucune notice ne correspond à votre recherche.",
+    noResults: "Aucune notice ne correspond à votre recherche ou à cet espace.",
     sourceLink: "Consulter la source ↗",
     pdfLink: "PDF ↗",
     closeBtn: "Fermer",
@@ -332,7 +358,19 @@ const COPY = {
     labelAbstract: "Résumé",
     statusValid: "Vérifié",
     statusReview: "À vérifier",
-    footerCopy: "© 2026 KITN — Centre de veille & de connaissances."
+    manualTitle: "Studio de contribution manuelle (local)",
+    manualSub: "Ajoutez manuellement une actualité, un article, une statistique, un concours ou un document de référence. Exportez ensuite le JSON pour l'intégrer au dépôt.",
+    manualLabelTitle: "Titre *",
+    manualLabelType: "Type",
+    manualLabelPole: "Pôle principal",
+    manualLabelDate: "Date (YYYY-MM-DD)",
+    manualLabelUrl: "Lien source (URL)",
+    manualLabelResume: "Résumé / Note",
+    manualAddBtn: "Ajouter à la base locale",
+    manualExportBtn: "Exporter contributions JSON",
+    manualClearBtn: "Vider contributions locales",
+    manualAddedMsg: "Notice ajoutée localement et visible dans l'index.",
+    footerCopy: "© 2026 KITN — De l'information à la maîtrise."
   },
   ar: {
     langBtn: "Français",
@@ -340,18 +378,18 @@ const COPY = {
     navThemes: "المحاور",
     navAcademy: "أكاديمية KITN",
     navMethod: "المنهجية",
-    navResearch: "البحث",
-    eyebrow: "مركز الرصد والمعرفة",
+    navResearch: "الفضاءات والفهرس",
+    eyebrow: "مركز الرصد والمعرفة · من المعلومة إلى التمكن",
     heroTitle: "فهم المغرب. <span>واستشراف</span> تحولاته.",
-    heroIntro: "منصة مستقلة لمتابعة تطورات المغرب واستكشاف الأبحاث وتحويل المعلومة إلى معرفة مفيدة.",
-    heroPrimary: "استكشاف المنصة ↗",
+    heroIntro: "منصة مستقلة لمتابعة تطورات المغرب واستكشاف الأبحاث والاطلاع على الأرقام والمباريات.",
+    heroPrimary: "استكشاف الفضاءات ↗",
     heroSecondary: "اكتشف KITN ←",
     heroNote: "قراءة مهيكلة للمغرب",
     card1Top: "01 / المغرب",
     card1Map: "MA",
     card2Top: "المعرفة / 2026",
     card2Cap: "<strong>المعلومة</strong> ← المعرفة",
-    chip: "✦ رؤية مغربية",
+    chip: "✦ من المعلومة إلى التمكن",
     themesEyebrow: "القضايا الكبرى",
     themesTitle: "الاستكشاف حسب المحور",
     themesSub: "مواضيع أساسية منظمة لتجاوز الأخبار اليومية وفهم الديناميات العميقة.",
@@ -361,8 +399,8 @@ const COPY = {
     allPolesSelect: "كل الأقطاب (6)",
     academyEyebrow: "أكاديمية KITN",
     academyTitle: "التعلم بمنهجية، لا بتسرع.",
-    academyText: "معالم واضحة وملخصات مهيكلة وموارد لتعميق الملفات الكبرى والاستعداد للاستحقاقات الدقيقة.",
-    academyBtn: "استعراض الموارد الوثائقية ←",
+    academyText: "معالم واضحة وملخصات مهيكلة واختبارات لتعميق الملفات الكبرى والاستعداد للمباريات.",
+    academyBtn: "فتح فضاء المباريات والأكاديمية ←",
     academySheetLabel: "بطاقة مراجعة",
     academyQuizLabel: "اختبار تفاعلي",
     academyPageTop: "KITN",
@@ -371,8 +409,8 @@ const COPY = {
     methodEyebrow: "مقاربتنا",
     methodTitle: "المعرفة تبدأ بسؤال جيد.",
     methodText: "تُقدّم KITN الوضوح والتحقق والربط السياقي بدل ضجيج المعلومات.",
-    researchEyebrow: "الفهرس الوثائقي",
-    researchTitle: "الأعمال والمنشورات المفهرسة",
+    researchEyebrow: "الفضاءات المتخصصة والفهرس الوثائقي",
+    researchTitle: "التنقل حسب الفضاء والمواد",
     searchPlaceholder: "ابحث بالعنوان أو المؤلف أو القطب أو نوع الوثيقة...",
     allTypes: "كل الأنواع",
     allConfidence: "كل مستويات الموثوقية",
@@ -390,7 +428,7 @@ const COPY = {
     unverifiedBadge: "للمراجعة",
     noAbstract: "الملخص غير متوفر في المصدر.",
     detailsBtn: "بطاقة تفصيلية",
-    noResults: "لا توجد مواد مطابقة لبحثك.",
+    noResults: "لا توجد مواد مطابقة لبحثك أو لهذا الفضاء.",
     sourceLink: "عرض المصدر ↗",
     pdfLink: "ملف PDF ↗",
     closeBtn: "إغلاق",
@@ -406,23 +444,35 @@ const COPY = {
     labelAbstract: "الملخص",
     statusValid: "متحقق منه",
     statusReview: "للمراجعة",
-    footerCopy: "© 2026 KITN — مركز الرصد والمعرفة."
+    manualTitle: "فضاء الإضافة اليدوية (محلي)",
+    manualSub: "أضف يدوياً خبراً أو مقالاً أو إحصائية أو مباراة أو وثيقة مرجعية ثم صدّر ملف JSON.",
+    manualLabelTitle: "العنوان *",
+    manualLabelType: "النوع",
+    manualLabelPole: "القطب الرئيسي",
+    manualLabelDate: "التاريخ (YYYY-MM-DD)",
+    manualLabelUrl: "رابط المصدر (URL)",
+    manualLabelResume: "الملخص / ملاحظة",
+    manualAddBtn: "إضافة إلى القاعدة المحلية",
+    manualExportBtn: "تصدير الإضافات JSON",
+    manualClearBtn: "مسح الإضافات المحلية",
+    manualAddedMsg: "تمت إضافة المادة محلياً وظهرت في الفهرس.",
+    footerCopy: "© 2026 KITN — من المعلومة إلى التمكن."
   }
 };
 
-function loadFavorites() {
+function loadJsonStorage(key, fallback) {
   try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    const raw = localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : fallback;
+    return Array.isArray(parsed) ? parsed : fallback;
   } catch {
-    return [];
+    return fallback;
   }
 }
 
-function saveFavorites(list) {
+function saveJsonStorage(key, value) {
   try {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
+    localStorage.setItem(key, JSON.stringify(value));
   } catch {
     // ignore storage quota errors
   }
@@ -433,6 +483,7 @@ function getItemKey(item) {
 }
 
 let lang = "fr";
+let activeSpace = "all";
 let mobileMenuOpen = false;
 let selectedThemeIndex = 0;
 let selectedPolesFilter = null;
@@ -448,8 +499,10 @@ let selectedQuizOption = null;
 let searchQuery = "";
 let futureDatesOnly = false;
 let favoritesOnly = false;
-let favorites = loadFavorites();
+let favorites = loadJsonStorage(FAVORITES_KEY, []);
+let manualItems = loadJsonStorage(MANUAL_ITEMS_KEY, []);
 let activeModalItem = null;
+let remoteItems = [];
 let indexItems = [];
 
 function escapeHtml(str = "") {
@@ -498,6 +551,30 @@ function formatDocLang(code) {
   return LANG_LABELS[lang]?.[code] || code.toUpperCase();
 }
 
+function rebuildCombinedIndex() {
+  const seen = new Set();
+  const merged = [];
+  for (const item of [...manualItems, ...remoteItems]) {
+    const key = getItemKey(item);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    merged.push(item);
+  }
+  indexItems = merged;
+}
+
+function matchesSpace(item, space) {
+  if (!space || space === "all") return true;
+  const t = String(item.type_document || "").toLowerCase();
+  const p = String(item.pole || "").toLowerCase();
+  if (space === "science") return t === "publication_scientifique" || p === "recherche_scientifique";
+  if (space === "chiffres") return t === "statistique" || p === "economie_finances_publiques";
+  if (space === "academy") return t === "concours" || p === "institutions_gouvernance" || p === "securite_affaires_interieures";
+  if (space === "bibliotheque") return ["rapport", "rapport_institutionnel", "document_juridique", "statistique", "publication_scientifique"].includes(t);
+  if (space === "veille") return true;
+  return true;
+}
+
 function toggleFavorite(item) {
   const key = getItemKey(item);
   if (!key) return;
@@ -506,11 +583,12 @@ function toggleFavorite(item) {
   } else {
     favorites = [...favorites, key];
   }
-  saveFavorites(favorites);
+  saveJsonStorage(FAVORITES_KEY, favorites);
   renderResults();
 }
 
 function resetAllFilters() {
+  activeSpace = "all";
   selectedPolesFilter = null;
   activePoleLabel = "";
   selectedSinglePoleFilter = "";
@@ -527,6 +605,7 @@ function resetAllFilters() {
 function getFilteredItems() {
   const q = searchQuery.trim().toLowerCase();
   const list = indexItems.filter((item) => {
+    if (!matchesSpace(item, activeSpace)) return false;
     const matchesThemePoles = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
     if (!matchesThemePoles) return false;
     if (selectedSinglePoleFilter && item.pole !== selectedSinglePoleFilter) return false;
@@ -566,8 +645,7 @@ function getFilteredItems() {
   });
 }
 
-function exportFilteredJson() {
-  const items = getFilteredItems();
+function exportJsonPayload(items, filename) {
   const payload = {
     exported_at: new Date().toISOString(),
     total: items.length,
@@ -577,7 +655,7 @@ function exportFilteredJson() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "kitn-export.json";
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -747,6 +825,7 @@ function render() {
   const themes = THEMES[lang];
   const principles = PRINCIPLES[lang];
   const tracks = ACADEMY_TRACKS[lang];
+  const spaces = SPACES[lang];
   const activeTheme = themes[selectedThemeIndex] || themes[0];
   const activePrinciple = principles[selectedPrincipleIndex] || principles[0];
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
@@ -760,6 +839,8 @@ function render() {
 
   const app = document.getElementById("app");
   if (!app) return;
+
+  const isCorrect = selectedQuizOption === activeTrack.answer;
 
   app.innerHTML = `
     <header class="topbar">
@@ -834,217 +915,197 @@ function render() {
         <p>${c.themesSub}</p>
       </div>
 
-      <div class="theme-grid">
-        ${themes
-          .map(
-            (t, i) => `
-          <button type="button" class="theme-card ${i === selectedThemeIndex ? "is-selected" : ""}" data-theme-index="${i}">
+      <div class="themes-grid">
+        ${themes.map((th, i) => `
+          <button type="button" class="theme-card ${i === selectedThemeIndex ? "is-active" : ""}" data-theme-idx="${i}">
             <div class="theme-top">
-              <span>${t.num}</span>
-              <span>${t.symbol}</span>
+              <span>${th.num}</span>
+              <span>${th.symbol}</span>
             </div>
-            <div class="theme-icon">${t.symbol}</div>
-            <h3>${escapeHtml(t.title)}</h3>
-            <p>${escapeHtml(t.desc)}</p>
+            <h3>${escapeHtml(th.title)}</h3>
+            <p>${escapeHtml(th.desc)}</p>
           </button>
-        `
-          )
-          .join("")}
+        `).join("")}
       </div>
 
-      <div class="theme-panel">
-        <div class="theme-panel-top">
-          <strong>${activeTheme.num} — ${escapeHtml(activeTheme.title)}</strong>
-          <div>
-            <a href="#research" id="filter-by-theme">${c.openPole}</a>
-            ${selectedPolesFilter ? ` · <a href="#research" id="reset-pole-filter">${c.allPoles}</a>` : ""}
+      <div class="theme-detail">
+        <div>
+          <h3>${escapeHtml(activeTheme.title)}</h3>
+          <p>${escapeHtml(activeTheme.detail)}</p>
+          <div class="theme-tags">
+            ${activeTheme.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
           </div>
         </div>
-        <p>${escapeHtml(activeTheme.detail)}</p>
-        <div class="theme-tags">
-          ${activeTheme.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
-        </div>
+        <button type="button" class="btn primary" id="filter-by-theme">${escapeHtml(c.openPole)}</button>
       </div>
     </section>
 
-    <section class="academy" id="academy">
-      <div>
-        <span class="eyebrow light">${c.academyEyebrow}</span>
-        <h2>${c.academyTitle}</h2>
+    <section class="section" id="academy">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">${c.academyEyebrow}</span>
+          <h2>${c.academyTitle}</h2>
+        </div>
         <p>${c.academyText}</p>
-
-        <div class="academy-tabs">
-          ${tracks
-            .map(
-              (tr, i) => `
-            <button type="button" class="academy-tab ${i === selectedAcademyIndex ? "is-active" : ""}" data-academy-index="${i}">
-              ${escapeHtml(tr.label)}
-            </button>
-          `
-            )
-            .join("")}
-        </div>
-
-        <div class="academy-box">
-          <strong>${escapeHtml(activeTrack.title)}</strong>
-          <p class="academy-sheet"><b>${escapeHtml(c.academySheetLabel)} :</b> ${escapeHtml(activeTrack.sheet)}</p>
-          <div class="academy-quiz">
-            <div class="quiz-q">${escapeHtml(c.academyQuizLabel)} : ${escapeHtml(activeTrack.question)}</div>
-            <div class="quiz-options">
-              ${activeTrack.options
-                .map((opt, idx) => {
-                  const picked = selectedQuizOption === idx;
-                  const isCorrect = idx === activeTrack.answer;
-                  const stateClass = selectedQuizOption === null
-                    ? ""
-                    : isCorrect
-                      ? "is-correct"
-                      : picked
-                        ? "is-wrong"
-                        : "";
-                  return `
-                    <button type="button" class="quiz-opt ${stateClass}" data-quiz-opt="${idx}">
-                      ${escapeHtml(opt)}
-                    </button>
-                  `;
-                })
-                .join("")}
-            </div>
-            ${
-              selectedQuizOption !== null
-                ? `<p class="quiz-correction">${escapeHtml(activeTrack.correction)}</p>`
-                : ""
-            }
-          </div>
-        </div>
-
-        <a href="#research" class="btn white">${c.academyBtn}</a>
       </div>
-      <div class="academy-visual">
-        <div class="book book-one"></div>
-        <div class="book book-two"></div>
-        <div class="book-page">
-          <span>${c.academyPageTop}</span>
-          <b>${c.academyPageTitle}</b>
-          <small>${c.academyPageSub}</small>
-          <div class="page-lines"></div>
+
+      <div class="academy-tabs">
+        ${tracks.map((tr, idx) => `
+          <button type="button" class="tab-btn ${idx === selectedAcademyIndex ? "is-active" : ""}" data-academy-idx="${idx}">${escapeHtml(tr.label)}</button>
+        `).join("")}
+      </div>
+
+      <div class="academy-card">
+        <div>
+          <span class="mini-label">${escapeHtml(c.academySheetLabel)}</span>
+          <h3>${escapeHtml(activeTrack.title)}</h3>
+          <p>${escapeHtml(activeTrack.sheet)}</p>
+        </div>
+        <div>
+          <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
+          <p class="quiz-question">${escapeHtml(activeTrack.question)}</p>
+          <div class="quiz-options">
+            ${activeTrack.options.map((opt, oIdx) => `
+              <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}">${escapeHtml(opt)}</button>
+            `).join("")}
+          </div>
+          ${selectedQuizOption !== null ? `
+            <p class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
+              ${escapeHtml(activeTrack.correction)}
+            </p>
+          ` : ""}
         </div>
       </div>
     </section>
 
-    <section class="section method" id="method">
-      <div>
-        <span class="eyebrow">${c.methodEyebrow}</span>
-        <h2>${c.methodTitle}</h2>
-      </div>
-      <div class="method-right">
-        <p>${c.methodText}</p>
-        <ul class="principle-list">
-          ${principles
-            .map(
-              (p, i) => `
-            <li>
-              <button type="button" class="principle-btn ${i === selectedPrincipleIndex ? "is-active" : ""}" data-principle-index="${i}">
-                <span>${p.num}</span>
-                <strong>${escapeHtml(p.title)}</strong>
-                <span>${i === selectedPrincipleIndex ? "−" : "+"}</span>
-              </button>
-            </li>
-          `
-            )
-            .join("")}
-        </ul>
-        <div class="principle-box">
-          <strong>${escapeHtml(activePrinciple.title)}</strong>
-          <p>${escapeHtml(activePrinciple.text)}</p>
+    <section class="section" id="method">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">${c.methodEyebrow}</span>
+          <h2>${c.methodTitle}</h2>
         </div>
+        <p>${c.methodText}</p>
+      </div>
+
+      <div class="principles-grid">
+        ${principles.map((pr, idx) => `
+          <button type="button" class="principle-card ${idx === selectedPrincipleIndex ? "is-active" : ""}" data-principle-idx="${idx}">
+            <span>${pr.num}</span>
+            <h3>${escapeHtml(pr.title)}</h3>
+            <p>${escapeHtml(pr.text)}</p>
+          </button>
+        `).join("")}
       </div>
     </section>
 
     <section class="section" id="research">
-      <div class="research-head">
+      <div class="section-head">
         <div>
           <span class="eyebrow">${c.researchEyebrow}</span>
           <h2>${c.researchTitle}</h2>
         </div>
-        <span class="index-badge" id="index-count">0</span>
+        <span class="count-badge" id="index-count">0</span>
       </div>
 
-      <div class="active-pole-banner" id="active-pole-banner" style="display:none;"></div>
-
-      <div class="search-bar-wrap">
-        <input
-          type="search"
-          id="search-input"
-          class="search-input"
-          placeholder="${escapeHtml(c.searchPlaceholder)}"
-          value="${escapeHtml(searchQuery)}"
-        />
-        <div class="filter-controls">
-          <select id="pole-filter" class="filter-select">
-            <option value="">${escapeHtml(c.allPolesSelect)}</option>
-            ${allPoleKeys
-              .map(
-                (pk) => `<option value="${escapeHtml(pk)}" ${selectedSinglePoleFilter === pk ? "selected" : ""}>${escapeHtml(formatPole(pk))}</option>`
-              )
-              .join("")}
-          </select>
-          <select id="type-filter" class="filter-select">
-            <option value="">${escapeHtml(c.allTypes)}</option>
-            ${availableTypes
-              .map(
-                (t) => `<option value="${escapeHtml(t)}" ${selectedTypeFilter === t ? "selected" : ""}>${escapeHtml(formatDocType(t))}</option>`
-              )
-              .join("")}
-          </select>
-          <select id="doc-lang-filter" class="filter-select">
-            <option value="">${escapeHtml(c.allDocLangs)}</option>
-            ${availableDocLangs
-              .map(
-                (dl) => `<option value="${escapeHtml(dl)}" ${selectedDocLangFilter === dl ? "selected" : ""}>${escapeHtml(formatDocLang(dl))}</option>`
-              )
-              .join("")}
-          </select>
-          <select id="confidence-filter" class="filter-select">
-            <option value="">${escapeHtml(c.allConfidence)}</option>
-            ${availableConfidence
-              .map(
-                (cf) => `<option value="${escapeHtml(cf)}" ${selectedConfidenceFilter === cf ? "selected" : ""}>${escapeHtml(formatConfidence(cf))}</option>`
-              )
-              .join("")}
-          </select>
-          <select id="sort-order" class="filter-select">
-            <option value="newest" ${sortOrder === "newest" ? "selected" : ""}>${escapeHtml(c.sortNewest)}</option>
-            <option value="oldest" ${sortOrder === "oldest" ? "selected" : ""}>${escapeHtml(c.sortOldest)}</option>
-            <option value="score" ${sortOrder === "score" ? "selected" : ""}>${escapeHtml(c.sortScore)}</option>
-          </select>
-          <button type="button" class="reset-btn" id="reset-filters-btn">${escapeHtml(c.resetFilters)}</button>
-          <button type="button" class="reset-btn" id="export-json-btn">${escapeHtml(c.exportJson)}</button>
-        </div>
-        <div class="filter-checks-row">
-          <label class="filter-check">
-            <input type="checkbox" id="favorites-toggle" ${favoritesOnly ? "checked" : ""} />
-            <span>${escapeHtml(c.savedOnly)} (${favorites.length})</span>
-          </label>
-          <label class="filter-check">
-            <input type="checkbox" id="future-dates-toggle" ${futureDatesOnly ? "checked" : ""} />
-            <span>${escapeHtml(c.futureOnly)}</span>
-          </label>
-        </div>
+      <div class="spaces-bar" role="tablist">
+        ${spaces.map((sp) => `
+          <button type="button" class="space-tab ${activeSpace === sp.id ? "is-active" : ""}" data-space-id="${sp.id}">${escapeHtml(sp.label)}</button>
+        `).join("")}
       </div>
 
-      <div class="results-grid" id="results-grid"></div>
+      ${activeSpace === "contribuer" ? `
+        <form class="manual-form" id="manual-form">
+          <h3>${escapeHtml(c.manualTitle)}</h3>
+          <p>${escapeHtml(c.manualSub)}</p>
+          <div class="manual-grid">
+            <label>
+              <span>${escapeHtml(c.manualLabelTitle)}</span>
+              <input type="text" id="m-title" required />
+            </label>
+            <label>
+              <span>${escapeHtml(c.manualLabelType)}</span>
+              <select id="m-type">
+                ${Object.entries(DOC_TYPES[lang]).map(([k, lbl]) => `<option value="${k}">${escapeHtml(lbl)}</option>`).join("")}
+              </select>
+            </label>
+            <label>
+              <span>${escapeHtml(c.manualLabelPole)}</span>
+              <select id="m-pole">
+                ${allPoleKeys.map((pk) => `<option value="${pk}">${escapeHtml(formatPole(pk))}</option>`).join("")}
+              </select>
+            </label>
+            <label>
+              <span>${escapeHtml(c.manualLabelDate)}</span>
+              <input type="date" id="m-date" value="${REFERENCE_DATE}" />
+            </label>
+            <label>
+              <span>${escapeHtml(c.manualLabelUrl)}</span>
+              <input type="url" id="m-url" placeholder="https://..." />
+            </label>
+          </div>
+          <label class="manual-resume-field">
+            <span>${escapeHtml(c.manualLabelResume)}</span>
+            <textarea id="m-resume" rows="3"></textarea>
+          </label>
+          <div class="manual-actions">
+            <button type="submit" class="btn primary">${escapeHtml(c.manualAddBtn)}</button>
+            <button type="button" class="link-btn" id="manual-export">${escapeHtml(c.manualExportBtn)}</button>
+            <button type="button" class="link-btn" id="manual-clear">${escapeHtml(c.manualClearBtn)}</button>
+          </div>
+          <p class="manual-status" id="manual-status"></p>
+        </form>
+      ` : ""}
+
+      <div id="active-pole-banner" class="pole-banner" style="display:none;"></div>
+
+      <div class="filters-bar">
+        <input type="search" id="search-input" placeholder="${escapeHtml(c.searchPlaceholder)}" value="${escapeHtml(searchQuery)}" />
+        <select id="pole-select">
+          <option value="">${escapeHtml(c.allPolesSelect)}</option>
+          ${allPoleKeys.map((pk) => `<option value="${pk}" ${selectedSinglePoleFilter === pk ? "selected" : ""}>${escapeHtml(formatPole(pk))}</option>`).join("")}
+        </select>
+        <select id="type-select">
+          <option value="">${escapeHtml(c.allTypes)}</option>
+          ${availableTypes.map((dt) => `<option value="${dt}" ${selectedTypeFilter === dt ? "selected" : ""}>${escapeHtml(formatDocType(dt))}</option>`).join("")}
+        </select>
+        <select id="conf-select">
+          <option value="">${escapeHtml(c.allConfidence)}</option>
+          ${availableConfidence.map((cf) => `<option value="${cf}" ${selectedConfidenceFilter === cf ? "selected" : ""}>${escapeHtml(formatConfidence(cf))}</option>`).join("")}
+        </select>
+        <select id="lang-doc-select">
+          <option value="">${escapeHtml(c.allDocLangs)}</option>
+          ${availableDocLangs.map((dl) => `<option value="${dl}" ${selectedDocLangFilter === dl ? "selected" : ""}>${escapeHtml(formatDocLang(dl))}</option>`).join("")}
+        </select>
+        <select id="sort-select">
+          <option value="newest" ${sortOrder === "newest" ? "selected" : ""}>${escapeHtml(c.sortNewest)}</option>
+          <option value="oldest" ${sortOrder === "oldest" ? "selected" : ""}>${escapeHtml(c.sortOldest)}</option>
+          <option value="score" ${sortOrder === "score" ? "selected" : ""}>${escapeHtml(c.sortScore)}</option>
+        </select>
+      </div>
+
+      <div class="filters-secondary">
+        <label class="check-pill">
+          <input type="checkbox" id="fav-only" ${favoritesOnly ? "checked" : ""} />
+          <span>${escapeHtml(c.savedOnly)} (${favorites.length})</span>
+        </label>
+        <label class="check-pill">
+          <input type="checkbox" id="future-only" ${futureDatesOnly ? "checked" : ""} />
+          <span>${escapeHtml(c.futureOnly)}</span>
+        </label>
+        <button type="button" class="link-btn" id="reset-filters">${escapeHtml(c.resetFilters)}</button>
+        <button type="button" class="link-btn" id="export-json">${escapeHtml(c.exportJson)}</button>
+      </div>
+
+      <div id="results-grid" class="results-grid"></div>
     </section>
 
-    <footer>
-      <span>${c.footerCopy}</span>
-      <span>kitn.pages.dev</span>
+    <footer class="footer">
+      <span>${escapeHtml(c.footerCopy)}</span>
     </footer>
   `;
 
   document.getElementById("lang-toggle")?.addEventListener("click", () => {
     lang = lang === "fr" ? "ar" : "fr";
-    selectedQuizOption = null;
     render();
   });
 
@@ -1053,37 +1114,31 @@ function render() {
     render();
   });
 
-  document.querySelectorAll("#main-nav a").forEach((link) => {
-    link.addEventListener("click", () => {
-      if (mobileMenuOpen) {
-        mobileMenuOpen = false;
-        render();
-      }
+  document.querySelectorAll("#main-nav a").forEach((a) => {
+    a.addEventListener("click", () => {
+      mobileMenuOpen = false;
+      render();
     });
   });
 
-  document.querySelectorAll("[data-theme-index]").forEach((btn) => {
+  document.querySelectorAll("[data-theme-idx]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selectedThemeIndex = Number(btn.getAttribute("data-theme-index"));
+      selectedThemeIndex = Number(btn.getAttribute("data-theme-idx")) || 0;
       render();
     });
   });
 
   document.getElementById("filter-by-theme")?.addEventListener("click", () => {
-    selectedPolesFilter = activeTheme.poles;
-    activePoleLabel = activeTheme.title;
+    const th = THEMES[lang][selectedThemeIndex] || THEMES[lang][0];
+    selectedPolesFilter = th.poles;
+    activePoleLabel = th.title;
     renderResults();
+    document.getElementById("research")?.scrollIntoView({ behavior: "smooth" });
   });
 
-  document.getElementById("reset-pole-filter")?.addEventListener("click", () => {
-    selectedPolesFilter = null;
-    activePoleLabel = "";
-    renderResults();
-  });
-
-  document.querySelectorAll("[data-academy-index]").forEach((btn) => {
+  document.querySelectorAll("[data-academy-idx]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selectedAcademyIndex = Number(btn.getAttribute("data-academy-index"));
+      selectedAcademyIndex = Number(btn.getAttribute("data-academy-idx")) || 0;
       selectedQuizOption = null;
       render();
     });
@@ -1096,81 +1151,135 @@ function render() {
     });
   });
 
-  document.querySelectorAll("[data-principle-index]").forEach((btn) => {
+  document.querySelectorAll("[data-principle-idx]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selectedPrincipleIndex = Number(btn.getAttribute("data-principle-index"));
+      selectedPrincipleIndex = Number(btn.getAttribute("data-principle-idx")) || 0;
       render();
     });
   });
 
-  const input = document.getElementById("search-input");
-  input?.addEventListener("input", (e) => {
+  document.querySelectorAll("[data-space-id]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeSpace = btn.getAttribute("data-space-id") || "all";
+      render();
+    });
+  });
+
+  document.getElementById("manual-form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const titleVal = (document.getElementById("m-title")?.value || "").trim();
+    if (!titleVal) return;
+    const typeVal = document.getElementById("m-type")?.value || "article";
+    const poleVal = document.getElementById("m-pole")?.value || "institutions_gouvernance";
+    const dateVal = document.getElementById("m-date")?.value || REFERENCE_DATE;
+    const urlVal = (document.getElementById("m-url")?.value || "").trim();
+    const resumeVal = (document.getElementById("m-resume")?.value || "").trim();
+
+    const newEntry = {
+      id: `kitn_manual_${Date.now()}`,
+      titre_original: titleVal,
+      auteurs: [lang === "ar" ? "إضافة يدوية" : "Contribution manuelle"],
+      date_publication: dateVal,
+      date_statut: "date_confirmee",
+      date_anomalie: false,
+      statut_validation: "valide",
+      langue_originale: lang,
+      source_id: "manual_studio",
+      source_nom: lang === "ar" ? "إضافة يدوية KITN" : "Contribution manuelle KITN",
+      type_document: typeVal,
+      pole: poleVal,
+      poles_secondaires: [],
+      confiance_classification: "eleve",
+      score_pertinence: 90,
+      url_publication: isSafeHttpUrl(urlVal) ? urlVal : null,
+      doi: null,
+      pdf_direct: null,
+      resume: resumeVal
+    };
+
+    manualItems = [newEntry, ...manualItems];
+    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+    rebuildCombinedIndex();
+    render();
+    const statusEl = document.getElementById("manual-status");
+    if (statusEl) statusEl.textContent = c.manualAddedMsg;
+  });
+
+  document.getElementById("manual-export")?.addEventListener("click", () => {
+    exportJsonPayload(manualItems, "kitn-contributions-manuelles.json");
+  });
+
+  document.getElementById("manual-clear")?.addEventListener("click", () => {
+    manualItems = [];
+    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+    rebuildCombinedIndex();
+    render();
+  });
+
+  document.getElementById("search-input")?.addEventListener("input", (e) => {
     searchQuery = e.target.value || "";
     renderResults();
   });
 
-  document.getElementById("pole-filter")?.addEventListener("change", (e) => {
+  document.getElementById("pole-select")?.addEventListener("change", (e) => {
     selectedSinglePoleFilter = e.target.value || "";
+    selectedPolesFilter = null;
+    activePoleLabel = "";
     renderResults();
   });
 
-  document.getElementById("type-filter")?.addEventListener("change", (e) => {
+  document.getElementById("type-select")?.addEventListener("change", (e) => {
     selectedTypeFilter = e.target.value || "";
     renderResults();
   });
 
-  document.getElementById("doc-lang-filter")?.addEventListener("change", (e) => {
-    selectedDocLangFilter = e.target.value || "";
-    renderResults();
-  });
-
-  document.getElementById("confidence-filter")?.addEventListener("change", (e) => {
+  document.getElementById("conf-select")?.addEventListener("change", (e) => {
     selectedConfidenceFilter = e.target.value || "";
     renderResults();
   });
 
-  document.getElementById("sort-order")?.addEventListener("change", (e) => {
+  document.getElementById("lang-doc-select")?.addEventListener("change", (e) => {
+    selectedDocLangFilter = e.target.value || "";
+    renderResults();
+  });
+
+  document.getElementById("sort-select")?.addEventListener("change", (e) => {
     sortOrder = e.target.value || "newest";
     renderResults();
   });
 
-  document.getElementById("reset-filters-btn")?.addEventListener("click", () => {
-    resetAllFilters();
-  });
-
-  document.getElementById("export-json-btn")?.addEventListener("click", () => {
-    exportFilteredJson();
-  });
-
-  document.getElementById("favorites-toggle")?.addEventListener("change", (e) => {
+  document.getElementById("fav-only")?.addEventListener("change", (e) => {
     favoritesOnly = Boolean(e.target.checked);
     renderResults();
   });
 
-  document.getElementById("future-dates-toggle")?.addEventListener("change", (e) => {
+  document.getElementById("future-only")?.addEventListener("change", (e) => {
     futureDatesOnly = Boolean(e.target.checked);
     renderResults();
+  });
+
+  document.getElementById("reset-filters")?.addEventListener("click", resetAllFilters);
+  document.getElementById("export-json")?.addEventListener("click", () => {
+    exportJsonPayload(getFilteredItems(), "kitn-export.json");
   });
 
   renderResults();
   renderModal();
 }
 
-async function loadSearchIndex() {
+async function initIndex() {
   try {
     const res = await fetch("/data/index/search-index.json", { cache: "no-store" });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data.items)) {
-      indexItems = data.items;
-    } else if (Array.isArray(data)) {
-      indexItems = data;
+    if (res.ok) {
+      const data = await res.json();
+      remoteItems = Array.isArray(data?.items) ? data.items : [];
     }
-    render();
-  } catch (err) {
-    console.error("Erreur chargement search-index.json :", err);
+  } catch {
+    remoteItems = [];
   }
+  rebuildCombinedIndex();
+  renderResults();
 }
 
 render();
-loadSearchIndex();
+initIndex();

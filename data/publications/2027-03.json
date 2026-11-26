@@ -17,7 +17,7 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+      "dernier_controle": "2026-11-26T01:41:01.846166+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "recherche_scientifique",
@@ -27,7 +27,7 @@
       "justification": "Lien pertinent avec le Maroc identifié via : morocco."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+    "collecte_le": "2026-11-26T01:41:01.846166+00:00"
   },
   {
     "id": "kitn_14a588891d984fae",
@@ -52,17 +52,17 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+      "dernier_controle": "2026-11-26T01:41:01.846166+00:00"
     },
     "type_document": "publication_scientifique",
-    "pole": "recherche_scientifique",
-    "confiance_classification": "faible",
+    "pole": "societe_developpement_humain",
+    "confiance_classification": "eleve",
     "pertinence_maroc": {
       "score": 60,
       "justification": "Lien pertinent avec le Maroc identifié via : morocco."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+    "collecte_le": "2026-11-26T01:41:01.846166+00:00"
   },
   {
     "id": "kitn_fb05b5753cd5e7d7",
@@ -91,17 +91,17 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+      "dernier_controle": "2026-11-26T01:41:01.846166+00:00"
     },
     "type_document": "publication_scientifique",
-    "pole": "recherche_scientifique",
-    "confiance_classification": "faible",
+    "pole": "societe_developpement_humain",
+    "confiance_classification": "moyen",
     "pertinence_maroc": {
       "score": 60,
       "justification": "Lien pertinent avec le Maroc identifié via : morocco."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+    "collecte_le": "2026-11-26T01:41:01.846166+00:00"
   },
   {
     "id": "kitn_7f99c3295c5cc84c",
@@ -126,7 +126,7 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+      "dernier_controle": "2026-11-26T01:41:01.846166+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "recherche_scientifique",
@@ -136,7 +136,7 @@
       "justification": "Lien pertinent avec le Maroc identifié via : morocco."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+    "collecte_le": "2026-11-26T01:41:01.846166+00:00"
   },
   {
     "id": "kitn_643b77341b694350",
@@ -158,7 +158,7 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-25T23:26:14.715818+00:00"
+      "dernier_controle": "2026-11-26T01:41:01.846166+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "recherche_scientifique",
@@ -168,6 +168,6 @@
       "justification": "Lien pertinent avec le Maroc identifié via : morocco."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-25T23:26:14.715818+00:00"
+    "collecte_le": "2026-11-26T01:41:01.846166+00:00"
   }
 ]

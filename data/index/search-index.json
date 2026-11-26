@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-26T14:00:55.336133+00:00",
+  "updated_at": "2026-11-26T14:12:24.738621+00:00",
   "total": 27,
-  "new_or_updated_this_run": 11,
+  "new_or_updated_this_run": 9,
   "items": [
     {
       "id": "kitn_1f4e7211af24b298",
@@ -262,7 +262,7 @@
       ],
       "confiance_classification": "eleve",
       "score_pertinence": 67,
-      "url_publication": "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9?error=cookies_not_supported&code=9b7a1cd6-9a16-4b6d-9c77-44cc79e1e536",
+      "url_publication": "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9",
       "doi": "10.1007/978-3-032-32865-6_9",
       "pdf_direct": null,
       "resume": ""
@@ -490,7 +490,7 @@
       "url_publication": "https://hal.science/hal-05806135v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05806135/document",
-      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d’un MBA d’HEC Paris, il préside le Think Tank Institut Marocain d’Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné "
+      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné "
     },
     {
       "id": "kitn_64e18d7a65e03c24",
@@ -515,7 +515,7 @@
       "url_publication": "https://hal.science/hal-05769879v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05769879/document",
-      "resume": "L’auteure se présente ainsi « Je suis une historienne de l’Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l’historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l’Institut d’Histoire du Temps Présent que je dirige aujourd’hui » (p.22). Après avoir "
+      "resume": "L'auteure se présente ainsi « Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui » (p.22). Après avoir "
     },
     {
       "id": "kitn_511633a25bb71c8c",
@@ -648,7 +648,7 @@
       "url_publication": "https://hal.science/hal-05864419v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l’évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d’altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en diﬃcu"
+      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en diffi"
     },
     {
       "id": "kitn_47e479f4a4fb35a8",
@@ -673,7 +673,7 @@
       "url_publication": "https://hal.science/hal-05856392v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05856392/document",
-      "resume": "La maîtrise de la langue d’enseignement constitue une condition essentielle à l’appropriation des savoirs disciplinaires, ainsi qu’à l’intégration et à la réussite dans le milieu universitaire. Toutefois, au Maroc, et plus particulièrement dans l’enseignement supérieur, un constat largement partagé par les universitair"
+      "resume": "La maîtrise de la langue d'enseignement constitue une condition essentielle à l'appropriation des savoirs disciplinaires, ainsi qu'à l'intégration et à la réussite dans le milieu universitaire. Toutefois, au Maroc, et plus particulièrement dans l'enseignement supérieur, un constat largement partagé par les universitair"
     },
     {
       "id": "kitn_6c2f7f2eaa3e6163",
@@ -697,11 +697,11 @@
       "url_publication": "https://hal.science/hal-05849028v1",
       "doi": "10.5281/zenodo.23850475",
       "pdf_direct": "https://hal.science/hal-05849028/document",
-      "resume": "Si la croissance de l’industrie automobile marocaine est bien documentée, sa nature et sa compatibilité avec un processus d’upgrading restent peu étudiées de manière intégrée. Cet article analyse conjointement deux lectures macroéconomiques de la croissance extensive et intensive : l’une appliquée aux exportations, ent"
+      "resume": "Si la croissance de l'industrie automobile marocaine est bien documentée, sa nature et sa compatibilité avec un processus d'upgrading restent peu étudiées de manière intégrée. Cet article analyse conjointement deux lectures macroéconomiques de la croissance extensive et intensive : l'une appliquée aux exportations, ent"
     },
     {
       "id": "kitn_f428f017c11b5168",
-      "titre_original": "La convergence des politiques publiques au Maroc: enjeux de gouvernance et voies d’institutionnalisation",
+      "titre_original": "La convergence des politiques publiques au Maroc: enjeux de gouvernance et voies d'institutionnalisation",
       "auteurs": [
         "El Mehdi Miftahi"
       ],
@@ -720,7 +720,7 @@
       "url_publication": "https://hal.science/hal-05840156v1",
       "doi": "10.65040/remeje.2026.11.v02n30.37",
       "pdf_direct": null,
-      "resume": "Cet article examine la convergence des politiques publiques au Maroc à la fois comme une exigence de gouvernance et comme un enjeu institutionnel. S’appuyant sur le cadre conceptuel développé dans le champ de l’analyse des politiques publiques, l’étude inscrit la convergence dans les débats plus larges relatifs à la bo"
+      "resume": "Cet article examine la convergence des politiques publiques au Maroc à la fois comme une exigence de gouvernance et comme un enjeu institutionnel. S'appuyant sur le cadre conceptuel développé dans le champ de l'analyse des politiques publiques, l'étude inscrit la convergence dans les débats plus larges relatifs à la bo"
     }
   ]
 }

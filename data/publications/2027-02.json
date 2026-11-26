@@ -13,14 +13,14 @@
     "source_id": "openalex_maroc",
     "source_nom": "OpenAlex — Travaux liés au Maroc",
     "resume": null,
-    "url_publication": "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9?error=cookies_not_supported&code=9b7a1cd6-9a16-4b6d-9c77-44cc79e1e536",
+    "url_publication": "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9",
     "doi": "10.1007/978-3-032-32865-6_9",
     "pdf_direct": null,
     "verification_liens": {
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
+      "dernier_controle": "2026-11-26T14:12:24.738621+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "economie_finances_publiques",
@@ -34,9 +34,9 @@
     },
     "statut_validation": "a_verifier",
     "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
-    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
-    "updated_at": "2026-11-26T14:00:55.336133+00:00",
-    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
+    "last_seen_at": "2026-11-26T14:12:24.738621+00:00",
+    "updated_at": "2026-11-26T14:12:24.738621+00:00",
+    "collecte_le": "2026-11-26T14:12:24.738621+00:00"
   },
   {
     "id": "kitn_596955e4514d6561",

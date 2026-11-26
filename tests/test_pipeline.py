@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
@@ -7,8 +8,10 @@ from pipeline.collectors import collect_from_source
 from pipeline.processors import (
     build_stable_id,
     classify_document,
+    clean_text,
     detect_real_language,
     evaluate_morocco_relevance,
+    sanitize_url,
     validate_publication_date,
 )
 from pipeline.run_pipeline import _content_fingerprint
@@ -21,18 +24,34 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(detect_real_language("تقرير حول الحكامة والسياسات العمومية في المغرب"), "ar")
 
     def test_validate_publication_date(self):
+        ref = date(2026, 11, 26)
         self.assertEqual(
-            validate_publication_date("2025-05-10"),
+            validate_publication_date("2025-05-10", reference_date=ref),
             {"date_statut": "date_confirmee", "date_anomalie": False},
         )
         self.assertEqual(
-            validate_publication_date("2028-01-15"),
+            validate_publication_date("2027-04", reference_date=ref),
             {"date_statut": "date_future_a_verifier", "date_anomalie": True},
         )
         self.assertEqual(
-            validate_publication_date("not-a-date"),
+            validate_publication_date("2028-01-15", reference_date=ref),
+            {"date_statut": "date_future_a_verifier", "date_anomalie": True},
+        )
+        self.assertEqual(
+            validate_publication_date("not-a-date", reference_date=ref),
             {"date_statut": "date_invalide", "date_anomalie": True},
         )
+
+    def test_clean_text_and_sanitize_url(self):
+        cleaned = clean_text("<p>Les m\ufb01tiers du Care &amp; \u201cd\u2019analyse\u201d</p>")
+        self.assertEqual(cleaned, 'Les mfitiers du Care & "d\'analyse"')
+
+        dirty_url = "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9?error=cookies_not_supported&code=abc123"
+        self.assertEqual(
+            sanitize_url(dirty_url),
+            "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9",
+        )
+        self.assertIsNone(sanitize_url("javascript:alert(1)"))
 
     def test_evaluate_morocco_relevance(self):
         relevant = evaluate_morocco_relevance(
@@ -94,6 +113,25 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["published_date"], "2026-10-12")
         self.assertEqual(items[0]["default_doc_type"], "statistique")
         self.assertTrue(Path(".").exists())
+
+    def test_collect_html_links_mocked(self):
+        sample_html = """
+        <html><body>
+          <a href="/rapports/rapport-annuel.pdf">Rapport annuel sur les politiques publiques</a>
+          <a href="/court">Court</a>
+        </body></html>
+        """
+        with patch("pipeline.collectors._fetch_text", return_value=sample_html):
+            items = collect_from_source({
+                "id": "test_html",
+                "name": "Page Test",
+                "type": "html_links",
+                "url": "https://example.org/index.html",
+                "default_doc_type": "rapport_institutionnel",
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["url"], "https://example.org/rapports/rapport-annuel.pdf")
+        self.assertEqual(items[0]["pdf_url"], "https://example.org/rapports/rapport-annuel.pdf")
 
 
 if __name__ == "__main__":

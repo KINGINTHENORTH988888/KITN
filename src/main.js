@@ -1,7 +1,16 @@
 import "./style.css";
 
-const REFERENCE_DATE = "2026-11-26";
 const FAVORITES_KEY = "kitn_favorites_v1";
+
+function getDynamicReferenceDate() {
+  const now = new Date();
+  const y = now.getUTCFullYear();
+  const m = String(now.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(now.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+const REFERENCE_DATE = getDynamicReferenceDate();
 
 const THEMES = {
   fr: [
@@ -26,11 +35,11 @@ const THEMES = {
     {
       num: "03",
       symbol: "⊕",
-      poles: ["relations_internationales_geopolitique"],
+      poles: ["securite_affaires_interieures", "relations_internationales_geopolitique"],
       title: "Sécurité, territoires & géopolitique",
       desc: "Sécurité publique, prévention, territoires, ressources et enjeux stratégiques.",
-      detail: "Suivi des dynamiques territoriales, des ressources, de la sécurité et du positionnement stratégique du Maroc.",
-      tags: ["Territoires", "Ressources", "Géopolitique", "Sécurité"]
+      detail: "Suivi des affaires intérieures, de la sécurité publique, des dynamiques territoriales et du positionnement stratégique du Maroc.",
+      tags: ["Sécurité & affaires intérieures", "Territoires", "Géopolitique", "Ressources"]
     },
     {
       num: "04",
@@ -64,11 +73,11 @@ const THEMES = {
     {
       num: "03",
       symbol: "⊕",
-      poles: ["relations_internationales_geopolitique"],
+      poles: ["securite_affaires_interieures", "relations_internationales_geopolitique"],
       title: "الأمن والمجالات والجيوسياسة",
       desc: "الأمن العمومي، الوقاية، المجالات الترابية والموارد والقضايا الاستراتيجية.",
-      detail: "تتبع الديناميات الترابية والموارد والأمن والموقع الاستراتيجي للمغرب.",
-      tags: ["المجالات الترابية", "الموارد", "الجيوسياسة", "الأمن"]
+      detail: "تتبع الشؤون الداخلية والأمن العمومي والديناميات الترابية والموقع الاستراتيجي للمغرب.",
+      tags: ["الأمن والشؤون الداخلية", "المجالات الترابية", "الجيوسياسة", "الموارد"]
     },
     {
       num: "04",
@@ -80,6 +89,25 @@ const THEMES = {
       tags: ["منشورات", "بيانات", "دراسات", "رصد"]
     }
   ]
+};
+
+const POLE_LABELS = {
+  fr: {
+    institutions_gouvernance: "Institutions & gouvernance",
+    economie_finances_publiques: "Économie & finances publiques",
+    societe_developpement_humain: "Société & développement humain",
+    relations_internationales_geopolitique: "Relations internationales & géopolitique",
+    securite_affaires_interieures: "Sécurité & affaires intérieures",
+    recherche_scientifique: "Recherche scientifique"
+  },
+  ar: {
+    institutions_gouvernance: "المؤسسات والحكامة",
+    economie_finances_publiques: "الاقتصاد والمالية العمومية",
+    societe_developpement_humain: "المجتمع والتنمية البشرية",
+    relations_internationales_geopolitique: "العلاقات الدولية والجيوسياسة",
+    securite_affaires_interieures: "الأمن والشؤون الداخلية",
+    recherche_scientifique: "البحث العلمي"
+  }
 };
 
 const ACADEMY_TRACKS = {
@@ -178,12 +206,16 @@ const DOC_TYPES = {
     publication_scientifique: "Publication scientifique",
     statistique: "Statistique / Jeu de données",
     rapport: "Rapport",
+    rapport_institutionnel: "Rapport institutionnel",
+    document_juridique: "Document juridique",
     article: "Article"
   },
   ar: {
     publication_scientifique: "منشور علمي",
     statistique: "إحصائية / مجموعة بيانات",
     rapport: "تقرير",
+    rapport_institutionnel: "تقرير مؤسساتي",
+    document_juridique: "وثيقة قانونية",
     article: "مقال"
   }
 };
@@ -230,6 +262,7 @@ const PRINCIPLES = {
 const COPY = {
   fr: {
     langBtn: "العربية",
+    menuBtn: "Menu",
     navThemes: "Thématiques",
     navAcademy: "KITN Academy",
     navMethod: "Méthode",
@@ -251,6 +284,7 @@ const COPY = {
     openPole: "Filtrer les notices de ce pôle →",
     activePoleBanner: "Filtre actif sur le pôle :",
     allPoles: "Tous les pôles",
+    allPolesSelect: "Tous les pôles (6)",
     academyEyebrow: "KITN Academy",
     academyTitle: "Apprendre avec méthode, pas dans la précipitation.",
     academyText: "Des repères clairs, des synthèses structurées et des ressources pour approfondir les grands dossiers et préparer les échéances exigeantes.",
@@ -277,8 +311,9 @@ const COPY = {
     savedOnly: "Favoris uniquement",
     saveBtn: "Enregistrer",
     savedBtn: "Enregistré",
-    futureOnly: "Dates postérieures au 26/11/2026 uniquement",
-    futureBadge: "Date > 26/11/2026 (à vérifier)",
+    futureOnly: "Dates futures à vérifier uniquement",
+    futureBadge: "Date future (à vérifier)",
+    unverifiedBadge: "À vérifier",
     noAbstract: "Résumé non fourni par la source.",
     detailsBtn: "Fiche détaillée",
     noResults: "Aucune notice ne correspond à votre recherche.",
@@ -288,16 +323,20 @@ const COPY = {
     labelAuthor: "Auteurs",
     labelDate: "Date de publication",
     labelPole: "Pôle",
+    labelStatus: "Statut éditorial",
     labelType: "Type de document",
     labelDocLang: "Langue",
     labelConfidence: "Fiabilité",
     labelScore: "Score",
     labelDoi: "DOI",
     labelAbstract: "Résumé",
+    statusValid: "Vérifié",
+    statusReview: "À vérifier",
     footerCopy: "© 2026 KITN — Centre de veille & de connaissances."
   },
   ar: {
     langBtn: "Français",
+    menuBtn: "القائمة",
     navThemes: "المحاور",
     navAcademy: "أكاديمية KITN",
     navMethod: "المنهجية",
@@ -319,6 +358,7 @@ const COPY = {
     openPole: "تصفية المواد حسب هذا القطب ←",
     activePoleBanner: "تصفية نشطة حسب القطب:",
     allPoles: "كل الأقطاب",
+    allPolesSelect: "كل الأقطاب (6)",
     academyEyebrow: "أكاديمية KITN",
     academyTitle: "التعلم بمنهجية، لا بتسرع.",
     academyText: "معالم واضحة وملخصات مهيكلة وموارد لتعميق الملفات الكبرى والاستعداد للاستحقاقات الدقيقة.",
@@ -345,8 +385,9 @@ const COPY = {
     savedOnly: "المحفوظات فقط",
     saveBtn: "حفظ",
     savedBtn: "محفوظ",
-    futureOnly: "التواريخ بعد 26/11/2026 فقط",
-    futureBadge: "تاريخ بعد 26/11/2026 (للمراجعة)",
+    futureOnly: "التواريخ المستقبلية للمراجعة فقط",
+    futureBadge: "تاريخ مستقبلي (للمراجعة)",
+    unverifiedBadge: "للمراجعة",
     noAbstract: "الملخص غير متوفر في المصدر.",
     detailsBtn: "بطاقة تفصيلية",
     noResults: "لا توجد مواد مطابقة لبحثك.",
@@ -356,12 +397,15 @@ const COPY = {
     labelAuthor: "المؤلفون",
     labelDate: "تاريخ النشر",
     labelPole: "القطب",
+    labelStatus: "الحالة التحريرية",
     labelType: "نوع الوثيقة",
     labelDocLang: "اللغة",
     labelConfidence: "الموثوقية",
     labelScore: "النتيجة",
     labelDoi: "المعرّف DOI",
     labelAbstract: "الملخص",
+    statusValid: "متحقق منه",
+    statusReview: "للمراجعة",
     footerCopy: "© 2026 KITN — مركز الرصد والمعرفة."
   }
 };
@@ -389,9 +433,11 @@ function getItemKey(item) {
 }
 
 let lang = "fr";
+let mobileMenuOpen = false;
 let selectedThemeIndex = 0;
 let selectedPolesFilter = null;
 let activePoleLabel = "";
+let selectedSinglePoleFilter = "";
 let selectedTypeFilter = "";
 let selectedConfidenceFilter = "";
 let selectedDocLangFilter = "";
@@ -414,11 +460,27 @@ function escapeHtml(str = "") {
     .replaceAll('"', "&quot;");
 }
 
+function isSafeHttpUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  try {
+    const parsed = new URL(url.trim());
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 function isFutureDate(item) {
   if (item && item.date_anomalie === true) return true;
+  if (item && item.date_statut === "date_future_a_verifier") return true;
   const clean = String(item?.date_publication || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return false;
   return clean > REFERENCE_DATE;
+}
+
+function formatPole(poleCode) {
+  if (!poleCode) return "";
+  return POLE_LABELS[lang]?.[poleCode] || poleCode;
 }
 
 function formatDocType(type) {
@@ -451,6 +513,7 @@ function toggleFavorite(item) {
 function resetAllFilters() {
   selectedPolesFilter = null;
   activePoleLabel = "";
+  selectedSinglePoleFilter = "";
   selectedTypeFilter = "";
   selectedConfidenceFilter = "";
   selectedDocLangFilter = "";
@@ -464,8 +527,9 @@ function resetAllFilters() {
 function getFilteredItems() {
   const q = searchQuery.trim().toLowerCase();
   const list = indexItems.filter((item) => {
-    const matchesPole = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
-    if (!matchesPole) return false;
+    const matchesThemePoles = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
+    if (!matchesThemePoles) return false;
+    if (selectedSinglePoleFilter && item.pole !== selectedSinglePoleFilter) return false;
     if (selectedTypeFilter && item.type_document !== selectedTypeFilter) return false;
     if (selectedConfidenceFilter && item.confiance_classification !== selectedConfidenceFilter) return false;
     if (selectedDocLangFilter && item.langue_originale !== selectedDocLangFilter) return false;
@@ -476,6 +540,7 @@ function getFilteredItems() {
     const title = (item.titre_original || "").toLowerCase();
     const authors = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
     const pole = (item.pole || "").toLowerCase();
+    const poleLabel = formatPole(item.pole).toLowerCase();
     const docType = (item.type_document || "").toLowerCase();
     const docTypeLabel = formatDocType(item.type_document).toLowerCase();
     const resume = (item.resume || "").toLowerCase();
@@ -484,6 +549,7 @@ function getFilteredItems() {
       title.includes(q) ||
       authors.includes(q) ||
       pole.includes(q) ||
+      poleLabel.includes(q) ||
       docType.includes(q) ||
       docTypeLabel.includes(q) ||
       resume.includes(q)
@@ -529,6 +595,12 @@ function renderModal() {
   const resumeText = item.resume && String(item.resume).trim()
     ? item.resume
     : c.noAbstract;
+  const statusLabel = item.statut_validation === "valide" && !isFutureDate(item)
+    ? c.statusValid
+    : c.statusReview;
+
+  const safeUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
+  const safePdf = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
 
   const modal = document.createElement("div");
   modal.id = "notice-modal";
@@ -536,7 +608,7 @@ function renderModal() {
   modal.innerHTML = `
     <div class="modal-card" role="dialog" aria-modal="true">
       <div class="modal-head">
-        <span>${escapeHtml(formatDocType(item.type_document) || item.pole || "")}</span>
+        <span>${escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || "")}</span>
         <button type="button" class="modal-close" id="close-modal">${escapeHtml(c.closeBtn)} ✕</button>
       </div>
       <h3>${escapeHtml(item.titre_original || "")}</h3>
@@ -544,7 +616,8 @@ function renderModal() {
       <dl class="modal-meta">
         <div><dt>${escapeHtml(c.labelAuthor)}</dt><dd>${escapeHtml(authorsText)}</dd></div>
         <div><dt>${escapeHtml(c.labelDate)}</dt><dd>${escapeHtml(item.date_publication || "—")}</dd></div>
-        <div><dt>${escapeHtml(c.labelPole)}</dt><dd>${escapeHtml(item.pole || "—")}</dd></div>
+        <div><dt>${escapeHtml(c.labelPole)}</dt><dd>${escapeHtml(formatPole(item.pole) || "—")}</dd></div>
+        <div><dt>${escapeHtml(c.labelStatus)}</dt><dd>${escapeHtml(statusLabel)}</dd></div>
         ${item.langue_originale ? `<div><dt>${escapeHtml(c.labelDocLang)}</dt><dd>${escapeHtml(formatDocLang(item.langue_originale))}</dd></div>` : ""}
         ${item.confiance_classification ? `<div><dt>${escapeHtml(c.labelConfidence)}</dt><dd>${escapeHtml(formatConfidence(item.confiance_classification))}</dd></div>` : ""}
         ${typeof item.score_pertinence === "number" ? `<div><dt>${escapeHtml(c.labelScore)}</dt><dd>${escapeHtml(String(item.score_pertinence))}</dd></div>` : ""}
@@ -555,8 +628,8 @@ function renderModal() {
         <p>${escapeHtml(resumeText)}</p>
       </div>
       <div class="result-actions">
-        ${item.url_publication ? `<a href="${escapeHtml(item.url_publication)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceLink)}</a>` : ""}
-        ${item.pdf_direct ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.pdfLink)}</a>` : ""}
+        ${safeUrl ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceLink)}</a>` : ""}
+        ${safePdf ? `<a href="${escapeHtml(safePdf)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.pdfLink)}</a>` : ""}
       </div>
     </div>
   `;
@@ -614,18 +687,22 @@ function renderResults() {
         ? item.auteurs.join(", ")
         : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
       const metaLeft = escapeHtml(item.date_publication || "");
-      const metaRight = escapeHtml(formatDocType(item.type_document) || item.pole || "");
+      const metaRight = escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || "");
       const futureFlag = isFutureDate(item)
         ? `<span class="flag-warn">${escapeHtml(COPY[lang].futureBadge)}</span>`
-        : "";
+        : (item.statut_validation === "a_verifier"
+            ? `<span class="flag-warn">${escapeHtml(COPY[lang].unverifiedBadge)}</span>`
+            : "");
       const resumeSnippet = item.resume && String(item.resume).trim()
         ? `<p class="result-resume">${escapeHtml(item.resume)}</p>`
         : "";
-      const pdfHtml = item.pdf_direct
-        ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer">${escapeHtml(COPY[lang].pdfLink)}</a>`
+      const safePdf = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
+      const safeUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
+      const pdfHtml = safePdf
+        ? `<a href="${escapeHtml(safePdf)}" target="_blank" rel="noopener noreferrer">${escapeHtml(COPY[lang].pdfLink)}</a>`
         : "";
-      const sourceHtml = item.url_publication
-        ? `<a href="${escapeHtml(item.url_publication)}" target="_blank" rel="noopener noreferrer">${escapeHtml(COPY[lang].sourceLink)}</a>`
+      const sourceHtml = safeUrl
+        ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(COPY[lang].sourceLink)}</a>`
         : "";
 
       return `
@@ -673,6 +750,7 @@ function render() {
   const activeTheme = themes[selectedThemeIndex] || themes[0];
   const activePrinciple = principles[selectedPrincipleIndex] || principles[0];
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
+  const allPoleKeys = Object.keys(POLE_LABELS[lang]);
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
   const availableConfidence = [...new Set(indexItems.map((it) => it.confiance_classification).filter(Boolean))];
   const availableDocLangs = [...new Set(indexItems.map((it) => it.langue_originale).filter(Boolean))];
@@ -689,13 +767,16 @@ function render() {
         <span class="brand-mark">K</span>
         <span>KITN<span class="brand-dot">.</span></span>
       </a>
-      <nav class="nav">
+      <nav class="nav ${mobileMenuOpen ? "is-open" : ""}" id="main-nav">
         <a href="#themes">${c.navThemes}</a>
         <a href="#academy">${c.navAcademy}</a>
         <a href="#method">${c.navMethod}</a>
         <a href="#research">${c.navResearch}</a>
       </nav>
-      <button type="button" class="lang" id="lang-toggle">${c.langBtn}</button>
+      <div class="topbar-actions">
+        <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="${mobileMenuOpen}">${c.menuBtn}</button>
+        <button type="button" class="lang" id="lang-toggle">${c.langBtn}</button>
+      </div>
     </header>
 
     <section class="hero">
@@ -900,6 +981,14 @@ function render() {
           value="${escapeHtml(searchQuery)}"
         />
         <div class="filter-controls">
+          <select id="pole-filter" class="filter-select">
+            <option value="">${escapeHtml(c.allPolesSelect)}</option>
+            ${allPoleKeys
+              .map(
+                (pk) => `<option value="${escapeHtml(pk)}" ${selectedSinglePoleFilter === pk ? "selected" : ""}>${escapeHtml(formatPole(pk))}</option>`
+              )
+              .join("")}
+          </select>
           <select id="type-filter" class="filter-select">
             <option value="">${escapeHtml(c.allTypes)}</option>
             ${availableTypes
@@ -959,6 +1048,20 @@ function render() {
     render();
   });
 
+  document.getElementById("menu-toggle")?.addEventListener("click", () => {
+    mobileMenuOpen = !mobileMenuOpen;
+    render();
+  });
+
+  document.querySelectorAll("#main-nav a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (mobileMenuOpen) {
+        mobileMenuOpen = false;
+        render();
+      }
+    });
+  });
+
   document.querySelectorAll("[data-theme-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedThemeIndex = Number(btn.getAttribute("data-theme-index"));
@@ -1003,6 +1106,11 @@ function render() {
   const input = document.getElementById("search-input");
   input?.addEventListener("input", (e) => {
     searchQuery = e.target.value || "";
+    renderResults();
+  });
+
+  document.getElementById("pole-filter")?.addEventListener("change", (e) => {
+    selectedSinglePoleFilter = e.target.value || "";
     renderResults();
   });
 

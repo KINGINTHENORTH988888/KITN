@@ -236,6 +236,7 @@ const COPY = {
     themesTitle: "Explorer par thématique",
     themesSub: "Des sujets essentiels, organisés pour aller au-delà de l'actualité et comprendre les dynamiques de fond.",
     openPole: "Filtrer les notices de ce pôle →",
+    activePoleBanner: "Filtre actif sur le pôle :",
     allPoles: "Tous les pôles",
     academyEyebrow: "KITN Academy",
     academyTitle: "Apprendre avec méthode, pas dans la précipitation.",
@@ -300,6 +301,7 @@ const COPY = {
     themesTitle: "الاستكشاف حسب المحور",
     themesSub: "مواضيع أساسية منظمة لتجاوز الأخبار اليومية وفهم الديناميات العميقة.",
     openPole: "تصفية المواد حسب هذا القطب ←",
+    activePoleBanner: "تصفية نشطة حسب القطب:",
     allPoles: "كل الأقطاب",
     academyEyebrow: "أكاديمية KITN",
     academyTitle: "التعلم بمنهجية، لا بتسرع.",
@@ -370,6 +372,7 @@ function getItemKey(item) {
 let lang = "fr";
 let selectedThemeIndex = 0;
 let selectedPolesFilter = null;
+let activePoleLabel = "";
 let selectedTypeFilter = "";
 let selectedConfidenceFilter = "";
 let sortOrder = "newest";
@@ -422,6 +425,7 @@ function toggleFavorite(item) {
 
 function resetAllFilters() {
   selectedPolesFilter = null;
+  activePoleLabel = "";
   selectedTypeFilter = "";
   selectedConfidenceFilter = "";
   sortOrder = "newest";
@@ -493,6 +497,7 @@ function renderModal() {
         <button type="button" class="modal-close" id="close-modal">${escapeHtml(c.closeBtn)} ✕</button>
       </div>
       <h3>${escapeHtml(item.titre_original || "")}</h3>
+      ${isFutureDate(item) ? `<span class="flag-warn">${escapeHtml(c.futureBadge)}</span>` : ""}
       <dl class="modal-meta">
         <div><dt>${escapeHtml(c.labelAuthor)}</dt><dd>${escapeHtml(authorsText)}</dd></div>
         <div><dt>${escapeHtml(c.labelDate)}</dt><dd>${escapeHtml(item.date_publication || "—")}</dd></div>
@@ -528,11 +533,30 @@ function renderModal() {
 function renderResults() {
   const container = document.getElementById("results-grid");
   const countBadge = document.getElementById("index-count");
+  const poleBanner = document.getElementById("active-pole-banner");
   if (!container || !countBadge) return;
 
   const filtered = getFilteredItems();
   const suffix = lang === "ar" ? " مادة" : filtered.length > 1 ? " notices" : " notice";
   countBadge.textContent = `${filtered.length}${suffix}`;
+
+  if (poleBanner) {
+    if (selectedPolesFilter && activePoleLabel) {
+      poleBanner.innerHTML = `
+        <span>${escapeHtml(COPY[lang].activePoleBanner)} <strong>${escapeHtml(activePoleLabel)}</strong></span>
+        <button type="button" class="link-btn" id="clear-pole-inline">${escapeHtml(COPY[lang].allPoles)} ✕</button>
+      `;
+      poleBanner.style.display = "flex";
+      document.getElementById("clear-pole-inline")?.addEventListener("click", () => {
+        selectedPolesFilter = null;
+        activePoleLabel = "";
+        renderResults();
+      });
+    } else {
+      poleBanner.style.display = "none";
+      poleBanner.innerHTML = "";
+    }
+  }
 
   if (!filtered.length) {
     container.innerHTML = `<p class="empty-results">${escapeHtml(COPY[lang].noResults)}</p>`;
@@ -820,6 +844,8 @@ function render() {
         <span class="index-badge" id="index-count">0</span>
       </div>
 
+      <div class="active-pole-banner" id="active-pole-banner" style="display:none;"></div>
+
       <div class="search-bar-wrap">
         <input
           type="search"
@@ -888,11 +914,13 @@ function render() {
 
   document.getElementById("filter-by-theme")?.addEventListener("click", () => {
     selectedPolesFilter = activeTheme.poles;
+    activePoleLabel = activeTheme.title;
     renderResults();
   });
 
   document.getElementById("reset-pole-filter")?.addEventListener("click", () => {
     selectedPolesFilter = null;
+    activePoleLabel = "";
     renderResults();
   });
 

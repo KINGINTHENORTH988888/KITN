@@ -1,5 +1,7 @@
 import "./style.css";
 
+const REFERENCE_DATE = "2026-11-26";
+
 const THEMES = {
   fr: [
     {
@@ -142,10 +144,21 @@ const COPY = {
     methodText: "KITN privilégie la clarté, la vérification et la mise en perspective plutôt que le bruit informationnel.",
     researchEyebrow: "Index documentaire",
     researchTitle: "Travaux & publications indexés",
-    searchPlaceholder: "Rechercher par titre, auteur, pôle ou type de document...",
+    searchPlaceholder: "Rechercher par titre, auteur, pôle, type ou résumé...",
+    futureOnly: "Dates postérieures au 26/11/2026 uniquement",
+    futureBadge: "Date > 26/11/2026 (à vérifier)",
+    noAbstract: "Résumé non fourni par la source.",
+    detailsBtn: "Fiche détaillée",
     noResults: "Aucune notice ne correspond à votre recherche.",
     sourceLink: "Consulter la source ↗",
     pdfLink: "PDF ↗",
+    closeBtn: "Fermer",
+    labelAuthor: "Auteurs",
+    labelDate: "Date de publication",
+    labelPole: "Pôle",
+    labelType: "Type de document",
+    labelDoi: "DOI",
+    labelAbstract: "Résumé",
     footerCopy: "© 2026 KITN — Centre de veille & de connaissances."
   },
   ar: {
@@ -183,9 +196,20 @@ const COPY = {
     researchEyebrow: "الفهرس الوثائقي",
     researchTitle: "الأعمال والمنشورات المفهرسة",
     searchPlaceholder: "ابحث بالعنوان أو المؤلف أو القطب أو نوع الوثيقة...",
+    futureOnly: "التواريخ بعد 26/11/2026 فقط",
+    futureBadge: "تاريخ بعد 26/11/2026 (للمراجعة)",
+    noAbstract: "الملخص غير متوفر في المصدر.",
+    detailsBtn: "بطاقة تفصيلية",
     noResults: "لا توجد مواد مطابقة لبحثك.",
     sourceLink: "عرض المصدر ↗",
     pdfLink: "ملف PDF ↗",
+    closeBtn: "إغلاق",
+    labelAuthor: "المؤلفون",
+    labelDate: "تاريخ النشر",
+    labelPole: "القطب",
+    labelType: "نوع الوثيقة",
+    labelDoi: "المعرّف DOI",
+    labelAbstract: "الملخص",
     footerCopy: "© 2026 KITN — مركز الرصد والمعرفة."
   }
 };
@@ -195,6 +219,8 @@ let selectedThemeIndex = 0;
 let selectedPolesFilter = null;
 let selectedPrincipleIndex = 0;
 let searchQuery = "";
+let futureDatesOnly = false;
+let activeModalItem = null;
 let indexItems = [];
 
 function escapeHtml(str = "") {
@@ -203,6 +229,12 @@ function escapeHtml(str = "") {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+function isFutureDate(dateStr = "") {
+  const clean = String(dateStr).slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(clean)) return false;
+  return clean > REFERENCE_DATE;
 }
 
 function formatDocType(type) {
@@ -215,6 +247,7 @@ function getFilteredItems() {
   return indexItems.filter((item) => {
     const matchesPole = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
     if (!matchesPole) return false;
+    if (futureDatesOnly && !isFutureDate(item.date_publication)) return false;
     if (!q) return true;
 
     const title = (item.titre_original || "").toLowerCase();
@@ -235,6 +268,60 @@ function getFilteredItems() {
   });
 }
 
+function renderModal() {
+  const existing = document.getElementById("notice-modal");
+  if (existing) existing.remove();
+  if (!activeModalItem) return;
+
+  const c = COPY[lang];
+  const item = activeModalItem;
+  const authorsText = Array.isArray(item.auteurs) && item.auteurs.length
+    ? item.auteurs.join(", ")
+    : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
+  const resumeText = item.resume && String(item.resume).trim()
+    ? item.resume
+    : c.noAbstract;
+
+  const modal = document.createElement("div");
+  modal.id = "notice-modal";
+  modal.className = "modal-backdrop";
+  modal.innerHTML = `
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <span>${escapeHtml(formatDocType(item.type_document) || item.pole || "")}</span>
+        <button type="button" class="modal-close" id="close-modal">${escapeHtml(c.closeBtn)} ✕</button>
+      </div>
+      <h3>${escapeHtml(item.titre_original || "")}</h3>
+      <dl class="modal-meta">
+        <div><dt>${escapeHtml(c.labelAuthor)}</dt><dd>${escapeHtml(authorsText)}</dd></div>
+        <div><dt>${escapeHtml(c.labelDate)}</dt><dd>${escapeHtml(item.date_publication || "—")}</dd></div>
+        <div><dt>${escapeHtml(c.labelPole)}</dt><dd>${escapeHtml(item.pole || "—")}</dd></div>
+        ${item.doi ? `<div><dt>${escapeHtml(c.labelDoi)}</dt><dd>${escapeHtml(item.doi)}</dd></div>` : ""}
+      </dl>
+      <div class="modal-resume">
+        <strong>${escapeHtml(c.labelAbstract)}</strong>
+        <p>${escapeHtml(resumeText)}</p>
+      </div>
+      <div class="result-actions">
+        ${item.url_publication ? `<a href="${escapeHtml(item.url_publication)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceLink)}</a>` : ""}
+        ${item.pdf_direct ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.pdfLink)}</a>` : ""}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  document.getElementById("close-modal")?.addEventListener("click", () => {
+    activeModalItem = null;
+    renderModal();
+  });
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      activeModalItem = null;
+      renderModal();
+    }
+  });
+}
+
 function renderResults() {
   const container = document.getElementById("results-grid");
   const countBadge = document.getElementById("index-count");
@@ -250,12 +337,18 @@ function renderResults() {
   }
 
   container.innerHTML = filtered
-    .map((item) => {
+    .map((item, idx) => {
       const authorsText = Array.isArray(item.auteurs) && item.auteurs.length
         ? item.auteurs.join(", ")
         : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
       const metaLeft = escapeHtml(item.date_publication || "");
       const metaRight = escapeHtml(formatDocType(item.type_document) || item.pole || "");
+      const futureFlag = isFutureDate(item.date_publication)
+        ? `<span class="flag-warn">${escapeHtml(COPY[lang].futureBadge)}</span>`
+        : "";
+      const resumeSnippet = item.resume && String(item.resume).trim()
+        ? `<p class="result-resume">${escapeHtml(item.resume)}</p>`
+        : "";
       const pdfHtml = item.pdf_direct
         ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer">${escapeHtml(COPY[lang].pdfLink)}</a>`
         : "";
@@ -269,16 +362,27 @@ function renderResults() {
             <span>${metaLeft}</span>
             <span>${metaRight}</span>
           </div>
+          ${futureFlag}
           <h3>${escapeHtml(item.titre_original || "")}</h3>
           <p class="result-authors">${escapeHtml(authorsText)}</p>
+          ${resumeSnippet}
           <div class="result-actions">
             ${sourceHtml}
             ${pdfHtml}
+            <button type="button" class="link-btn" data-open-index="${idx}">${escapeHtml(COPY[lang].detailsBtn)}</button>
           </div>
         </article>
       `;
     })
     .join("");
+
+  container.querySelectorAll("[data-open-index]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const i = Number(btn.getAttribute("data-open-index"));
+      activeModalItem = filtered[i] || null;
+      renderModal();
+    });
+  });
 }
 
 function render() {
@@ -462,6 +566,10 @@ function render() {
           placeholder="${escapeHtml(c.searchPlaceholder)}"
           value="${escapeHtml(searchQuery)}"
         />
+        <label class="filter-check">
+          <input type="checkbox" id="future-dates-toggle" ${futureDatesOnly ? "checked" : ""} />
+          <span>${escapeHtml(c.futureOnly)}</span>
+        </label>
       </div>
 
       <div class="results-grid" id="results-grid"></div>
@@ -508,7 +616,13 @@ function render() {
     renderResults();
   });
 
+  document.getElementById("future-dates-toggle")?.addEventListener("change", (e) => {
+    futureDatesOnly = Boolean(e.target.checked);
+    renderResults();
+  });
+
   renderResults();
+  renderModal();
 }
 
 async function loadSearchIndex() {

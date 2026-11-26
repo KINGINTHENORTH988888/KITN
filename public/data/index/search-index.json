@@ -1,0 +1,115 @@
+{
+  "updated_at": "2026-11-26T01:41:01.846166+00:00",
+  "total": 26,
+  "new_or_updated_this_run": 26,
+  "items": [
+    {
+      "id": "kitn_1f4e7211af24b298",
+      "titre_original": "Chapter 2. Between Portuguese Expansionism and Muslim Morocco: Abravanel’s Response to the Conquest of Arzila and Tangier",
+      "auteurs": [],
+      "date_publication": "2027-12-31",
+      "langue_originale": "en",
+      "source_id": "crossref_maroc",
+      "source_nom": "Crossref — Publications indexées Maroc",
+      "type_document": "publication_scientifique",
+      "pole": "relations_internationales_geopolitique",
+      "confiance_classification": "moyen",
+      "score_pertinence": 60,
+      "url_publication": "https://www.degruyterbrill.com/document/doi/10.9783/9781512830644-004/html",
+      "doi": "10.9783/9781512830644-004",
+      "pdf_direct": null,
+      "resume": ""
+    },
+    {
+      "id": "kitn_abe0401f4c9c3bfa",
+      "titre_original": "Data on rare earth element leaching from Moroccan phosphate tailings using citric and malic acids",
+      "auteurs": [
+        "ouafae daoudi",
+        "Mouna Fahr",
+        "Perrine Chaurand",
+        "Bernard Angeletti",
+        "Adrien DUVIER",
+        "Danielle borschneck",
+        "Abdelaziz SMOUNI",
+        "Clement Levard"
+      ],
+      "date_publication": "2027-10-12",
+      "langue_originale": "en",
+      "source_id": "openalex_maroc",
+      "source_nom": "OpenAlex — Travaux liés au Maroc",
+      "type_document": "publication_scientifique",
+      "pole": "economie_finances_publiques",
+      "confiance_classification": "moyen",
+      "score_pertinence": 60,
+      "url_publication": "https://data.mendeley.com/datasets/yn282n5kr9/1",
+      "doi": "10.17632/yn282n5kr9",
+      "pdf_direct": null,
+      "resume": ""
+    },
+    {
+      "id": "kitn_a07bf9ea8631e9ff",
+      "titre_original": "Eating habits, weight, stress and pain among Moroccan nursing students: dataset",
+      "auteurs": [
+        "Ahmed Ouaamr"
+      ],
+      "date_publication": "2027-09-07",
+      "langue_originale": "en",
+      "source_id": "openalex_maroc",
+      "source_nom": "OpenAlex — Travaux liés au Maroc",
+      "type_document": "statistique",
+      "pole": "societe_developpement_humain",
+      "confiance_classification": "moyen",
+      "score_pertinence": 60,
+      "url_publication": "https://data.mendeley.com/datasets/d2zjdkhbg6/1",
+      "doi": "10.17632/d2zjdkhbg6",
+      "pdf_direct": null,
+      "resume": ""
+    },
+    {
+      "id": "kitn_6781e69e5a1cb6c1",
+      "titre_original": "Multi-objective optimization and decision-making for renewable energy production and enhancement of wind turbine selection in Morocco",
+      "auteurs": [
+        "Mourad Yessef",
+        "Youness Hakam",
+        "Mohamed Tabaa",
+        "Lhoussaine Ahessab",
+        "Mohammed F. Allehyani",
+        "Husam S. Samkari"
+      ],
+      "date_publication": "2027-04",
+      "langue_originale": "en",
+      "source_id": "crossref_maroc",
+      "source_nom": "Crossref — Publications indexées Maroc",
+      "type_document": "publication_scientifique",
+      "pole": "recherche_scientifique",
+      "confiance_classification": "faible",
+      "score_pertinence": 60,
+      "url_publication": "https://linkinghub.elsevier.com/retrieve/pii/S0378779626015543",
+      "doi": "10.1016/j.epsr.2026.114269",
+      "pdf_direct": null,
+      "resume": ""
+    },
+    {
+      "id": "kitn_4fbd87339d91afa5",
+      "titre_original": "Lower Cretaceous (Valanginian – Barremian) belemnites from the western External Rif (northwestern Morocco)",
+      "auteurs": [
+        "Mohamed Benzaggagh"
+      ],
+      "date_publication": "2027-03",
+      "langue_originale": "en",
+      "source_id": "crossref_maroc",
+      "source_nom": "Crossref — Publications indexées Maroc",
+      "type_document": "publication_scientifique",
+      "pole": "recherche_scientifique",
+      "confiance_classification": "faible",
+      "score_pertinence": 60,
+      "url_publication": "https://linkinghub.elsevier.com/retrieve/pii/S0195667126001916",
+      "doi": "10.1016/j.cretres.2026.106502",
+      "pdf_direct": null,
+      "resume": ""
+    },
+    {
+      "id": "kitn_14a588891d984fae",
+      "titre_original": "Evolution of geriatric oncology care in Morocco: Complete results of a pilot care pathway in the Northern region",
+      "auteurs": [
+        "Mounia Amzerin",

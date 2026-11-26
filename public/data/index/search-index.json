@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-26T22:16:09Z",
-  "total": 156,
+  "generated_at": "2026-11-26T22:20:27Z",
+  "total": 157,
   "active_sources": 7,
   "fetched_in_run": 97,
   "processed_in_run": 71,
-  "added_in_run": 10,
+  "added_in_run": 1,
   "updated_in_run": 0,
   "items": [
     {
@@ -2122,6 +2122,40 @@
       "pdf_direct": null,
       "texte_integral_disponible": false,
       "resume": "Résumé: La pandémie de COVID-19 a révélé des vulnérabilités profondes dans les systèmes de santé et a accéléré une transformation majeure de l'écosystème de santé marocain. Cet article vise à analyser comment la création des Groupements Sanitaires Territoriaux (GST), la généralisation de la protection sociale et la digitalisation reconfigurent la gouvernance territoriale du système de santé marocain dans l'après-COVID-19.En mobilisant une approche théorique fondée sur l'analyse documentaire des textes de réforme et des travaux internationaux post-COVID, l'étude propose un cadre d'interprétation de cette transformation.Au cœur de cette dynamique, la création des GST marque une évolution décisive vers une gouvernance territoriale intégrée et une meilleure coordination des parcours de soins. L'analyse met en évidence une recomposition du pilotage sanitaire fondée sur la responsabilité populationnelle, l'intégration des soins et l'articulation entre réforme organisationnelle et protection sociale. La généralisation de la couverture médicale et l'essor de la santé numérique renforcent ainsi la cohérence systémique et l'équité d'accès.Le modèle marocain apparaît dès lors comme une trajectoire singulière de transformation systémique, offrant un cas pertinent pour les pays à revenu intermédiaire engagés dans des réformes territoriales comparables.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_06a2fe289eb3b855",
+      "titre_original": "La convergence des politiques publiques au Maroc: enjeux de gouvernance et voies d'institutionnalisation",
+      "auteurs": [
+        "El Mehdi Miftahi"
+      ],
+      "revue_ou_institution": "HAL Archives Ouvertes - Maroc",
+      "mots_cles": [],
+      "date_publication": "2026",
+      "collecte_le": "2026-11-26T22:20:27Z",
+      "mis_a_jour_le": "2026-11-26T22:20:27Z",
+      "date_statut": "date_partielle",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "hal_science_morocco",
+      "source_nom": "HAL Archives Ouvertes - Maroc",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "recherche_scientifique",
+      "poles_secondaires": [
+        "institutions_gouvernance"
+      ],
+      "confiance_classification": "eleve",
+      "lien_maroc": "direct",
+      "score_pertinence": 59,
+      "url_publication": "https://hal.science/hal-05840156v1",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Cet article examine la convergence des politiques publiques au Maroc à la fois comme une exigence de gouvernance et comme un enjeu institutionnel. S'appuyant sur le cadre conceptuel développé dans le champ de l'analyse des politiques publiques, l'étude inscrit la convergence dans les débats plus larges relatifs à la bonne gouvernance et à la coordination de l'action de l'État. Si la convergence s'est progressivement imposée dans la littérature comme un principe structurant de l'action publique, son effectivité demeure étroitement tributaire des configurations institutionnelles nationales. Dans le contexte marocain, la recherche d'une plus grande cohérence entre les stratégies sectorielles, les interventions territoriales et les programmes publics a fait de la convergence une préoccupation centrale de la gouvernance publique. L'article soutient que l'enjeu ne réside pas uniquement dans l'affirmation normative du principe de convergence, mais dans son institutionnalisation effective à travers des mécanismes structurés de coordination, de pilotage et d'évaluation. La première partie analyse la convergence comme une exigence de bonne gouvernance et examine la mise en place d'un Cadre global national de cohérence en tant qu'instrument visant à renforcer l'articulation et l'alignement des politiques publiques. La seconde partie étudie les voies d'institutionnalisation de la convergence, en s'intéressant à la mise en place d'instances de coordination ainsi qu'au cadre institutionnel plus large consacré à la coordination et à l'évaluation des politiques publiques. À travers cette analyse, l'article cherche à apprécier dans quelle mesure la convergence au Maroc est passée d'un objectif conceptuel et stratégique à une composante opérationnelle et institutionnalisée de la gouvernance publique.",
       "analyse_strategique": "",
       "origine": "automatique"
     },

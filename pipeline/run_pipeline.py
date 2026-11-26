@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,7 +14,7 @@ from pipeline.config import (
     SOURCES_HEALTH_FILE,
 )
 from pipeline.collectors import collect_from_source
-from pipeline.processors import clean_text, process_raw_item, sanitize_url
+from pipeline.processors import clean_text, process_raw_item, resolve_space, sanitize_url
 
 
 def _load_json_list(path: Path) -> list[dict]:
@@ -40,6 +41,12 @@ def _load_existing_items(path: Path) -> list[dict]:
     except Exception:
         return []
     return []
+
+
+def _title_date_key(item: dict) -> str:
+    title = re.sub(r"\s+", " ", clean_text(item.get("titre_original")).lower()).strip()
+    dt = str(item.get("date_publication") or "").strip()[:10]
+    return f"{title}|{dt}" if title else ""
 
 
 def _content_fingerprint(item: dict) -> str:
@@ -142,6 +149,7 @@ def run() -> dict:
 
     existing_items = _load_existing_items(INDEX_FILE)
     by_id: dict[str, dict] = {}
+    td_to_id: dict[str, str] = {}
     order_ids: list[str] = []
 
     for item in existing_items:
@@ -154,12 +162,18 @@ def run() -> dict:
         normalized["url_publication"] = sanitize_url(normalized.get("url_publication"))
         normalized["pdf_direct"] = sanitize_url(normalized.get("pdf_direct"))
         if not normalized.get("espace"):
-            from pipeline.processors import resolve_space
             normalized["espace"] = resolve_space(
                 str(normalized.get("type_document") or ""),
                 str(normalized.get("pole") or ""),
             )
+        td = _title_date_key(normalized)
+        if td and td in td_to_id:
+            canon_id = td_to_id[td]
+            by_id[canon_id], _ = _merge_preserving_rich_fields(by_id[canon_id], normalized, now_iso)
+            continue
         by_id[iid] = normalized
+        if td:
+            td_to_id[td] = iid
         order_ids.append(iid)
 
     manual_raw = _load_json_list(MANUAL_CONTRIBUTIONS_FILE)
@@ -169,10 +183,14 @@ def run() -> dict:
             continue
         proc["origine"] = "manuel"
         iid = proc["id"]
-        if iid in by_id:
-            by_id[iid], _ = _merge_preserving_rich_fields(by_id[iid], proc, now_iso)
+        td = _title_date_key(proc)
+        target_id = iid if iid in by_id else td_to_id.get(td)
+        if target_id:
+            by_id[target_id], _ = _merge_preserving_rich_fields(by_id[target_id], proc, now_iso)
         else:
             by_id[iid] = proc
+            if td:
+                td_to_id[td] = iid
             order_ids.append(iid)
 
     total_fetched = 0
@@ -200,14 +218,18 @@ def run() -> dict:
                 accepted_count += 1
                 total_processed += 1
                 iid = proc["id"]
-                if iid in by_id:
-                    before_fp = _content_fingerprint(by_id[iid])
-                    by_id[iid], _ = _merge_preserving_rich_fields(by_id[iid], proc, now_iso)
-                    after_fp = _content_fingerprint(by_id[iid])
+                td = _title_date_key(proc)
+                target_id = iid if iid in by_id else td_to_id.get(td)
+                if target_id:
+                    before_fp = _content_fingerprint(by_id[target_id])
+                    by_id[target_id], _ = _merge_preserving_rich_fields(by_id[target_id], proc, now_iso)
+                    after_fp = _content_fingerprint(by_id[target_id])
                     if before_fp != after_fp:
                         total_updated += 1
                 else:
                     by_id[iid] = proc
+                    if td:
+                        td_to_id[td] = iid
                     order_ids.append(iid)
                     total_added += 1
         except Exception as exc:

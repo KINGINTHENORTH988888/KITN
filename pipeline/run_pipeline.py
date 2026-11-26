@@ -4,6 +4,7 @@ import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from pipeline.config import (
     INDEX_DIR,
@@ -47,6 +48,18 @@ def _title_date_key(item: dict) -> str:
     title = re.sub(r"\s+", " ", clean_text(item.get("titre_original")).lower()).strip()
     dt = str(item.get("date_publication") or "").strip()[:10]
     return f"{title}|{dt}" if title else ""
+
+
+def _extract_domain(source: dict) -> str:
+    if source.get("domain"):
+        return str(source["domain"]).strip().lower()
+    raw_url = str(source.get("url") or "").strip()
+    if not raw_url:
+        return ""
+    try:
+        return (urlsplit(raw_url).hostname or "").lower()
+    except ValueError:
+        return ""
 
 
 def _content_fingerprint(item: dict) -> str:
@@ -178,7 +191,12 @@ def run() -> dict:
 
     manual_raw = _load_json_list(MANUAL_CONTRIBUTIONS_FILE)
     for m_entry in manual_raw:
-        proc = process_raw_item(m_entry, {"id": "manual_studio", "name": "Contribution manuelle KITN", "enabled": True}, now_iso=now_iso, bypass_relevance=True)
+        proc = process_raw_item(
+            m_entry,
+            {"id": "manual_studio", "name": "Contribution manuelle KITN", "enabled": True},
+            now_iso=now_iso,
+            bypass_relevance=True,
+        )
         if not proc:
             continue
         proc["origine"] = "manuel"
@@ -204,6 +222,7 @@ def run() -> dict:
         fetched_count = 0
         accepted_count = 0
         status = "ok"
+        stage = "collecte_effectuee"
         error_msg = None
 
         try:
@@ -234,14 +253,18 @@ def run() -> dict:
                     total_added += 1
         except Exception as exc:
             status = "error"
+            stage = "erreur_collecte"
             error_msg = str(exc)
 
         health_records.append({
             "source_id": sid,
             "source_name": src.get("name") or sid,
+            "domain": _extract_domain(src),
+            "target_space": src.get("target_space") or resolve_space(str(src.get("default_doc_type") or ""), ""),
             "type": src.get("type") or "",
             "enabled": True,
             "status": status,
+            "stage": stage,
             "fetched": fetched_count,
             "accepted": accepted_count,
             "error": error_msg,

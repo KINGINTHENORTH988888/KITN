@@ -478,8 +478,44 @@ function saveJsonStorage(key, value) {
   }
 }
 
+function normalizeTitleKey(title) {
+  return String(title || "")
+    .toLowerCase()
+    .replaceAll(/[^\p{L}\p{N}\s]+/gu, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeUrlKey(url) {
+  if (!url) return "";
+  try {
+    const u = new URL(String(url).trim());
+    return `${u.hostname.toLowerCase()}${u.pathname.replace(/\/+$/, "").toLowerCase()}`;
+  } catch {
+    return String(url).trim().toLowerCase();
+  }
+}
+
+function getDedupeKeys(item) {
+  const keys = [];
+  if (item.id) keys.push(`id:${String(item.id).trim().toLowerCase()}`);
+  if (item.doi) {
+    const d = String(item.doi)
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\/(dx\.)?doi\.org\//, "");
+    if (d) keys.push(`doi:${d}`);
+  }
+  const normUrl = normalizeUrlKey(item.url_publication);
+  if (normUrl) keys.push(`url:${normUrl}`);
+  const normTitle = normalizeTitleKey(item.titre_original);
+  const datePrefix = String(item.date_publication || "").slice(0, 10);
+  if (normTitle) keys.push(`title:${normTitle}|${datePrefix}`);
+  return keys;
+}
+
 function getItemKey(item) {
-  return String(item.id || item.doi || item.url_publication || item.titre_original || "");
+  return getDedupeKeys(item)[0] || String(item.titre_original || "");
 }
 
 let lang = "fr";
@@ -555,9 +591,9 @@ function rebuildCombinedIndex() {
   const seen = new Set();
   const merged = [];
   for (const item of [...manualItems, ...remoteItems]) {
-    const key = getItemKey(item);
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
+    const keys = getDedupeKeys(item);
+    if (!keys.length || keys.some((k) => seen.has(k))) continue;
+    keys.forEach((k) => seen.add(k));
     merged.push(item);
   }
   indexItems = merged;
@@ -612,7 +648,11 @@ function getFilteredItems() {
     if (selectedTypeFilter && item.type_document !== selectedTypeFilter) return false;
     if (selectedConfidenceFilter && item.confiance_classification !== selectedConfidenceFilter) return false;
     if (selectedDocLangFilter && item.langue_originale !== selectedDocLangFilter) return false;
-    if (futureDatesOnly && !isFutureDate(item)) return false;
+    if (futureDatesOnly) {
+      if (!isFutureDate(item)) return false;
+    } else if (isFutureDate(item)) {
+      return false;
+    }
     if (favoritesOnly && !favorites.includes(getItemKey(item))) return false;
     if (!q) return true;
 

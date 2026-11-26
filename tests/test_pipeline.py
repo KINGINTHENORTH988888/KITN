@@ -73,7 +73,7 @@ class TestPipelineProcessors(unittest.TestCase):
             "Prévention de la criminalité et coopération sécuritaire.",
         )
         self.assertEqual(sec["pole"], "securite_affaires_interieures")
-        self.assertEqual(sec["confidence"], "eleve")
+        self.assertEqual(sec["confiance_classification"], "eleve")
 
     def test_stable_id_and_fingerprint(self):
         id1 = build_stable_id("10.1000/xyz", "https://example.org/a", "Titre A", "2025-01-01")

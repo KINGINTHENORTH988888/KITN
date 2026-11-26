@@ -646,6 +646,8 @@ let activeModalItem = null;
 let remoteItems = [];
 let indexItems = [];
 let statisticsData = null;
+let statisticsCategory = "all";
+let statisticsRange = "all";
 
 function escapeHtml(str = "") {
   return String(str)
@@ -867,36 +869,64 @@ function formatStatisticValue(indicator, value) {
 }
 
 function renderStatisticsDashboard() {
-  const indicators = Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : [];
+  const allIndicators = Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : [];
   const isAr = lang === "ar";
+  const categoryLabels = {
+    economie_finances_publiques: isAr ? "الاقتصاد والمالية العمومية" : "Économie & finances publiques",
+    societe_developpement_humain: isAr ? "المجتمع والتنمية البشرية" : "Société & développement humain"
+  };
   const heading = isAr ? "المؤشرات الاقتصادية والاجتماعية للمغرب" : "Indicateurs économiques et sociaux du Maroc";
   const intro = isAr
     ? "سلاسل تاريخية موثقة، مع سنة القياس والوحدة والمصدر."
     : "Séries historiques documentées, avec année de référence, unité et source.";
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
-  if (!indicators.length) {
+  const filteredIndicators = allIndicators.filter((indicator) =>
+    statisticsCategory === "all" || indicator.category === statisticsCategory
+  );
+  const categoryControls = [
+    { id: "all", label: isAr ? "جميع المؤشرات" : "Tous les indicateurs" },
+    { id: "economie_finances_publiques", label: categoryLabels.economie_finances_publiques },
+    { id: "societe_developpement_humain", label: categoryLabels.societe_developpement_humain }
+  ];
+  const rangeControls = [
+    { id: "5", label: isAr ? "5 سنوات" : "5 ans" },
+    { id: "10", label: isAr ? "10 سنوات" : "10 ans" },
+    { id: "all", label: isAr ? "كامل السلسلة" : "Toute la série" }
+  ];
+  const controls = `
+    <div class="stats-controls">
+      <div class="stats-filter-group" role="group" aria-label="${isAr ? "تصنيف المؤشرات" : "Filtrer les indicateurs"}">
+        ${categoryControls.map((item) => `<button type="button" class="stats-filter-btn ${statisticsCategory === item.id ? "is-active" : ""}" data-stat-category="${item.id}" aria-pressed="${statisticsCategory === item.id}">${escapeHtml(item.label)}</button>`).join("")}
+      </div>
+      <div class="stats-filter-group stats-range-group" role="group" aria-label="${isAr ? "الفترة الزمنية" : "Période historique"}">
+        ${rangeControls.map((item) => `<button type="button" class="stats-filter-btn ${statisticsRange === item.id ? "is-active" : ""}" data-stat-range="${item.id}" aria-pressed="${statisticsRange === item.id}">${escapeHtml(item.label)}</button>`).join("")}
+      </div>
+    </div>`;
+  if (!allIndicators.length) {
     return `<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>`;
   }
-  const cards = indicators.map((indicator) => {
-    const history = Array.isArray(indicator.history) ? indicator.history.slice(-8) : [];
-    const latest = indicator.latest || history[history.length - 1];
+  const cards = filteredIndicators.map((indicator) => {
+    const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
+    const history = statisticsRange === "all" ? allHistory : allHistory.slice(-Number(statisticsRange));
+    const latest = indicator.latest || allHistory[allHistory.length - 1];
     const previous = indicator.previous;
-    const delta = previous
+    const delta = previous && latest
       ? (indicator.change_mode === "absolute"
           ? Number(latest.value) - Number(previous.value)
           : (Number(previous.value) !== 0
               ? ((Number(latest.value) - Number(previous.value)) / Math.abs(Number(previous.value))) * 100
               : null))
       : null;
-    const min = Math.min(...history.map((point) => Number(point.value)));
-    const max = Math.max(...history.map((point) => Number(point.value)));
-    const range = max - min || 1;
+    const numericValues = history.map((point) => Number(point.value)).filter(Number.isFinite);
+    const min = numericValues.length ? Math.min(...numericValues) : 0;
+    const max = numericValues.length ? Math.max(...numericValues) : 1;
+    const range = max - min || Math.max(Math.abs(max) * 0.08, 1);
     const coords = history.map((point, index) => {
       const x = history.length <= 1 ? 50 : 6 + (index / (history.length - 1)) * 88;
-      const y = 48 - ((Number(point.value) - min) / range) * 38;
+      const y = 49 - ((Number(point.value) - min) / range) * 38;
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");
-    const lastPoint = coords ? coords.split(" ").at(-1).split(",") : ["50","48"];
+    const lastPoint = coords ? coords.split(" ").at(-1).split(",") : ["50","49"];
     const label = isAr ? (indicator.label_ar || indicator.label_fr) : indicator.label_fr;
     const description = isAr ? (indicator.description_ar || indicator.description_fr) : indicator.description_fr;
     const unit = isAr ? (indicator.unit_ar || indicator.unit_fr) : indicator.unit_fr;
@@ -908,27 +938,40 @@ function renderStatisticsDashboard() {
     const changeUnit = indicator.change_mode === "absolute" ? (indicator.change_unit || "") : "%";
     const changeText = delta === null ? (isAr ? "لا توجد مقارنة سابقة" : "Pas de comparaison précédente")
       : `${delta > 0 ? "+" : ""}${formattedDelta}${changeUnit ? ` ${changeUnit}` : ""} ${comparisonLabel}`;
-    const sourceUrl = isSafeHttpUrl(indicator.source_url) ? indicator.source_url : "https://www.bkam.ma/";
-    const sourceLabel = indicator.source_name || "Source institutionnelle";
+    const sourceUrl = isSafeHttpUrl(indicator.source_url) ? indicator.source_url : "";
+    const sourceLabel = indicator.source_name || (isAr ? "مصدر مؤسساتي غير محدد" : "Source institutionnelle non précisée");
+    const historyRows = history.map((point) => `
+      <tr><th scope="row">${escapeHtml(String(point.year))}</th><td>${escapeHtml(formatStatisticValue(indicator, point.value))} ${escapeHtml(unit || "")}</td></tr>
+    `).join("");
+    const chartTitle = isAr ? "التطور التاريخي للمؤشر" : "Évolution historique de l'indicateur";
     return `
       <article class="stat-card">
         <div class="stat-card-top"><span>${escapeHtml(label)}</span><span class="stat-year">${escapeHtml(String(latest?.year || "—"))}</span></div>
         <div class="stat-value">${escapeHtml(formatStatisticValue(indicator, latest?.value ?? 0))}<small>${escapeHtml(unit || "")}</small></div>
         <p class="stat-description">${escapeHtml(description || "")}</p>
         <div class="stat-trend"><span>${escapeHtml(changeText)}</span></div>
-        <svg class="stat-sparkline" viewBox="0 0 100 56" role="img" aria-label="${escapeHtml(isAr ? "التطور التاريخي" : "Évolution historique")}">
-          <polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          ${history.length ? `<circle cx="${lastPoint[0]}" cy="${lastPoint[1]}" r="3" fill="currentColor"></circle>` : ""}
+        <svg class="stat-sparkline" viewBox="0 0 100 64" role="img" aria-label="${escapeHtml(chartTitle)}">
+          <line x1="5" y1="11" x2="95" y2="11" class="stat-chart-grid"></line>
+          <line x1="5" y1="30" x2="95" y2="30" class="stat-chart-grid"></line>
+          <line x1="5" y1="49" x2="95" y2="49" class="stat-chart-grid"></line>
+          ${coords ? `<polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline><circle cx="${lastPoint[0]}" cy="${lastPoint[1]}" r="3" fill="currentColor"></circle>` : ""}
         </svg>
-        <div class="stat-card-foot"><span>${history.length ? `${history[0].year}–${history[history.length - 1].year}` : ""}</span><a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر" : "Source"} : ${escapeHtml(sourceLabel)}</a></div>
+        <div class="stat-chart-years"><span>${history.length ? escapeHtml(String(history[0].year)) : "—"}</span><span>${history.length ? escapeHtml(String(history[history.length - 1].year)) : "—"}</span></div>
+        <details class="stat-history">
+          <summary>${isAr ? "عرض البيانات التاريخية" : "Voir les valeurs historiques"}</summary>
+          <div class="stat-history-table-wrap"><table class="stat-history-table"><tbody>${historyRows}</tbody></table></div>
+        </details>
+        <div class="stat-card-foot"><span>${indicator.last_updated ? `${isAr ? "المصدر محيّن في" : "Source actualisée le"} ${escapeHtml(indicator.last_updated)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Source originale"} ↗</a>` : `<span>${escapeHtml(sourceLabel)}</span>`}</div>
       </article>`;
   }).join("");
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";
+  const emptyFiltered = isAr ? "لا توجد مؤشرات في هذا التصنيف." : "Aucun indicateur dans cette catégorie.";
   return `
     <section class="stats-dashboard">
-      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تحديث" : "Mise à jour"} : ${escapeHtml(updateDate)}</span></div>
-      <div class="stats-grid">${cards}</div>
-      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة بجانب كل مؤشر، مع رابط المصدر الأصلي." : "Chaque indicateur indique son institution source et renvoie vers la source originale."}</p>
+      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "آخر تحديث للوحة" : "Actualisation du tableau"} : ${escapeHtml(updateDate)}</span></div>
+      ${controls}
+      <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
+      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة وتاريخ تحديث البيانات بجانب كل مؤشر، مع رابط المصدر الأصلي." : "Chaque indicateur précise son institution source, la date de mise à jour et un lien vers la série originale."}</p>
     </section>`;
 }
 
@@ -1613,6 +1656,19 @@ function render() {
   document.querySelectorAll("[data-space-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
       activeSpace = btn.getAttribute("data-space-id") || "all";
+      render();
+    });
+  });
+  document.querySelectorAll("[data-stat-category]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      statisticsCategory = btn.getAttribute("data-stat-category") || "all";
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-stat-range]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      statisticsRange = btn.getAttribute("data-stat-range") || "all";
       render();
     });
   });

@@ -52,6 +52,11 @@ def _title_date_key(item: dict) -> str:
     return f"{title}|{dt}" if title else ""
 
 
+def _url_key(item: dict) -> str:
+    url = sanitize_url(item.get("url_publication"))
+    return url.rstrip("/").lower() if url else ""
+
+
 def _extract_domain(source: dict) -> str:
     if source.get("domain"):
         return str(source["domain"]).strip().lower()
@@ -122,11 +127,13 @@ def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) 
     # Prefer richer metadata from a fresh extraction of the same record.
     old_title = str(merged.get("titre_original") or "")
     new_title = str(incoming.get("titre_original") or "")
+    old_title_is_listing_label = bool(re.match(r"^\\d{1,2}\\s+[A-Za-zÀ-ÿ.]+\\s+20\\d{2}\\s+-", old_title))
+    new_title_is_listing_label = bool(re.match(r"^\\d{1,2}\\s+[A-Za-zÀ-ÿ.]+\\s+20\\d{2}\\s+-", new_title))
+    same_url = bool(incoming.get("url_publication") and incoming.get("url_publication") == merged.get("url_publication"))
     if (
         new_title
-        and len(new_title) > len(old_title)
-        and incoming.get("source_id")
         and incoming.get("source_id") == merged.get("source_id")
+        and (old_title_is_listing_label and not new_title_is_listing_label or len(new_title) > len(old_title) and not new_title_is_listing_label)
     ):
         merged["titre_original"] = new_title
         changed = True
@@ -187,6 +194,7 @@ def run() -> dict:
     existing_items = _load_existing_items(INDEX_FILE)
     by_id: dict[str, dict] = {}
     td_to_id: dict[str, str] = {}
+    url_to_id: dict[str, str] = {}
     order_ids: list[str] = []
 
     for item in existing_items:
@@ -204,13 +212,21 @@ def run() -> dict:
                 str(normalized.get("pole") or ""),
             )
         td = _title_date_key(normalized)
-        if td and td in td_to_id:
-            canon_id = td_to_id[td]
-            by_id[canon_id], _ = _merge_preserving_rich_fields(by_id[canon_id], normalized, now_iso)
+        url_key = _url_key(normalized)
+        existing_id = td_to_id.get(td) if td else None
+        existing_id = existing_id or (url_to_id.get(url_key) if url_key else None)
+        if existing_id:
+            by_id[existing_id], _ = _merge_preserving_rich_fields(by_id[existing_id], normalized, now_iso)
+            if td:
+                td_to_id.setdefault(td, existing_id)
+            if url_key:
+                url_to_id[url_key] = existing_id
             continue
         by_id[iid] = normalized
         if td:
             td_to_id[td] = iid
+        if url_key:
+            url_to_id[url_key] = iid
         order_ids.append(iid)
 
     manual_raw = _load_json_list(MANUAL_CONTRIBUTIONS_FILE)
@@ -226,13 +242,20 @@ def run() -> dict:
         proc["origine"] = "manuel"
         iid = proc["id"]
         td = _title_date_key(proc)
-        target_id = iid if iid in by_id else td_to_id.get(td)
+        url_key = _url_key(proc)
+        target_id = iid if iid in by_id else (td_to_id.get(td) or (url_to_id.get(url_key) if url_key else None))
         if target_id:
             by_id[target_id], _ = _merge_preserving_rich_fields(by_id[target_id], proc, now_iso)
+            if td:
+                td_to_id.setdefault(td, target_id)
+            if url_key:
+                url_to_id[url_key] = target_id
         else:
             by_id[iid] = proc
             if td:
                 td_to_id[td] = iid
+            if url_key:
+                url_to_id[url_key] = iid
             order_ids.append(iid)
 
     total_fetched = 0
@@ -271,10 +294,15 @@ def run() -> dict:
                 total_processed += 1
                 iid = proc["id"]
                 td = _title_date_key(proc)
-                target_id = iid if iid in by_id else td_to_id.get(td)
+                url_key = _url_key(proc)
+                target_id = iid if iid in by_id else (td_to_id.get(td) or (url_to_id.get(url_key) if url_key else None))
                 if target_id:
                     before_fp = _content_fingerprint(by_id[target_id])
                     by_id[target_id], _ = _merge_preserving_rich_fields(by_id[target_id], proc, now_iso)
+                    if td:
+                        td_to_id.setdefault(td, target_id)
+                    if url_key:
+                        url_to_id[url_key] = target_id
                     after_fp = _content_fingerprint(by_id[target_id])
                     if before_fp != after_fp:
                         total_updated += 1
@@ -282,6 +310,8 @@ def run() -> dict:
                     by_id[iid] = proc
                     if td:
                         td_to_id[td] = iid
+                    if url_key:
+                        url_to_id[url_key] = iid
                     order_ids.append(iid)
                     total_added += 1
 

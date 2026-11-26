@@ -553,7 +553,7 @@ def _extract_institutional_detail(page_url: str, source: dict) -> dict | None:
     parser.feed(html_body)
 
     title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title)
-    title = re.sub(r"\\s+[|–-]\\s+(Cour des comptes|IRES)\\s*$", "", title, flags=re.IGNORECASE)
+    title = re.sub(r"\s+[|–-]\s+(Cour des comptes|IRES)\s*$", "", title, flags=re.IGNORECASE)
     paragraphs: list[str] = []
     seen: set[str] = set()
     for paragraph in parser.paragraphs:

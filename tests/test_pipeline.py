@@ -233,6 +233,61 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["authors"], ["HCP - Direction de la statistique"])
         self.assertEqual(items[0]["default_doc_type"], "statistique")
 
+
+    def test_process_raw_item_uses_source_target_space(self):
+        proc = process_raw_item(
+            {
+                "title": "Taux de chômage au Maroc au troisième trimestre 2026",
+                "abstract": "Le HCP publie les indicateurs du marché du travail au Maroc.",
+                "published_date": "2026-11-03",
+                "url": "https://www.hcp.ma/example_a1234.html",
+                "default_doc_type": "statistique",
+            },
+            {
+                "id": "hcp_maroc",
+                "name": "Haut-Commissariat au Plan (HCP)",
+                "target_space": "chiffres",
+                "default_doc_type": "statistique",
+            },
+            now_iso="2026-11-26T19:00:00Z",
+        )
+        self.assertIsNotNone(proc)
+        self.assertEqual(proc["espace"], "chiffres")
+        self.assertEqual(proc["type_document"], "statistique")
+
+    def test_merge_refreshes_better_classification_and_date(self):
+        existing = {
+            "id": "kitn_hcp_merge",
+            "source_id": "hcp_maroc",
+            "titre_original": "Taux de chômage",
+            "date_publication": "2026",
+            "type_document": "publication_scientifique",
+            "espace": "science",
+            "pole": "recherche_scientifique",
+            "confiance_classification": "eleve",
+            "resume": "Résumé générique.",
+        }
+        incoming = {
+            "id": "kitn_hcp_merge",
+            "source_id": "hcp_maroc",
+            "titre_original": "Taux de chômage au Maroc au troisième trimestre 2026",
+            "date_publication": "2026-11-03",
+            "date_statut": "date_confirmee",
+            "date_anomalie": False,
+            "type_document": "statistique",
+            "espace": "chiffres",
+            "pole": "economie_finances_publiques",
+            "confiance_classification": "eleve",
+            "resume": "Résumé détaillé des indicateurs du marché du travail au Maroc.",
+        }
+        merged, changed = _merge_preserving_rich_fields(existing, incoming, "2026-11-26T19:00:00Z")
+        self.assertTrue(changed)
+        self.assertEqual(merged["espace"], "chiffres")
+        self.assertEqual(merged["type_document"], "statistique")
+        self.assertEqual(merged["date_publication"], "2026-11-03")
+        self.assertIn("troisième trimestre", merged["titre_original"])
+        self.assertEqual(merged["resume"], incoming["resume"])
+
     def test_run_pipeline_preserves_existing_and_merges_manual(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

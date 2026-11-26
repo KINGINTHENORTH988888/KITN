@@ -187,6 +187,52 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["url"], "https://example.org/rapports/rapport-annuel.pdf")
         self.assertEqual(items[0]["pdf_url"], "https://example.org/rapports/rapport-annuel.pdf")
 
+
+    def test_collect_hcp_enriches_article_metadata(self):
+        listing_html = """
+        <html><body>
+          <a href="/Marche-du-travail_r423.html">Marché du travail</a>
+          <a href="/Situation-du-marche-du-travail-au-Maroc_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>
+        </body></html>
+        """
+        detail_html = """
+        <html><head>
+          <title>Situation du marché du travail au Maroc</title>
+          <meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026" />
+          <meta property="og:description" content="Le HCP publie les principaux indicateurs du marché du travail au Maroc au troisième trimestre 2026." />
+          <meta property="article:published_time" content="2026-11-03T10:00:00+01:00" />
+          <meta name="author" content="HCP — Direction de la statistique" />
+        </head><body>
+          <h1>Situation du marché du travail au Maroc</h1>
+          <p>Rabat, le 3 novembre 2026, le Haut-Commissariat au Plan présente les résultats de l'enquête sur la main-d'œuvre.</p>
+          <p>Le taux d'activité, le taux d'emploi et le taux de chômage sont détaillés par sexe et par milieu de résidence.</p>
+        </body></html>
+        """
+
+        def fake_fetch(url):
+            if "_a4364.html" in url:
+                return detail_html
+            return listing_html
+
+        with patch("pipeline.collectors._fetch_text", side_effect=fake_fetch):
+            items = collect_from_source({
+                "id": "hcp_maroc",
+                "name": "Haut-Commissariat au Plan (HCP)",
+                "type": "html_links",
+                "url": "https://www.hcp.ma/",
+                "listing_urls": ["/listing"],
+                "lang_hint": "fr",
+                "default_doc_type": "statistique",
+                "max_items": 5,
+            })
+
+        self.assertEqual(len(items), 1)
+        self.assertIn("troisième trimestre 2026", items[0]["title"])
+        self.assertIn("principaux indicateurs", items[0]["abstract"])
+        self.assertEqual(items[0]["published_date"], "2026-11-03T10:00:00+01:00")
+        self.assertEqual(items[0]["authors"], ["HCP — Direction de la statistique"])
+        self.assertEqual(items[0]["default_doc_type"], "statistique")
+
     def test_run_pipeline_preserves_existing_and_merges_manual(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -261,7 +307,8 @@ class TestPipelineProcessors(unittest.TestCase):
             health_data = json.loads(health_path.read_text(encoding="utf-8"))
             self.assertEqual(health_data["sources"][0]["domain"], "example.ma")
             self.assertEqual(health_data["sources"][0]["target_space"], "chiffres")
-            self.assertEqual(health_data["sources"][0]["stage"], "collecte_effectuee")
+            self.assertEqual(health_data["sources"][0]["stage"], "aucun_contenu")
+            self.assertEqual(health_data["sources"][0]["status"], "warning")
 
 
 if __name__ == "__main__":

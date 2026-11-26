@@ -336,6 +336,14 @@ def run() -> dict:
     SOURCES_HEALTH_FILE.write_text(json.dumps(health_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     _sync_public_index(INDEX_FILE, PUBLIC_INDEX_FILE)
+    if not statistics_series and STATISTICS_FILE.exists():
+        try:
+            previous_statistics = json.loads(STATISTICS_FILE.read_text(encoding="utf-8"))
+            for previous in previous_statistics.get("indicators", []):
+                if isinstance(previous, dict) and previous.get("indicator_code"):
+                    statistics_series[str(previous["indicator_code"])] = previous
+        except (OSError, json.JSONDecodeError, AttributeError):
+            pass
     statistics_payload = {
         "generated_at": now_iso,
         "source": "Banque mondiale — World Development Indicators",
@@ -343,7 +351,7 @@ def run() -> dict:
         "indicators": list(statistics_series.values()),
     }
     STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    STATISTICS_FILE.write_text(json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    STATISTICS_FILE.write_text(json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     _sync_public_index(STATISTICS_FILE, PUBLIC_STATISTICS_FILE)
     return index_payload
 

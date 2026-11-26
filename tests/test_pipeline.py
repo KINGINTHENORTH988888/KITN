@@ -255,6 +255,28 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(proc["espace"], "chiffres")
         self.assertEqual(proc["type_document"], "statistique")
 
+
+    def test_hcp_institutional_news_does_not_enter_statistics_space(self):
+        proc = process_raw_item(
+            {
+                "title": "Le HCP renforce sa coopération institutionnelle avec Statistics Denmark",
+                "abstract": "Un partenariat portant sur la modernisation statistique et la coopération institutionnelle.",
+                "published_date": "2026-11-25",
+                "url": "https://www.hcp.ma/example_a4372.html",
+                "default_doc_type": "rapport_institutionnel",
+            },
+            {
+                "id": "hcp_maroc",
+                "name": "Haut-Commissariat au Plan (HCP)",
+                "target_space": "chiffres",
+                "default_doc_type": "statistique",
+            },
+            now_iso="2026-11-26T20:00:00Z",
+        )
+        self.assertIsNotNone(proc)
+        self.assertEqual(proc["espace"], "bibliotheque")
+        self.assertEqual(proc["type_document"], "rapport_institutionnel")
+
     def test_merge_refreshes_better_classification_and_date(self):
         existing = {
             "id": "kitn_hcp_merge",

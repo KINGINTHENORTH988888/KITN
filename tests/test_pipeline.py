@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from pipeline.collectors import collect_from_source
+from pipeline.collectors import collect_from_source, collect_world_bank_api
 from pipeline.processors import (
     build_stable_id,
     classify_document,
@@ -236,6 +236,50 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["published_date"], "2026-10-12")
         self.assertEqual(items[0]["default_doc_type"], "statistique")
         self.assertTrue(Path(".").exists())
+
+
+    def test_collect_world_bank_api_builds_historical_series(self):
+        payload = [
+            {"lastupdated": "2026-11-11"},
+            [
+                {"date": "2025", "value": 4.5},
+                {"date": "2024", "value": 3.8},
+                {"date": "2023", "value": None},
+            ],
+        ]
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)):
+            items = collect_world_bank_api({
+                "id": "world_bank_maroc",
+                "url": "https://api.worldbank.org/v2/country/MAR/indicator/",
+                "max_items": 1,
+                "indicators": [{
+                    "code": "NY.GDP.MKTP.KD.ZG",
+                    "label_fr": "Croissance du PIB",
+                    "label_ar": "نمو الناتج الداخلي الإجمالي",
+                    "unit_fr": "%",
+                    "unit_ar": "٪",
+                    "scale_divisor": 1,
+                    "precision": 1,
+                    "pole": "economie_finances_publiques",
+                }],
+            })
+        self.assertEqual(len(items), 1)
+        series = items[0]["statistics_series"]
+        self.assertEqual(series["latest"], {"year": 2025, "value": 4.5})
+        self.assertEqual(series["previous"], {"year": 2024, "value": 3.8})
+        self.assertEqual([point["year"] for point in series["history"]], [2024, 2025])
+        self.assertEqual(items[0]["espace"], "chiffres")
+
+    def test_collect_world_bank_api_continues_after_one_indicator_failure(self):
+        good_payload = json.dumps([{"lastupdated": "2026-11-11"}, [{"date": "2025", "value": 4.5}]])
+        with patch("pipeline.collectors._fetch_text", side_effect=[RuntimeError("temporary outage"), good_payload]):
+            items = collect_world_bank_api({
+                "url": "https://api.worldbank.org/v2/country/MAR/indicator/",
+                "indicators": [{"code": "BAD"}, {"code": "GOOD", "label_fr": "Indicateur"}],
+                "max_items": 2,
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["statistics_series"]["indicator_code"], "GOOD")
 
     def test_collect_html_links_mocked(self):
         sample_html = """

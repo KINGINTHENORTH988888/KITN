@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadSearchIndex } from '../lib/data';
+import { POLE_LABELS, UI_TEXT } from '../lib/i18n';
+
+const indexData = loadSearchIndex();
+const polesEntries = Object.entries(POLE_LABELS);
+---
+
+<BaseLayout title="Bibliothèque" activeNav="library">
+  <section class="page-head">
+    <div>
+      <h1 data-i18n="navLibrary">{UI_TEXT.fr.navLibrary}</h1>
+      <p class="muted">
+        {indexData.items.length} {UI_TEXT.fr.resultsCount}
+      </p>
+    </div>
+    <a href="/veille" class="btn-primary" data-i18n="ctaWatch">{UI_TEXT.fr.ctaWatch}</a>
+  </section>
+
+  <div class="lib-sections">
+    {polesEntries.map(([poleKey, labels]) => {
+      const poleItems = indexData.items.filter((i) => i.pole === poleKey);
+      return (
+        <section class="card pole-block">
+          <div class="pole-header">
+            <h2 data-fr={labels.fr} data-ar={labels.ar}>{labels.fr}</h2>
+            <span class="badge">{poleItems.length}</span>
+          </div>
+
+          {poleItems.length === 0 ? (
+            <p class="muted" data-i18n="noResults">{UI_TEXT.fr.noResults}</p>
+          ) : (
+            <ul class="doc-list">
+              {poleItems.map((item) => (
+                <li>
+                  <a href={`/fiche?id=${encodeURIComponent(item.id)}`} class="doc-link">
+                    {item.titre_original}
+                  </a>
+                  <span class="doc-info">
+                    {item.source_nom} • {item.date_publication || 'N/A'} • Score {item.score_pertinence}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      );
+    })}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .page-head h1 {
+    margin: 0;
+    font-size: 1.7rem;
+  }
+
+  .muted {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .lib-sections {
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  .pole-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .pole-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .doc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .doc-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .doc-link {
+    font-weight: 600;
+    font-size: 0.98rem;
+  }
+
+  .doc-link:hover {
+    color: var(--primary);
+  }
+
+  .doc-info {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+</style>

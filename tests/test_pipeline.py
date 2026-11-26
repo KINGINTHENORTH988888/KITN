@@ -263,7 +263,7 @@ class TestPipelineProcessors(unittest.TestCase):
                 "default_doc_type": "article_presse",
                 "target_space": "veille",
                 "max_items": 10,
-                "include_title_tokens": ["économie", "défense"],
+                "include_title_tokens": ["économ", "défense"],
                 "exclude_title_tokens": ["football"],
             })
         self.assertEqual(len(items), 2)

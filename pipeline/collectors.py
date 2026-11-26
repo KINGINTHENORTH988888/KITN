@@ -137,11 +137,22 @@ def _crossref_date(item: dict) -> str:
         date_parts = ((item.get(field) or {}).get("date-parts") or [])
         if date_parts and date_parts[0]:
             parts = date_parts[0]
-            if len(parts) >= 3:
-                return f"{int(parts[0]):04d}-{int(parts[1]):02d}-{int(parts[2]):02d}"
-            if len(parts) == 2:
-                return f"{int(parts[0]):04d}-{int(parts[1]):02d}"
-            return f"{int(parts[0]):04d}"
+            # Crossref records occasionally contain null month/day values.
+            # Keep the most precise valid prefix instead of failing the source.
+            valid = []
+            for value in parts[:3]:
+                if value is None:
+                    break
+                try:
+                    valid.append(int(value))
+                except (TypeError, ValueError):
+                    break
+            if len(valid) >= 3:
+                return f"{valid[0]:04d}-{valid[1]:02d}-{valid[2]:02d}"
+            if len(valid) == 2:
+                return f"{valid[0]:04d}-{valid[1]:02d}"
+            if len(valid) == 1:
+                return f"{valid[0]:04d}"
     return ""
 
 

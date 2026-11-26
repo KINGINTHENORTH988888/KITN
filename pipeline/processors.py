@@ -10,6 +10,7 @@ from pipeline.config import (
     MOROCCO_STRONG_SIGNALS,
     POLES,
     POLE_KEYWORDS,
+    SPACES,
     SUPPORTED_LANGUAGES,
 )
 
@@ -39,8 +40,6 @@ _LIGATURES = {
     "\u2014": "-",
 }
 
-# Retire les caractères invisibles / directionnels de contrôle tout en préservant
-# l'alphabet arabe (\u0600-\u06FF, \u0750-\u077F, \u08A0-\u08FF, \uFB50-\uFDFF, \uFE70-\uFEFF).
 _INVISIBLE_CONTROL_RE = re.compile(
     r"[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff\x00-\x08\x0b\x0c\x0e-\x1f\x7f]"
 )
@@ -188,8 +187,6 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
         score += 15
 
     score = min(100, score)
-    # Exige soit un signal Maroc explicite avec un minimum de contexte thématique/titre,
-    # soit un score >= 45 pour éviter les mentions incidentes hors axes stratégiques.
     is_relevant = score >= 45 and (len(strong_matches) >= 1 or is_national_source)
     lien_maroc = (
         "direct"
@@ -205,7 +202,27 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
     }
 
 
-def classify_document(title: str, abstract: str = "", default_doc_type: str | None = None) -> dict:
+def resolve_space(doc_type: str, pole: str, explicit_space: str | None = None) -> str:
+    if explicit_space in SPACES:
+        return explicit_space
+    if doc_type == "concours":
+        return "academy"
+    if doc_type == "publication_scientifique" or pole == "recherche_scientifique":
+        return "science"
+    if doc_type == "statistique":
+        return "chiffres"
+    if doc_type in ("rapport", "rapport_institutionnel", "document_juridique"):
+        return "bibliotheque"
+    return "veille"
+
+
+def classify_document(
+    title: str,
+    abstract: str = "",
+    default_doc_type: str | None = None,
+    explicit_pole: str | None = None,
+    explicit_space: str | None = None,
+) -> dict:
     combined = f"{clean_text(title)} {clean_text(abstract)}".lower()
     scores: dict[str, int] = {}
 
@@ -214,7 +231,12 @@ def classify_document(title: str, abstract: str = "", default_doc_type: str | No
         if hits > 0:
             scores[pole] = hits
 
-    if scores:
+    if explicit_pole in POLES:
+        primary_pole = explicit_pole
+        top_hits = max(2, scores.get(explicit_pole, 2))
+        secondary_poles = [p for p, _ in sorted(scores.items(), key=lambda kv: kv[1], reverse=True) if p != primary_pole and p in POLES][:2]
+        confidence = "eleve"
+    elif scores:
         ordered = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
         primary_pole = ordered[0][0]
         top_hits = ordered[0][1]
@@ -226,10 +248,13 @@ def classify_document(title: str, abstract: str = "", default_doc_type: str | No
         confidence = "faible"
 
     doc_type = default_doc_type if default_doc_type in DOCUMENT_TYPES else "rapport_institutionnel"
+    space = resolve_space(doc_type, primary_pole, explicit_space)
+
     return {
         "pole": primary_pole,
         "poles_secondaires": secondary_poles,
         "type_document": doc_type,
+        "espace": space,
         "confiance_classification": confidence,
     }
 
@@ -252,7 +277,7 @@ def build_stable_id(doi: str | None, url: str | None, title: str, pub_date: str 
     return f"kitn_{digest}"
 
 
-def process_raw_item(raw: dict, source: dict) -> dict | None:
+def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass_relevance: bool = False) -> dict | None:
     if not isinstance(raw, dict):
         return None
 
@@ -262,7 +287,7 @@ def process_raw_item(raw: dict, source: dict) -> dict | None:
 
     abstract = clean_text(raw.get("abstract"))
     relevance = evaluate_morocco_relevance(title, abstract, source)
-    if not relevance["is_relevant"]:
+    if not bypass_relevance and not relevance["is_relevant"]:
         return None
 
     url_pub = sanitize_url(raw.get("url"))
@@ -280,6 +305,8 @@ def process_raw_item(raw: dict, source: dict) -> dict | None:
         title,
         abstract,
         default_doc_type=raw.get("default_doc_type") or source.get("default_doc_type"),
+        explicit_pole=raw.get("pole"),
+        explicit_space=raw.get("espace"),
     )
 
     authors_raw = raw.get("authors")
@@ -289,16 +316,29 @@ def process_raw_item(raw: dict, source: dict) -> dict | None:
         else []
     )
 
-    has_anomaly = bool(date_info["date_anomalie"]) or classification["confiance_classification"] == "faible"
-    statut_validation = "a_verifier" if has_anomaly else "valide"
+    keywords_raw = raw.get("keywords")
+    keywords = (
+        [clean_text(k) for k in keywords_raw if isinstance(k, str) and clean_text(k)]
+        if isinstance(keywords_raw, list)
+        else []
+    )
 
-    item_id = build_stable_id(doi_raw, url_pub, title, pub_date_raw)
+    has_anomaly = bool(date_info["date_anomalie"]) or classification["confiance_classification"] == "faible"
+    explicit_status = raw.get("statut_validation")
+    statut_validation = explicit_status if explicit_status in ("valide", "a_verifier", "archive") else ("a_verifier" if has_anomaly else "valide")
+
+    item_id = clean_text(raw.get("id")) or build_stable_id(doi_raw, url_pub, title, pub_date_raw)
+    stamp = now_iso or ""
 
     return {
         "id": item_id,
         "titre_original": title,
         "auteurs": authors,
+        "revue_ou_institution": clean_text(raw.get("venue") or raw.get("source_name") or source.get("name") or source.get("id")),
+        "mots_cles": keywords,
         "date_publication": pub_date_raw,
+        "collecte_le": clean_text(raw.get("collecte_le")) or stamp,
+        "mis_a_jour_le": stamp,
         "date_statut": date_info["date_statut"],
         "date_anomalie": date_info["date_anomalie"],
         "statut_validation": statut_validation,
@@ -306,13 +346,17 @@ def process_raw_item(raw: dict, source: dict) -> dict | None:
         "source_id": str(source.get("id") or ""),
         "source_nom": clean_text(raw.get("source_name") or source.get("name") or source.get("id")),
         "type_document": classification["type_document"],
+        "espace": classification["espace"],
         "pole": classification["pole"],
         "poles_secondaires": classification["poles_secondaires"],
         "confiance_classification": classification["confiance_classification"],
-        "lien_maroc": relevance["lien_maroc"],
-        "score_pertinence": relevance["score"],
+        "lien_maroc": "direct" if bypass_relevance else relevance["lien_maroc"],
+        "score_pertinence": int(raw["score_pertinence"]) if isinstance(raw.get("score_pertinence"), (int, float)) else (90 if bypass_relevance else relevance["score"]),
         "url_publication": url_pub,
         "doi": doi_raw,
         "pdf_direct": pdf_url,
+        "texte_integral_disponible": bool(pdf_url or raw.get("texte_integral_disponible")),
         "resume": abstract,
+        "analyse_strategique": clean_text(raw.get("analyse_strategique")),
+        "origine": clean_text(raw.get("origine")) or "automatique",
     }

@@ -49,3 +49,8 @@ Le pipeline alimente également :
 Les séries statistiques conservent leur code d'indicateur, leur unité, leurs valeurs historiques, leur année de référence et leur URL source. Les valeurs sont actualisées par le pipeline automatisé ; l'indisponibilité d'une série isolée ne bloque pas les autres indicateurs.
 
 Les collecteurs institutionnels visitent les pages de détail lorsqu'elles sont accessibles afin de récupérer les titres normalisés, dates de publication et résumés éditoriaux. Les notices sont dédoublonnées à partir de leur URL canonique pour éviter de conserver une version générique et une version enrichie du même rapport.
+
+
+### Bank Al-Maghrib API
+
+Le connecteur officiel `bank_al_maghrib_api` récupère les cours de virement EUR, USD et CAD via l'API de Bank Al-Maghrib. Il attend la clé dans la variable d'environnement `BKAM_API_KEY`, transmise uniquement via le secret GitHub Actions du même nom. La source reste désactivée tant que la clé n'a pas été configurée. Ne jamais placer cette clé dans un fichier du dépôt.

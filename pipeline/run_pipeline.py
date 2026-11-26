@@ -375,7 +375,8 @@ def run() -> dict:
             pass
     statistics_payload = {
         "generated_at": now_iso,
-        "source": "Banque mondiale — World Development Indicators",
+        "source": "Sources officielles — Banque mondiale et Bank Al-Maghrib",
+        "sources": sorted({str(item.get("source_name") or "") for item in statistics_series.values() if item.get("source_name")}),
         "source_url": "https://data.worldbank.org/country/morocco",
         "indicators": list(statistics_series.values()),
     }

@@ -229,6 +229,10 @@ def run() -> dict:
             raw_items = collect_from_source(src)
             fetched_count = len(raw_items)
             total_fetched += fetched_count
+            if not raw_items:
+                status = "warning"
+                stage = "aucun_contenu"
+                error_msg = "Aucun document exploitable détecté par le collecteur."
 
             for raw in raw_items:
                 proc = process_raw_item(raw, src, now_iso=now_iso)
@@ -251,6 +255,12 @@ def run() -> dict:
                         td_to_id[td] = iid
                     order_ids.append(iid)
                     total_added += 1
+
+            if fetched_count > 0 and accepted_count == 0:
+                status = "warning"
+                stage = "aucun_document_pertinent"
+                error_msg = "Des éléments ont été collectés, mais aucun n'a passé les contrôles de pertinence."
+
         except Exception as exc:
             status = "error"
             stage = "erreur_collecte"

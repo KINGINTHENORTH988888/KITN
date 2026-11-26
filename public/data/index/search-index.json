@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T01:41:01.846166+00:00",
+  "updated_at": "2026-11-26T13:45:52.209968+00:00",
   "total": 26,
   "new_or_updated_this_run": 26,
   "items": [
@@ -8,7 +8,6 @@
       "titre_original": "Chapter 2. Between Portuguese Expansionism and Muslim Morocco: Abravanel’s Response to the Conquest of Arzila and Tangier",
       "auteurs": [],
       "date_publication": "2027-12-31",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -35,7 +34,6 @@
         "Clement Levard"
       ],
       "date_publication": "2027-10-12",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "openalex_maroc",
       "source_nom": "OpenAlex — Travaux liés au Maroc",
@@ -55,7 +53,6 @@
         "Ahmed Ouaamr"
       ],
       "date_publication": "2027-09-07",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "openalex_maroc",
       "source_nom": "OpenAlex — Travaux liés au Maroc",
@@ -80,7 +77,6 @@
         "Husam S. Samkari"
       ],
       "date_publication": "2027-04",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -100,7 +96,6 @@
         "Mohamed Benzaggagh"
       ],
       "date_publication": "2027-03",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -125,7 +120,6 @@
         "Fatima Zahra El M'rabet"
       ],
       "date_publication": "2027-03",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -154,7 +148,6 @@
         "Amina Barkat"
       ],
       "date_publication": "2027-03",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -179,7 +172,6 @@
         "E.-M. Boufounas"
       ],
       "date_publication": "2027-03",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -201,7 +193,6 @@
         "Abdelilah Ghallab"
       ],
       "date_publication": "2027-03",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -222,7 +213,6 @@
         "Fatiha Regragui"
       ],
       "date_publication": "2027-02-02",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "openalex_maroc",
       "source_nom": "OpenAlex — Travaux liés au Maroc",
@@ -230,7 +220,7 @@
       "pole": "economie_finances_publiques",
       "confiance_classification": "eleve",
       "score_pertinence": 70,
-      "url_publication": "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9?error=cookies_not_supported&code=e7186815-bb4e-4717-bd6c-31d85c24eb55",
+      "url_publication": "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9?error=cookies_not_supported&code=84a2a69a-784f-48c6-8ba4-fcd2b6abb13b",
       "doi": "10.1007/978-3-032-32865-6_9",
       "pdf_direct": null,
       "resume": ""
@@ -251,7 +241,6 @@
         "Sanaa Mahfoud"
       ],
       "date_publication": "2027-02",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -275,7 +264,6 @@
         "Amine Azghari"
       ],
       "date_publication": "2027-02",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -299,7 +287,6 @@
         "Mohamed Abourouh"
       ],
       "date_publication": "2027-02",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -321,7 +308,6 @@
         "Ernesto D.R. Santibanez Gonzalez"
       ],
       "date_publication": "2027-02",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -350,7 +336,6 @@
         "Mounir Hassani Zerrouk"
       ],
       "date_publication": "2027-02",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -379,7 +364,6 @@
         "Hanane El Kacemi"
       ],
       "date_publication": "2027-02",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -400,7 +384,6 @@
         "Karim Zaouaq"
       ],
       "date_publication": "2027-01-28",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "crossref_maroc",
       "source_nom": "Crossref — Publications indexées Maroc",
@@ -420,7 +403,6 @@
         "Dominique Barjot"
       ],
       "date_publication": "2027",
-      "date_anomalie": true,
       "langue_originale": "fr",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -445,7 +427,6 @@
         "El Mahjoub Gallouli"
       ],
       "date_publication": "2026-12",
-      "date_anomalie": true,
       "langue_originale": "en",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -465,7 +446,6 @@
         "Mounya Khnaba"
       ],
       "date_publication": "2026-11-30",
-      "date_anomalie": true,
       "langue_originale": "fr",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -486,7 +466,6 @@
         "Yousr Ben"
       ],
       "date_publication": "2026-11-21",
-      "date_anomalie": false,
       "langue_originale": "fr",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -505,10 +484,9 @@
       "auteurs": [
         "Houssaine Ouljour",
         "Youssef Samihi",
-        "Nabil Boubrahimi"
+        "Nabil Boubrahimi,"
       ],
       "date_publication": "2026-11-18",
-      "date_anomalie": false,
       "langue_originale": "en",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -529,7 +507,6 @@
         "Safae Ed-Douadi"
       ],
       "date_publication": "2026-11-12",
-      "date_anomalie": false,
       "langue_originale": "fr",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -540,7 +517,7 @@
       "url_publication": "https://hal.science/hal-05864419v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l’évolution des modes de vie, les besoins liés aux métiers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d’altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en difficulté"
+      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l’évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d’altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en diﬃcu"
     },
     {
       "id": "kitn_47e479f4a4fb35a8",
@@ -549,7 +526,6 @@
         "Abdeladim ERRADI"
       ],
       "date_publication": "2026-11-08",
-      "date_anomalie": false,
       "langue_originale": "fr",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -570,7 +546,6 @@
         "Youssef Samihi"
       ],
       "date_publication": "2026-11-02",
-      "date_anomalie": false,
       "langue_originale": "fr",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -590,7 +565,6 @@
         "El Mehdi Miftahi"
       ],
       "date_publication": "2026-11-01",
-      "date_anomalie": false,
       "langue_originale": "fr",
       "source_id": "hal_maroc",
       "source_nom": "HAL Archives Ouvertes — Maroc",

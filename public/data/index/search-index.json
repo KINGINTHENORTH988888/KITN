@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-26T22:14:54Z",
-  "total": 146,
+  "generated_at": "2026-11-26T22:16:09Z",
+  "total": 156,
   "active_sources": 7,
-  "fetched_in_run": 87,
-  "processed_in_run": 61,
-  "added_in_run": 0,
+  "fetched_in_run": 97,
+  "processed_in_run": 71,
+  "added_in_run": 10,
   "updated_in_run": 0,
   "items": [
     {
@@ -770,6 +770,109 @@
       "espace": "science"
     },
     {
+      "id": "kitn_3449f4a62e2ef372",
+      "titre_original": "Rencontre entre le président de la Chambre des représentants et le président du Conseil économique, social et environnemental",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-26",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "economie_finances_publiques",
+      "poles_secondaires": [
+        "societe_developpement_humain"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 84,
+      "url_publication": "https://www.cese.ma/rencontre-entre-le-president-de-la-chambre-des-representants-et-le-president-du-conseil-economique-social-et-environnemental/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Le président du Conseil économique, social et environnemental (CESE), M. Abdelkader Amara, a rendu visite, dans la matinée de ce jeudi 26 novembre 2026, à M. Ahmed Touizi, président de la Chambre des représentants. L'article Rencontre entre le président de la Chambre des représentants et le président du Conseil économique, social et environnemental est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_125bddcd8928f1b6",
+      "titre_original": "Le CESE adopte une étude sur la sous-traitance des services de gardiennage et de nettoyage et un avis sur l'emploi dans le tiers secteur",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-25",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "institutions_gouvernance",
+      "poles_secondaires": [
+        "economie_finances_publiques",
+        "societe_developpement_humain"
+      ],
+      "confiance_classification": "eleve",
+      "lien_maroc": "direct",
+      "score_pertinence": 85,
+      "url_publication": "https://www.cese.ma/le-cese-adopte-une-etude-sur-la-sous-traitance-des-services-de-gardiennage-et-de-nettoyage-et-un-avis-sur-lemploi-dans-le-tiers-secteur/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Le Conseil économique, social et environnemental (CESE) a tenu, ce mercredi 25 novembre 2026, la 188ᵉ session ordinaire de son Assemblée générale, sous la présidence de M. Abdelkader Amara, président du Conseil. A l'ordre du jour d de cette session: Adoption du projet d'étude sur «Les marchés conclus par les administrations, les établissements et les entreprises publics avec des sociétés de prestation de services de nettoyage et de gardiennage et la situation des agents concernés», élaboré en réponse à une saisine de la Chambre des représentants. Adoption du projet d'avis sur «La réalité et les perspectives de l'emploi dans le tiers secteur», élaboré dans le cadre d'une auto-saisine. Présentation et discussion du projet d'avis intitulé «Réhabiliter le service public des cimetières», élaboré dans le cadre d'une auto-saisine. L'article Le CESE adopte une étude sur la sous-traitance des services de gardiennage et de nettoyage et un avis sur l'emploi dans le tiers secteur est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_5f0406d05f456a4b",
+      "titre_original": "Le CESE appelle à faire de l'intercommunalité un véritable levier de développement territorial",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-25",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "economie_finances_publiques",
+      "poles_secondaires": [
+        "societe_developpement_humain"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 94,
+      "url_publication": "https://www.cese.ma/le-cese-appelle-a-faire-de-lintercommunalite-un-veritable-levier-de-developpement-territorial/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Le Conseil économique, social et environnemental (CESE) a organisé, le mercredi 25 novembre 2026, à son siège à Rabat, un atelier de restitution consacré à la présentation des principales conclusions et recommandations de son avis intitulé «l'intercommunalité au service du développement régional», élaboré dans le cadre d'une auto-saisine. Dans son allocution d'ouverture, M. Abdelkader Amara, […] L'article Le CESE appelle à faire de l'intercommunalité un véritable levier de développement territorial est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
       "id": "kitn_85b4413f62904f59",
       "titre_original": "Au-delà de la flexibilité hospitalière: intérimaires en santé, valeur territoriale et limites de la GRH responsable au Maroc",
       "auteurs": [
@@ -798,6 +901,41 @@
       "espace": "science",
       "lien_maroc": "direct",
       "mis_a_jour_le": "2026-11-26T19:07:29Z"
+    },
+    {
+      "id": "kitn_b532b04e2fff4f04",
+      "titre_original": "Le Conseil économique, social et environnemental et le ministère de la Jeunesse, de la Culture et des Sports tiennent une réunion de travail consacrée aux questions de jeunesse",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-20",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "institutions_gouvernance",
+      "poles_secondaires": [
+        "societe_developpement_humain",
+        "economie_finances_publiques"
+      ],
+      "confiance_classification": "eleve",
+      "lien_maroc": "direct",
+      "score_pertinence": 95,
+      "url_publication": "https://www.cese.ma/le-conseil-economique-social-et-environnemental-et-le-ministere-de-la-jeunesse-de-la-culture-et-des-sports-tiennent-une-reunion-de-travail-consacree-aux-questions-de-jeunesse/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Le Conseil économique, social et environnemental (CESE) et le ministère de la Jeunesse, de la Culture et des Sports ont tenu, le vendredi 20 novembre 2026, au siège du Conseil à Rabat, une réunion de travail consacrée aux questions de jeunesse. Cette rencontre a été coprésidée par M. Abdelkader Amara, président du CESE, M. Mohamed Mehdi Bensaid, ministre de la Jeunesse, de la Culture et des Sports, et M. Salaheddine Abkari, ministre délégué chargé de la Jeunesse, avec la participation de responsables et de cadres des deux institutions. L'article Le Conseil économique, social et environnemental et le ministère de la Jeunesse, de la Culture et des Sports tiennent une réunion de travail consacrée aux questions de jeunesse est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
     },
     {
       "id": "kitn_2f5b3f9e86d89f35",
@@ -868,6 +1006,75 @@
       "espace": "science"
     },
     {
+      "id": "kitn_c612e60e1fb6d538",
+      "titre_original": "Le CESE à la rencontre des jeunes du milieu universitaire à Errachidia",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-17",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "economie_finances_publiques",
+      "poles_secondaires": [
+        "societe_developpement_humain",
+        "securite_affaires_interieures"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 85,
+      "url_publication": "https://www.cese.ma/le-cese-a-la-rencontre-des-jeunes-du-milieu-universitaire-a-errachidia/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Dans le cadre de sa démarche d'ouverture sur les territoires, de renforcement de ses relations avec les établissements universitaires et d'élargissement des espaces de dialogue et d'interaction avec les jeunes autour des questions qui les concernent, le Conseil économique, social et environnemental (CESE) a effectué, les 16 et 17 novembre 2026, une visite au pôle universitaire d'Errachidia, relevant de l'Université Moulay Ismaïl, à l'occasion d'une nouvelle édition de son programme «Le CESE à l'université». Cette édition a été marquée par l'installation d'un stand interactif, l'organisation d'une rencontre avec les étudiants consacrée à la place des jeunes dans les préoccupations et les travaux du Conseil, ainsi que la tenue d'un atelier interactif sur la participation citoyenne des jeunes. L'article Le CESE à la rencontre des jeunes du milieu universitaire à Errachidia est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_15cff6ed4d11c4a3",
+      "titre_original": "Depuis Errachidia, le CESE appelle à renforcer la place du douar dans les politiques et programmes de développement rural",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-16",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "economie_finances_publiques",
+      "poles_secondaires": [
+        "societe_developpement_humain"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 84,
+      "url_publication": "https://www.cese.ma/depuis-errachidia-le-cese-appelle-a-renforcer-la-place-du-douar-dans-les-politiques-et-programmes-de-developpement-rural/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Le Conseil économique, social et environnemental (CESE) a organisé, le lundi 16 novembre 2026, au siège du Conseil de la région Drâa-Tafilalet à Errachidia, un atelier de restitution consacré à la présentation des grandes lignes de son avis intitulé «Quelle place du douar dans le développement rural?». L'article Depuis Errachidia, le CESE appelle à renforcer la place du douar dans les politiques et programmes de développement rural est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
       "id": "kitn_c620daca09afb30a",
       "titre_original": "Administrer l'exil: le Secrétariat général du Gouvernement, architecte de l'aide aux rapatriés (1956-1959)",
       "auteurs": [
@@ -899,6 +1106,40 @@
       "espace": "science"
     },
     {
+      "id": "kitn_eb29bd5a1e95b8be",
+      "titre_original": "La Cheffe du gouvernement reçoit M. Abdelkader Amara",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-13",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "economie_finances_publiques",
+      "poles_secondaires": [
+        "societe_developpement_humain"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 69,
+      "url_publication": "https://www.cese.ma/la-cheffe-du-gouvernement-recoit-m-abdelkader-amara/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Mme Fatima-Zahra Mansouri, Cheffe du gouvernement, a reçu, jeudi 12 novembre 2026 dans l'après-midi, M. Abdelkader Amara, Président du Conseil économique, social et environnemental. Ci-après le texte du communiqué relatif à cette rencontre, tel que publié sur le portail officiel de la Chefferie du gouvernement (traduction non officielle): L'article La Cheffe du gouvernement reçoit M. Abdelkader Amara est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
       "id": "kitn_9efe248a85d43ef7",
       "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc: quel rôle pour les associations? (Analyse de trois terrains)",
       "auteurs": [
@@ -926,6 +1167,108 @@
       "espace": "science",
       "lien_maroc": "direct",
       "mis_a_jour_le": "2026-11-26T19:07:29Z"
+    },
+    {
+      "id": "kitn_6f5b48de8d93ea49",
+      "titre_original": "M. Abdelkader Amara présente le projet de budget du CESE au titre de l'année 2027 à la Chambre des représentants",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-11",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "economie_finances_publiques",
+      "poles_secondaires": [
+        "societe_developpement_humain"
+      ],
+      "confiance_classification": "eleve",
+      "lien_maroc": "direct",
+      "score_pertinence": 84,
+      "url_publication": "https://www.cese.ma/m-abdelkader-amara-presente-le-projet-de-budget-du-cese-au-titre-de-lannee-2027-a-la-chambre-des-representants/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "M. Abdelkader Amara, Président du Conseil économique, social et environnemental (CESE), a présenté, ce mardi 10 novembre 2026, devant la Commission des finances et du développement économique de la Chambre des représentants, le projet de budget du Conseil au titre de l'année 2027. L'article M. Abdelkader Amara présente le projet de budget du CESE au titre de l'année 2027 à la Chambre des représentants est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_a26ab035ac56945f",
+      "titre_original": "M. Amara reçoit le ministre de la Jeunesse, de la Culture et des Sports et le ministre délégué chargé de la Jeunesse",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-10",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "societe_developpement_humain",
+      "poles_secondaires": [
+        "economie_finances_publiques"
+      ],
+      "confiance_classification": "eleve",
+      "lien_maroc": "direct",
+      "score_pertinence": 69,
+      "url_publication": "https://www.cese.ma/m-amara-recoit-le-ministre-de-la-jeunesse-de-la-culture-et-des-sports-et-le-ministre-delegue-charge-de-la-jeunesse/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "M. Abdelkader Amara, Président du Conseil économique, social et environnemental (CESE), a reçu, lundi 9 novembre 2026 dans l'après-midi, M. Mohamed Mehdi Bensaid, ministre de la Jeunesse, de la Culture et des Sports, et M. Salah-Eddine Abkari, ministre délégué auprès du ministre de la Jeunesse, de la Culture et des Sports, chargé de la Jeunesse. L'article M. Amara reçoit le ministre de la Jeunesse, de la Culture et des Sports et le ministre délégué chargé de la Jeunesse est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_87b7ec040e908874",
+      "titre_original": "Le programme «Lundis Jeunesse» accueille des jeunes du Youth Policy Center",
+      "auteurs": [
+        "Rime Jedidi"
+      ],
+      "revue_ou_institution": "Conseil économique, social et environnemental (CESE)",
+      "mots_cles": [],
+      "date_publication": "2026-11-09",
+      "collecte_le": "2026-11-26T22:16:09Z",
+      "mis_a_jour_le": "2026-11-26T22:16:09Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "cese_maroc",
+      "source_nom": "Conseil économique, social et environnemental (CESE)",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "societe_developpement_humain",
+      "poles_secondaires": [
+        "economie_finances_publiques"
+      ],
+      "confiance_classification": "eleve",
+      "lien_maroc": "direct",
+      "score_pertinence": 79,
+      "url_publication": "https://www.cese.ma/le-programme-lundis-jeunesse-accueille-des-jeunes-du-youth-policy-center/",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "Dans le cadre de son programme «Lundis Jeunesse», le Conseil économique, social et environnemental (CESE) a accueilli, ce lundi 9 novembre 2026, à son siège à Rabat, un groupe de jeunes membres du Youth Policy Center (YPC). L'article Le programme «Lundis Jeunesse» accueille des jeunes du Youth Policy Center est apparu en premier sur CESE.",
+      "analyse_strategique": "",
+      "origine": "automatique"
     },
     {
       "id": "kitn_47e479f4a4fb35a8",

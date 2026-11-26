@@ -179,20 +179,27 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
 
     score = 0
     if strong_matches:
-        score += 40 if title_matches else 25
+        score += 35 if title_matches else 20
         score += min(30, 10 * max(0, len(strong_matches) - 1))
     if pole_hits >= 1:
-        score += min(20, 10 * pole_hits)
+        score += min(25, 12 * pole_hits)
     if is_national_source and (strong_matches or pole_hits >= 1):
         score += 15
 
     score = min(100, score)
-    is_relevant = score >= 45 and (len(strong_matches) >= 1 or is_national_source)
-    lien_maroc = (
-        "direct"
-        if title_matches or len(strong_matches) >= 2
-        else ("indirect_ou_source_nationale" if is_relevant else "aucun")
-    )
+
+    # Une mention seule dans le titre sans signal thématique (pole_hits == 0) ni source nationale est rejetée
+    has_thematic_context = pole_hits >= 1 or is_national_source
+    is_relevant = score >= 45 and len(strong_matches) >= 1 and has_thematic_context
+
+    if title_matches and pole_hits >= 1:
+        lien_maroc = "direct"
+    elif len(strong_matches) >= 2 and pole_hits >= 1:
+        lien_maroc = "direct"
+    elif is_relevant:
+        lien_maroc = "indirect_comparatif"
+    else:
+        lien_maroc = "aucun"
 
     return {
         "is_relevant": is_relevant,
@@ -205,7 +212,7 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
 def resolve_space(doc_type: str, pole: str, explicit_space: str | None = None) -> str:
     if explicit_space in SPACES:
         return explicit_space
-    if doc_type == "concours":
+    if doc_type in ("concours", "ressource_pedagogique"):
         return "academy"
     if doc_type == "publication_scientifique" or pole == "recherche_scientifique":
         return "science"

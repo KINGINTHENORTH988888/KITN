@@ -1,67 +1,94 @@
 {
-  "tracks": [
-    {
-      "id": "dgsn-commissaire",
-      "pole": "securite_affaires_interieures",
-      "title_fr": "Concours Commissaire de Police (DGSN)",
-      "title_ar": "مباراة عميد الشرطة (المديرية العامة للأمن الوطني)",
-      "summary_fr": "Méthodologie, sécurité publique, police de proximité, gouvernance sécuritaire et analyse des politiques publiques.",
-      "summary_ar": "المنهجية، الأمن العمومي، شرطة القرب، الحكامة الأمنية وتحليل السياسات العمومية."
-    },
-    {
-      "id": "irat-administration",
-      "pole": "institutions_gouvernance",
-      "title_fr": "IRAT & Concours Administratifs",
-      "title_ar": "المعهد الملكي للإدارة الترابية والمباريات الإدارية",
-      "summary_fr": "Régionalisation avancée, déconcentration administrative, réforme du service public et finances locales.",
-      "summary_ar": "الجهوية المتقدمة، اللاتمركز الإداري، إصلاح المرفق العمومي والمالية الترابية."
-    }
-  ],
-  "fiches": [
-    {
-      "id": "fiche-regionalisation-avancee",
-      "track_id": "irat-administration",
-      "title_fr": "Régionalisation avancée et gouvernance territoriale au Maroc",
-      "title_ar": "الجهوية المتقدمة والحكامة الترابية بالمغرب",
-      "content_fr": "La régionalisation avancée consacre la région comme collectivité territoriale de droit public dotée de la libre administration, dans le respect de l'unité de l'État et de l'intégrité territoriale. Elle s'articule avec la Charte de la déconcentration administrative pour rapprocher la décision publique des territoires.",
-      "content_ar": "تكرس الجهوية المتقدمة الجهة كجماعة ترابية خاضعة للقانون العام تتمتع بالتدبير الحر في إطار وحدة الدولة وسلامتها الترابية، وتتكامل مع ميثاق اللاتمركز الإداري لتقريب القرار العمومي من المجالات الترابية."
-    }
-  ],
-  "dissertations": [
-    {
-      "id": "diss-police-proximite",
-      "track_id": "dgsn-commissaire",
-      "sujet_fr": "Police de proximité et prévention intégrée : enjeux d'efficacité et de confiance citoyenne.",
-      "sujet_ar": "شرطة القرب والوقاية المندمجة: رهانات الفعالية والثقة المواطنة.",
-      "plan_fr": [
-        "I. La police de proximité comme levier de prévention et de connaissance fine du terrain",
-        "II. Les exigences opérationnelles, juridiques et citoyennes d'une sécurité durable"
-      ],
-      "plan_ar": [
-        "أولاً: شرطة القرب كرافعة للوقاية والمعرفة الدقيقة بالميدان",
-        "ثانياً: المتطلبات العملياتية والقانونية والمواطنة لأمن مستدام"
-      ]
-    }
-  ],
-  "qcm": [
-    {
-      "id": "qcm-1",
-      "track_id": "irat-administration",
-      "question_fr": "Quel texte cadre vise à doter les administrations déconcentrées des moyens d'action adaptés aux politiques publiques territoriales au Maroc ?",
-      "question_ar": "ما هو النص الإطار الذي يهدف إلى تزويد المصالح اللاممركزة بوسائل العمل الملائمة للسياسات العمومية الترابية بالمغرب؟",
-      "options_fr": [
-        "La Charte nationale de la déconcentration administrative",
-        "Le Code de commerce maritime",
-        "La loi organique sur les finances locales uniquement"
-      ],
-      "options_ar": [
-        "الميثاق الوطني للاتمركز الإداري",
-        "مدونة التجارة البحرية",
-        "القانون التنظيمي للمالية المحلية فقط"
-      ],
-      "correct_index": 0,
-      "explanation_fr": "La Charte nationale de la déconcentration administrative organise le transfert des compétences et des ressources vers les échelons régional et provincial.",
-      "explanation_ar": "ينظم الميثاق الوطني للاتمركز الإداري نقل الاختصاصات والموارد نحو المستويين الجهوي والإقليمي."
-    }
-  ]
+  "version": "1.0.0",
+  "updated_at": "2026-11-26",
+  "tracks": {
+    "fr": [
+      {
+        "id": "dgsn",
+        "label": "DGSN",
+        "title": "Concours DGSN — Sécurité & ordre public",
+        "sheet": "Police de proximité, coopération sécuritaire, digitalisation des services et protection des droits.",
+        "question": "Quel principe résume le mieux la doctrine moderne de sécurité publique au Maroc ?",
+        "options": [
+          "La prévention, la proximité citoyenne et la légalité",
+          "L'isolement administratif des services",
+          "L'absence de coordination territoriale"
+        ],
+        "answer": 0,
+        "correction": "La sécurité moderne repose sur la prévention, la proximité avec le citoyen, l'efficacité opérationnelle et le respect de la loi."
+      },
+      {
+        "id": "irat",
+        "label": "IRAT",
+        "title": "IRAT — Administration territoriale & gouvernance",
+        "sheet": "Déconcentration administrative, régionalisation avancée, coordination locale et politiques publiques.",
+        "question": "Quel levier renforce l'efficacité de l'action publique au niveau territorial ?",
+        "options": [
+          "La déconcentration et la convergence des programmes locaux",
+          "La multiplication des procédures sans coordination",
+          "L'absence d'évaluation des politiques publiques"
+        ],
+        "answer": 0,
+        "correction": "La déconcentration administrative et la cohérence territoriale permettent de mieux adapter les politiques publiques aux réalités locales."
+      },
+      {
+        "id": "admin",
+        "label": "Concours admin",
+        "title": "Concours administratifs — Finances & réformes",
+        "sheet": "Budgétisation axée sur la performance, protection sociale, transition numérique et service public.",
+        "question": "Que vise principalement la réforme de la gestion publique axée sur les résultats ?",
+        "options": [
+          "L'efficacité de la dépense, la redevabilité et la qualité du service",
+          "La suppression du contrôle budgétaire",
+          "La réduction de la transparence"
+        ],
+        "answer": 0,
+        "correction": "La gestion axée sur les résultats lie les moyens engagés aux objectifs et à l'impact réel pour l'usager."
+      }
+    ],
+    "ar": [
+      {
+        "id": "dgsn",
+        "label": "الأمن الوطني DGSN",
+        "title": "مباريات الأمن الوطني — الأمن والنظام العام",
+        "sheet": "شرطة القرب، التعاون الأمني، رقمنة الخدمات وحماية الحقوق.",
+        "question": "ما المبدأ الذي يلخص بأفضل شكل المقاربة الحديثة للأمن العمومي بالمغرب؟",
+        "options": [
+          "الوقاية والقرب من المواطن واحترام القانون",
+          "انغلاق المصالح الإدارية",
+          "غياب التنسيق الترابي"
+        ],
+        "answer": 0,
+        "correction": "يرتكز العمل الأمني الحديث على الوقاية والقرب من المواطن والنجاعة الميدانية وسيادة القانون."
+      },
+      {
+        "id": "irat",
+        "label": "الإدارة الترابية IRAT",
+        "title": "الإدارة الترابية والحكامة",
+        "sheet": "اللاتمركز الإداري، الجهوية المتقدمة، التنسيق المحلي والسياسات العمومية.",
+        "question": "ما الآلية التي تعزز نجاعة العمل العمومي على المستوى الترابي؟",
+        "options": [
+          "اللاتمركز وتكامل البرامج المحلية",
+          "تعدد المساطر دون تنسيق",
+          "غياب تقييم السياسات العمومية"
+        ],
+        "answer": 0,
+        "correction": "يساعد اللاتمركز الإداري والالتقائية الترابية على ملاءمة السياسات العمومية مع خصوصيات كل مجال."
+      },
+      {
+        "id": "admin",
+        "label": "المباريات الإدارية",
+        "title": "المباريات الإدارية — المالية والإصلاحات",
+        "sheet": "الميزانية المبنية على النجاعة، الحماية الاجتماعية، التحول الرقمي والمرفق العام.",
+        "question": "ما الهدف الأساسي لإصلاح التدبير العمومي القائم على النتائج؟",
+        "options": [
+          "نجاعة الإنفاق والمساءلة وجودة الخدمة للمرتفق",
+          "إلغاء المراقبة الميزانياتية",
+          "تقليص الشفافية"
+        ],
+        "answer": 0,
+        "correction": "يربط التدبير القائم على النتائج الاعتمادات المرصودة بالأهداف والأثر الفعلي على المواطن."
+      }
+    ]
+  }
 }

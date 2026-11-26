@@ -320,6 +320,16 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(series["BAM_NPL_RATIO"]["latest"]["value"], 7.9)
         self.assertEqual(series["BAM_MONIA_RATE"]["latest"], {"year": "2026-11-25", "value": 2.195})
         self.assertEqual(series["BAM_MONIA_VOLUME"]["latest"]["value"], 12709)
+        bam_source = {
+            "id": "bank_al_maghrib",
+            "name": "Bank Al-Maghrib",
+            "target_space": "chiffres",
+            "default_doc_type": "statistique",
+        }
+        processed = process_raw_item(items[0], bam_source)
+        self.assertIsNotNone(processed)
+        self.assertEqual(processed["espace"], "chiffres")
+        self.assertEqual(processed["pole"], "economie_finances_publiques")
 
     def test_collect_world_bank_api_builds_historical_series(self):
         payload = [

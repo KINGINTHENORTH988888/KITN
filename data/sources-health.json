@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T22:26:25Z",
+  "updated_at": "2026-11-26T22:27:17Z",
   "active_sources": 7,
   "total_fetched": 97,
   "total_accepted": 67,
@@ -16,7 +16,7 @@
       "fetched": 20,
       "accepted": 15,
       "error": null,
-      "checked_at": "2026-11-26T22:26:25Z"
+      "checked_at": "2026-11-26T22:27:17Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -30,7 +30,7 @@
       "fetched": 15,
       "accepted": 9,
       "error": null,
-      "checked_at": "2026-11-26T22:26:25Z"
+      "checked_at": "2026-11-26T22:27:17Z"
     },
     {
       "source_id": "cese_maroc",
@@ -44,7 +44,7 @@
       "fetched": 10,
       "accepted": 10,
       "error": null,
-      "checked_at": "2026-11-26T22:26:25Z"
+      "checked_at": "2026-11-26T22:27:17Z"
     },
     {
       "source_id": "ires_maroc",
@@ -58,7 +58,7 @@
       "fetched": 6,
       "accepted": 3,
       "error": null,
-      "checked_at": "2026-11-26T22:26:25Z"
+      "checked_at": "2026-11-26T22:27:17Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -72,7 +72,7 @@
       "fetched": 20,
       "accepted": 20,
       "error": null,
-      "checked_at": "2026-11-26T22:26:25Z"
+      "checked_at": "2026-11-26T22:27:17Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -86,7 +86,7 @@
       "fetched": 20,
       "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T22:26:25Z"
+      "checked_at": "2026-11-26T22:27:17Z"
     },
     {
       "source_id": "world_bank_maroc",
@@ -100,7 +100,7 @@
       "fetched": 6,
       "accepted": 6,
       "error": null,
-      "checked_at": "2026-11-26T22:26:25Z"
+      "checked_at": "2026-11-26T22:27:17Z"
     }
   ]
 }

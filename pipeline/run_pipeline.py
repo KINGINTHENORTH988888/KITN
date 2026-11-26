@@ -98,15 +98,8 @@ def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) 
             changed = True
 
     scalar_fields = (
-        "titre_original",
         "revue_ou_institution",
-        "date_publication",
-        "date_statut",
         "langue_originale",
-        "type_document",
-        "espace",
-        "pole",
-        "confiance_classification",
         "lien_maroc",
         "url_publication",
         "doi",
@@ -122,6 +115,35 @@ def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) 
         if not cur or (sf == "resume" and len(str(val)) > len(str(cur))):
             if cur != val:
                 merged[sf] = val
+                changed = True
+
+    # Prefer richer metadata from a fresh extraction of the same record.
+    old_title = str(merged.get("titre_original") or "")
+    new_title = str(incoming.get("titre_original") or "")
+    if (
+        new_title
+        and len(new_title) > len(old_title)
+        and incoming.get("source_id")
+        and incoming.get("source_id") == merged.get("source_id")
+    ):
+        merged["titre_original"] = new_title
+        changed = True
+
+    old_date = str(merged.get("date_publication") or "")
+    new_date = str(incoming.get("date_publication") or "")
+    if new_date and len(new_date) > len(old_date) and not incoming.get("date_anomalie"):
+        merged["date_publication"] = new_date
+        merged["date_statut"] = incoming.get("date_statut") or merged.get("date_statut")
+        changed = True
+
+    confidence_rank = {"faible": 1, "moyen": 2, "eleve": 3}
+    old_rank = confidence_rank.get(str(merged.get("confiance_classification") or ""), 0)
+    new_rank = confidence_rank.get(str(incoming.get("confiance_classification") or ""), 0)
+    if new_rank >= old_rank and new_rank > 0:
+        for field in ("type_document", "espace", "pole", "confiance_classification"):
+            value = incoming.get(field)
+            if value and merged.get(field) != value:
+                merged[field] = value
                 changed = True
 
     if incoming.get("date_anomalie") is not None and merged.get("date_anomalie") != incoming.get("date_anomalie"):
@@ -270,7 +292,7 @@ def run() -> dict:
             "source_id": sid,
             "source_name": src.get("name") or sid,
             "domain": _extract_domain(src),
-            "target_space": src.get("target_space") or resolve_space(str(src.get("default_doc_type") or ""), ""),
+            "target_space": src.get("target_space") or src.get("space") or resolve_space(str(src.get("default_doc_type") or ""), ""),
             "type": src.get("type") or "",
             "enabled": True,
             "status": status,

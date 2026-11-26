@@ -900,10 +900,11 @@ function renderStatisticsDashboard() {
     const label = isAr ? (indicator.label_ar || indicator.label_fr) : indicator.label_fr;
     const description = isAr ? (indicator.description_ar || indicator.description_fr) : indicator.description_fr;
     const unit = isAr ? (indicator.unit_ar || indicator.unit_fr) : indicator.unit_fr;
-    const formattedDelta = delta === null ? "" : new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", {maximumFractionDigits:1}).format(delta);
+    const deltaPrecision = Number.isInteger(indicator.precision) ? indicator.precision : 1;
+    const formattedDelta = delta === null ? "" : new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", {maximumFractionDigits:deltaPrecision}).format(delta);
     const comparisonLabel = isAr
-      ? (indicator.comparison_label_ar || "مقارنة بالفترة السابقة")
-      : (indicator.comparison_label_fr || "par rapport à la période précédente");
+      ? (indicator.comparison_label_ar || (indicator.change_mode === "absolute" ? "مقارنة بالفترة السابقة" : "مقارنة بالسنة السابقة"))
+      : (indicator.comparison_label_fr || (indicator.change_mode === "absolute" ? "par rapport à la période précédente" : "par rapport à l'année précédente"));
     const changeUnit = indicator.change_mode === "absolute" ? (indicator.change_unit || "") : "%";
     const changeText = delta === null ? (isAr ? "لا توجد مقارنة سابقة" : "Pas de comparaison précédente")
       : `${delta > 0 ? "+" : ""}${formattedDelta}${changeUnit ? ` ${changeUnit}` : ""} ${comparisonLabel}`;

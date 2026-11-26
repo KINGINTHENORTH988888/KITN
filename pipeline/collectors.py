@@ -1,292 +1,333 @@
 import html
 import json
 import re
-import time
 import xml.etree.ElementTree as ET
 from urllib.error import HTTPError, URLError
+from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 
-from pipeline.config import MAX_RETRIES, REQUEST_TIMEOUT, USER_AGENT
+from pipeline.config import REQUEST_TIMEOUT, USER_AGENT
 
 
-def _fetch_text(url: str, accept: str) -> str:
-    """Télécharge une ressource texte/JSON avec gestion des limites de débit et retries."""
-    for attempt in range(MAX_RETRIES + 1):
-        req = Request(
-            url,
-            headers={
-                "User-Agent": USER_AGENT,
-                "Accept": accept,
-            },
-        )
-        try:
-            with urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
-                return resp.read().decode("utf-8", errors="replace")
-        except HTTPError as e:
-            if e.code == 429 and attempt < MAX_RETRIES:
-                time.sleep(2 * (attempt + 1))
-                continue
-            raise RuntimeError(f"Erreur HTTP {e.code} sur {url}") from e
-        except (URLError, TimeoutError, OSError) as e:
-            if attempt < MAX_RETRIES:
-                time.sleep(1.5)
-                continue
-            raise RuntimeError(f"Échec de récupération sur {url}: {e}") from e
-    raise RuntimeError(f"Échec inattendu sur {url}")
+def _fetch_text(url: str) -> str:
+    req = Request(
+        url,
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "application/json, application/xml, text/xml, application/rss+xml, application/atom+xml, text/html;q=0.9, */*;q=0.8",
+        },
+    )
+    with urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
+        raw_bytes = resp.read()
+        encoding = resp.headers.get_content_charset() or "utf-8"
+        return raw_bytes.decode(encoding, errors="replace")
 
 
-def _fetch_json(url: str) -> dict | None:
-    raw = _fetch_text(url, "application/json")
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError as e:
-        raise RuntimeError(f"JSON invalide reçu depuis {url}: {e}") from e
+def _strip_html(raw: str | None) -> str:
+    if not raw:
+        return ""
+    text = html.unescape(str(raw))
+    text = re.sub(r"<script\b[^>]*>.*?</script>", " ", text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<style\b[^>]*>.*?</style>", " ", text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def _reconstruct_openalex_abstract(inv_index: dict | None) -> str:
-    """Reconstitue le résumé OpenAlex à partir de son index inversé lorsqu'il existe."""
-    if not inv_index or not isinstance(inv_index, dict):
+    if not isinstance(inv_index, dict) or not inv_index:
         return ""
-    positions: list[tuple[int, str]] = []
+    positions: dict[int, str] = {}
     for word, idx_list in inv_index.items():
         if isinstance(idx_list, list):
             for pos in idx_list:
-                if isinstance(pos, int):
-                    positions.append((pos, word))
-    positions.sort(key=lambda x: x[0])
-    return " ".join(w for _, w in positions).strip()
-
-
-def _clean_html_tags(text: str | None) -> str:
-    if not text:
+                if isinstance(pos, int) and pos >= 0:
+                    positions[pos] = word
+    if not positions:
         return ""
-    unescaped = html.unescape(text)
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", unescaped)).strip()
+    max_pos = max(positions.keys())
+    return " ".join(positions.get(i, "") for i in range(max_pos + 1)).strip()
 
 
-def _local_name(tag: str) -> str:
-    return tag.split("}", 1)[-1].lower() if tag else ""
-
-
-def _child_text(elem: ET.Element, names: tuple[str, ...]) -> str:
-    for child in elem:
-        if _local_name(child.tag) in names and child.text:
-            txt = child.text.strip()
-            if txt:
-                return txt
-    return ""
-
-
-def collect_rss_atom(source: dict) -> list[dict]:
-    """Collecte générique pour flux RSS 2.0 ou Atom."""
-    xml_raw = _fetch_text(source["url"], "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8")
-    try:
-        root = ET.fromstring(xml_raw)
-    except ET.ParseError as e:
-        raise RuntimeError(f"Flux RSS/Atom invalide sur {source['url']}: {e}") from e
-
-    entries: list[ET.Element] = []
-    for elem in root.iter():
-        lname = _local_name(elem.tag)
-        if lname in ("item", "entry"):
-            entries.append(elem)
-
-    items: list[dict] = []
-    max_items = int(source.get("max_items") or 15)
-
-    for entry in entries[:max_items]:
-        title = _clean_html_tags(_child_text(entry, ("title",)))
-        if not title:
-            continue
-
-        raw_desc = _child_text(entry, ("description", "summary", "content"))
-        abstract = _clean_html_tags(raw_desc)
-
-        link = _child_text(entry, ("link", "guid"))
-        if not link:
-            for child in entry:
-                if _local_name(child.tag) == "link":
-                    href = (child.attrib.get("href") or "").strip()
-                    if href:
-                        link = href
-                        break
-
-        pub_date = _child_text(entry, ("pubdate", "published", "updated", "date")) or None
-        if pub_date and len(pub_date) >= 10 and re.match(r"^\d{4}-\d{2}-\d{2}", pub_date):
-            pub_date = pub_date[:10]
-
-        author_txt = _child_text(entry, ("author", "creator"))
-        authors = [author_txt] if author_txt else []
-
-        items.append({
-            "title": title,
-            "authors": authors,
-            "published_date": pub_date,
-            "abstract": abstract,
-            "source_lang_hint": source.get("lang_hint"),
-            "url": link or None,
-            "doi": None,
-            "pdf_url": None,
-            "source_id": source["id"],
-            "source_name": source["name"],
-            "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
-        })
-
-    return items
-
-
-def collect_openalex(source: dict) -> list[dict]:
-    payload = _fetch_json(source["url"]) or {}
+def _collect_openalex(source: dict) -> list[dict]:
+    payload = json.loads(_fetch_text(source["url"]))
     results = payload.get("results") or []
     items: list[dict] = []
 
     for work in results:
-        title = (work.get("title") or "").strip()
+        if not isinstance(work, dict):
+            continue
+        title = _strip_html(work.get("title") or work.get("display_name"))
         if not title:
             continue
 
         authors = []
-        for auth in (work.get("authorships") or [])[:10]:
-            name = ((auth.get("author") or {}).get("display_name") or "").strip()
-            if name:
-                authors.append(name)
+        for auth in work.get("authorships") or []:
+            if isinstance(auth, dict):
+                name = ((auth.get("author") or {}).get("display_name") or "").strip()
+                if name:
+                    authors.append(name)
 
         abstract = _reconstruct_openalex_abstract(work.get("abstract_inverted_index"))
-        doi_raw = work.get("doi") or ""
-        doi = doi_raw.replace("https://doi.org/", "").strip() or None
-
-        open_access = work.get("open_access") or {}
-        pdf_url = open_access.get("oa_url") if str(open_access.get("oa_url") or "").lower().endswith(".pdf") else None
-
         primary_loc = work.get("primary_location") or {}
-        landing_url = (
+        open_access = work.get("open_access") or {}
+        doi_raw = work.get("doi")
+        doi = doi_raw.replace("https://doi.org/", "").strip() if isinstance(doi_raw, str) and doi_raw else None
+        url = (
             primary_loc.get("landing_page_url")
+            or open_access.get("oa_url")
             or work.get("id")
-            or (f"https://doi.org/{doi}" if doi else None)
         )
+        pdf_url = primary_loc.get("pdf_url") or open_access.get("oa_url")
 
         items.append({
             "title": title,
             "authors": authors,
-            "published_date": work.get("publication_date"),
+            "published_date": work.get("publication_date") or (str(work["publication_year"]) if work.get("publication_year") else None),
             "abstract": abstract,
-            "source_lang_hint": work.get("language"),
-            "url": landing_url,
-            "doi": doi,
+            "url": url,
             "pdf_url": pdf_url,
-            "source_id": source["id"],
-            "source_name": source["name"],
-            "default_doc_type": source.get("default_doc_type", "publication_scientifique"),
+            "doi": doi,
+            "source_name": source.get("name") or source["id"],
+            "source_lang_hint": source.get("lang_hint"),
+            "default_doc_type": source.get("default_doc_type") or "publication_scientifique",
         })
 
     return items
 
 
-def collect_hal(source: dict) -> list[dict]:
-    payload = _fetch_json(source["url"]) or {}
+def _collect_hal(source: dict) -> list[dict]:
+    payload = json.loads(_fetch_text(source["url"]))
     docs = ((payload.get("response") or {}).get("docs")) or []
     items: list[dict] = []
 
     for doc in docs:
-        titles = doc.get("title_s") or []
-        title = (titles[0] if isinstance(titles, list) and titles else (titles or "")).strip()
+        if not isinstance(doc, dict):
+            continue
+        raw_title = doc.get("title_s")
+        if isinstance(raw_title, list):
+            raw_title = raw_title[0] if raw_title else ""
+        title = _strip_html(raw_title)
         if not title:
             continue
 
-        authors_raw = doc.get("authFullName_s") or []
-        authors = [a.strip() for a in authors_raw if isinstance(a, str) and a.strip()][:10]
+        raw_abs = doc.get("abstract_s")
+        if isinstance(raw_abs, list):
+            raw_abs = " ".join(str(x) for x in raw_abs if x)
+        abstract = _strip_html(raw_abs)
 
-        abstracts = doc.get("abstract_s") or []
-        abstract_raw = abstracts[0] if isinstance(abstracts, list) and abstracts else (abstracts or "")
-        abstract = _clean_html_tags(abstract_raw)
+        authors = doc.get("authFullName_s")
+        if not isinstance(authors, list):
+            authors = [str(authors)] if authors else []
 
-        langs = doc.get("language_s") or []
-        lang_hint = langs[0] if isinstance(langs, list) and langs else (langs if isinstance(langs, str) else None)
+        raw_uri = doc.get("uri_s")
+        if isinstance(raw_uri, list):
+            raw_uri = raw_uri[0] if raw_uri else None
 
-        doi_raw = doc.get("doiId_s")
-        doi = (doi_raw[0] if isinstance(doi_raw, list) and doi_raw else (doi_raw or "")).strip() or None
+        raw_pdf = doc.get("fileMain_s")
+        if isinstance(raw_pdf, list):
+            raw_pdf = raw_pdf[0] if raw_pdf else None
 
-        url = (doc.get("uri_s") or "").strip() or None
-        file_main = doc.get("fileMain_s")
-        pdf_url = (file_main[0] if isinstance(file_main, list) and file_main else (file_main or "")).strip() or None
+        raw_doi = doc.get("doiId_s")
+        if isinstance(raw_doi, list):
+            raw_doi = raw_doi[0] if raw_doi else None
+
+        lang_s = doc.get("language_s")
+        if isinstance(lang_s, list):
+            lang_s = lang_s[0] if lang_s else None
 
         items.append({
             "title": title,
-            "authors": authors,
+            "authors": [a.strip() for a in authors if isinstance(a, str) and a.strip()],
             "published_date": doc.get("producedDate_s"),
             "abstract": abstract,
-            "source_lang_hint": lang_hint,
-            "url": url,
-            "doi": doi,
-            "pdf_url": pdf_url,
-            "source_id": source["id"],
-            "source_name": source["name"],
-            "default_doc_type": source.get("default_doc_type", "publication_scientifique"),
+            "url": raw_uri,
+            "pdf_url": raw_pdf,
+            "doi": raw_doi,
+            "source_name": source.get("name") or source["id"],
+            "source_lang_hint": lang_s or source.get("lang_hint"),
+            "default_doc_type": source.get("default_doc_type") or "publication_scientifique",
         })
 
     return items
 
 
-def collect_crossref(source: dict) -> list[dict]:
-    payload = _fetch_json(source["url"]) or {}
-    works = ((payload.get("message") or {}).get("items")) or []
+def _collect_crossref(source: dict) -> list[dict]:
+    payload = json.loads(_fetch_text(source["url"]))
+    work_items = ((payload.get("message") or {}).get("items")) or []
     items: list[dict] = []
 
-    for work in works:
-        titles = work.get("title") or []
-        title = (titles[0] if isinstance(titles, list) and titles else "").strip()
+    for w in work_items:
+        if not isinstance(w, dict):
+            continue
+        title_list = w.get("title") or []
+        title = _strip_html(title_list[0] if isinstance(title_list, list) and title_list else "")
         if not title:
             continue
 
         authors = []
-        for a in (work.get("author") or [])[:10]:
-            given = (a.get("given") or "").strip()
-            family = (a.get("family") or "").strip()
-            full_name = f"{given} {family}".strip()
-            if full_name:
-                authors.append(full_name)
+        for a in w.get("author") or []:
+            if isinstance(a, dict):
+                given = (a.get("given") or "").strip()
+                family = (a.get("family") or "").strip()
+                full = f"{given} {family}".strip()
+                if full:
+                    authors.append(full)
 
-        abstract = _clean_html_tags(work.get("abstract"))
-        doi = (work.get("DOI") or "").strip() or None
-        url = (work.get("URL") or "").strip() or (f"https://doi.org/{doi}" if doi else None)
+        date_parts = None
+        for key in ("published-print", "published-online", "created"):
+            dp = ((w.get(key) or {}).get("date-parts")) or []
+            if dp and isinstance(dp[0], list) and dp[0]:
+                date_parts = dp[0]
+                break
 
-        date_parts = (((work.get("published") or work.get("created") or {}).get("date-parts")) or [[]])[0]
         pub_date = None
-        if isinstance(date_parts, list) and date_parts:
-            pub_date = "-".join(str(p).zfill(2) for p in date_parts[:3])
+        if date_parts:
+            parts_str = [str(p).zfill(2) if idx > 0 else str(p) for idx, p in enumerate(date_parts[:3])]
+            pub_date = "-".join(parts_str)
+
+        abstract = _strip_html(w.get("abstract"))
+        doi = (w.get("DOI") or "").strip() or None
+        url = (w.get("URL") or "").strip() or (f"https://doi.org/{doi}" if doi else None)
 
         pdf_url = None
-        for link in (work.get("link") or []):
-            if str(link.get("content-type") or "").lower() == "application/pdf" and link.get("URL"):
-                pdf_url = str(link["URL"]).strip()
-                break
+        for link in w.get("link") or []:
+            if isinstance(link, dict) and "pdf" in (link.get("content-type") or "").lower():
+                if link.get("URL"):
+                    pdf_url = link["URL"].strip()
+                    break
 
         items.append({
             "title": title,
             "authors": authors,
             "published_date": pub_date,
             "abstract": abstract,
-            "source_lang_hint": work.get("language"),
             "url": url,
-            "doi": doi,
             "pdf_url": pdf_url,
-            "source_id": source["id"],
-            "source_name": source["name"],
-            "default_doc_type": source.get("default_doc_type", "publication_scientifique"),
+            "doi": doi,
+            "source_name": source.get("name") or source["id"],
+            "source_lang_hint": w.get("language") or source.get("lang_hint"),
+            "default_doc_type": source.get("default_doc_type") or "publication_scientifique",
         })
+
+    return items
+
+
+def _collect_rss_atom(source: dict) -> list[dict]:
+    xml_text = _fetch_text(source["url"])
+    root = ET.fromstring(xml_text)
+    items: list[dict] = []
+
+    # RSS 2.0
+    for entry in root.findall(".//channel/item"):
+        title = _strip_html(entry.findtext("title"))
+        if not title:
+            continue
+        link = (entry.findtext("link") or "").strip() or None
+        pub_date = (entry.findtext("pubDate") or entry.findtext("date") or "").strip() or None
+        summary = _strip_html(entry.findtext("description") or entry.findtext("summary"))
+
+        items.append({
+            "title": title,
+            "authors": [],
+            "published_date": pub_date,
+            "abstract": summary,
+            "url": link,
+            "pdf_url": None,
+            "doi": None,
+            "source_name": source.get("name") or source["id"],
+            "source_lang_hint": source.get("lang_hint"),
+            "default_doc_type": source.get("default_doc_type") or "rapport_institutionnel",
+        })
+
+    # Atom
+    atom_ns = {"atom": "http://www.w3.org/2005/Atom"}
+    for entry in root.findall(".//atom:entry", atom_ns):
+        title = _strip_html(entry.findtext("atom:title", namespaces=atom_ns))
+        if not title:
+            continue
+        link_el = entry.find("atom:link[@rel='alternate']", atom_ns) or entry.find("atom:link", atom_ns)
+        link = (link_el.attrib.get("href") if link_el is not None else "").strip() or None
+        pub_date = (
+            entry.findtext("atom:updated", namespaces=atom_ns)
+            or entry.findtext("atom:published", namespaces=atom_ns)
+            or ""
+        ).strip() or None
+        summary = _strip_html(
+            entry.findtext("atom:summary", namespaces=atom_ns)
+            or entry.findtext("atom:content", namespaces=atom_ns)
+        )
+
+        items.append({
+            "title": title,
+            "authors": [],
+            "published_date": pub_date,
+            "abstract": summary,
+            "url": link,
+            "pdf_url": None,
+            "doi": None,
+            "source_name": source.get("name") or source["id"],
+            "source_lang_hint": source.get("lang_hint"),
+            "default_doc_type": source.get("default_doc_type") or "rapport_institutionnel",
+        })
+
+    return items
+
+
+def _collect_html_links(source: dict) -> list[dict]:
+    """Collecte légère de liens/titres pertinents depuis une page HTML publique (sans scraping agressif)."""
+    html_text = _fetch_text(source["url"])
+    base_url = source["url"]
+    max_items = int(source.get("max_items", 20))
+    seen_urls: set[str] = set()
+    items: list[dict] = []
+
+    for match in re.finditer(r'<a\b[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', html_text, flags=re.IGNORECASE | re.DOTALL):
+        href, raw_label = match.group(1).strip(), match.group(2)
+        if not href or href.startswith(("#", "mailto:", "javascript:", "tel:")):
+            continue
+        full_url = urljoin(base_url, href)
+        if full_url in seen_urls:
+            continue
+        title = _strip_html(raw_label)
+        if len(title) < 18:
+            continue
+        seen_urls.add(full_url)
+        items.append({
+            "title": title,
+            "authors": [],
+            "published_date": None,
+            "abstract": "",
+            "url": full_url,
+            "pdf_url": full_url if full_url.lower().endswith(".pdf") else None,
+            "doi": None,
+            "source_name": source.get("name") or source["id"],
+            "source_lang_hint": source.get("lang_hint"),
+            "default_doc_type": source.get("default_doc_type") or "rapport_institutionnel",
+        })
+        if len(items) >= max_items:
+            break
 
     return items
 
 
 def collect_from_source(source: dict) -> list[dict]:
-    """Route vers le bon connecteur selon le type déclaré dans sources.json."""
-    s_type = (source.get("type") or "").strip()
-    if s_type == "api_openalex":
-        return collect_openalex(source)
-    if s_type == "api_hal":
-        return collect_hal(source)
-    if s_type == "api_crossref":
-        return collect_crossref(source)
-    if s_type == "rss_atom":
-        return collect_rss_atom(source)
-    raise ValueError(f"Type de source non pris en charge : {s_type}")
+    """Point d'entrée unique de collecte selon le type de source."""
+    stype = (source.get("type") or "").strip().lower()
+    if not source.get("url"):
+        return []
+
+    try:
+        if stype == "api_openalex":
+            return _collect_openalex(source)
+        if stype == "api_hal":
+            return _collect_hal(source)
+        if stype == "api_crossref":
+            return _collect_crossref(source)
+        if stype == "rss_atom":
+            return _collect_rss_atom(source)
+        if stype == "html_links":
+            return _collect_html_links(source)
+    except (HTTPError, URLError, TimeoutError, ValueError, ET.ParseError, OSError):
+        raise
+
+    raise ValueError(f"Type de source non supporté : {stype}")

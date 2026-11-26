@@ -1,31 +1,38 @@
-# KITN — De l'information à la maîtrise
+# KITN — Centre de veille & de connaissances
 
-KITN est une plateforme de veille stratégique et de capitalisation des connaissances, centrée sur le Maroc.
+Plateforme bilingue (FR / AR, avec prise en charge RTL) dédiée à la veille, à l'indexation et à l'analyse structurée des dynamiques, politiques publiques, enjeux économiques, sécuritaires et travaux de recherche liés au Maroc.
 
-## Vision
-Rassembler et organiser des analyses, publications scientifiques, rapports, documents institutionnels et ressources de préparation aux concours. Aider à comprendre les transformations du Maroc et transformer l'information en connaissance utile.
+## Architecture du dépôt
 
-## Principes
-- **Gratuité** : privilégier les services et sources accessibles gratuitement.
-- **Fiabilité** : favoriser les sources originales, références vérifiables et liens directs.
-- **Pertinence** : sélectionner les contenus selon leur utilité pour comprendre le Maroc.
-- **Bilinguisme** : français et arabe, avec prise en charge RTL.
-- **Traçabilité** : distinguer source originale, date de publication et analyses KITN.
+- **Racine (`index.html`, `src/main.js`, `src/style.css`, `package.json`)** : application web **Vite** active en production sur Cloudflare Pages (`kitn.pages.dev`), commandée par `npm run build` avec sortie `dist`.
+- **`pipeline/`** : moteur Python de collecte, normalisation, scoring de pertinence, classification sur les 6 pôles, vérification d'URL et fusion incrémentale (`run_pipeline.py`, `processors.py`, `collectors.py`, `config.py`).
+- **`data/`** : configuration des sources (`sources.json`), archives mensuelles (`publications/YYYY-MM.json`), index de recherche (`index/search-index.json`) et suivi de santé (`index/sources-health.json`).
+- **`public/data/`** : copie synchronisée de l'index consommé par le build Vite de production.
+- **`web/`** : prototype/interface alternative sous Astro (non déployée par le projet Cloudflare Pages principal).
 
-## Rubriques prévues
-- Institutions et gouvernance
-- Économie et société
-- Sécurité et territoires
-- Recherche et études
-- KITN Academy : préparation aux concours
+## Les 6 pôles de classification
 
-## Technologie
-Application statique basée sur Vite. Déploiement prévu sur Cloudflare Pages : commande `npm run build`, dossier de sortie `dist`.
+1. `institutions_gouvernance` — Institutions & gouvernance
+2. `economie_finances_publiques` — Économie & finances publiques
+3. `societe_developpement_humain` — Société & développement humain
+4. `relations_internationales_geopolitique` — Relations internationales & géopolitique
+5. `securite_affaires_interieures` — Sécurité & affaires intérieures
+6. `recherche_scientifique` — Recherche scientifique
 
-## Démarrage local
+## Automatisation (GitHub Actions)
+
+Le workflow `.github/workflows/main.yml` s'exécute deux fois par jour (`03:30` et `15:30` UTC) ainsi qu'à la demande (`workflow_dispatch`) :
+
+1. Exécute `python -m pipeline.run_pipeline`.
+2. Synchronise `data/index/search-index.json` vers `public/data/index/search-index.json`.
+3. Vérifie le build Vite à la racine (`npm run build`).
+4. Commit et push uniquement si des changements réels sont détectés dans `data/` ou `public/data/`.
+
+## Lancer le pipeline et les tests en local
+
 ```bash
-npm install
-npm run dev
-```
+# Lancer la veille
+PYTHONPATH=. python -m pipeline.run_pipeline
 
-Cette première livraison est une base visuelle et technique. Les modules de veille, recherche documentaire, bibliothèque et préparation aux concours seront développés progressivement.
+# Lancer les tests unitaires
+python -m unittest discover -s tests -v

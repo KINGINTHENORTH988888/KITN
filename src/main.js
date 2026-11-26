@@ -12,10 +12,34 @@ const copy = {
     sections: 'Explorer par thématique',
     sectionsIntro: 'Des sujets essentiels, organisés pour aller au-delà de l’actualité et comprendre les dynamiques de fond.',
     themes: [
-      ['01', 'Institutions & gouvernance', 'Politiques publiques, institutions, administration et réformes.'],
-      ['02', 'Économie & société', 'Indicateurs, emploi, développement humain et mutations sociales.'],
-      ['03', 'Sécurité & territoires', 'Sécurité publique, prévention, territoires et cohésion sociale.'],
-      ['04', 'Recherche & études', 'Articles scientifiques, rapports, mémoires et publications.']
+      {
+        num: '01',
+        title: 'Institutions & gouvernance',
+        desc: 'Politiques publiques, institutions, administration et réformes.',
+        focus: 'Action publique, modernisation administrative, finances publiques, décentralisation et cadres juridiques au Maroc.',
+        tags: ['Politiques publiques', 'Administration', 'Réformes', 'Gouvernance']
+      },
+      {
+        num: '02',
+        title: 'Économie & société',
+        desc: 'Indicateurs, emploi, développement humain et mutations sociales.',
+        focus: 'Croissance, pouvoir d’achat, emploi, investissement, données statistiques (HCP) et dynamiques sociales.',
+        tags: ['Macroéconomie', 'Emploi', 'Indicateurs', 'Mutations sociales']
+      },
+      {
+        num: '03',
+        title: 'Sécurité & territoires',
+        desc: 'Sécurité publique, prévention, territoires et cohésion sociale.',
+        focus: 'Sécurité intérieure, aménagement du territoire, cohésion sociale, enjeux territoriaux et prévention.',
+        tags: ['Sécurité publique', 'Territoires', 'Prévention', 'Cohésion']
+      },
+      {
+        num: '04',
+        title: 'Recherche & études',
+        desc: 'Articles scientifiques, rapports, mémoires et publications.',
+        focus: 'Notes d’analyse, rapports institutionnels, travaux académiques et publications de référence.',
+        tags: ['Rapports', 'Études', 'Publications', 'Analyse']
+      }
     ],
     academy: 'KITN ACADEMY',
     academyTitle: 'Préparer les concours avec méthode.',
@@ -52,10 +76,34 @@ const copy = {
     sections: 'استكشف حسب الموضوع',
     sectionsIntro: 'مواضيع أساسية منظمة لفهم التحولات العميقة وتجاوز مجرد متابعة الأخبار.',
     themes: [
-      ['01', 'المؤسسات والحكامة', 'السياسات العمومية والمؤسسات والإدارة والإصلاحات.'],
-      ['02', 'الاقتصاد والمجتمع', 'المؤشرات والتشغيل والتنمية البشرية والتحولات الاجتماعية.'],
-      ['03', 'الأمن والمجالات الترابية', 'الأمن العام والوقاية والمجالات الترابية والتماسك الاجتماعي.'],
-      ['04', 'البحث والدراسات', 'مقالات علمية وتقارير وأطروحات ومنشورات.']
+      {
+        num: '01',
+        title: 'المؤسسات والحكامة',
+        desc: 'السياسات العمومية والمؤسسات والإدارة والإصلاحات.',
+        focus: 'العمل العمومي، تحديث الإدارة، المالية العمومية، اللاتمركز والإطارات القانونية بالمغرب.',
+        tags: ['السياسات العمومية', 'الإدارة', 'الإصلاحات', 'الحكامة']
+      },
+      {
+        num: '02',
+        title: 'الاقتصاد والمجتمع',
+        desc: 'المؤشرات والتشغيل والتنمية البشرية والتحولات الاجتماعية.',
+        focus: 'النمو، القدرة الشرائية، التشغيل، الاستثمار، المعطيات الإحصائية والديناميات الاجتماعية.',
+        tags: ['الاقتصاد الكلي', 'التشغيل', 'المؤشرات', 'التحولات الاجتماعية']
+      },
+      {
+        num: '03',
+        title: 'الأمن والمجالات الترابية',
+        desc: 'الأمن العام والوقاية والمجالات الترابية والتماسك الاجتماعي.',
+        focus: 'الأمن الداخلي، التهيئة المجالية، التماسك الاجتماعي، القضايا الترابية والوقاية.',
+        tags: ['الأمن العام', 'المجالات الترابية', 'الوقاية', 'التماسك']
+      },
+      {
+        num: '04',
+        title: 'البحث والدراسات',
+        desc: 'مقالات علمية وتقارير وأطروحات ومنشورات.',
+        focus: 'أوراق تحليلية، تقارير مؤسساتية، أعمال أكاديمية ومنشورات مرجعية.',
+        tags: ['تقارير', 'دراسات', 'منشورات', 'تحليل']
+      }
     ],
     academy: 'أكاديمية KITN',
     academyTitle: 'استعد للمباريات بمنهجية واضحة.',
@@ -85,11 +133,13 @@ const copy = {
 
 let lang = 'fr'
 let activePrinciple = 0
+let activeTheme = 0
 const app = document.querySelector('#app')
 
 function render() {
   const t = copy[lang]
   const currentPrinciple = t.principles[activePrinciple] || t.principles[0]
+  const currentTheme = t.themes[activeTheme] || t.themes[0]
 
   document.documentElement.lang = lang
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
@@ -139,13 +189,23 @@ function render() {
     </div>
     <div class="theme-grid">
       ${t.themes.map((x, i) => `
-        <a class="theme-card theme-${i + 1}" href="#research">
-          <div class="theme-top"><span>${x[0]}</span><span class="theme-arrow">↗</span></div>
+        <button type="button" class="theme-card theme-${i + 1} ${activeTheme === i ? 'is-selected' : ''}" data-theme="${i}">
+          <div class="theme-top"><span>${x.num}</span><span class="theme-arrow">${activeTheme === i ? '●' : '↗'}</span></div>
           <div class="theme-icon">${['⌘', '◒', '◎', '⌕'][i]}</div>
-          <h3>${x[1]}</h3>
-          <p>${x[2]}</p>
-        </a>
+          <h3>${x.title}</h3>
+          <p>${x.desc}</p>
+        </button>
       `).join('')}
+    </div>
+    <div class="theme-panel" id="theme-detail">
+      <div class="theme-panel-top">
+        <strong>${currentTheme.num} · ${currentTheme.title}</strong>
+        <a href="#research">${lang === 'fr' ? 'Aller à l’espace de recherche →' : 'الانتقال إلى فضاء البحث ←'}</a>
+      </div>
+      <p>${currentTheme.focus}</p>
+      <div class="theme-tags">
+        ${currentTheme.tags.map(tag => `<span>${tag}</span>`).join('')}
+      </div>
     </div>
   </section>
 
@@ -206,6 +266,13 @@ function render() {
   document.querySelector('#language').addEventListener('click', () => {
     lang = lang === 'fr' ? 'ar' : 'fr'
     render()
+  })
+
+  document.querySelectorAll('.theme-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      activeTheme = Number(card.dataset.theme)
+      render()
+    })
   })
 
   document.querySelectorAll('.principle-btn').forEach((btn) => {

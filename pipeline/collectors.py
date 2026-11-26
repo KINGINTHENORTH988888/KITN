@@ -27,6 +27,32 @@ _NOISE_PATH_TOKENS = (
 _DOC_EXT_RE = re.compile(r"\.(pdf|xlsx?|csv|docx?)($|\?)", re.IGNORECASE)
 _DATE_IN_TEXT_RE = re.compile(r"\b(20\d{2}[-/](?:0[1-9]|1[0-2])(?:[-/](?:0[1-9]|[12]\d|3[01]))?|20\d{2})\b")
 
+_HCP_RELEVANT_TOKENS = (
+    "note",
+    "publication",
+    "rapport",
+    "enquete",
+    "enquête",
+    "indice",
+    "ipc",
+    "pib",
+    "emploi",
+    "chomage",
+    "chômage",
+    "demograph",
+    "démograph",
+    "recensement",
+    "rgph",
+    "conjoncture",
+    "comptes-nationaux",
+    "statistique",
+    "indicateur",
+    "communique",
+    "communiqué",
+    "pdf",
+    "xls",
+)
+
 
 def _fetch_text(url: str, timeout: int = 20) -> str:
     req = Request(
@@ -61,8 +87,7 @@ def _extract_date_hint(text: str, url: str = "") -> str | None:
     for candidate in (url, text):
         m = _DATE_IN_TEXT_RE.search(candidate or "")
         if m:
-            val = m.group(1).replace("/", "-")
-            return val
+            return m.group(1).replace("/", "-")
     return None
 
 
@@ -166,11 +191,7 @@ class _AnchorExtractor(HTMLParser):
             self._buf = []
 
 
-def collect_html_links(source: dict) -> list[dict]:
-    base_url = source.get("url")
-    if not base_url:
-        return []
-    max_items = int(source.get("max_items", 20))
+def _collect_links_from_page(base_url: str, source: dict, strict_hcp: bool = False) -> list[dict]:
     html_body = _fetch_text(base_url)
     parser = _AnchorExtractor()
     parser.feed(html_body)
@@ -182,7 +203,7 @@ def collect_html_links(source: dict) -> list[dict]:
     for href, anchor_text in parser.links:
         if href.startswith(("#", "mailto:", "tel:", "javascript:")):
             continue
-        if len(anchor_text) < 18:
+        if len(anchor_text) < 16:
             continue
         abs_url = sanitize_url(urljoin(base_url, href))
         if not abs_url or abs_url == sanitize_url(base_url) or abs_url in seen_urls:
@@ -202,28 +223,65 @@ def collect_html_links(source: dict) -> list[dict]:
         if not is_doc_file and not has_deep_path:
             continue
 
+        combined_probe = f"{anchor_text.lower()} {path_lower}"
+        if strict_hcp and not is_doc_file:
+            if not any(tok in combined_probe for tok in _HCP_RELEVANT_TOKENS):
+                continue
+
         seen_urls.add(abs_url)
         is_pdf = path_lower.endswith(".pdf")
         date_hint = _extract_date_hint(anchor_text, abs_url)
+        doc_type = "rapport" if is_pdf else source.get("default_doc_type", "rapport_institutionnel")
 
         items.append({
             "title": anchor_text,
-            "abstract": f"Publication ou jeu de données extrait depuis {source.get('name') or base_host} ({anchor_text}).",
+            "abstract": f"Ressource statistique ou publication officielle ({source.get('name') or base_host}) : {anchor_text}.",
             "authors": [source.get("name")] if source.get("name") else [],
             "venue": source.get("name") or base_host,
-            "keywords": [],
+            "keywords": ["HCP", "Maroc", "statistiques"] if strict_hcp else [],
             "published_date": date_hint,
             "url": abs_url,
             "doi": None,
             "pdf_url": abs_url if is_pdf else None,
             "texte_integral_disponible": is_doc_file,
             "source_lang_hint": source.get("lang_hint"),
-            "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
+            "default_doc_type": doc_type,
         })
-        if len(items) >= max_items:
-            break
 
     return items
+
+
+def collect_html_links(source: dict) -> list[dict]:
+    base_url = source.get("url")
+    if not base_url:
+        return []
+    max_items = int(source.get("max_items", 20))
+    is_hcp = str(source.get("id") or "").lower() == "hcp_maroc" or "hcp.ma" in str(base_url).lower()
+
+    collected = _collect_links_from_page(base_url, source, strict_hcp=is_hcp)
+
+    if is_hcp and len(collected) < max_items:
+        candidate_pages = [
+            urljoin(base_url, "/Publications"),
+            urljoin(base_url, "/Notes-d-information"),
+            urljoin(base_url, "/Communiques"),
+        ]
+        seen = {it["url"] for it in collected if it.get("url")}
+        for sub_url in candidate_pages:
+            if len(collected) >= max_items:
+                break
+            try:
+                extra = _collect_links_from_page(sub_url, source, strict_hcp=True)
+                for item in extra:
+                    if item.get("url") and item["url"] not in seen:
+                        seen.add(item["url"])
+                        collected.append(item)
+                        if len(collected) >= max_items:
+                            break
+            except Exception:
+                continue
+
+    return collected[:max_items]
 
 
 def _strip_ns(tag: str) -> str:

@@ -271,7 +271,7 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["published_date"], "2026-10-12")
         self.assertEqual(items[0]["default_doc_type"], "article_presse")
         self.assertEqual(items[0]["espace"], "veille")
-        self.assertEqual(items[1]["title"], "Industrie de défense : financement et souveraineté")
+        self.assertEqual(items[1]["title"], "Industrie de défense: financement et souveraineté")
 
 
 

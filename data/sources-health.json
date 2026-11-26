@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-26T20:32:32Z",
+  "updated_at": "2026-11-26T20:33:57Z",
   "active_sources": 3,
-  "total_fetched": 60,
-  "total_accepted": 39,
+  "total_fetched": 55,
+  "total_accepted": 33,
   "sources": [
     {
       "source_id": "hcp_maroc",
@@ -16,7 +16,7 @@
       "fetched": 15,
       "accepted": 9,
       "error": null,
-      "checked_at": "2026-11-26T20:32:32Z"
+      "checked_at": "2026-11-26T20:33:57Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -28,9 +28,9 @@
       "status": "ok",
       "stage": "collecte_effectuee",
       "fetched": 20,
-      "accepted": 17,
+      "accepted": 20,
       "error": null,
-      "checked_at": "2026-11-26T20:32:32Z"
+      "checked_at": "2026-11-26T20:33:57Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -41,10 +41,10 @@
       "enabled": true,
       "status": "ok",
       "stage": "collecte_effectuee",
-      "fetched": 25,
-      "accepted": 13,
+      "fetched": 20,
+      "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T20:32:32Z"
+      "checked_at": "2026-11-26T20:33:57Z"
     }
   ]
 }

@@ -1,363 +1,282 @@
 import hashlib
 import html
 import re
-from datetime import date, datetime, timezone
-from urllib.error import HTTPError, URLError
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
-from urllib.request import Request, urlopen
+import unicodedata
+from datetime import date
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pipeline.config import (
+    DOCUMENT_TYPES,
     MOROCCO_STRONG_SIGNALS,
+    POLES,
     POLE_KEYWORDS,
-    REQUEST_TIMEOUT,
-    USER_AGENT,
+    SUPPORTED_LANGUAGES,
 )
 
-EXTRA_POLE_KEYWORDS = {
-    "economie_finances_publiques": (
-        "finance", "esg", "investment", "trade", "deficit", "value chain",
-        "automotive", "industrie", "automobile", "export", "import", "phosphate",
-        "macroéconomique", "croissance", "marchés publics", "budget", "fiscal",
-        "économie", "economic", "green finance", "banque", "investissements",
-    ),
-    "institutions_gouvernance": (
-        "gouvernance", "governance", "politiques publiques", "public policy",
-        "décret", "administration", "territorial", "régionalisation", "déconcentration",
-        "service public", "réforme", "institution", "état", "collectivités",
-    ),
-    "relations_internationales_geopolitique": (
-        "géopolitique", "puissance", "diplomatie", "mediterranean", "méditerranée",
-        "expansionism", "international", "coopération", "sahara", "afrique",
-        "europe", "stratégique", "foreign policy", "global value chains",
-    ),
-    "securite_affaires_interieures": (
-        "sécurité", "security", "police", "sûreté", "dgsn", "criminalité",
-        "prévention", "ordre public", "renseignement", "cyber", "frontières",
-    ),
-    "societe_developpement_humain": (
-        "santé", "health", "hospitalière", "malnutrition", "oncology", "université",
-        "étudiants", "students", "éducation", "femmes", "vulnérabilité", "social",
-        "care", "emploi", "jeunesse", "démographie",
-    ),
-}
-
-LIGATURE_MAP = str.maketrans({
-    "\ufb00": "ff",
-    "\ufb01": "fi",
-    "\ufb02": "fl",
-    "\ufb03": "ffi",
-    "\ufb04": "ffl",
-    "\u2019": "'",
-    "\u2018": "'",
-    "\u201c": '"',
-    "\u201d": '"',
-})
-
-NOISY_QUERY_KEYS = {
+_TRACKING_PARAMS = {
     "error",
     "code",
-    "state",
-    "session",
     "utm_source",
     "utm_medium",
     "utm_campaign",
     "utm_term",
     "utm_content",
+    "fbclid",
+    "gclid",
+}
+
+_LIGATURES = {
+    "\ufb00": "ff",
+    "\ufb01": "fi",
+    "\ufb02": "fl",
+    "\ufb03": "ffi",
+    "\ufb04": "ffl",
+    "\u201c": '"',
+    "\u201d": '"',
+    "\u2018": "'",
+    "\u2019": "'",
+    "\u2013": "-",
+    "\u2014": "-",
 }
 
 
-def clean_text(text: str | None) -> str:
-    """Nettoie les balises HTML, entités, ligatures et espaces superflus."""
-    if not text:
+def clean_text(raw: str | None) -> str:
+    if not raw:
         return ""
-    unescaped = html.unescape(str(text))
-    no_tags = re.sub(r"<[^>]+>", " ", unescaped)
-    normalized = no_tags.translate(LIGATURE_MAP)
-    return re.sub(r"\s+", " ", normalized).strip()
+    text = html.unescape(str(raw))
+    for k, v in _LIGATURES.items():
+        text = text.replace(k, v)
+    text = re.sub(r"<script\b[^>]*>.*?</script>", " ", text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<style\b[^>]*>.*?</style>", " ", text, flags=re.IGNORECASE | re.DOTALL)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = unicodedata.normalize("NFC", text)
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def sanitize_url(url: str | None) -> str | None:
-    """Nettoie une URL HTTP(S) en retirant les paramètres d'erreur ou de tracking."""
     if not url or not isinstance(url, str):
         return None
-    raw = url.strip()
-    if not raw.startswith(("http://", "https://")):
+    candidate = url.strip()
+    if not candidate:
         return None
     try:
-        parsed = urlparse(raw)
-        clean_params = [
-            (k, v)
-            for k, v in parse_qsl(parsed.query, keep_blank_values=False)
-            if k.lower() not in NOISY_QUERY_KEYS
-        ]
-        clean_query = urlencode(clean_params)
-        return urlunparse((
-            parsed.scheme.lower(),
-            parsed.netloc.lower(),
-            parsed.path,
-            "",
-            clean_query,
-            "",
-        ))
+        parsed = urlsplit(candidate)
     except ValueError:
-        return raw
+        return None
+    if parsed.scheme.lower() not in ("http", "https") or not parsed.netloc:
+        return None
+    kept_query = [
+        (k, v)
+        for k, v in parse_qsl(parsed.query, keep_blank_values=False)
+        if k.lower() not in _TRACKING_PARAMS
+    ]
+    clean_query = urlencode(kept_query)
+    return urlunsplit((parsed.scheme.lower(), parsed.netloc.lower(), parsed.path, clean_query, ""))
 
 
-def detect_real_language(text: str, source_hint: str | None = None) -> str:
-    """Détecte la langue réelle (fr, ar, en, es, ou autre) sans valeur par défaut erronée."""
-    cleaned = clean_text(text)
-    if not cleaned:
-        return (source_hint or "unknown").lower()
-
-    arabic_chars = len(re.findall(r"[\u0600-\u06FF]", cleaned))
-    alpha_chars = len(re.findall(r"[A-Za-z\u0600-\u06FFÀ-ÿ]", cleaned))
-    if alpha_chars > 0 and (arabic_chars / alpha_chars) > 0.25:
+def detect_real_language(text: str, hint: str | None = None) -> str:
+    sample = (text or "").strip()
+    if re.search(r"[\u0600-\u06FF]", sample):
         return "ar"
 
-    lower = f" {cleaned.lower()} "
-    scores = {"fr": 0, "en": 0, "es": 0}
-
-    fr_markers = (
-        " le ", " la ", " les ", " des ", " du ", " au ", " aux ", " est ", " sont ",
-        " pour ", " dans ", " avec ", " sur ", " par ", " une ", " cette ", " politique ",
-        " publique ", " maroc ", " gouvernement ", " étude ", " recherche ", " sécurité "
+    lower = f" {sample.lower()} "
+    fr_hits = sum(
+        1
+        for tok in (
+            " le ", " la ", " les ", " des ", " du ", " au ", " aux ",
+            " politique ", " gouvernance ", " économie ", " maroc ", " sécurité ", " rapport "
+        )
+        if tok in lower
     )
-    en_markers = (
-        " the ", " and ", " of ", " to ", " in ", " for ", " with ", " on ", " is ",
-        " are ", " from ", " by ", " morocco ", " moroccan ", " policy ", " study ",
-        " research ", " governance ", " security "
-    )
-    es_markers = (
-        " el ", " los ", " las ", " del ", " por ", " para ", " con ", " una ",
-        " marruecos ", " marroquí ", " gobierno ", " investigación ", " seguridad ",
-        " política ", " público ", " pública "
+    en_hits = sum(
+        1
+        for tok in (
+            " the ", " and ", " of ", " in ", " for ", " to ", " with ",
+            " policy ", " economic ", " morocco ", " security ", " analysis "
+        )
+        if tok in lower
     )
 
-    for w in fr_markers:
-        if w in lower:
-            scores["fr"] += 1
-    for w in en_markers:
-        if w in lower:
-            scores["en"] += 1
-    for w in es_markers:
-        if w in lower:
-            scores["es"] += 1
+    if fr_hits > en_hits and fr_hits > 0:
+        return "fr"
+    if en_hits > fr_hits and en_hits > 0:
+        return "en"
 
-    if re.search(r"\b(qu'|d'|l'|j'|s'|n'|c')\w+", lower):
-        scores["fr"] += 2
-    if re.search(r"[àâçéèêëîïôùûüÿ]", lower):
-        scores["fr"] += 2
-    if "¿" in cleaned or "¡" in cleaned or "ñ" in lower:
-        scores["es"] += 3
-
-    best_lang = max(scores, key=scores.get)
-    if scores[best_lang] > 0:
-        return best_lang
-
-    if source_hint and source_hint.lower() in ("fr", "ar", "en", "es"):
-        return source_hint.lower()
-
-    return "unknown"
+    if hint:
+        h = str(hint).strip().lower()[:2]
+        if h in SUPPORTED_LANGUAGES:
+            return h
+    return "fr"
 
 
 def validate_publication_date(raw_date: str | None, reference_date: date | None = None) -> dict:
-    """Valide une date de publication (YYYY, YYYY-MM ou YYYY-MM-DD) face à la date du jour."""
-    ref = reference_date or datetime.now(timezone.utc).date()
-    val = (raw_date or "").strip()
+    ref = reference_date or date.today()
+    if not raw_date or not str(raw_date).strip():
+        return {"date_statut": "date_manquante", "date_anomalie": False}
 
-    if not val:
-        return {"date_statut": "date_invalide", "date_anomalie": True}
-
-    iso_match = re.match(r"^(\d{4}-\d{2}-\d{2})", val)
-    if iso_match and re.fullmatch(r"\d{4}-\d{2}-\d{2}", val):
+    s = str(raw_date).strip()
+    m_full = re.match(r"^(\d{4})-(\d{2})-(\d{2})", s)
+    if m_full:
+        y, mo, d = int(m_full.group(1)), int(m_full.group(2)), int(m_full.group(3))
         try:
-            parsed = date.fromisoformat(val)
+            parsed_d = date(y, mo, d)
         except ValueError:
             return {"date_statut": "date_invalide", "date_anomalie": True}
-        if parsed > ref:
+        if parsed_d > ref:
             return {"date_statut": "date_future_a_verifier", "date_anomalie": True}
         return {"date_statut": "date_confirmee", "date_anomalie": False}
 
-    if re.fullmatch(r"\d{4}-\d{2}", val):
-        year, month = map(int, val.split("-"))
-        if not (1 <= month <= 12):
+    m_ym = re.match(r"^(\d{4})-(\d{2})$", s)
+    if m_ym:
+        y, mo = int(m_ym.group(1)), int(m_ym.group(2))
+        if not (1 <= mo <= 12):
             return {"date_statut": "date_invalide", "date_anomalie": True}
-        if (year, month) > (ref.year, ref.month):
+        ref_ym = (ref.year, ref.month)
+        if (y, mo) > ref_ym:
             return {"date_statut": "date_future_a_verifier", "date_anomalie": True}
-        return {"date_statut": "date_confirmee", "date_anomalie": False}
+        return {"date_statut": "date_partielle", "date_anomalie": False}
 
-    if re.fullmatch(r"\d{4}", val):
-        year = int(val)
-        if year > ref.year:
+    m_y = re.match(r"^(\d{4})$", s)
+    if m_y:
+        y = int(m_y.group(1))
+        if y > ref.year:
             return {"date_statut": "date_future_a_verifier", "date_anomalie": True}
-        return {"date_statut": "date_confirmee", "date_anomalie": False}
+        return {"date_statut": "date_partielle", "date_anomalie": False}
 
     return {"date_statut": "date_invalide", "date_anomalie": True}
 
 
-def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
-    """Évalue si le document concerne réellement le Maroc au-delà d'une mention isolée."""
-    title_l = clean_text(title).lower()
-    abs_l = clean_text(abstract).lower()
-    full_l = f"{title_l} {abs_l}".strip()
-
-    matched_signals = [sig for sig in MOROCCO_STRONG_SIGNALS if sig in full_l]
-    in_title = [sig for sig in MOROCCO_STRONG_SIGNALS if sig in title_l]
-
-    context_terms = (
-        "politique", "gouvernance", "économie", "budget", "finance", "sécurité",
-        "université", "recherche", "loi", "réforme", "développement", "région",
-        "policy", "governance", "economy", "security", "research", "development",
-        "السياسة", "الحكامة", "الاقتصاد", "الأمن", "البحث", "التنمية"
-    )
-    has_context = any(term in full_l for term in context_terms)
+def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | None = None) -> dict:
+    combined = f"{clean_text(title)} {clean_text(abstract)}".lower()
+    strong_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if sig.lower() in combined]
+    source_id = str((source or {}).get("id") or "").lower()
 
     score = 0
-    if in_title:
-        score += 35
-    if matched_signals:
-        score += min(35, len(matched_signals) * 12)
-    if matched_signals and has_context:
+    if strong_matches:
+        score += min(80, 35 + 15 * len(strong_matches))
+    if any(k in source_id for k in ("maroc", "hcp", "bam", "bkam", "finances", "tgr", "cour_des_comptes", "cese", "sgg", "interieur", "emploi_public", "prsm", "imist", "map", "hespress", "medias24")):
         score += 20
-    if len(abs_l) >= 80 and matched_signals:
-        score += 10
 
     score = min(100, score)
-    is_relevant = bool(matched_signals) and (score >= 50 or (in_title and has_context))
-
-    if not matched_signals:
-        justification = "Aucun signal explicite lié au Maroc détecté dans le titre ou le résumé."
-    elif is_relevant:
-        justification = f"Lien pertinent avec le Maroc identifié via : {', '.join(matched_signals[:5])}."
-    else:
-        justification = f"Mention limitée ({', '.join(matched_signals[:3])}) sans contexte analytique suffisant."
+    is_relevant = score >= 35
+    lien_maroc = "direct" if len(strong_matches) >= 1 else ("indirect_ou_source_nationale" if is_relevant else "aucun")
 
     return {
-        "score": score,
         "is_relevant": is_relevant,
-        "justification": justification,
+        "score": score,
+        "lien_maroc": lien_maroc,
+        "signals": strong_matches,
     }
 
 
-def classify_document(title: str, abstract: str, default_doc_type: str = "publication_scientifique") -> dict:
-    """Classe sur les pôles de KITN avec pôles secondaires éventuels et détection du type."""
-    text_l = f"{clean_text(title)} {clean_text(abstract)}".lower()
-    title_l = clean_text(title).lower()
+def classify_document(title: str, abstract: str = "", default_doc_type: str | None = None) -> dict:
+    combined = f"{clean_text(title)} {clean_text(abstract)}".lower()
+    scores: dict[str, int] = {}
 
-    pole_scores = {}
-    for pole, base_keywords in POLE_KEYWORDS.items():
-        merged_keywords = set(base_keywords) | set(EXTRA_POLE_KEYWORDS.get(pole, ()))
-        s = 0
-        for kw in merged_keywords:
-            if kw in title_l:
-                s += 3
-            elif kw in text_l:
-                s += 1
-        pole_scores[pole] = s
+    for pole, keywords in POLE_KEYWORDS.items():
+        hits = sum(1 for kw in keywords if kw.lower() in combined)
+        if hits > 0:
+            scores[pole] = hits
 
-    ranked_poles = sorted(pole_scores.items(), key=lambda kv: kv[1], reverse=True)
-    best_pole, best_score = ranked_poles[0]
-    secondary_poles = [p for p, sc in ranked_poles[1:] if sc >= 2 and p != best_pole][:2]
-
-    if best_score == 0:
-        best_pole = "recherche_scientifique"
-        confidence = "faible"
-    elif best_score >= 4:
-        confidence = "eleve"
-    elif best_score >= 2:
-        confidence = "moyen"
+    if scores:
+        ordered = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
+        primary_pole = ordered[0][0]
+        top_hits = ordered[0][1]
+        secondary_poles = [p for p, h in ordered[1:] if h >= 1 and p in POLES][:2]
+        confidence = "eleve" if top_hits >= 2 else "moyen"
     else:
+        primary_pole = "recherche_scientifique" if default_doc_type == "publication_scientifique" else "institutions_gouvernance"
+        secondary_poles = []
         confidence = "faible"
 
-    doc_type = default_doc_type
-    if re.search(r"\b(dahir|bulletin officiel|texte législatif|code pénal|code du travail)\b", title_l):
-        doc_type = "document_juridique"
-    elif re.search(r"\b(rapport annuel|rapport stratégique|policy brief|working paper|تقرير)\b", title_l):
-        doc_type = "rapport_institutionnel"
-    elif re.search(r"\b(dataset|recensement|enquête nationale|indicateurs statistiques|إحصاء)\b", title_l):
-        doc_type = "statistique"
-
+    doc_type = default_doc_type if default_doc_type in DOCUMENT_TYPES else "rapport_institutionnel"
     return {
-        "pole": best_pole,
+        "pole": primary_pole,
         "poles_secondaires": secondary_poles,
-        "confidence": confidence,
-        "doc_type": doc_type,
+        "type_document": doc_type,
+        "confiance_classification": confidence,
     }
 
 
-def build_stable_id(doi: str | None, url: str | None, title: str, published_date: str | None) -> str:
-    """Identifiant stable indépendant de la langue d'affichage."""
+def build_stable_id(doi: str | None, url: str | None, title: str, pub_date: str | None = None) -> str:
     if doi:
-        clean_doi = doi.strip().lower().replace("https://doi.org/", "").replace("http://doi.org/", "")
-        base = f"doi:{clean_doi}"
-    elif url:
-        cleaned = sanitize_url(url) or url.strip()
-        parsed = urlparse(cleaned)
-        clean_url = f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{parsed.path.rstrip('/')}"
-        base = f"url:{clean_url}"
-    else:
-        norm_title = re.sub(r"\s+", " ", clean_text(title).lower())
-        year = (published_date or "")[:4]
-        base = f"title:{norm_title}|year:{year}"
+        clean_doi = re.sub(r"^https?://(dx\.)?doi\.org/", "", str(doi).strip(), flags=re.IGNORECASE).lower()
+        if clean_doi:
+            digest = hashlib.sha256(f"doi:{clean_doi}".encode("utf-8")).hexdigest()[:16]
+            return f"kitn_{digest}"
 
-    digest = hashlib.sha256(base.encode("utf-8")).hexdigest()[:16]
+    norm_title = re.sub(r"\s+", " ", clean_text(title).lower()).strip()
+    norm_date = str(pub_date or "").strip()[:10]
+    if norm_title:
+        digest = hashlib.sha256(f"title:{norm_title}|date:{norm_date}".encode("utf-8")).hexdigest()[:16]
+        return f"kitn_{digest}"
+
+    norm_url = (sanitize_url(url) or str(url or "")).strip().lower()
+    digest = hashlib.sha256(f"url:{norm_url}".encode("utf-8")).hexdigest()[:16]
     return f"kitn_{digest}"
 
 
-def verify_url_real(url: str | None) -> dict:
-    """Vérifie réellement une URL (statut HTTP, redirections, type de contenu, détection d'accueil générique)."""
-    now_iso = datetime.now(timezone.utc).isoformat()
-    cleaned_url = sanitize_url(url)
-    if not cleaned_url:
-        return {
-            "status": "manquant_ou_invalide",
-            "final_url": None,
-            "content_type": None,
-            "checked_at": now_iso,
-        }
+def process_raw_item(raw: dict, source: dict) -> dict | None:
+    if not isinstance(raw, dict):
+        return None
 
-    req = Request(
-        cleaned_url,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html,application/pdf,application/json;q=0.9,*/*;q=0.8",
-        },
-        method="GET",
+    title = clean_text(raw.get("title"))
+    if not title or len(title) < 4:
+        return None
+
+    abstract = clean_text(raw.get("abstract"))
+    relevance = evaluate_morocco_relevance(title, abstract, source)
+    if not relevance["is_relevant"]:
+        return None
+
+    url_pub = sanitize_url(raw.get("url"))
+    pdf_url = sanitize_url(raw.get("pdf_url"))
+    doi_raw = clean_text(raw.get("doi")) or None
+    pub_date_raw = clean_text(raw.get("published_date")) or None
+    date_info = validate_publication_date(pub_date_raw)
+
+    lang_code = detect_real_language(
+        f"{title} {abstract}",
+        hint=raw.get("source_lang_hint") or source.get("lang_hint"),
     )
 
-    try:
-        with urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
-            code = getattr(resp, "status", 200)
-            final_url = sanitize_url(resp.geturl()) or resp.geturl() or cleaned_url
-            content_type = (resp.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+    classification = classify_document(
+        title,
+        abstract,
+        default_doc_type=raw.get("default_doc_type") or source.get("default_doc_type"),
+    )
 
-            parsed_final = urlparse(final_url)
-            path_clean = (parsed_final.path or "/").strip("/")
+    authors_raw = raw.get("authors")
+    authors = (
+        [clean_text(a) for a in authors_raw if isinstance(a, str) and clean_text(a)]
+        if isinstance(authors_raw, list)
+        else []
+    )
 
-            if code >= 400:
-                status = f"http_{code}"
-            elif path_clean == "" and parsed_final.netloc:
-                status = "accueil_generique"
-            else:
-                status = "verifie"
+    has_anomaly = bool(date_info["date_anomalie"]) or classification["confiance_classification"] == "faible"
+    statut_validation = "a_verifier" if has_anomaly else "valide"
 
-            return {
-                "status": status,
-                "final_url": final_url,
-                "content_type": content_type,
-                "checked_at": now_iso,
-            }
-    except HTTPError as e:
-        return {
-            "status": f"http_{e.code}",
-            "final_url": cleaned_url,
-            "content_type": None,
-            "checked_at": now_iso,
-        }
-    except (URLError, TimeoutError, ValueError, OSError):
-        return {
-            "status": "inaccessible",
-            "final_url": cleaned_url,
-            "content_type": None,
-            "checked_at": now_iso,
-        }
+    item_id = build_stable_id(doi_raw, url_pub, title, pub_date_raw)
+
+    return {
+        "id": item_id,
+        "titre_original": title,
+        "auteurs": authors,
+        "date_publication": pub_date_raw,
+        "date_statut": date_info["date_statut"],
+        "date_anomalie": date_info["date_anomalie"],
+        "statut_validation": statut_validation,
+        "langue_originale": lang_code,
+        "source_id": str(source.get("id") or ""),
+        "source_nom": clean_text(raw.get("source_name") or source.get("name") or source.get("id")),
+        "type_document": classification["type_document"],
+        "pole": classification["pole"],
+        "poles_secondaires": classification["poles_secondaires"],
+        "confiance_classification": classification["confiance_classification"],
+        "lien_maroc": relevance["lien_maroc"],
+        "score_pertinence": relevance["score"],
+        "url_publication": url_pub,
+        "doi": doi_raw,
+        "pdf_direct": pdf_url,
+        "resume": abstract,
+    }

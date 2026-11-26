@@ -36,3 +36,14 @@ PYTHONPATH=. python -m pipeline.run_pipeline
 
 # Lancer les tests unitaires
 python -m unittest discover -s tests -v
+
+
+## Données statistiques et bibliothèque documentaire
+
+Le pipeline alimente également :
+
+- `data/statistics.json` : six séries historiques marocaines issues de l'API World Development Indicators de la Banque mondiale (PIB nominal, croissance, inflation, chômage estimé OIT, population et IDE).
+- `data/index/search-index.json` : notices institutionnelles et documentaires provenant notamment du HCP, de la Cour des comptes, du CESE et de l'IRES.
+- `public/data/` : copies publiées consommées par l'application Vite.
+
+Les séries statistiques conservent leur code d'indicateur, leur unité, leurs valeurs historiques, leur année de référence et leur URL source. Les valeurs sont actualisées par le pipeline automatisé ; l'indisponibilité d'une série isolée ne bloque pas les autres indicateurs.

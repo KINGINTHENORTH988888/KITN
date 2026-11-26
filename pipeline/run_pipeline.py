@@ -13,6 +13,8 @@ from pipeline.config import (
     PUBLIC_INDEX_FILE,
     SOURCES_FILE,
     SOURCES_HEALTH_FILE,
+    STATISTICS_FILE,
+    PUBLIC_STATISTICS_FILE,
 )
 from pipeline.collectors import collect_from_source
 from pipeline.processors import clean_text, process_raw_item, resolve_space, sanitize_url
@@ -238,6 +240,7 @@ def run() -> dict:
     total_added = 0
     total_updated = 0
     health_records: list[dict] = []
+    statistics_series: dict[str, dict] = {}
 
     for src in active_sources:
         sid = str(src.get("id") or "unknown")
@@ -251,6 +254,10 @@ def run() -> dict:
             raw_items = collect_from_source(src)
             fetched_count = len(raw_items)
             total_fetched += fetched_count
+            for raw in raw_items:
+                series = raw.get("statistics_series") if isinstance(raw, dict) else None
+                if isinstance(series, dict) and series.get("indicator_code"):
+                    statistics_series[str(series["indicator_code"])] = series
             if not raw_items:
                 status = "warning"
                 stage = "aucun_contenu"
@@ -329,6 +336,15 @@ def run() -> dict:
     SOURCES_HEALTH_FILE.write_text(json.dumps(health_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     _sync_public_index(INDEX_FILE, PUBLIC_INDEX_FILE)
+    statistics_payload = {
+        "generated_at": now_iso,
+        "source": "Banque mondiale — World Development Indicators",
+        "source_url": "https://data.worldbank.org/country/morocco",
+        "indicators": list(statistics_series.values()),
+    }
+    STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    STATISTICS_FILE.write_text(json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    _sync_public_index(STATISTICS_FILE, PUBLIC_STATISTICS_FILE)
     return index_payload
 
 

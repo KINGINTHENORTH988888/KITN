@@ -1,0 +1,460 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadSearchIndex } from '../lib/data';
+import { DOC_TYPE_LABELS, POLE_LABELS, UI_TEXT } from '../lib/i18n';
+
+const indexData = loadSearchIndex();
+const items = indexData.items;
+
+const uniqueLangs = [...new Set(items.map((i) => i.langue_originale).filter(Boolean))].sort();
+const uniqueSources = [...new Set(items.map((i) => i.source_nom).filter(Boolean))].sort();
+const uniqueMonths = [
+  ...new Set(
+    items
+      .map((i) => (i.date_publication ? i.date_publication.slice(0, 7) : ''))
+      .filter((m) => /^\d{4}-\d{2}$/.test(m))
+  )
+]
+  .sort()
+  .reverse();
+---
+
+<BaseLayout title="Veille" activeNav="watch">
+  <section class="page-head">
+    <div>
+      <h1 data-i18n="navWatch">{UI_TEXT.fr.navWatch}</h1>
+      <p class="muted" id="results-counter">
+        {items.length} {UI_TEXT.fr.resultsCount}
+      </p>
+    </div>
+    <button type="button" id="reset-filters" class="btn-secondary" data-i18n="resetFilters">
+      {UI_TEXT.fr.resetFilters}
+    </button>
+  </section>
+
+  <section class="card filters-panel">
+    <div class="filters-grid">
+      <div class="filter-field full-span">
+        <label for="f-search" data-i18n="searchPlaceholder">{UI_TEXT.fr.searchPlaceholder}</label>
+        <input
+          id="f-search"
+          type="search"
+          data-i18n-placeholder="searchPlaceholder"
+          placeholder={UI_TEXT.fr.searchPlaceholder}
+        />
+      </div>
+
+      <div class="filter-field">
+        <label for="f-pole" data-i18n="filterPole">{UI_TEXT.fr.filterPole}</label>
+        <select id="f-pole">
+          <option value="">{UI_TEXT.fr.allOption}</option>
+          {Object.entries(POLE_LABELS).map(([key, labels]) => (
+            <option value={key} data-fr={labels.fr} data-ar={labels.ar}>{labels.fr}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="f-type" data-i18n="filterType">{UI_TEXT.fr.filterType}</label>
+        <select id="f-type">
+          <option value="">{UI_TEXT.fr.allOption}</option>
+          {Object.entries(DOC_TYPE_LABELS).map(([key, labels]) => (
+            <option value={key} data-fr={labels.fr} data-ar={labels.ar}>{labels.fr}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="f-lang" data-i18n="filterLang">{UI_TEXT.fr.filterLang}</label>
+        <select id="f-lang">
+          <option value="">{UI_TEXT.fr.allOption}</option>
+          {uniqueLangs.map((lang) => (
+            <option value={lang}>{lang.toUpperCase()}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="f-source" data-i18n="filterSource">{UI_TEXT.fr.filterSource}</label>
+        <select id="f-source">
+          <option value="">{UI_TEXT.fr.allOption}</option>
+          {uniqueSources.map((src) => (
+            <option value={src}>{src}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="f-month" data-i18n="filterMonth">{UI_TEXT.fr.filterMonth}</label>
+        <select id="f-month">
+          <option value="">{UI_TEXT.fr.allOption}</option>
+          {uniqueMonths.map((m) => (
+            <option value={m}>{m}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="f-score" data-i18n="filterScore">{UI_TEXT.fr.filterScore}</label>
+        <select id="f-score">
+          <option value="0">0+</option>
+          <option value="40">40+</option>
+          <option value="60">60+</option>
+          <option value="80">80+</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="f-access" data-i18n="filterAccess">{UI_TEXT.fr.filterAccess}</label>
+        <select id="f-access">
+          <option value="">{UI_TEXT.fr.allOption}</option>
+          <option value="pdf">PDF direct</option>
+          <option value="verified_or_pdf" data-i18n="pdfOrVerified">{UI_TEXT.fr.pdfOrVerified}</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="f-sort" data-i18n="filterSort">{UI_TEXT.fr.filterSort}</label>
+        <select id="f-sort">
+          <option value="relevance" data-i18n="sortRelevance">{UI_TEXT.fr.sortRelevance}</option>
+          <option value="recent" data-i18n="sortRecent">{UI_TEXT.fr.sortRecent}</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section id="watch-list" class="results-grid"></section>
+
+  <script
+    is:inline
+    define:vars={{
+      allItems: items,
+      poleLabels: POLE_LABELS,
+      docTypeLabels: DOC_TYPE_LABELS,
+      uiText: UI_TEXT
+    }}
+  >
+    const els = {
+      search: document.getElementById('f-search'),
+      pole: document.getElementById('f-pole'),
+      type: document.getElementById('f-type'),
+      lang: document.getElementById('f-lang'),
+      source: document.getElementById('f-source'),
+      month: document.getElementById('f-month'),
+      score: document.getElementById('f-score'),
+      access: document.getElementById('f-access'),
+      sort: document.getElementById('f-sort'),
+      reset: document.getElementById('reset-filters'),
+      list: document.getElementById('watch-list'),
+      counter: document.getElementById('results-counter')
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('pole') && els.pole) {
+      els.pole.value = urlParams.get('pole');
+    }
+
+    function getLang() {
+      return document.documentElement.getAttribute('data-lang') === 'ar' ? 'ar' : 'fr';
+    }
+
+    function getFavs() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('kitn_favorites') || '[]');
+        return new Set(Array.isArray(raw) ? raw : []);
+      } catch {
+        return new Set();
+      }
+    }
+
+    function toggleFav(id) {
+      const favs = getFavs();
+      if (favs.has(id)) favs.delete(id);
+      else favs.add(id);
+      localStorage.setItem('kitn_favorites', JSON.stringify([...favs]));
+      render();
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function render() {
+      const lang = getLang();
+      const t = uiText[lang];
+      const favs = getFavs();
+
+      const q = (els.search?.value || '').trim().toLowerCase();
+      const pole = els.pole?.value || '';
+      const docType = els.type?.value || '';
+      const itemLang = els.lang?.value || '';
+      const source = els.source?.value || '';
+      const month = els.month?.value || '';
+      const minScore = Number(els.score?.value || '0');
+      const access = els.access?.value || '';
+      const sort = els.sort?.value || 'relevance';
+
+      let filtered = allItems.filter((item) => {
+        if (pole && item.pole !== pole) return false;
+        if (docType && item.type_document !== docType) return false;
+        if (itemLang && item.langue_originale !== itemLang) return false;
+        if (source && item.source_nom !== source) return false;
+        if (month && !(item.date_publication || '').startsWith(month)) return false;
+        if ((item.score_pertinence || 0) < minScore) return false;
+        if (access === 'pdf' && !item.pdf_direct) return false;
+        if (access === 'verified_or_pdf' && !item.pdf_direct && item.statut_lien !== 'verifie') {
+          return false;
+        }
+        if (q) {
+          const hay = [
+            item.titre_original,
+            ...(item.auteurs || []),
+            item.source_nom,
+            item.resume || '',
+            poleLabels[item.pole]?.fr || '',
+            poleLabels[item.pole]?.ar || ''
+          ]
+            .join(' ')
+            .toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (sort === 'recent') {
+        filtered.sort((a, b) => (b.date_publication || '').localeCompare(a.date_publication || ''));
+      } else {
+        filtered.sort((a, b) => (b.score_pertinence || 0) - (a.score_pertinence || 0));
+      }
+
+      if (els.counter) {
+        els.counter.textContent = `${filtered.length} ${t.resultsCount}`;
+      }
+
+      if (!els.list) return;
+
+      if (filtered.length === 0) {
+        els.list.innerHTML = `<div class="card empty-box">${escapeHtml(t.noResults)}</div>`;
+        return;
+      }
+
+      els.list.innerHTML = filtered
+        .map((item) => {
+          const poleText = poleLabels[item.pole]?.[lang] || item.pole;
+          const typeText = docTypeLabels[item.type_document]?.[lang] || item.type_document;
+          const isFav = favs.has(item.id);
+          const authorsText =
+            Array.isArray(item.auteurs) && item.auteurs.length
+              ? item.auteurs.slice(0, 3).join(', ') + (item.auteurs.length > 3 ? '…' : '')
+              : '';
+
+          return `
+            <article class="card item-card">
+              <div class="item-top">
+                <span class="badge">${escapeHtml(poleText)}</span>
+                <span class="badge badge-score">Score ${escapeHtml(item.score_pertinence)}</span>
+              </div>
+              <h3><a href="/fiche?id=${encodeURIComponent(item.id)}">${escapeHtml(item.titre_original)}</a></h3>
+              <p class="item-meta">
+                ${escapeHtml(typeText)} • ${escapeHtml(item.source_nom)} • ${escapeHtml(item.date_publication || 'N/A')} • ${escapeHtml((item.langue_originale || '').toUpperCase())}
+              </p>
+              ${authorsText ? `<p class="item-authors">${escapeHtml(authorsText)}</p>` : ''}
+              ${item.resume ? `<p class="item-resume">${escapeHtml(item.resume)}</p>` : ''}
+              <div class="item-actions">
+                ${
+                  item.url_publication
+                    ? `<a href="${escapeHtml(item.url_publication)}" target="_blank" rel="noopener noreferrer" class="btn-secondary">${escapeHtml(t.openSource)}</a>`
+                    : ''
+                }
+                ${
+                  item.pdf_direct
+                    ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer" class="btn-primary">${escapeHtml(t.openPdf)}</a>`
+                    : ''
+                }
+                <button type="button" class="btn-secondary fav-toggle" data-fav-id="${escapeHtml(item.id)}">
+                  ${isFav ? '★ ' + escapeHtml(t.savedFav) : '☆ ' + escapeHtml(t.saveFav)}
+                </button>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+
+      els.list.querySelectorAll('.fav-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-fav-id');
+          if (id) toggleFav(id);
+        });
+      });
+    }
+
+    [els.search, els.pole, els.type, els.lang, els.source, els.month, els.score, els.access, els.sort].forEach(
+      (input) => {
+        if (input) {
+          input.addEventListener('input', render);
+          input.addEventListener('change', render);
+        }
+      }
+    );
+
+    if (els.reset) {
+      els.reset.addEventListener('click', () => {
+        if (els.search) els.search.value = '';
+        if (els.pole) els.pole.value = '';
+        if (els.type) els.type.value = '';
+        if (els.lang) els.lang.value = '';
+        if (els.source) els.source.value = '';
+        if (els.month) els.month.value = '';
+        if (els.score) els.score.value = '0';
+        if (els.access) els.access.value = '';
+        if (els.sort) els.sort.value = 'relevance';
+        render();
+      });
+    }
+
+    window.addEventListener('kitn:lang-change', render);
+    render();
+  </script>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .page-head h1 {
+    margin: 0;
+    font-size: 1.7rem;
+  }
+
+  .muted {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .filters-panel {
+    margin-bottom: 1.5rem;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  .filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .full-span {
+    grid-column: 1 / -1;
+  }
+
+  .filter-field label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .filter-field input,
+  .filter-field select {
+    padding: 0.6rem 0.75rem;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  :global(.item-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  :global(.item-top) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  :global(.item-card h3) {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.4;
+  }
+
+  :global(.item-card h3 a:hover) {
+    color: var(--primary);
+  }
+
+  :global(.item-meta),
+  :global(.item-authors) {
+    margin: 0;
+    font-size: 0.83rem;
+    color: var(--muted);
+  }
+
+  :global(.item-resume) {
+    margin: 0;
+    font-size: 0.89rem;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  :global(.item-actions) {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 0.35rem;
+  }
+
+  :global(.empty-box) {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--muted);
+    padding: 2rem;
+  }
+
+  @media (max-width: 900px) {
+    .filters-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .results-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,53 +1,19 @@
 {
-  "last_run": "2026-11-26T14:12:24.738621+00:00",
-  "sources": {
-    "openalex_maroc": {
+  "updated_at": "2026-11-26T17:53:59Z",
+  "active_sources": 1,
+  "total_fetched": 15,
+  "total_accepted": 6,
+  "sources": [
+    {
+      "source_id": "openalex_morocco_policy",
+      "source_name": "OpenAlex — Recherche & politiques publiques (Maroc)",
+      "type": "openalex",
+      "enabled": true,
       "status": "ok",
-      "collected_raw": 15,
-      "accepted_relevant": 1,
-      "last_checked": "2026-11-26T14:12:24.738621+00:00",
-      "error": null
-    },
-    "hal_maroc": {
-      "status": "ok",
-      "collected_raw": 15,
-      "accepted_relevant": 10,
-      "last_checked": "2026-11-26T14:12:24.738621+00:00",
-      "error": null
-    },
-    "crossref_maroc": {
-      "status": "ok",
-      "collected_raw": 15,
-      "accepted_relevant": 0,
-      "last_checked": "2026-11-26T14:12:24.738621+00:00",
-      "error": null
+      "fetched": 15,
+      "accepted": 6,
+      "error": null,
+      "checked_at": "2026-11-26T17:53:59Z"
     }
-  },
-  "openalex_maroc": {
-    "source_id": "openalex_maroc",
-    "name": "OpenAlex — Travaux liés au Maroc",
-    "status": "ok",
-    "last_run_at": "2026-11-26T16:33:57Z",
-    "raw_fetched": 15,
-    "kept": 4,
-    "error": null
-  },
-  "hal_maroc": {
-    "source_id": "hal_maroc",
-    "name": "HAL Archives Ouvertes — Maroc",
-    "status": "ok",
-    "last_run_at": "2026-11-26T16:33:57Z",
-    "raw_fetched": 15,
-    "kept": 12,
-    "error": null
-  },
-  "crossref_maroc": {
-    "source_id": "crossref_maroc",
-    "name": "Crossref — Publications indexées Maroc",
-    "status": "ok",
-    "last_run_at": "2026-11-26T16:33:57Z",
-    "raw_fetched": 15,
-    "kept": 14,
-    "error": null
-  }
+  ]
 }

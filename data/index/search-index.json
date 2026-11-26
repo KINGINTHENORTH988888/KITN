@@ -1,9 +1,11 @@
 {
-  "generated_at": "2026-11-26T16:33:57Z",
-  "total": 44,
-  "active_sources": 3,
-  "fetched_in_run": 45,
-  "processed_in_run": 30,
+  "generated_at": "2026-11-26T17:53:59Z",
+  "total": 50,
+  "active_sources": 1,
+  "fetched_in_run": 15,
+  "processed_in_run": 6,
+  "added_in_run": 6,
+  "updated_in_run": 0,
   "items": [
     {
       "id": "kitn_1f4e7211af24b298",
@@ -28,7 +30,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_abe0401f4c9c3bfa",
@@ -62,7 +65,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_a07bf9ea8631e9ff",
@@ -89,7 +93,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_6781e69e5a1cb6c1",
@@ -121,7 +126,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_4fbd87339d91afa5",
@@ -148,7 +154,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_14a588891d984fae",
@@ -180,7 +187,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_fb05b5753cd5e7d7",
@@ -219,7 +227,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_7f99c3295c5cc84c",
@@ -251,7 +260,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_643b77341b694350",
@@ -280,7 +290,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_3eea47cf75e66827",
@@ -308,7 +319,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_596955e4514d6561",
@@ -346,7 +358,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_d930c50d8def075c",
@@ -377,7 +390,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_0731eb34672109f4",
@@ -408,7 +422,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_01050376a76f0b6b",
@@ -437,7 +452,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_57cdbe68937dd5cd",
@@ -473,7 +489,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_f09b56973133c464",
@@ -516,7 +533,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_70e625cb0043f439",
@@ -544,7 +562,8 @@
       "resume": "",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_fa3d5814a66506ab",
@@ -571,7 +590,8 @@
       "resume": "Purpose: This study examines the social impacts of multinational military exercises in Africa, with particular attention to their contribution to cultural understanding, interpersonal trust, professional networks, civil military relations, and regional cooperation. Research Methodology: The study adopted a qualitative documentary research design, drawing on peer reviewed literature, African Union documents, government publications, and official reports on AMANI Africa, African Lion, and Justified Accord. Constructivist Theory and Defense Diplomacy Theory provide the analytical framework. Results: Joint exercises generate social benefits by creating repeated contact among military personnel, encouraging cultural learning, developing shared professional norms, and strengthening interpersonal and institutional trust. Humanitarian assistance, medical outreach, disaster response, and civilian participation extend these effects to host communities. However, these benefits are not automatic, because exercises can also reinforce perceptions of external influence, militarization, or strategic competition when their objectives and social consequences are poorly communicated. Conclusions: African military exercises should be designed not only as instruments of operational preparedness but also as structured platforms for cultural diplomacy, people to people engagement, and confidence building. Limitations: The study relies on documentary evidence and does not measure attitudes statistically or establish causal relationships through primary surveys. Contributions: The study conceptualizes military exercises as social and diplomatic processes, proposes a framework of social impact pathways, and offers indicators and recommendations for integrating cultural diplomacy into exercise planning and evaluation.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_598ae2de3ffa64aa",
@@ -598,11 +618,12 @@
       "resume": "This thesis provides a socio-legal analysis of legal interventions against the violence at Europe's external borders in the Mediterranean region. Legal interventions denote a practice, closely linked to strategic litigation, in which lawyers tactically resort to legal fora to achieve broader political and legal changes beyond the individual case. Although strategic litigation appeared to be a promising tool for resisting border violence in the 2010s, more than a decade later, this optimism has faded. Critical setbacks in jurisprudence and the ongoing harms experienced by people on the move along Europe's external borders, make this an important time to rethink legal contestations of pushbacks. While reckoning with the limits of contesting border violence primarily based on legal frameworks, I argue that legal interventions remain an important tool for struggling against pushbacks. At the same time, legal scholarship and practice would benefit from a stronger understanding of racism and colonialism in shaping the experience of people on the move to Europe, both at the border and in the courtroom. Thereby, I contribute to the literature on border justice, rethinking the dilemmas posed by engaging with the law. In analysing legal cases along the Spanish-Moroccan and Greek-Turkish borders, I contextualise border violence in a broader historical arc and highlight colonial legacies. Furthermore, I explore racialisation processes and follow the way in which legal justifications are mobilised to shift responsibility away from the state. Racialisation in the legal arena involves distrusting the applicants' narratives and raising the bar of what counts as credible evidence for a pushback. Additionally, it manifests in criminalising the care and organising that occurs between people on the move, and in framing their relationalities as threatening and morally deviant. All the more important is recognising the crucial role of relationalities between people on the move, and actors in solidarity with them in contesting border violence. Moreover, I analyse the resort to alternative legal concepts, such as enforced disappearances, to connect various sites of state violence across the globe and to contest pushbacks at Europe's borders. I also reflect on the potentials and limits of requesting interim measures to prevent pushbacks in a more direct way. Overall, I argue that it is the relationalities that emerge in the process of engaging in legal interventions - the coalitional work, the creative struggles toward truth and justice, as well as the establishment of infrastructures for enabling freedom of movement against the odds - that constitute the ground for moving forward.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_b36c48fb0a9b351c",
-      "titre_original": "Recension de l'ouvrage \" Maroc : le défi de la puissance",
+      "titre_original": "Recension de l'ouvrage \" Maroc: le défi de la puissance",
       "auteurs": [
         "Dominique Barjot"
       ],
@@ -624,11 +645,12 @@
       "url_publication": "https://hal.science/hal-05806135v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05806135/document",
-      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné "
+      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné",
+      "espace": "science"
     },
     {
       "id": "kitn_64e18d7a65e03c24",
-      "titre_original": "Recension de l'ouvrage \" Mille histoires diraient la mienne : l'historienne, les témoins et leurs récits",
+      "titre_original": "Recension de l'ouvrage \" Mille histoires diraient la mienne: l'historienne, les témoins et leurs récits",
       "auteurs": [
         "Christian Lochon"
       ],
@@ -649,11 +671,12 @@
       "url_publication": "https://hal.science/hal-05769879v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05769879/document",
-      "resume": "L'auteure se présente ainsi « Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui » (p.22). Après avoir "
+      "resume": "L'auteure se présente ainsi «Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui» (p.22). Après avoir",
+      "espace": "science"
     },
     {
       "id": "kitn_d892d1fff882faba",
-      "titre_original": "Recension de l'ouvrage \" Rome pour ou contre l'Empire ? : missions catholiques et colonies françaises, 1918-1930",
+      "titre_original": "Recension de l'ouvrage \" Rome pour ou contre l'Empire?: missions catholiques et colonies françaises, 1918-1930",
       "auteurs": [
         "Jacques Frémeaux"
       ],
@@ -675,14 +698,15 @@
       "url_publication": "https://hal.science/hal-05806258v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05806258/document",
-      "resume": "Ce livre, mise en forme d'une thèse soutenue en 2020, décrit avec un grand luxe d'érudition les rapports entre l'État français et l'Église catholique romaine à propos des questions suscitées par l'action missionnaire. La période étudiée dépasse les dates indiquées par le titre, l'auteur évoquant avec précision les conséquences de la politique anticléricale d'avant 1914 et ne se privant pas de mener son étude jusqu'en 1939. La notion de « colonies françaises » est entendue au sens le plus large. Outre l'Indochine, l'Afrique noire et Madagascar, l'étude inclut en effet les « vieilles colonies », l'Algérie, les protectorats de Tunisie et du Maroc, sans oublier le Levant où la France se prévaut du très ancien protectorat sur les catholiques d'Orient. L'ouvrage s'appuie sur un recours approfondi aux archives françaises et vaticanes. Il recense une très vaste bibliographie dans laquelle ne manquent que les ouvrages juridiques (dont l'absence amène l'auteur à confondre à propos des Algériens musulmans la nationalité française dont ils relèvent et la citoyenneté dont ils sont exclus) (voir p. 179). Un plan très précis en sept chapitres permet à l'auteur de traiter l'ensemble de la question. Un premier chapitre est consacré à situer précisément la chronologie de la période étudiée. Il convient d'abord pour l'État français et le Vatican de se consulter et de négocier, en rétablissant les liens très relâchés, sinon totalement rompus, depuis la rupture des relations diplomatiques et le vote de la loi de séparation de 1905. Lorsque ces relations sont reprises en 1921, de grands dossiers attendent les diplomates : la position des missionnaires dans les colonies françaises, l'avenir du concordat d'Alsace-Lorraine après le retour des deux provinces à la France, le remplacement des missionnaires allemands au Cameroun et au Togo après le passage de ces ex-colonies allemandes sous administration française, et enfin l'organisation du Maroc.",
+      "resume": "Ce livre, mise en forme d'une thèse soutenue en 2020, décrit avec un grand luxe d'érudition les rapports entre l'État français et l'Église catholique romaine à propos des questions suscitées par l'action missionnaire. La période étudiée dépasse les dates indiquées par le titre, l'auteur évoquant avec précision les conséquences de la politique anticléricale d'avant 1914 et ne se privant pas de mener son étude jusqu'en 1939. La notion de «colonies françaises» est entendue au sens le plus large. Outre l'Indochine, l'Afrique noire et Madagascar, l'étude inclut en effet les «vieilles colonies», l'Algérie, les protectorats de Tunisie et du Maroc, sans oublier le Levant où la France se prévaut du très ancien protectorat sur les catholiques d'Orient. L'ouvrage s'appuie sur un recours approfondi aux archives françaises et vaticanes. Il recense une très vaste bibliographie dans laquelle ne manquent que les ouvrages juridiques (dont l'absence amène l'auteur à confondre à propos des Algériens musulmans la nationalité française dont ils relèvent et la citoyenneté dont ils sont exclus) (voir p. 179). Un plan très précis en sept chapitres permet à l'auteur de traiter l'ensemble de la question. Un premier chapitre est consacré à situer précisément la chronologie de la période étudiée. Il convient d'abord pour l'État français et le Vatican de se consulter et de négocier, en rétablissant les liens très relâchés, sinon totalement rompus, depuis la rupture des relations diplomatiques et le vote de la loi de séparation de 1905. Lorsque ces relations sont reprises en 1921, de grands dossiers attendent les diplomates: la position des missionnaires dans les colonies françaises, l'avenir du concordat d'Alsace-Lorraine après le retour des deux provinces à la France, le remplacement des missionnaires allemands au Cameroun et au Togo après le passage de ces ex-colonies allemandes sous administration française, et enfin l'organisation du Maroc.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_e7dd4bbe50911871",
-      "titre_original": "Recension de l'ouvrage \" Maroc : le défi de la puissance",
+      "titre_original": "Recension de l'ouvrage \" Maroc: le défi de la puissance",
       "auteurs": [
         "Dominique Barjot"
       ],
@@ -705,14 +729,15 @@
       "url_publication": "https://hal.science/hal-05806135v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05806135/document",
-      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné Senior Fellow par l'École Blavatnik de gouvernance de l'Université d'Oxford où il se consacre à la recherche sur les politiques publiques en Afrique. Son ouvrage retrace la trajectoire économique, politique, sociale et géopolitique du Maroc depuis son indépendance en 1955. Pays contrasté, à la fois puissant et vulnérable, le Maroc peut-il bâtir une véritable puissance durable ? Tel est l'objectif du livre. Dans son introduction, il situe le point de départ de son étude au 16 novembre 1955, date du retour au Maroc du sultan Mohammed V. Ce retour s'effectue dans un contexte difficile. Si le pays navigue entre les appétits des grandes puissances, il construit avec patience « sa souveraineté industrielle, économique et diplomatique, tout en affirmant l'islam du milieu », prôné par Mohammed VI. En effet, « au Maroc… le roi … empêche la dérive, équilibre les forces et maintient la stabilité du cap ». Plusieurs dynamiques traversent l'ouvrage : la quête de souveraineté, le défi des transitions industrielles, énergétiques et agricoles, l'industrialisation, le chantier persistant du rééquilibrage social. L'objectif du livre est donc de comprendre comment le pays a appris à peser sur son environnement, pourquoi, malgré ses succès, il peine à concilier croissance forte et solidarité, enfin « quelle est la nature du sentier étroit, mais résolu que le royaume chérifien a emprunté pour atteindre la position qui est la sienne ». L'ouvrage se penche sur ces interrogations en onze chapitres.",
+      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné Senior Fellow par l'École Blavatnik de gouvernance de l'Université d'Oxford où il se consacre à la recherche sur les politiques publiques en Afrique. Son ouvrage retrace la trajectoire économique, politique, sociale et géopolitique du Maroc depuis son indépendance en 1955. Pays contrasté, à la fois puissant et vulnérable, le Maroc peut-il bâtir une véritable puissance durable? Tel est l'objectif du livre. Dans son introduction, il situe le point de départ de son étude au 16 novembre 1955, date du retour au Maroc du sultan Mohammed V. Ce retour s'effectue dans un contexte difficile. Si le pays navigue entre les appétits des grandes puissances, il construit avec patience «sa souveraineté industrielle, économique et diplomatique, tout en affirmant l'islam du milieu», prôné par Mohammed VI. En effet, «au Maroc… le roi… empêche la dérive, équilibre les forces et maintient la stabilité du cap». Plusieurs dynamiques traversent l'ouvrage: la quête de souveraineté, le défi des transitions industrielles, énergétiques et agricoles, l'industrialisation, le chantier persistant du rééquilibrage social. L'objectif du livre est donc de comprendre comment le pays a appris à peser sur son environnement, pourquoi, malgré ses succès, il peine à concilier croissance forte et solidarité, enfin «quelle est la nature du sentier étroit, mais résolu que le royaume chérifien a emprunté pour atteindre la position qui est la sienne». L'ouvrage se penche sur ces interrogations en onze chapitres.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_00c988759d44186a",
-      "titre_original": "Recension de l'ouvrage \" Mille histoires diraient la mienne : l'historienne, les témoins et leurs récits",
+      "titre_original": "Recension de l'ouvrage \" Mille histoires diraient la mienne: l'historienne, les témoins et leurs récits",
       "auteurs": [
         "Christian Lochon"
       ],
@@ -734,10 +759,11 @@
       "url_publication": "https://hal.science/hal-05769879v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05769879/document",
-      "resume": "L'auteure se présente ainsi « Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui » (p.22). Après avoir obtenu l'agrégation en sciences sociales, elle enseigne dans un collège d'Aulnay-sous-Bois (p.141). En 2010, elle est recrutée au CNRS, mise à disposition à l'IHTP qui lui permet de consacrer l'essentiel de son temps à la poursuite de sa thèse avec des séjours longs en Algérie et des cours d'arabe (p.236). Elle consacre sa thèse sous la direction du Pr Benjamin Stora (p.144) à l'Union Démocratique du Manifeste Algérien de Ferhat Abbas (p.171). La famille de Madame Rahal est plusieurs fois émigrée, d'Algérie au Maroc et retour, d'Algérie en France sans retour. Les histoires de migration se dédoublent (p.112). Son père algérien né en 1942 au Maroc, où ses parents s'étaient réfugiés, et sa mère étasunienne, symbolisent la bourgeoisie de Nedroma unie à une ferme coloniale du sud-est du Nebraska, l'islam de la tariqa et les missionnaires protestants presbytériens. A l'indépendance de l'Algérie, Son père étudiait à l'École Polytechnique d'Alger (p.81). Il deviendra exilé non pas de son pays mais de ses propres espoirs (p.89). Sa mère s'installa à Toulouse avec son mari doctorant en physique et enseigna l'anglais comme lectrice à l'Université Jean-Jaurès (p.73).",
+      "resume": "L'auteure se présente ainsi «Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui» (p.22). Après avoir obtenu l'agrégation en sciences sociales, elle enseigne dans un collège d'Aulnay-sous-Bois (p.141). En 2010, elle est recrutée au CNRS, mise à disposition à l'IHTP qui lui permet de consacrer l'essentiel de son temps à la poursuite de sa thèse avec des séjours longs en Algérie et des cours d'arabe (p.236). Elle consacre sa thèse sous la direction du Pr Benjamin Stora (p.144) à l'Union Démocratique du Manifeste Algérien de Ferhat Abbas (p.171). La famille de Madame Rahal est plusieurs fois émigrée, d'Algérie au Maroc et retour, d'Algérie en France sans retour. Les histoires de migration se dédoublent (p.112). Son père algérien né en 1942 au Maroc, où ses parents s'étaient réfugiés, et sa mère étasunienne, symbolisent la bourgeoisie de Nedroma unie à une ferme coloniale du sud-est du Nebraska, l'islam de la tariqa et les missionnaires protestants presbytériens. A l'indépendance de l'Algérie, Son père étudiait à l'École Polytechnique d'Alger (p.81). Il deviendra exilé non pas de son pays mais de ses propres espoirs (p.89). Sa mère s'installa à Toulouse avec son mari doctorant en physique et enseigna l'anglais comme lectrice à l'Université Jean-Jaurès (p.73).",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_60ad922b852ed491",
@@ -767,7 +793,8 @@
       "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné Senior Fellow par l'École Blavatnik de gouvernance de l'Université d'Oxford où il se consacre à la recherche sur les politiques publiques en Afrique. Son ouvrage retrace la trajectoire économique, politique, sociale et géopolitique du Maroc depuis son indépendance en 1955. Pays contrasté, à la fois puissant et vulnérable, le Maroc peut-il bâtir une véritable puissance durable? Tel est l'objectif du livre. Dans son introduction, il situe le point de départ de son étude au 16 novembre 1955, date du retour au Maroc du sultan Mohammed V. Ce retour s'effectue dans un contexte difficile. Si le pays navigue entre les appétits des grandes puissances, il construit avec patience «sa souveraineté industrielle, économique et diplomatique, tout en affirmant l'islam du milieu», prôné par Mohammed VI. En effet, «au Maroc… le roi… empêche la dérive, équilibre les forces et maintient la stabilité du cap». Plusieurs dynamiques traversent l'ouvrage: la quête de souveraineté, le défi des transitions industrielles, énergétiques et agricoles, l'industrialisation, le chantier persistant du rééquilibrage social. L'objectif du livre est donc de comprendre comment le pays a appris à peser sur son environnement, pourquoi, malgré ses succès, il peine à concilier croissance forte et solidarité, enfin «quelle est la nature du sentier étroit, mais résolu que le royaume chérifien a emprunté pour atteindre la position qui est la sienne». L'ouvrage se penche sur ces interrogations en onze chapitres.",
       "first_seen_at": "2026-11-26T15:23:24Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_1321c7227606814b",
@@ -796,7 +823,8 @@
       "resume": "Ce livre, mise en forme d'une thèse soutenue en 2020, décrit avec un grand luxe d'érudition les rapports entre l'État français et l'Église catholique romaine à propos des questions suscitées par l'action missionnaire. La période étudiée dépasse les dates indiquées par le titre, l'auteur évoquant avec précision les conséquences de la politique anticléricale d'avant 1914 et ne se privant pas de mener son étude jusqu'en 1939. La notion de «colonies françaises» est entendue au sens le plus large. Outre l'Indochine, l'Afrique noire et Madagascar, l'étude inclut en effet les «vieilles colonies», l'Algérie, les protectorats de Tunisie et du Maroc, sans oublier le Levant où la France se prévaut du très ancien protectorat sur les catholiques d'Orient. L'ouvrage s'appuie sur un recours approfondi aux archives françaises et vaticanes. Il recense une très vaste bibliographie dans laquelle ne manquent que les ouvrages juridiques (dont l'absence amène l'auteur à confondre à propos des Algériens musulmans la nationalité française dont ils relèvent et la citoyenneté dont ils sont exclus) (voir p. 179). Un plan très précis en sept chapitres permet à l'auteur de traiter l'ensemble de la question. Un premier chapitre est consacré à situer précisément la chronologie de la période étudiée. Il convient d'abord pour l'État français et le Vatican de se consulter et de négocier, en rétablissant les liens très relâchés, sinon totalement rompus, depuis la rupture des relations diplomatiques et le vote de la loi de séparation de 1905. Lorsque ces relations sont reprises en 1921, de grands dossiers attendent les diplomates: la position des missionnaires dans les colonies françaises, l'avenir du concordat d'Alsace-Lorraine après le retour des deux provinces à la France, le remplacement des missionnaires allemands au Cameroun et au Togo après le passage de ces ex-colonies allemandes sous administration française, et enfin l'organisation du Maroc.",
       "first_seen_at": "2026-11-26T15:23:24Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_033fc0cd2890f872",
@@ -825,7 +853,8 @@
       "resume": "L'auteure se présente ainsi «Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui» (p.22). Après avoir obtenu l'agrégation en sciences sociales, elle enseigne dans un collège d'Aulnay-sous-Bois (p.141). En 2010, elle est recrutée au CNRS, mise à disposition à l'IHTP qui lui permet de consacrer l'essentiel de son temps à la poursuite de sa thèse avec des séjours longs en Algérie et des cours d'arabe (p.236). Elle consacre sa thèse sous la direction du Pr Benjamin Stora (p.144) à l'Union Démocratique du Manifeste Algérien de Ferhat Abbas (p.171). La famille de Madame Rahal est plusieurs fois émigrée, d'Algérie au Maroc et retour, d'Algérie en France sans retour. Les histoires de migration se dédoublent (p.112). Son père algérien né en 1942 au Maroc, où ses parents s'étaient réfugiés, et sa mère étasunienne, symbolisent la bourgeoisie de Nedroma unie à une ferme coloniale du sud-est du Nebraska, l'islam de la tariqa et les missionnaires protestants presbytériens. A l'indépendance de l'Algérie, Son père étudiait à l'École Polytechnique d'Alger (p.81). Il deviendra exilé non pas de son pays mais de ses propres espoirs (p.89). Sa mère s'installa à Toulouse avec son mari doctorant en physique et enseigna l'anglais comme lectrice à l'Université Jean-Jaurès (p.73).",
       "first_seen_at": "2026-11-26T15:23:24Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_511633a25bb71c8c",
@@ -857,7 +886,8 @@
       "resume": "Eastern boundary upwelling systems sustain among the highest marine primary productivity globally, yet diatom assemblage responses to persistent upwelling and episodic hydroclimatic disturbances remain critically under­ characterised along the North African Atlantic margin. This study examines diatom spatiotemporal dynamics along the Aglou-Sidi Ifni coastline (~29◦N, Moroccan Atlantic), a transitional sector of the Canary Current Upwelling System, over two annual cycles (2014-2016) at three coastal stations. A total of 126 diatom taxa were identified among 233 phytoplankton species (54% of total richness). Taxo­ nomic revision against WoRMS and AlgaeBase yielded 20 nomenclatural updates. Total phytoplankton cell density exhibited a pronounced seasonal pattern, peaking in spring 2015 (65,890 cells L−1), exceeding spring 2014 by 24-31%. This amplification coincided with elevated nitrate (up to 390.6 μg L−1) and phosphate (up to 147.8 μg L−1), consistent with a flood-driven nutrient priming hypothesis, although single-event design precludes causal attribution. Molar N:P ratios ranged 2.58-6.32 (station means: 4.17-4.28), remaining below Redfield (16:1), evidencing chronic nitrogen limitation. Absent dissolved silicate data preclude complete bloom stoichiometry characteri­ sation. Multivariate analysis explained 58.6% variance, with temperature and nitrate as primary community drivers. A southward gradient in diatom dominance (46-52%) and richness was consistent with spatial upwelling intensity differences. Six Pseudo-nitzschia morpho-groups were recorded, including P. multiseries near Massa Marine Protected Area. Confirmatory transmission electron microscopy (TEM), quantitative PCR (qPCR), and shellfish domoic acid as­ says are required before regulatory conclusions; this study provides a preliminary precautionary baseline signal. Östliche Auftriebssysteme weisen weltweit eine der höchsten marinen Primärproduktionen auf, dennoch sind die Reaktionen der Kieselalgen-Gemeinschaften auf anhaltenden Auftrieb und episodische hydroklimatische Störungen entlang des nordafrikanischen Atlantikrandes noch unzureichend charakterisiert. Diese Studie untersucht die räumlich-zeitliche Dynamik von Kieselalgen entlang der Küste von Aglou-Sidi Ifni (~29°N, marokkanischer Atlantik), einem Übergangsbereich des Kanarenstrom-Auftriebssystems, über zwei Jahreszyklen (2014-2016) an drei Küstenstationen. Insgesamt wurden 126 Kieselalgen-Taxa unter 233 Phytoplanktonarten identifiziert (54 % der Gesamtartenvielfalt). Die taxonomische Revision anhand von WoRMS und AlgaeBase ergab 20 nomenklatorische Aktualisierungen. Die Gesamtdichte des Phytoplanktons zeigte ein ausgeprägtes saisonales Muster mit einem Höchstwert im Frühjahr 2015 (65.890 Zellen L−1), der den Wert des Frühjahrs 2014 um 24-31 % überstieg. Diese Zunahme fiel mit erhöhten Nitrat- (bis zu 390,6 μg L−1) und Phosphatkonzentrationen (bis zu 147,8 μg L−1) zusammen, was mit der Hypothese einer durch Überschwemmungen bedingten Nährstoffanreicherung übereinstimmt. Allerdings erlaubt das einmalige Messverfahren keine Kausalzusammenhänge. Die molaren N:P-Verhältnisse lagen zwischen 2,58 und 6,32 (Stationsmittelwerte: 4,17-4,28) und blieben damit unter dem Redfield-Wert (16:1), was auf eine chronische Stickstofflimitierung hindeutet. Fehlende Daten zu gelöstem Silikat erlauben keine vollständige Charakterisierung der Stöchiometrie der Algenblüte. Die multivariate Analyse erklärte 58,6 % der Varianz, wobei Temperatur und Nitrat die wichtigsten Einflussfaktoren für die Artengemeinschaft darstellten. Ein nach Süden gerichteter Gradient in der Dominanz (46-52 %) und Artenvielfalt der Kieselalgen stimmte mit räumlichen Unterschieden in der Intensität des Auftriebs überein. Sechs Morphogruppen der Gattung Pseudo-nitzschia wurden nachgewiesen, darunter P. multiseries in der Nähe des Meeresschutzgebiets Massa. Zur Bestätigung der Ergebnisse sind Untersuchungen mittels Transmissionselektronenmikroskopie (TEM), quantitativer PCR (qPCR) und Domoinsäure-Analysen von Schalentieren erforderlich, bevor regulatorische Schlussfolgerungen gezogen werden können. Diese Studie liefert ein vorläufiges, vorsorgliches Basissignal. Los sistemas de afloramiento de los límites orientales mantienen una de las mayores productividades primarias marinas a nivel mundial; sin embargo, las respuestas de las comunidades de diatomeas a los afloramientos persistentes y a las perturbaciones hidroclimáticas episódicas siguen estando críticamente poco caracterizadas a lo largo del margen atlántico del norte de África. Este estudio examina la dinámica espaciotemporal de las diatomeas a lo largo de la costa de Aglou-Sidi Ifni (~29°N, Atlántico marroquí), un sector de transición del Sistema de Afloramiento de la Corriente de Canarias, durante dos ciclos anuales (2014-2016) en tres estaciones costeras. Se identificaron un total de 126 taxones de diatomeas entre 233 especies de fitoplancton (54 % de la riqueza total). La revisión taxonómica con WoRMS y AlgaeBase arrojó 20 actualizaciones nomenclaturales. La densidad celular total del fitoplancton mostró un marcado patrón estacional, alcanzando su máximo en la primavera de 2015 (65 890 células L⁻¹), superando a la primavera de 2014 entre un 24 % y un 31 %. Esta amplificación coincidió con niveles elevados de nitrato (hasta 390,6 μg L⁻¹) y fosfato (hasta 147,8 μg L⁻¹), lo que concuerda con la hipótesis de la activación de nutrientes inducida por inundaciones, si bien el diseño de un solo evento impide establecer una relación causal. Las relaciones molares N:P oscilaron entre 2,58 y 6,32 (promedio por estación: 4,17-4,28), manteniéndose por debajo de la de Redfield (16:1), lo que evidencia una limitación crónica de nitrógeno. La ausencia de datos sobre silicatos disueltos impide la caracterización completa de la estequiometría de la floración. El análisis multivariante explicó el 58,6 % de la varianza, siendo la temperatura y el nitrato los principales factores determinantes de la comunidad. Un gradiente hacia el sur en la dominancia (46-52 %) y la riqueza de diatomeas fue consistente con las diferencias espaciales en la intensidad del afloramiento. Se registraron seis morfogrupos de Pseudo-nitzschia, incluyendo P. multiseries cerca del Área Marina Protegida de Massa. Se requieren análisis confirmatorios mediante microscopía electrónica de transmisión (TEM), PCR cuantitativa (qPCR) y ácido domoico en moluscos antes de llegar a conclusiones regulatorias; este estudio proporciona una señal de referencia preliminar a modo de precaución. Les systèmes d'upwelling de la marge orientale présentent une productivité primaire marine parmi les plus élevées au monde. Pourtant, les réponses des communautés de diatomées aux upwellings persistants et aux perturbations hydroclimatiques épisodiques restent encore mal caractérisées le long de la marge atlantique nord-africaine. Cette étude examine la dynamique spatio-temporelle des diatomées le long du littoral d'Aglou-Sidi Ifni (environ 29°N, Atlantique marocain), un secteur de transition du système d'upwelling du courant des Canaries, sur deux cycles annuels (2014-2016) à trois stations côtières. Au total, 126 taxons de diatomées ont été identifiés parmi 233 espèces de phytoplancton (54 % de la richesse totale). La révision taxonomique par rapport à WoRMS et AlgaeBase a permis de mettre à jour 20 noms. La densité cellulaire totale du phytoplancton a présenté une forte variation saisonnière, avec un pic au printemps 2015 (65 890 cellules L⁻¹), dépassant de 24 à 31 % celle du printemps 2014. Cette amplification a coïncidé avec des concentrations élevées de nitrate (jusqu'à 390,6 μg L−1) et de phosphate (jusqu'à 147,8 μg L−1), compatibles avec l'hypothèse d'une amorçage par les nutriments induit par les crues, bien que la nature ponctuelle de l'étude ne permette pas d'établir de lien de causalité. Les rapports molaires N:P variaient de 2,58 à 6,32 (moyennes par station: 4,17 à 4,28), restant inférieurs à la valeur de Redfield (16:1), ce qui témoigne d'une limitation chronique en azote. L'absence de données sur les silicates dissous empêche une caractérisation complète de la stœchiométrie de la prolifération. L'analyse multivariée expliquait 58,6 % de la variance, la température et le nitrate étant les principaux facteurs influençant la communauté. Un gradient sud-sud de dominance (46 à 52 %) et de richesse en diatomées était cohérent avec les différences spatiales d'intensité des remontées d'eau. Six morphogroupes de Pseudo-nitzschia ont été recensés, dont P. multiseries à proximité de l'aire marine protégée de Massa. Des analyses de confirmation par microscopie électronique à transmission (MET), PCR quantitative (qPCR) et dosage de l'acide domoïque dans les mollusques sont nécessaires avant toute conclusion réglementaire; cette étude fournit un signal de base préliminaire à titre préventif. I sistemi di risalita delle acque profonde del margine orientale sostengono una delle più alte produttività primarie marine a livello globale, eppure le risposte delle comunità di diatomee alla risalita persistente delle acque profonde e alle perturbazioni idroclimatiche episodiche rimangono criticamente poco caratterizzate lungo il margine atlantico nordafricano. Questo studio esamina le dinamiche spazio-temporali delle diatomee lungo la costa di Aglou-Sidi Ifni (~29°N, Atlantico marocchino), un settore di transizione del sistema di risalita delle acque profonde della Corrente delle Canarie, su due cicli annuali (2014-2016) in tre stazioni costiere. Sono stati identificati un totale di 126 taxa di diatomee tra 233 specie di fitoplancton (54% della ricchezza totale). La revisione tassonomica rispetto a WoRMS e AlgaeBase ha prodotto 20 aggiornamenti nomenclaturali. La densità cellulare totale del fitoplancton ha mostrato un marcato andamento stagionale, con un picco nella primavera del 2015 (65.890 cellule L−1), superando la primavera del 2014 del 24-31%. Questo aumento ha coinciso con livelli elevati di nitrati (fino a 390,6 μg L−1) e fosfati (fino a 147,8 μg L−1), in linea con un'ipotesi di priming nutrizionale indotto dalle inondazioni, sebbene la progettazione dello studio basata su un singolo evento precluda l'attribuzione causale. I rapporti molari N:P variavano da 2,58 a 6,32 (medie delle stazioni: 4,17-4,28), rimanendo al di sotto del valore di Redfield (16:1), a dimostrazione di una limitazione cronica dell'azoto. L'assenza di dati sui silicati disciolti impedisce una caratterizzazione completa della stechiometria della fioritura. L'analisi multivariata ha spiegato il 58,6% della varianza, con la temperatura e i nitrati come principali fattori determinanti della comunità. Un gradiente verso sud nella dominanza delle diatomee (46-52%) e nella ricchezza era coerente con le differenze spaziali di intensità dell'upwelling. Sono stati registrati sei morfogruppi di Pseudo-nitzschia, tra cui P. multiseries vicino all'Area Marina Protetta di Massa. Prima di giungere a conclusioni normative, sono necessari ulteriori esami di conferma tramite microscopia elettronica a trasmissione (TEM), PCR quantitativa (qPCR) e analisi dell'acido domoico nei molluschi; questo studio fornisce un segnale di base precauzionale preliminare.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_3c43a4bd66dbfcd1",
@@ -884,11 +914,12 @@
       "resume": "Le cadre marocain des marchés publics affiche une ambition croissante d'intégration de l'efficacité énergétique. Consacrée aux niveaux constitutionnel, stratégique, législatif et réglementaire, celle-ci trouve dans le décret n° 2-22-431 de 2023 son principal ancrage procédural. Pourtant, entre la consécration normative et la décision d'achat, l'exigence énergétique s'affaiblit. L'article analyse cette perte de portée à travers les différentes séquences de la procédure de passation, en s'appuyant sur l'examen de 46 dossiers d'appel d'offres et sur une enquête menée auprès de 30 acteurs de la commande publique. Il montre que, si l'efficacité énergétique est, partiellement, prise en compte lors de la définition des besoins, elle perd progressivement sa portée au stade de l'admission des offres, puis lors de leur attribution. Ce décrochage ne procède pas d'une insuffisance juridique, mais d'un déficit d'opérationnalisation au niveau méso, là où l'exigence juridique doit se convertir en instruments techniques, permettant de comparer et de justifier les performances énergétiques. En effet, faute de référentiels standardisés et opposables, l'acheteur privilégie le prix juridiquement défendable comme stratégie de maîtrise du risque de contrôle. Une logique que nous qualifions de «sécurisation technique». L'article propose de renforcer la portée réglementaire de l'exigence au niveau macro, de standardiser les méthodes d'évaluation au niveau méso, puis de sécuriser la décision de l'acheteur au niveau micro. L'enjeu n'est donc plus seulement d'inscrire l'efficacité énergétique dans le droit des marchés publics, mais de la rendre opposable au moment de la décision d'achat. The Moroccan normative framework reflects a remarkable level of ambition. Energy efficiency is part of public procurement at every level: constitutional, strategic, legislative, regulatory. The 2023 Public Procurement Decree gives it a procedural base. Yet in the daily practice of public buyers, it disappears. This article follows that disappearance across the procurement process. Drawing on a sequential analysis of 46 tender files and a survey of 30 procurement actors, it shows where and how energy-efficiency requirements are neutralized. They are present when needs are defined. They fade at the admissibility stage. They are gone by contract award. The problem is not the law. The rules exist, and they are coherent. The gap lies at the meso level, the link, where legal ambition should turn into working tools. Public buyers, however, have no binding technical standards. Without these tools, they pick the bid closest to the reference price. Not out of negligence, but to protect themselves from oversight. The article proposes a reform on three levels. At the macro level, make regulatory requirements binding, step by step. At the meso level, build shared evaluation tools. At the micro level, give public buyers legal security. Without this alignment, energy efficiency will stay on paper.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_85b4413f62904f59",
-      "titre_original": "Au-delà de la flexibilité hospitalière : intérimaires en santé, valeur territoriale et limites de la GRH responsable au Maroc",
+      "titre_original": "Au-delà de la flexibilité hospitalière: intérimaires en santé, valeur territoriale et limites de la GRH responsable au Maroc",
       "auteurs": [
         "Marc Valax",
         "Yousr Ben"
@@ -911,11 +942,12 @@
       "url_publication": "https://shs.hal.science/halshs-05879601v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "Alors que le travail intérimaire dans le secteur de la santé est historiquement appréhendé comme un simple instrument de flexibilité organisationnelle et de régulation des pénuries de personnel, cette recherche propose une relecture critique de ses fonctions à travers le prisme de la Responsabilité Sociale des Territoi"
+      "resume": "Alors que le travail intérimaire dans le secteur de la santé est historiquement appréhendé comme un simple instrument de flexibilité organisationnelle et de régulation des pénuries de personnel, cette recherche propose une relecture critique de ses fonctions à travers le prisme de la Responsabilité Sociale des Territoi",
+      "espace": "science"
     },
     {
       "id": "kitn_e3a0cb18db9ca20d",
-      "titre_original": "Au-delà de la flexibilité hospitalière : intérimaires en santé, valeur territoriale et limites de la GRH responsable au Maroc",
+      "titre_original": "Au-delà de la flexibilité hospitalière: intérimaires en santé, valeur territoriale et limites de la GRH responsable au Maroc",
       "auteurs": [
         "Marc Valax",
         "Yousr Ben"
@@ -942,7 +974,8 @@
       "resume": "Alors que le travail intérimaire dans le secteur de la santé est historiquement appréhendé comme un simple instrument de flexibilité organisationnelle et de régulation des pénuries de personnel, cette recherche propose une relecture critique de ses fonctions à travers le prisme de la Responsabilité Sociale des Territoires (RST). En s'appuyant sur une étude qualitative menée au Maroc, contexte caractérisé par des tensions structurelles en ressources humaines médicales, une forte hétérogénéité territoriale de l'offre de soins et des déséquilibres persistants entre régions urbaines et périphériques, l'article interroge les mécanismes par lesquels les professionnels intérimaires participent, souvent de manière invisible, à la régulation des systèmes locaux de santé. Les résultats empiriques mettent en évidence que les intérimaires en santé ne peuvent être réduits à de simples variables d'ajustement organisationnel. Ils apparaissent au contraire comme des acteurs hybrides de régulation territoriale, capables de compenser les défaillances structurelles des établissements, de maintenir la continuité des soins dans des environnements sous-dotés et de contribuer à une forme de stabilisation fonctionnelle du système de santé. Leur mobilité, leur polyvalence et leur capacité d'adaptation rapide favorisent également l'hybridation des pratiques professionnelles, ainsi que la diffusion informelle de savoirs et de normes organisationnelles entre établissements, renforçant ainsi les dynamiques de résilience territoriale. Dans cette perspective, l'étude met en lumière un déplacement analytique important: de la gestion organisationnelle de la flexibilité vers la production de valeur à l'échelle territoriale. Elle introduit ainsi le concept de valeur territoriale des ressources humaines, entendu comme la capacité des dispositifs de GRH à produire des effets dépassant les frontières de l'organisation employeuse, en contribuant à la cohésion, à la continuité et à l'équité d'accès aux soins sur un territoire donné. Cette requalification théorique permet de dépasser une lecture strictement fonctionnelle de l'intérim pour l'inscrire dans une logique de gouvernance élargie des systèmes de santé. Enfin, l'article propose une lecture renouvelée de l'intérim \"gris\", compris comme un mode de régulation informelle, partiellement invisible et structurellement intégré au fonctionnement réel des hôpitaux. Loin d'être une anomalie marginale, ce phénomène apparaît comme un révélateur des tensions contemporaines de la GRH dans les secteurs essentiels, où les logiques de contrainte, de pénurie et de continuité des services redéfinissent les frontières entre emploi stable, travail flexible et responsabilité sociale. En ce sens, cette recherche contribue à une meilleure compréhension des transformations du travail hospitalier dans les contextes à forte contrainte, tout en enrichissant les débats sur la GRH responsable et territorialisée.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_5f8099422fae3bd0",
@@ -973,7 +1006,8 @@
       "resume": "Alors que le travail intérimaire dans le secteur de la santé est historiquement appréhendé comme un simple instrument de flexibilité organisationnelle et de régulation des pénuries de personnel, cette recherche propose une relecture critique de ses fonctions à travers le prisme de la Responsabilité Sociale des Territoires (RST). En s'appuyant sur une étude qualitative menée au Maroc, contexte caractérisé par des tensions structurelles en ressources humaines médicales, une forte hétérogénéité territoriale de l'offre de soins et des déséquilibres persistants entre régions urbaines et périphériques, l'article interroge les mécanismes par lesquels les professionnels intérimaires participent, souvent de manière invisible, à la régulation des systèmes locaux de santé. Les résultats empiriques mettent en évidence que les intérimaires en santé ne peuvent être réduits à de simples variables d'ajustement organisationnel. Ils apparaissent au contraire comme des acteurs hybrides de régulation territoriale, capables de compenser les défaillances structurelles des établissements, de maintenir la continuité des soins dans des environnements sous-dotés et de contribuer à une forme de stabilisation fonctionnelle du système de santé. Leur mobilité, leur polyvalence et leur capacité d'adaptation rapide favorisent également l'hybridation des pratiques professionnelles, ainsi que la diffusion informelle de savoirs et de normes organisationnelles entre établissements, renforçant ainsi les dynamiques de résilience territoriale. Dans cette perspective, l'étude met en lumière un déplacement analytique important: de la gestion organisationnelle de la flexibilité vers la production de valeur à l'échelle territoriale. Elle introduit ainsi le concept de valeur territoriale des ressources humaines, entendu comme la capacité des dispositifs de GRH à produire des effets dépassant les frontières de l'organisation employeuse, en contribuant à la cohésion, à la continuité et à l'équité d'accès aux soins sur un territoire donné. Cette requalification théorique permet de dépasser une lecture strictement fonctionnelle de l'intérim pour l'inscrire dans une logique de gouvernance élargie des systèmes de santé. Enfin, l'article propose une lecture renouvelée de l'intérim \"gris\", compris comme un mode de régulation informelle, partiellement invisible et structurellement intégré au fonctionnement réel des hôpitaux. Loin d'être une anomalie marginale, ce phénomène apparaît comme un révélateur des tensions contemporaines de la GRH dans les secteurs essentiels, où les logiques de contrainte, de pénurie et de continuité des services redéfinissent les frontières entre emploi stable, travail flexible et responsabilité sociale. En ce sens, cette recherche contribue à une meilleure compréhension des transformations du travail hospitalier dans les contextes à forte contrainte, tout en enrichissant les débats sur la GRH responsable et territorialisée.",
       "first_seen_at": "2026-11-26T15:23:24Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_2f5b3f9e86d89f35",
@@ -1002,7 +1036,8 @@
       "resume": "In Morocco, the merchandise trade deficit is the main source of the structural imbalance of the external accounts. Exports of compensating products under inward processing account for more than three quarters of exports, reflecting an effective integration into global value chains (GVCs) that has not been accompanied by a reduction of this deficit. The literature on processing trade focuses mainly on domestic value added; the link between this integration profile and the trade balance remains rarely examined, especially at the industry level. This article examines the magnitude and significance of this link. It uses Office des Changes merchandise trade data (66 industries, 1998-2025) and measures processing intensity by the share of these exports in total exports (REAT). A dynamic fixed-effects panel model, corrected for the bias specific to such models and subjected to robustness tests, is complemented by OECD TiVA indicators. Industry trade balances are persistent and show no tendency to return to equilibrium. A higher REAT is associated with a modest improvement in the coverage ratio and the Trade Balance Index, but not in the trade balance: even under the most favourable assumption, a 10-point rise in REAT in all industries would reduce the 2025 deficit by at most 5%. Nearly two thirds of the deficit outside inward processing comes from the industries most integrated into GVCs. TiVA indicators show that the domestic value-added share of manufacturing exports declined between 2010 and 2021. The results suggest that domestic value creation, rather than the intensity of integration, conditions the external balance. Au Maroc, le déficit du commerce de marchandises est la principale source du déséquilibre structurel des comptes extérieurs. Les réexportations en suite d'admission temporaire pour perfectionnement actif représentent plus des trois quarts des exportations, signe d'une intégration effective aux chaînes de valeur mondiales (CVM) qui ne s'est pas accompagnée d'une résorption de ce déficit. La littérature sur le commerce de transformation porte surtout sur la valeur ajoutée domestique; le lien entre ce profil d'intégration et le solde commercial reste rarement examiné, notamment par branche. Cet article mobilise les données du commerce extérieur de marchandises de l'Office des Changes (66 branches, 1998-2025) et mesure l'intensité de la transformation par la part de ces réexportations dans les exportations (REAT). Un modèle de panel dynamique à effets fixes, soumis à des tests de robustesse, est complété par les indicateurs TiVA de l'OCDE. Les soldes des branches sont persistants et ne reviennent pas vers un équilibre. Une hausse de REAT est associée à une amélioration modeste du taux de couverture et du Trade Balance Index, mais non du solde: une hausse de 10 points de REAT dans toutes les branches réduirait le déficit de 2025 d'au plus 5 %. Près des deux tiers du déficit hors admission temporaire proviennent des branches les plus intégrées aux CVM. Les indicateurs TiVA montrent que la part de la valeur ajoutée domestique dans les exportations manufacturières recule entre 2010 et 2021. Les résultats suggèrent que la création de valeur domestique, plus que l'intensité de l'intégration, conditionne l'équilibre extérieur.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_344bcd31ad5bd782",
@@ -1039,11 +1074,12 @@
       "resume": "As climate change increases, drought is a major constraint on alfalfa (Medicago sativa L.) productivity, particularly in Mediterranean environments. Native rhizobia are considered promising bioinoculants for improving crop adaptation to water-limited conditions. This preliminary study investigated nodule-associated bacteria isolated from alfalfa grown in two Moroccan agroecological regions and preliminarily assessed their effects on plant growth under different water regimes. Fifty-six isolates were recovered from nodules, and six isolates were selected following morphological and pathogenicity screening. Molecular identification based on 16S rRNA gene sequencing suggested that most isolates were affiliated with Sinorhizobium (closest match S. meliloti), while one isolate was affiliated with Lysobacter sp., a non-classical nodule associate whose functional role was not assessed in this study. Greenhouse experiments conducted under three irrigation regimes (100, 66 and 33% field capacity) demonstrated that water availability was the main factor affecting plant height, branch number and leaf production (p",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_c620daca09afb30a",
-      "titre_original": "Administrer l'exil : le Secrétariat général du Gouvernement, architecte de l'aide aux rapatriés (1956-1959)",
+      "titre_original": "Administrer l'exil: le Secrétariat général du Gouvernement, architecte de l'aide aux rapatriés (1956-1959)",
       "auteurs": [
         "Majid Embarech"
       ],
@@ -1066,10 +1102,11 @@
       "url_publication": "https://hal.science/hal-05631260v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "L'indépendance du Maroc et de la Tunisie en 1956 confronte la France à un défi administratif, social et politique inédit : organiser l'accueil et l'intégration en métropole des « Français d'Afrique du Nord ». Dans le contexte instable de la fin de la IVe République puis des débuts de la Ve, l'État met en place, dans l'urgence, des structures de reclassement et d'assistance. L'enjeu dépasse toutefois la seule gestion matérielle du retour : il s'agit de redéfinir l'action publique, en passant d'une logique de présence outre-mer à une politique d'intégration nationale. Cette communication analyse la manière dont l'État a assuré la continuité de son action malgré l'instabilité des structures et la concurrence des tutelles ministérielles. Elle défend l'hypothèse que le Secrétariat général du gouvernement a occupé une place centrale dans ce dispositif. En assurant, entre 1957 et 1959, le secrétariat des commissions chargées du dossier, le SGG apparaît comme le pivot de l'interministérialité, transformant une gestion fragmentée de l'urgence en une politique publique plus cohérente, qui préfigure les dispositifs de 1962. L'étude s'appuie sur le fonds d'archives du Commissariat général chargé de l'aide aux Français rentrant du Maroc et de Tunisie (cote F/60/4244-F/60/4249), disponible aux Archives nationales. Ce corpus permet de saisir la fabrique administrative de cette politique à travers trois ensembles documentaires : les textes organiques et décrets publiés entre 1956 et 1959, qui retracent la genèse des institutions compétentes ; les comptes rendus et procès-verbaux des instances interministérielles, rédigés sous l'égide du SGG, qui révèlent les arbitrages entre l'Intérieur et les Affaires étrangères ; enfin, les dossiers de mission de chargés de mission, qui documentent la mise en œuvre concrète de l'aide économique et sociale. Ces sources mettent en évidence la permanence du SGG comme point fixe d'un dispositif en recomposition. Dès 1957, alors que les premières structures de coordination demeurent fragiles, il en assure déjà le secrétariat. Cette fonction se confirme en 1958 avec la création du Commissariat général dirigé par Jacques Ravail. Le rôle du SGG apparaît plus nettement encore dans la gestion des conflits de tutelle, notamment autour du Centre d'orientation et de recensement, partagé entre l'Intérieur et les Affaires étrangères. En garantissant la circulation de l'information, la continuité des arbitrages et la mémoire du dossier, le SGG contribue à éviter que des questions sensibles, comme le reclassement des fonctionnaires, ne soient paralysées par les cloisonnements administratifs. La création, en 1959, du Commissariat d'aide aux rapatriés de Tunisie, du Maroc et d'Indochine confirme cette centralité : à Matignon se concentrent désormais l'expertise, la coordination et la mémoire d'une politique de retour en voie d'institutionnalisation. This paper analyzes how the State ensured the continuity of its actions despite the instability of its structures and the competing oversight of various ministries. It argues that the General Secretariat of the Government played a central role in this process. By providing secretariat services for the commissions handling the matter between 1957 and 1959, the General Secretariat of the Government (SGG) emerged as the linchpin of interministerial cooperation, transforming a fragmented approach to emergency management into a more coherent public policy that foreshadowed the mechanisms of 1962. This study draws on the archives of the General Commissariat for Aid to French Citizens Returning from Morocco and Tunisia (reference numbers F/60/4244-F/60/4249), available at the National Archives. These sources highlight the SGG's enduring role as a fixed point within a system undergoing restructuring. As early as 1957, while the initial coordinating structures remained fragile, the SGG was already providing their secretariat services. This function was confirmed in 1958 with the creation of the General Commissariat headed by Jacques Ravail. The role of the General Secretariat of the Government (SGG) becomes even more apparent in managing supervisory conflicts, particularly concerning the Orientation and Census Center, shared between the Ministries of the Interior and Foreign Affairs. By ensuring the flow of information, the continuity of arbitration, and the preservation of case files, the SGG helps prevent sensitive issues, such as the reassignment of civil servants, from being paralyzed by administrative silos. The creation, in 1959, of the Commissariat for Assistance to Repatriates from Tunisia, Morocco, and Indochina confirms this central role: the expertise, coordination, and institutional memory of a repatriation policy now converge at Matignon.",
+      "resume": "L'indépendance du Maroc et de la Tunisie en 1956 confronte la France à un défi administratif, social et politique inédit: organiser l'accueil et l'intégration en métropole des «Français d'Afrique du Nord». Dans le contexte instable de la fin de la IVe République puis des débuts de la Ve, l'État met en place, dans l'urgence, des structures de reclassement et d'assistance. L'enjeu dépasse toutefois la seule gestion matérielle du retour: il s'agit de redéfinir l'action publique, en passant d'une logique de présence outre-mer à une politique d'intégration nationale. Cette communication analyse la manière dont l'État a assuré la continuité de son action malgré l'instabilité des structures et la concurrence des tutelles ministérielles. Elle défend l'hypothèse que le Secrétariat général du gouvernement a occupé une place centrale dans ce dispositif. En assurant, entre 1957 et 1959, le secrétariat des commissions chargées du dossier, le SGG apparaît comme le pivot de l'interministérialité, transformant une gestion fragmentée de l'urgence en une politique publique plus cohérente, qui préfigure les dispositifs de 1962. L'étude s'appuie sur le fonds d'archives du Commissariat général chargé de l'aide aux Français rentrant du Maroc et de Tunisie (cote F/60/4244-F/60/4249), disponible aux Archives nationales. Ce corpus permet de saisir la fabrique administrative de cette politique à travers trois ensembles documentaires: les textes organiques et décrets publiés entre 1956 et 1959, qui retracent la genèse des institutions compétentes; les comptes rendus et procès-verbaux des instances interministérielles, rédigés sous l'égide du SGG, qui révèlent les arbitrages entre l'Intérieur et les Affaires étrangères; enfin, les dossiers de mission de chargés de mission, qui documentent la mise en œuvre concrète de l'aide économique et sociale. Ces sources mettent en évidence la permanence du SGG comme point fixe d'un dispositif en recomposition. Dès 1957, alors que les premières structures de coordination demeurent fragiles, il en assure déjà le secrétariat. Cette fonction se confirme en 1958 avec la création du Commissariat général dirigé par Jacques Ravail. Le rôle du SGG apparaît plus nettement encore dans la gestion des conflits de tutelle, notamment autour du Centre d'orientation et de recensement, partagé entre l'Intérieur et les Affaires étrangères. En garantissant la circulation de l'information, la continuité des arbitrages et la mémoire du dossier, le SGG contribue à éviter que des questions sensibles, comme le reclassement des fonctionnaires, ne soient paralysées par les cloisonnements administratifs. La création, en 1959, du Commissariat d'aide aux rapatriés de Tunisie, du Maroc et d'Indochine confirme cette centralité: à Matignon se concentrent désormais l'expertise, la coordination et la mémoire d'une politique de retour en voie d'institutionnalisation. This paper analyzes how the State ensured the continuity of its actions despite the instability of its structures and the competing oversight of various ministries. It argues that the General Secretariat of the Government played a central role in this process. By providing secretariat services for the commissions handling the matter between 1957 and 1959, the General Secretariat of the Government (SGG) emerged as the linchpin of interministerial cooperation, transforming a fragmented approach to emergency management into a more coherent public policy that foreshadowed the mechanisms of 1962. This study draws on the archives of the General Commissariat for Aid to French Citizens Returning from Morocco and Tunisia (reference numbers F/60/4244-F/60/4249), available at the National Archives. These sources highlight the SGG's enduring role as a fixed point within a system undergoing restructuring. As early as 1957, while the initial coordinating structures remained fragile, the SGG was already providing their secretariat services. This function was confirmed in 1958 with the creation of the General Commissariat headed by Jacques Ravail. The role of the General Secretariat of the Government (SGG) becomes even more apparent in managing supervisory conflicts, particularly concerning the Orientation and Census Center, shared between the Ministries of the Interior and Foreign Affairs. By ensuring the flow of information, the continuity of arbitration, and the preservation of case files, the SGG helps prevent sensitive issues, such as the reassignment of civil servants, from being paralyzed by administrative silos. The creation, in 1959, of the Commissariat for Assistance to Repatriates from Tunisia, Morocco, and Indochina confirms this central role: the expertise, coordination, and institutional memory of a repatriation policy now converge at Matignon.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_deec81a6a007f2b7",
@@ -1099,11 +1136,12 @@
       "resume": "L'indépendance du Maroc et de la Tunisie en 1956 confronte la France à un défi administratif, social et politique inédit: organiser l'accueil et l'intégration en métropole des «Français d'Afrique du Nord». Dans le contexte instable de la fin de la IVe République puis des débuts de la Ve, l'État met en place, dans l'urgence, des structures de reclassement et d'assistance. L'enjeu dépasse toutefois la seule gestion matérielle du retour: il s'agit de redéfinir l'action publique, en passant d'une logique de présence outre-mer à une politique d'intégration nationale. Cette communication analyse la manière dont l'État a assuré la continuité de son action malgré l'instabilité des structures et la concurrence des tutelles ministérielles. Elle défend l'hypothèse que le Secrétariat général du gouvernement a occupé une place centrale dans ce dispositif. En assurant, entre 1957 et 1959, le secrétariat des commissions chargées du dossier, le SGG apparaît comme le pivot de l'interministérialité, transformant une gestion fragmentée de l'urgence en une politique publique plus cohérente, qui préfigure les dispositifs de 1962. L'étude s'appuie sur le fonds d'archives du Commissariat général chargé de l'aide aux Français rentrant du Maroc et de Tunisie (cote F/60/4244-F/60/4249), disponible aux Archives nationales. Ce corpus permet de saisir la fabrique administrative de cette politique à travers trois ensembles documentaires: les textes organiques et décrets publiés entre 1956 et 1959, qui retracent la genèse des institutions compétentes; les comptes rendus et procès-verbaux des instances interministérielles, rédigés sous l'égide du SGG, qui révèlent les arbitrages entre l'Intérieur et les Affaires étrangères; enfin, les dossiers de mission de chargés de mission, qui documentent la mise en œuvre concrète de l'aide économique et sociale. Ces sources mettent en évidence la permanence du SGG comme point fixe d'un dispositif en recomposition. Dès 1957, alors que les premières structures de coordination demeurent fragiles, il en assure déjà le secrétariat. Cette fonction se confirme en 1958 avec la création du Commissariat général dirigé par Jacques Ravail. Le rôle du SGG apparaît plus nettement encore dans la gestion des conflits de tutelle, notamment autour du Centre d'orientation et de recensement, partagé entre l'Intérieur et les Affaires étrangères. En garantissant la circulation de l'information, la continuité des arbitrages et la mémoire du dossier, le SGG contribue à éviter que des questions sensibles, comme le reclassement des fonctionnaires, ne soient paralysées par les cloisonnements administratifs. La création, en 1959, du Commissariat d'aide aux rapatriés de Tunisie, du Maroc et d'Indochine confirme cette centralité: à Matignon se concentrent désormais l'expertise, la coordination et la mémoire d'une politique de retour en voie d'institutionnalisation. This paper analyzes how the State ensured the continuity of its actions despite the instability of its structures and the competing oversight of various ministries. It argues that the General Secretariat of the Government played a central role in this process. By providing secretariat services for the commissions handling the matter between 1957 and 1959, the General Secretariat of the Government (SGG) emerged as the linchpin of interministerial cooperation, transforming a fragmented approach to emergency management into a more coherent public policy that foreshadowed the mechanisms of 1962. This study draws on the archives of the General Commissariat for Aid to French Citizens Returning from Morocco and Tunisia (reference numbers F/60/4244-F/60/4249), available at the National Archives. These sources highlight the SGG's enduring role as a fixed point within a system undergoing restructuring. As early as 1957, while the initial coordinating structures remained fragile, the SGG was already providing their secretariat services. This function was confirmed in 1958 with the creation of the General Commissariat headed by Jacques Ravail. The role of the General Secretariat of the Government (SGG) becomes even more apparent in managing supervisory conflicts, particularly concerning the Orientation and Census Center, shared between the Ministries of the Interior and Foreign Affairs. By ensuring the flow of information, the continuity of arbitration, and the preservation of case files, the SGG helps prevent sensitive issues, such as the reassignment of civil servants, from being paralyzed by administrative silos. The creation, in 1959, of the Commissariat for Assistance to Repatriates from Tunisia, Morocco, and Indochina confirms this central role: the expertise, coordination, and institutional memory of a repatriation policy now converge at Matignon.",
       "first_seen_at": "2026-11-26T15:23:24Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_9efe248a85d43ef7",
-      "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc : quel rôle pour les associations ? (Analyse de trois terrains)",
+      "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc: quel rôle pour les associations? (Analyse de trois terrains)",
       "auteurs": [
         "Rayyane M'Barki",
         "Safae Ed-Douadi"
@@ -1125,11 +1163,12 @@
       "url_publication": "https://hal.science/hal-05864419v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en diffi"
+      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en diffi",
+      "espace": "science"
     },
     {
       "id": "kitn_f08b0b6849e256dd",
-      "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc : quel rôle pour les associations ? (Analyse de trois terrains)",
+      "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc: quel rôle pour les associations? (Analyse de trois terrains)",
       "auteurs": [
         "Rayyane M'Barki",
         "Safae Ed-Douadi"
@@ -1150,10 +1189,11 @@
       "url_publication": "https://hal.science/hal-05864419v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en difficulté, ce qui en fait un impératif social. Cependant, ce secteur reste confronté à de nombreux défis, y compris dans certains pays développés, où les difficultés d'attractivité, de recrutement et de fidélisation des employés sont au cœur des préoccupations (Amat et al., 2023). Dans les pays émergeants comme le Maroc, d'autres problématiques apparaissent en lien avec l'informalité du Care, touchant en premier lieu les femmes, qui représentent la majorité des professionnels. Souvent faiblement rémunérées, sans contrat de travail et exclues de la sécurité sociale, elles sont en outre exposées à des violences, y compris physiques (HCP , 2023 ; Mechouat, 2017 ; OIT , 2022 ; WiNorsky, 2012). Nous défendons dans ce travail l'idée que le Care doit être abordé non seulement comme des pratiques centrées sur les aidés, mais comme une responsabilité collective vis-à-vis des aidantes professionnelles, notamment à travers la professionnalisation. Dans ce cadre, nous nous appuyons sur une enquête qualitative (observation et entretiens semi-directifs) réalisée auprès de deux catégories de public : les travailleuses du Care et les actrices associatives engagées dans la promotion des droits des femmes et dans leur accompagnement socio-professionnel. Notre étude a été menée en 2025 au sein de trois associations engagées pour l'amélioration des situations des femmes et situées dans des territoires contrastés au Maroc : l'Union Nationale des Femmes du Maroc (Tanger à l'extrême nord) ; l'Union de l'Action Féministe (Tanger et Rabat au nord-ouest) ; Aïn Ghazal (Oujda au nord-est). Analyser les enjeux de professionnalisation du Care dans ces trois territoires nous permet de distinguer les effets systémiques nationaux des effets locaux propres aux contextes de chaque territoire. ‬‬‬‬‬‬‬‬‬‬‬‬‬‬‬‬‬‬‬‬ Notre étude montre que la professionnalisation de l'économie du Care constitue un levier stratégique pour prendre soin des travailleuses et pour renforcer leur insertion socio-économique. Si les trois territoires partagent un contexte de vulnérabilité des travailleuses, révélant un problème structurel qui nécessite une transformation profonde, un point positif émerge : le rôle déterminant des associations qui peuvent apporter une part de solution. Les associations peuvent participer à la professionnalisation des métiers du care, grâce à leur rôle d'identification de besoins des femmes et des employeurs, d'accompagnement, de formation, de certification et de lutte pour la reconnaissance institutionnelle des formations et des métiers du care. Cependant, et malgré de nombreuses contributions, leur portée reste limitée. La réussite de la professionnalisation nécessite un cadre juridique protecteur, un effort de reconnaissance et de valorisation, des formations qualifiantes et une approche collaborative et multi-acteurs.",
+      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en difficulté, ce qui en fait un impératif social. Cependant, ce secteur reste confronté à de nombreux défis, y compris dans certains pays développés, où les difficultés d'attractivité, de recrutement et de fidélisation des employés sont au cœur des préoccupations (Amat et al., 2023). Dans les pays émergeants comme le Maroc, d'autres problématiques apparaissent en lien avec l'informalité du Care, touchant en premier lieu les femmes, qui représentent la majorité des professionnels. Souvent faiblement rémunérées, sans contrat de travail et exclues de la sécurité sociale, elles sont en outre exposées à des violences, y compris physiques (HCP, 2023; Mechouat, 2017; OIT, 2022; WiNorsky, 2012). Nous défendons dans ce travail l'idée que le Care doit être abordé non seulement comme des pratiques centrées sur les aidés, mais comme une responsabilité collective vis-à-vis des aidantes professionnelles, notamment à travers la professionnalisation. Dans ce cadre, nous nous appuyons sur une enquête qualitative (observation et entretiens semi-directifs) réalisée auprès de deux catégories de public: les travailleuses du Care et les actrices associatives engagées dans la promotion des droits des femmes et dans leur accompagnement socio-professionnel. Notre étude a été menée en 2025 au sein de trois associations engagées pour l'amélioration des situations des femmes et situées dans des territoires contrastés au Maroc: l'Union Nationale des Femmes du Maroc (Tanger à l'extrême nord); l'Union de l'Action Féministe (Tanger et Rabat au nord-ouest); Aïn Ghazal (Oujda au nord-est). Analyser les enjeux de professionnalisation du Care dans ces trois territoires nous permet de distinguer les effets systémiques nationaux des effets locaux propres aux contextes de chaque territoire. Notre étude montre que la professionnalisation de l'économie du Care constitue un levier stratégique pour prendre soin des travailleuses et pour renforcer leur insertion socio-économique. Si les trois territoires partagent un contexte de vulnérabilité des travailleuses, révélant un problème structurel qui nécessite une transformation profonde, un point positif émerge: le rôle déterminant des associations qui peuvent apporter une part de solution. Les associations peuvent participer à la professionnalisation des métiers du care, grâce à leur rôle d'identification de besoins des femmes et des employeurs, d'accompagnement, de formation, de certification et de lutte pour la reconnaissance institutionnelle des formations et des métiers du care. Cependant, et malgré de nombreuses contributions, leur portée reste limitée. La réussite de la professionnalisation nécessite un cadre juridique protecteur, un effort de reconnaissance et de valorisation, des formations qualifiantes et une approche collaborative et multi-acteurs.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
     },
     {
       "id": "kitn_a5d288609b9d4c5e",
@@ -1181,7 +1221,8 @@
       "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en difficulté, ce qui en fait un impératif social. Cependant, ce secteur reste confronté à de nombreux défis, y compris dans certains pays développés, où les difficultés d'attractivité, de recrutement et de fidélisation des employés sont au cœur des préoccupations (Amat et al., 2023). Dans les pays émergeants comme le Maroc, d'autres problématiques apparaissent en lien avec l'informalité du Care, touchant en premier lieu les femmes, qui représentent la majorité des professionnels. Souvent faiblement rémunérées, sans contrat de travail et exclues de la sécurité sociale, elles sont en outre exposées à des violences, y compris physiques (HCP, 2023; Mechouat, 2017; OIT, 2022; WiNorsky, 2012). Nous défendons dans ce travail l'idée que le Care doit être abordé non seulement comme des pratiques centrées sur les aidés, mais comme une responsabilité collective vis-à-vis des aidantes professionnelles, notamment à travers la professionnalisation. Dans ce cadre, nous nous appuyons sur une enquête qualitative (observation et entretiens semi-directifs) réalisée auprès de deux catégories de public: les travailleuses du Care et les actrices associatives engagées dans la promotion des droits des femmes et dans leur accompagnement socio-professionnel. Notre étude a été menée en 2025 au sein de trois associations engagées pour l'amélioration des situations des femmes et situées dans des territoires contrastés au Maroc: l'Union Nationale des Femmes du Maroc (Tanger à l'extrême nord); l'Union de l'Action Féministe (Tanger et Rabat au nord-ouest); Aïn Ghazal (Oujda au nord-est). Analyser les enjeux de professionnalisation du Care dans ces trois territoires nous permet de distinguer les effets systémiques nationaux des effets locaux propres aux contextes de chaque territoire. Notre étude montre que la professionnalisation de l'économie du Care constitue un levier stratégique pour prendre soin des travailleuses et pour renforcer leur insertion socio-économique. Si les trois territoires partagent un contexte de vulnérabilité des travailleuses, révélant un problème structurel qui nécessite une transformation profonde, un point positif émerge: le rôle déterminant des associations qui peuvent apporter une part de solution. Les associations peuvent participer à la professionnalisation des métiers du care, grâce à leur rôle d'identification de besoins des femmes et des employeurs, d'accompagnement, de formation, de certification et de lutte pour la reconnaissance institutionnelle des formations et des métiers du care. Cependant, et malgré de nombreuses contributions, leur portée reste limitée. La réussite de la professionnalisation nécessite un cadre juridique protecteur, un effort de reconnaissance et de valorisation, des formations qualifiantes et une approche collaborative et multi-acteurs.",
       "first_seen_at": "2026-11-26T15:23:24Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_47e479f4a4fb35a8",
@@ -1206,7 +1247,8 @@
       "url_publication": "https://hal.science/hal-05856392v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05856392/document",
-      "resume": "La maîtrise de la langue d'enseignement constitue une condition essentielle à l'appropriation des savoirs disciplinaires, ainsi qu'à l'intégration et à la réussite dans le milieu universitaire. Toutefois, au Maroc, et plus particulièrement dans l'enseignement supérieur, un constat largement partagé par les universitair"
+      "resume": "La maîtrise de la langue d'enseignement constitue une condition essentielle à l'appropriation des savoirs disciplinaires, ainsi qu'à l'intégration et à la réussite dans le milieu universitaire. Toutefois, au Maroc, et plus particulièrement dans l'enseignement supérieur, un constat largement partagé par les universitair",
+      "espace": "science"
     },
     {
       "id": "kitn_5e21f1e4c7c5f1b3",
@@ -1235,7 +1277,8 @@
       "resume": "La maîtrise de la langue d'enseignement constitue une condition essentielle à l'appropriation des savoirs disciplinaires, ainsi qu'à l'intégration et à la réussite dans le milieu universitaire. Toutefois, au Maroc, et plus particulièrement dans l'enseignement supérieur, un constat largement partagé par les universitaires et les observateurs s'impose: le profil linguistique du public étudiant a considérablement évolué par rapport à celui des générations des années 1960 et 1970, au lendemain de l'indépendance. Ces dernières disposaient généralement d'un niveau de maîtrise du français leur permettant d'accéder aux contenus disciplinaires, de se les approprier et de mobiliser les méthodologies de travail propres à l'enseignement universitaire. Partant de ce constat et de notre expérience dans l'enseignement du français à l'université marocaine, nous proposons, dans cette contribution, d'examiner les difficultés que rencontrent les nouveaux étudiants en matière de maîtrise de la compétence scripturale en français. Nous chercherons ensuite à dégager quelques pistes de réflexion sociodidactiques susceptibles de contribuer à la prise en charge de ces difficultés. Proficiency in the language of instruction is an essential prerequisite for mastering subject-specific knowledge, as well as for integrating into and succeeding within the university environment. In Morocco, however-particularly in higher education-there is a widely held view among academics and observers that the linguistic profile of the student body has evolved significantly since the generations of the 1960s and 1970s, the period immediately following independence. Those earlier generations generally possessed a level of French proficiency that enabled them to access course content, internalize it, and employ the academic methodologies required for university-level study. Building on this observation-and drawing on our own experience teaching French within the Moroccan university system-this paper examines the challenges new students face in developing written proficiency in French. Furthermore, we aim to outline several socio-didactic approaches that could help address these difficulties.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_6c2f7f2eaa3e6163",
@@ -1263,7 +1306,8 @@
       "resume": "Si la croissance de l'industrie automobile marocaine est bien documentée, sa nature et sa compatibilité avec un processus d'upgrading restent peu étudiées de manière intégrée. Cet article analyse conjointement deux lectures macroéconomiques de la croissance extensive et intensive: l'une appliquée aux exportations, entre approfondissement des segments existants et diversification, l'autre à la valeur ajoutée, entre emploi et productivité apparente du travail. L'étude mobilise trois sources complémentaires, chacune sur son propre périmètre statistique: les données du commerce extérieur de l'Office des Changes, les comptes nationaux du Haut-Commissariat au Plan et les indicateurs de commerce en valeur ajoutée (TiVA) de l'OCDE. La démarche est descriptive et ne vise pas à établir des relations causales entre intégration et upgrading. Les résultats montrent que la nature de la croissance varie selon les phases. La productivité contribue davantage que l'emploi à la hausse de la valeur ajoutée sur 2010-2024, mais le test de sensibilité sur 2014-2024 fait apparaître une croissance principalement tirée par l'emploi. L'expansion des exportations associe l'approfondissement de la construction automobile et du câblage à une diversification vers le powertrain et d'autres composants. Ces évolutions sont compatibles avec un upgrading de produit et fournissent des signes compatibles avec un upgrading de processus. En revanche, la part de la valeur ajoutée domestique dans les exportations recule, tandis que le contenu étranger progresse plus rapidement, et ce recul figure parmi les plus marqués des économies de comparaison. Ce résultat est compatible avec une intégration locale fondée en partie sur l'implantation d'équipementiers étrangers qui importent l'essentiel de leurs intrants: le taux d'intégration locale et la part domestique peuvent ainsi évoluer en sens inverse. L'upgrading fonctionnel reste incertain avec les données mobilisées. L'article conclut à une transformation productive importante mais incomplète, dont l'approfondissement domestique demeure un enjeu central. Mots clés: Classification JEL: F14, F23, L62, O55. Type du papier: Analyse empirique. While the growth of Morocco's automotive industry is well documented, its nature and its compatibility with upgrading remain little examined within an integrated framework. This article jointly analyses two macroeconomic readings of extensive and intensive growth: one applied to exports, distinguishing the deepening of existing segments from diversification, and the other to value added, distinguishing employment from apparent labour productivity. The study uses three complementary sources, each within its own statistical scope: foreign-trade data from the Office des Changes, national accounts from the Haut-Commissariat au Plan and the OECD Trade in Value Added (TiVA) indicators. The approach is descriptive and does not seek to establish causal relationships between integration and upgrading. Results show that the nature of growth varies across phases. Productivity contributes more than employment to value-added growth over 2010-2024, whereas the sensitivity test for 2014-2024 indicates growth mainly driven by employment. Export expansion combines the deepening of vehicle manufacturing and wiring with diversification towards powertrain and other components. These changes are compatible with product upgrading and provide signs consistent with process upgrading. By contrast, the share of domestic value added in exports declines, while foreign content grows faster, and this decline is among the most pronounced in the comparison economies. This result is consistent with local integration driven in part by foreign suppliers that import most of their inputs: the local integration rate and the domestic share can thus move in opposite directions. Functional upgrading remains uncertain with the data used. The article concludes that the productive transformation is substantial but incomplete, with domestic deepening remaining a central challenge. Keywords: Extensive and intensive growth, automotive industry, upgrading, domestic value added, Morocco. JEL Classification: F14, F23, L62, O55. Paper type: Empirical analysis.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_f428f017c11b5168",
@@ -1290,11 +1334,12 @@
       "resume": "Cet article examine la convergence des politiques publiques au Maroc à la fois comme une exigence de gouvernance et comme un enjeu institutionnel. S'appuyant sur le cadre conceptuel développé dans le champ de l'analyse des politiques publiques, l'étude inscrit la convergence dans les débats plus larges relatifs à la bonne gouvernance et à la coordination de l'action de l'État. Si la convergence s'est progressivement imposée dans la littérature comme un principe structurant de l'action publique, son effectivité demeure étroitement tributaire des configurations institutionnelles nationales. Dans le contexte marocain, la recherche d'une plus grande cohérence entre les stratégies sectorielles, les interventions territoriales et les programmes publics a fait de la convergence une préoccupation centrale de la gouvernance publique. L'article soutient que l'enjeu ne réside pas uniquement dans l'affirmation normative du principe de convergence, mais dans son institutionnalisation effective à travers des mécanismes structurés de coordination, de pilotage et d'évaluation. La première partie analyse la convergence comme une exigence de bonne gouvernance et examine la mise en place d'un Cadre global national de cohérence en tant qu'instrument visant à renforcer l'articulation et l'alignement des politiques publiques. La seconde partie étudie les voies d'institutionnalisation de la convergence, en s'intéressant à la mise en place d'instances de coordination ainsi qu'au cadre institutionnel plus large consacré à la coordination et à l'évaluation des politiques publiques. À travers cette analyse, l'article cherche à apprécier dans quelle mesure la convergence au Maroc est passée d'un objectif conceptuel et stratégique à une composante opérationnelle et institutionnalisée de la gouvernance publique. This article examines the convergence of public policies in Morocco as both a governance imperative and an institutional challenge. Drawing on the conceptual framework developed in public policy analysis, the study situates convergence within broader debates on good governance and State coordination. While convergence has progressively emerged in the literature as a structuring principle of public action, its effectiveness remains closely dependent on national institutional configurations. In the Moroccan context, the search for greater coherence among sectoral strategies, territorial interventions, and public programs has elevated convergence to a central concern of public governance. The article argues that the challenge lies not merely in the normative affirmation of convergence, but in its effective institutionalization through structured mechanisms of coordination, steering, and evaluation. The first part analyzes convergence as a requirement of good governance and explores the development of a Global National Coherence Framework as an instrument designed to enhance policy alignment. The second part investigates the pathways toward institutionalization, focusing on the establishment of coordination bodies and the broader institutional framework dedicated to the coordination and evaluation of public policies. Through this analysis, the article seeks to assess to what extent convergence in Morocco has evolved from a conceptual and strategic objective into an operational and institutionalized component of public governance.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z"
+      "updated_at": "2026-11-26T16:33:57Z",
+      "espace": "science"
     },
     {
       "id": "kitn_4501627a7a9c249c",
-      "titre_original": "Comparison of Wild and Field-Cultivated Thymus satureioides : Effects on Rhizosphere Properties, Essential-Oil Composition, and Biological Activities",
+      "titre_original": "Comparison of Wild and Field-Cultivated Thymus satureioides: Effects on Rhizosphere Properties, Essential-Oil Composition, and Biological Activities",
       "auteurs": [
         "Meryem Youssfi",
         "Oumaima Akachoud",
@@ -1326,7 +1371,208 @@
       "resume": "Thymus satureioides Coss. is an endemic Moroccan medicinal and aromatic species of high socio-economic value, is increasingly threatened by overexploitation and continued reliance on wild harvesting. Sustainable cultivation could reduce pressure on natural populations, yet its effects on essential oil (EO) composition, bioactivity, and associated microbial diversity remain poorly understood. This study compared EO yield, chemical composition, antioxidant, antimicrobial, and nematicidal activities, and soil microbial diversity (PLFA) between wild (WT) and cultivated (CT) populations. Gas chromatography-MS analysis identified 18 and 24 compounds in WT-EO and CT-EO, respectively. Thymol and endo-borneol were the major constituents in both oils, with thymol occurring at higher levels in CT-EO (31.83%) than WT-EO (24.79%), while endo-borneol accounted for 15.61% and 16.37%, respectively. WT-EO was further characterized by the exclusive presence of camphor (0.28%). Despite the higher EO yield in CT plants, WT-EO exhibited stronger biological activities. WT-EO showed significantly higher antioxidant capacity, with lower IC50 values than CT-EO in TAC (0.01 vs. 0.02 mg mL−1), DPPH (0.30 vs. 0.60 mg mL−1), and ABTS (0.03 vs. 0.37 mg mL−1) assays. WT-EO also showed stronger antimicrobial activity, with lower MIC values against E. coli (2.5 vs. 3.8 mg mL−1), Pseudomonas aeruginosa (2.5 vs. 3.8 mg mL−1), and Staphylococcus aureus (0.04 vs. 0.50 mg mL−1). At the lowest tested concentration (5 µL mL−1), WT-EO induced significantly higher nematicidal activity than CT-EO, although both oils reached nearly complete juvenile mortality and egg-hatching inhibition at higher concentrations. WT soils also supported greater microbial biomass and a distinct PLFA-based microbial profile than CT soils (9.53 vs. 3.77 µg g−1 soil). These findings support cultivation as a sustainable production strategy while highlighting the importance of conserving WT populations as reservoirs of chemical and microbial diversity.",
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z"
+      "updated_at": "2026-11-26T15:05:17Z",
+      "espace": "science"
+    },
+    {
+      "id": "kitn_3965f031d2d3df77",
+      "titre_original": "Introduction: revisiting Moroccan migrations",
+      "auteurs": [
+        "Mohamed Berriane",
+        "Hein de Haas",
+        "Katharina Natter"
+      ],
+      "revue_ou_institution": "The Journal of North African Studies",
+      "mots_cles": [],
+      "date_publication": "2015-07-17",
+      "collecte_le": "2026-11-26T17:53:59Z",
+      "mis_a_jour_le": "2026-11-26T17:53:59Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "en",
+      "source_id": "openalex_morocco_policy",
+      "source_nom": "OpenAlex - Recherche & politiques publiques (Maroc)",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "societe_developpement_humain",
+      "poles_secondaires": [
+        "recherche_scientifique"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "indirect_ou_source_nationale",
+      "score_pertinence": 45,
+      "url_publication": "https://doi.org/10.1080/13629387.2015.1065036",
+      "doi": "https://doi.org/10.1080/13629387.2015.1065036",
+      "pdf_direct": "https://www.tandfonline.com/doi/pdf/10.1080/13629387.2015.1065036?needAccess=true&role=button",
+      "texte_integral_disponible": true,
+      "resume": "Since the 1960s, Morocco has evolved into one of the world's leading emigration countries and in many ways migration has permeated Morocco's social, cultural and economic life. However, Morocco's position within Euro-African migration systems seems to be undergoing significant changes since 2000. Although Morocco remains primarily a country of emigration, it is also becoming a destination for migrants and refugees from sub-Saharan Africa and, to some extent, from Europe. The growing presence of immigrants confronts Moroccan society with an entirely new set of social, cultural, political and legal issues around diversity and integration. This special issue explores how continued emigration and increasing immigration is transforming contemporary Moroccan society, with a particular emphasis on the way in which the Moroccan state is dealing with these shifting migratory realities. The analyses highlight how existing migration theories can help to make sense of these transformations and, vice-versa, how the Moroccan case can contribute to migration scholarship. The Moroccan migration experience particularly exemplifies the value and necessity of going beyond Euro-centric biases in migration research that artificially divide the world into 'receiving' and 'sending' countries.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_26dff15ce5b62926",
+      "titre_original": "A new strategy for agriculture in Morocco: \"the Green Morocco Plan\".",
+      "auteurs": [
+        "Najib Akesbi"
+      ],
+      "revue_ou_institution": "New Medit",
+      "mots_cles": [],
+      "date_publication": "2012-01-01",
+      "collecte_le": "2026-11-26T17:53:59Z",
+      "mis_a_jour_le": "2026-11-26T17:53:59Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "en",
+      "source_id": "openalex_morocco_policy",
+      "source_nom": "OpenAlex - Recherche & politiques publiques (Maroc)",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "institutions_gouvernance",
+      "poles_secondaires": [],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 70,
+      "url_publication": "http://www.iamb.it/share/img_new_medit_articoli/441_12_akesbi.pdf",
+      "doi": null,
+      "pdf_direct": "http://www.iamb.it/share/img_new_medit_articoli/441_12_akesbi.pdf",
+      "texte_integral_disponible": true,
+      "resume": "EnglishOver the last years Morocco has worked out a new agricultural strategy named «Green Morocco Plan». This article intends to underpin some �good ideas� but also to raise some criticalities. A first criticism goes towards its standard approach and its �technicist� dimension. A second criticality is its bias towards �large-sized farms� that may destabilize family-run agriculture, which is the only reality in the rural world. A third criticality addresses the ultra-productivist model of agriculture in this plan which is dangerous for the environment and natural resources. Choices made at production levels do not seem to take in serious consideration the protection of food security in the country. The aggregation-based organization is viewed with some skepticism, mainly for its pretention to be easily replicable. The second pillar forced us to question whether it will be a �supporting� accompanying measure or a dumping ground of the first pillar�.As to the governance of the Green Morocco Plan, it seems to be too red-tape and elitist, which may raise some concern. francaisLe Maroc s�est dote depuis quelques annees d�une nouvelle strategie agricole appelee «Plan Maroc Vert». Cet article nous a permis d�en souligner certaines «bonnes idees», mais aussi de critiquer celles qui nous paraissent problematiques. Une premiere critique regrette son approche standard et sa dimension «techniciste». Une seconde deplore son parti pris pour le modele de la «grande ferme» et des grands exploitants, au risque de destabiliser dangereusement l�equilibre de l�agriculture familiale, seule realite preeminente dans le monde rural. Une troisieme critique porte sur le caractere ultra-productiviste du modele agricole vehicule par ce plan, dangereux pour l�environnement et les ressources naturelles. Par ailleurs, les choix arretes au niveau des productions ne temoignent guere d�un souci de sauvegarde d�une certaine securite alimentaire du pays. Le mode d�organisation autour de l�agregation est percu avec un certain scepticisme, notamment pour sa pretention a etre aisement «duplicable». Pour sa part, a voir la maniere avec laquelle il est traite, le second pilier nous a pousses a nous demander s�il sera un vrai «accompagnateur solidaire», ou au contraire un simple depotoir du premier pilier� Quant a la gouvernance du PMV, et en depit de certaines apparences, il nous est apparu qu�elle degage une propension bureaucratique et elitiste, plutot preoccupante.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_0ca6caf8b3ca4b69",
+      "titre_original": "Women, Gender and Language in Morocco",
+      "auteurs": [
+        "Fatima Sadiqi"
+      ],
+      "revue_ou_institution": "BRILL eBooks",
+      "mots_cles": [],
+      "date_publication": "2003-01-01",
+      "collecte_le": "2026-11-26T17:53:59Z",
+      "mis_a_jour_le": "2026-11-26T17:53:59Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "en",
+      "source_id": "openalex_morocco_policy",
+      "source_nom": "OpenAlex - Recherche & politiques publiques (Maroc)",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "societe_developpement_humain",
+      "poles_secondaires": [],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 50,
+      "url_publication": "https://doi.org/10.1163/9789047404378",
+      "doi": "https://doi.org/10.1163/9789047404378",
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "This volume deals with the complex but poorly understood relationship between women, gender, and language in Morocco, a Muslim, multilingual, multicultural, and developing country. The hypothesis on which the book is based is that an understanding of gender perception and women's agency can be achieved only by taking into account the structure of power in a specific culture and that language is an important component of this power. In Moroccan culture, history, geography, Islam, orality, multilingualism, social organization, economic status, and political system constitute the superstructures of power within which factors such as social differences, contextual differences, and identity differences interact in the daily linguistic performances of gender. Moroccan women are far from constituting a homogeneous group, consequently the choices available to them vary in nature and empowering capacity, thus 'widening' the spectrum of gender beyond cultural limits.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_edccca00c07a1096",
+      "titre_original": "Nutrition transition in Morocco",
+      "auteurs": [
+        "Sabah Benjelloun"
+      ],
+      "revue_ou_institution": "Public Health Nutrition",
+      "mots_cles": [],
+      "date_publication": "2002-02-01",
+      "collecte_le": "2026-11-26T17:53:59Z",
+      "mis_a_jour_le": "2026-11-26T17:53:59Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "en",
+      "source_id": "openalex_morocco_policy",
+      "source_nom": "OpenAlex - Recherche & politiques publiques (Maroc)",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "societe_developpement_humain",
+      "poles_secondaires": [
+        "recherche_scientifique"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 60,
+      "url_publication": "https://doi.org/10.1079/phn2001285",
+      "doi": "https://doi.org/10.1079/phn2001285",
+      "pdf_direct": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/66EE637D80C0C55B7B0F501F13DDB2D9/S1368980002000198a.pdf/div-class-title-nutrition-transition-in-morocco-div.pdf",
+      "texte_integral_disponible": true,
+      "resume": "OBJECTIVE: To analyse the nutritional transition in Morocco. DESIGN: Examination of Moroccan national survey data. RESULTS: Morocco is undergoing a demographic, epidemiological and social transition. The urban population increased from 29% in 1960 to 53% in 1997. Per capita gross domestic product increased steadily from 1972 to 1999. Life expectancy at birth increased to 70 years in 1999 from 47 years in 1962. Both infant and juvenile mortalities have decreased, from 92/1000 and 69/1000 in 1982-87 to 46/1000 and 37/1000 in 1992-97, respectively. In parallel, the diet changed considerably: the intake of animal products increased while that of cereals and sugar remained relatively high, reflecting the specificity of Moroccan dietary habits. The rise in the consumption of meats and vegetables was accompanied by a steady consumption of bread, used to eat the sauce in which the meat and vegetables are cooked. Sugar is mainly used in tea, the very sweet, national drink consumed throughout the day. Under-nourishment persists among children under five (23% stunting and 10% underweight in 1997) while overweight is rising (9% in 1997 compared with 3% in 1987 for children under three). Among adults, overweight (body mass index (BMI) > 25 kg m(-2)) increased from 26% in 1984 to 36% in 1998. It is higher among women (32% in 1984 and 45% in 1998) than among males (19% in 1984 and 25% in 1998). It is also higher among urban populations (30% in 1984 and 40% in 1998) than rural populations (20% in 1984 and 29% in 1998). Obesity (BMI > 30kg m(-2)) increased from 4% in 1984 to 10% in 1998. Overweight seems to be positively associated with economic status but negatively with education level. CONCLUSION: Overweight and obesity constitute major health problems in Morocco.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_6ea8b4c4f444c611",
+      "titre_original": "Religion and Power in Morocco",
+      "auteurs": [
+        "Henry Munson"
+      ],
+      "revue_ou_institution": "Yale University Press eBooks",
+      "mots_cles": [],
+      "date_publication": "1993-07-28",
+      "collecte_le": "2026-11-26T17:53:59Z",
+      "mis_a_jour_le": "2026-11-26T17:53:59Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "en",
+      "source_id": "openalex_morocco_policy",
+      "source_nom": "OpenAlex - Recherche & politiques publiques (Maroc)",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "societe_developpement_humain",
+      "poles_secondaires": [
+        "recherche_scientifique"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 60,
+      "url_publication": "https://doi.org/10.2307/j.ctt1xp3srm",
+      "doi": "https://doi.org/10.2307/j.ctt1xp3srm",
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "In this book a well-known anthropologist traces the evolution of the political role of Islam in Morocco from the seventeenth century to present times. Integrating history and anthropology in a way very different from Clifford Geertz's famous study of 1968, Henry Munson organizes his book around a series of conflicts that have exemplified the myth of the righteous man of God who dares to defy an unjust sultan. Grounding his book in the relevant indigenous texts and on two years of ethnographic fieldwork, Munson suggests a more solidly substantiated alternative to the history of the imagination advocated by Geertz, and he illustrates the consequences of neglecting the historical and symbolic contexts of events by examining Geertz's interpretation of the conflict between the seventeenth-century scholar-cum-saint al-Yusi and the sultan Mulay Ismail. Munson argues that the religious facets of power cannot be understood without reference to factors like force and fear, and he suggests that anthropological analyses of sacred kingship in Morocco have often been distorted by their neglect of such matters - and by their failure to distinguish between the religious rhetoric of rulers and the religious beliefs of those they rule. Munson examines the social historical roots of the fundamentalist opposition to the regime of King Hassan II, who has reigned since 1961, and the reasons for its relative weakness when compared with its counterparts in Iran and Algeria. He shows to what extent Moroccan fundamentalism is rooted in classical Islamic notions of just rule and to what extent it represents an invented tradition similar to recent forms of politicized revivalism in other religions.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_4d20fc4e5ccf4263",
+      "titre_original": "Manganese Poisoning in Moroccan Miners",
+      "auteurs": [
+        "Jean Rodier"
+      ],
+      "revue_ou_institution": "Occupational and Environmental Medicine",
+      "mots_cles": [],
+      "date_publication": "1955-01-01",
+      "collecte_le": "2026-11-26T17:53:59Z",
+      "mis_a_jour_le": "2026-11-26T17:53:59Z",
+      "date_statut": "date_confirmee",
+      "date_anomalie": false,
+      "statut_validation": "a_verifier",
+      "langue_originale": "en",
+      "source_id": "openalex_morocco_policy",
+      "source_nom": "OpenAlex - Recherche & politiques publiques (Maroc)",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "recherche_scientifique",
+      "poles_secondaires": [],
+      "confiance_classification": "faible",
+      "lien_maroc": "direct",
+      "score_pertinence": 45,
+      "url_publication": "https://doi.org/10.1136/oem.12.1.21",
+      "doi": "https://doi.org/10.1136/oem.12.1.21",
+      "pdf_direct": "https://oem.bmj.com/content/oemed/12/1/21.full.pdf",
+      "texte_integral_disponible": true,
+      "resume": "MEDICINEtons in 1922 it reached by 1953 420,000 tons, of which 40,000 tons are chemical salts.The mines of Imini, Bou-Arfa, and Tiouine (in order of importance) furnish 90% of Moroccan production.Geologically the deposits of manganese in Morocco are of two principal types, sedimentary deposits and seam deposits.The first are the more important and make up the greater part of the country's production.They are situated in cretaceous terrains such as Imini and Talsdremt, liassic as at Bou-Arfa, or cambrian as at Tiouine (Rodier, 1950).Reserves of these deposits would amount to 15,000,000 tons. ExploitationThe techniques vary in different mines.Most of the workings at Imini are underground.The friable and powdery nature of the ore only very rarely calls for blasting or the use of rock-drilling machines.Formerly excavation was by hand-pick but now hand-picks have been replaced by pneu- matic drills.The ore is removed in tubs winchhoisted up an incline.One part only is worked as open-cast.The mineral extracted is made up of pyrolusite very rich in manganese.Formerly the ore was screened and hand-picked but now this process is replaced by pneumatic washing.The inconvenience of this system is to get rid of the quantities of dust so it has been necessary to add to this an elaborate apparatus, which seems satisfactory, for suppressing the dust.The powdery nature of the ore renders its transport difficult and is a serious handicap to its use in blast furnaces.It is thus necessary to treat it in Casablanca in a \" sinterization\" works using a Dwight-Lloyd machine.At Bou-Arfa working is by horizontal terraced trenches.The general character of the ore is rather friable and as much as a third of production is made up of small stuff.At Tiouine workings are entirely underground and mined by the gallery-and-pillar method.Because of the hardness of the rock, excavation is by blasting after the blast holes have been bored by rock drills.The spoil is removed by mine tubs on the level, which are subsequently pulled to the surface by electric winches.Sorting of the large blocks of ore is done by hand-picking.",
+      "analyse_strategique": "",
+      "origine": "automatique"
     }
   ]
 }

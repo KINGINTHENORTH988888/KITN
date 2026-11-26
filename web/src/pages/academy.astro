@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadAcademyModules } from '../lib/data';
+import { POLE_LABELS, UI_TEXT } from '../lib/i18n';
+
+const modules = loadAcademyModules();
+---
+
+<BaseLayout title="KITN Academy" activeNav="academy">
+  <section class="page-head">
+    <div>
+      <h1 data-i18n="academyTitle">{UI_TEXT.fr.academyTitle}</h1>
+      <p class="muted" data-i18n="academyDesc">{UI_TEXT.fr.academyDesc}</p>
+    </div>
+  </section>
+
+  <section class="modules-grid">
+    {modules.map((mod) => (
+      <article class="card module-card">
+        <div class="module-top">
+          <span class="badge" data-fr={POLE_LABELS[mod.pole]?.fr || mod.pole} data-ar={POLE_LABELS[mod.pole]?.ar || mod.pole}>
+            {POLE_LABELS[mod.pole]?.fr || mod.pole}
+          </span>
+          <span class="badge badge-score">{mod.level} • {mod.duration}</span>
+        </div>
+
+        <h2 data-fr={mod.fr.title} data-ar={mod.ar.title}>{mod.fr.title}</h2>
+        <p class="module-summary" data-fr={mod.fr.summary} data-ar={mod.ar.summary}>{mod.fr.summary}</p>
+
+        <ul class="key-points">
+          {mod.fr.keyPoints.map((pt, idx) => (
+            <li data-fr={pt} data-ar={mod.ar.keyPoints[idx] || pt}>{pt}</li>
+          ))}
+        </ul>
+      </article>
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    margin-bottom: 1.5rem;
+  }
+
+  .page-head h1 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+
+  .muted {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+    max-width: 68ch;
+  }
+
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+  }
+
+  .module-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .module-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .module-card h2 {
+    margin: 0;
+    font-size: 1.12rem;
+    line-height: 1.38;
+  }
+
+  .module-summary {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .key-points {
+    margin: 0.25rem 0 0;
+    padding-inline-start: 1.15rem;
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 960px) {
+    .modules-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

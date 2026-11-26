@@ -47,3 +47,5 @@ Le pipeline alimente également :
 - `public/data/` : copies publiées consommées par l'application Vite.
 
 Les séries statistiques conservent leur code d'indicateur, leur unité, leurs valeurs historiques, leur année de référence et leur URL source. Les valeurs sont actualisées par le pipeline automatisé ; l'indisponibilité d'une série isolée ne bloque pas les autres indicateurs.
+
+Les collecteurs institutionnels visitent les pages de détail lorsqu'elles sont accessibles afin de récupérer les titres normalisés, dates de publication et résumés éditoriaux. Les notices sont dédoublonnées à partir de leur URL canonique pour éviter de conserver une version générique et une version enrichie du même rapport.

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T19:23:32Z",
+  "updated_at": "2026-11-26T19:28:10Z",
   "active_sources": 2,
   "total_fetched": 15,
   "total_accepted": 4,
@@ -16,7 +16,7 @@
       "fetched": 15,
       "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T19:23:32Z"
+      "checked_at": "2026-11-26T19:28:10Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -30,7 +30,7 @@
       "fetched": 0,
       "accepted": 0,
       "error": null,
-      "checked_at": "2026-11-26T19:23:32Z"
+      "checked_at": "2026-11-26T19:28:10Z"
     }
   ]
 }

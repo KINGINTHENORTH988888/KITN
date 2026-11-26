@@ -62,6 +62,13 @@ const copy = {
         detail: 'Les contenus, études et outils de préparation sont filtrés et organisés autour des réalités, politiques publiques et concours au Maroc.'
       }
     ],
+    searchTitle: 'Index documentaire & veille',
+    searchSubtitle: 'La connaissance commence par une bonne question.',
+    searchPlaceholder: 'Rechercher une étude, un auteur, un pôle ou une source...',
+    indexedLabel: 'notices indexées',
+    openSource: 'Voir la source',
+    openPdf: 'PDF direct',
+    noResults: 'Aucune publication ne correspond à cette recherche.',
     footer: 'Une plateforme de veille, de recherche et de transmission des connaissances.',
     language: 'العربية'
   },
@@ -126,6 +133,13 @@ const copy = {
         detail: 'تُنتقى المواد والدراسات وأدوات الاستعداد وتُنظّم حول القضايا والسياسات العمومية والمباريات بالمغرب.'
       }
     ],
+    searchTitle: 'فهرس الوثائق والرصد',
+    searchSubtitle: 'تبدأ المعرفة بسؤال جيد.',
+    searchPlaceholder: 'ابحث عن دراسة أو باحث أو محور أو مصدر...',
+    indexedLabel: 'مادة مفهرسة',
+    openSource: 'فتح المصدر',
+    openPdf: 'ملف PDF',
+    noResults: 'لا توجد نتائج مطابقة لهذا البحث.',
     footer: 'منصة للرصد والبحث ونقل المعرفة.',
     language: 'Français'
   }
@@ -134,12 +148,45 @@ const copy = {
 let lang = 'fr'
 let activePrinciple = 0
 let activeTheme = 0
+let searchQuery = ''
+let indexItems = []
+let indexTotal = 0
+
 const app = document.querySelector('#app')
+
+function escapeHtml(str = '') {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function getFilteredItems() {
+  const q = searchQuery.trim().toLowerCase()
+  if (!q) return indexItems.slice(0, 6)
+  return indexItems
+    .filter((item) => {
+      const hay = [
+        item.titre_original,
+        item.source_nom,
+        item.pole,
+        item.type_document,
+        ...(Array.isArray(item.auteurs) ? item.auteurs : [])
+      ]
+        .join(' ')
+        .toLowerCase()
+      return hay.includes(q)
+    })
+    .slice(0, 8)
+}
 
 function render() {
   const t = copy[lang]
   const currentPrinciple = t.principles[activePrinciple] || t.principles[0]
   const currentTheme = t.themes[activeTheme] || t.themes[0]
+  const visibleItems = getFilteredItems()
+  const countDisplay = indexTotal || indexItems.length
 
   document.documentElement.lang = lang
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
@@ -204,7 +251,7 @@ function render() {
       </div>
       <p>${currentTheme.focus}</p>
       <div class="theme-tags">
-        ${currentTheme.tags.map(tag => `<span>${tag}</span>`).join('')}
+        ${currentTheme.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}
       </div>
     </div>
   </section>
@@ -248,13 +295,55 @@ function render() {
     </div>
   </section>
 
-  <section class="research-strip" id="research">
-    <span class="research-symbol">✳</span>
-    <div>
-      <b>${lang === 'fr' ? 'La connaissance commence par une bonne question.' : 'تبدأ المعرفة بسؤال جيد.'}</b>
-      <p>KITN — De l’information à la maîtrise.</p>
+  <section class="research-box section" id="research">
+    <div class="research-head">
+      <div>
+        <div class="eyebrow muted">${t.searchTitle}</div>
+        <h2>${t.searchSubtitle}</h2>
+      </div>
+      ${countDisplay > 0 ? `<span class="index-badge">${countDisplay} ${t.indexedLabel}</span>` : ''}
     </div>
-    <a href="#explorer">↑</a>
+
+    ${indexItems.length > 0 ? `
+      <div class="search-bar-wrap">
+        <input
+          type="search"
+          id="kitn-search-input"
+          class="search-input"
+          value="${escapeHtml(searchQuery)}"
+          placeholder="${escapeHtml(t.searchPlaceholder)}"
+          aria-label="${escapeHtml(t.searchPlaceholder)}"
+        />
+      </div>
+      <div class="results-grid">
+        ${visibleItems.length > 0 ? visibleItems.map((item) => {
+          const authors = Array.isArray(item.auteurs) && item.auteurs.length ? item.auteurs.slice(0, 3).join(', ') : ''
+          return `
+            <article class="result-card">
+              <div class="result-meta">
+                <span>${escapeHtml(item.source_nom || item.source_id || 'KITN')}</span>
+                <span>${escapeHtml(item.date_publication || '')}</span>
+              </div>
+              <h3>${escapeHtml(item.titre_original || '')}</h3>
+              ${authors ? `<p class="result-authors">${escapeHtml(authors)}</p>` : ''}
+              <div class="result-actions">
+                ${item.url_publication ? `<a href="${escapeHtml(item.url_publication)}" target="_blank" rel="noopener noreferrer">${t.openSource} ↗</a>` : ''}
+                ${item.pdf_direct ? `<a href="${escapeHtml(item.pdf_direct)}" target="_blank" rel="noopener noreferrer">${t.openPdf} ↗</a>` : ''}
+              </div>
+            </article>
+          `
+        }).join('') : `<p class="empty-results">${t.noResults}</p>`}
+      </div>
+    ` : `
+      <div class="research-strip">
+        <span class="research-symbol">✳</span>
+        <div>
+          <b>${t.searchSubtitle}</b>
+          <p>KITN — De l’information à la maîtrise.</p>
+        </div>
+        <a href="#explorer">↑</a>
+      </div>
+    `}
   </section>
 </main>
 <footer>
@@ -281,6 +370,40 @@ function render() {
       render()
     })
   })
+
+  const searchInput = document.querySelector('#kitn-search-input')
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value
+      render()
+      const updatedInput = document.querySelector('#kitn-search-input')
+      if (updatedInput) {
+        updatedInput.focus()
+        const len = updatedInput.value.length
+        updatedInput.setSelectionRange(len, len)
+      }
+    })
+  }
+}
+
+async function loadSearchIndex() {
+  const candidates = ['/data/index/search-index.json', './data/index/search-index.json']
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url)
+      if (!res.ok) continue
+      const data = await res.json()
+      if (Array.isArray(data.items) && data.items.length > 0) {
+        indexItems = data.items
+        indexTotal = Number(data.total) || data.items.length
+        render()
+        return
+      }
+    } catch (_) {
+      // On essaie le chemin suivant ou on garde l'affichage de repli
+    }
+  }
 }
 
 render()
+loadSearchIndex()

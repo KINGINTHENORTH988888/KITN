@@ -29,9 +29,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html[lang="ar"] body {
+  font-family: "Tajawal", "Cairo", "DM Sans", sans-serif;
+}
+
 h1, h2, h3, strong {
   font-family: "Manrope", "DM Sans", sans-serif;
   letter-spacing: -0.025em;
+}
+
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] strong {
+  font-family: "Cairo", "Tajawal", "Manrope", sans-serif;
+  letter-spacing: 0;
 }
 
 a {
@@ -41,6 +53,11 @@ a {
 
 button, input {
   font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .topbar {
@@ -147,6 +164,11 @@ button, input {
   text-transform: uppercase;
   letter-spacing: 0.09em;
   color: var(--accent);
+}
+
+html[lang="ar"] .eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .eyebrow.light {
@@ -265,6 +287,14 @@ button, input {
   transform: translate(22px, 24px);
 }
 
+html[dir="rtl"] .card-back {
+  transform: translate(18px, -16px);
+}
+
+html[dir="rtl"] .card-front {
+  transform: translate(-22px, 24px);
+}
+
 .art-top {
   display: flex;
   align-items: center;
@@ -352,7 +382,7 @@ button, input {
 .floating-chip {
   position: absolute;
   bottom: 6px;
-  left: 6%;
+  inset-inline-start: 6%;
   background: var(--surface);
   border: 1px solid var(--line);
   padding: 8px 14px;
@@ -550,3 +580,188 @@ button, input {
 
 .book-page small {
   color: var(--muted);
+}
+
+.page-lines {
+  margin-top: 10px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.method {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.method-right > p {
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+
+.principle-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.principle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 15px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: start;
+}
+
+.principle-btn.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.principle-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.principle-box p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.research-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.index-badge {
+  background: var(--dark);
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.search-bar-wrap {
+  margin-bottom: 24px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.98rem;
+}
+
+.search-input:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+}
+
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.result-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.result-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.result-authors {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.result-actions {
+  display: flex;
+  gap: 14px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.empty-results {
+  color: var(--muted);
+}
+
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 28px 6%;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 960px) {
+  .hero,
+  .academy,
+  .method {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .nav {
+    display: none;
+  }
+}
+
+@media (max-width: 580px) {
+  .theme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-back,
+  .card-front {
+    transform: none;
+  }
+}

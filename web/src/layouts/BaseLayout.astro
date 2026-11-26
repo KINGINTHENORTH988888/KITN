@@ -1,0 +1,361 @@
+---
+import { UI_TEXT, type Lang } from '../lib/i18n';
+
+interface Props {
+  title: string;
+  description?: string;
+  activeNav?: 'home' | 'watch' | 'library' | 'academy' | 'favorites';
+}
+
+const {
+  title,
+  description = 'KITN — Veille stratégique, documentaire et académique sur le Maroc.',
+  activeNav = 'home'
+} = Astro.props;
+
+const tFr = UI_TEXT.fr;
+const tAr = UI_TEXT.ar;
+---
+
+<!doctype html>
+<html lang="fr" dir="ltr" data-lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} | KITN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      (() => {
+        const saved = localStorage.getItem('kitn_lang');
+        const lang = saved === 'ar' ? 'ar' : 'fr';
+        document.documentElement.setAttribute('lang', lang);
+        document.documentElement.setAttribute('data-lang', lang);
+        document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="/" class="brand">
+          <span class="brand-mark">K</span>
+          <span class="brand-text">
+            <strong>KITN</strong>
+            <small data-i18n="brandSub">{tFr.brandSub}</small>
+          </span>
+        </a>
+
+        <nav class="main-nav" aria-label="Navigation principale">
+          <a href="/" class={activeNav === 'home' ? 'active' : ''} data-i18n="navHome">{tFr.navHome}</a>
+          <a href="/veille" class={activeNav === 'watch' ? 'active' : ''} data-i18n="navWatch">{tFr.navWatch}</a>
+          <a href="/bibliotheque" class={activeNav === 'library' ? 'active' : ''} data-i18n="navLibrary">{tFr.navLibrary}</a>
+          <a href="/academy" class={activeNav === 'academy' ? 'active' : ''} data-i18n="navAcademy">{tFr.navAcademy}</a>
+          <a href="/favoris" class={activeNav === 'favorites' ? 'active' : ''} data-i18n="navFavorites">{tFr.navFavorites}</a>
+        </nav>
+
+        <button type="button" id="lang-toggle" class="lang-btn" aria-label="Changer de langue / تغيير اللغة">
+          {tFr.switchLang}
+        </button>
+      </div>
+    </header>
+
+    <main class="site-main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>KITN</strong> — <span data-i18n="brandSub">{tFr.brandSub}</span>
+        </div>
+        <div class="footer-links">
+          <a href="/veille" data-i18n="navWatch">{tFr.navWatch}</a>
+          <a href="/bibliotheque" data-i18n="navLibrary">{tFr.navLibrary}</a>
+          <a href="/academy" data-i18n="navAcademy">{tFr.navAcademy}</a>
+          <a href="/favoris" data-i18n="navFavorites">{tFr.navFavorites}</a>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline define:vars={{ dict: { fr: tFr, ar: tAr } }}>
+      const toggleBtn = document.getElementById('lang-toggle');
+
+      function applyLanguage(lang) {
+        const cleanLang = lang === 'ar' ? 'ar' : 'fr';
+        document.documentElement.setAttribute('lang', cleanLang);
+        document.documentElement.setAttribute('data-lang', cleanLang);
+        document.documentElement.setAttribute('dir', cleanLang === 'ar' ? 'rtl' : 'ltr');
+        localStorage.setItem('kitn_lang', cleanLang);
+
+        if (toggleBtn) {
+          toggleBtn.textContent = dict[cleanLang].switchLang;
+        }
+
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+          const key = el.getAttribute('data-i18n');
+          if (key && dict[cleanLang][key]) {
+            el.textContent = dict[cleanLang][key];
+          }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          if (key && dict[cleanLang][key]) {
+            el.setAttribute('placeholder', dict[cleanLang][key]);
+          }
+        });
+
+        document.querySelectorAll('[data-fr][data-ar]').forEach((el) => {
+          el.textContent = el.getAttribute(`data-${cleanLang}`) || '';
+        });
+
+        window.dispatchEvent(new CustomEvent('kitn:lang-change', { detail: { lang: cleanLang } }));
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-lang') === 'ar' ? 'ar' : 'fr';
+          applyLanguage(current === 'fr' ? 'ar' : 'fr');
+        });
+      }
+
+      const initialLang = localStorage.getItem('kitn_lang') === 'ar' ? 'ar' : 'fr';
+      applyLanguage(initialLang);
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #f6f8fb;
+    --surface: #ffffff;
+    --surface-alt: #eef2f7;
+    --text: #0f172a;
+    --muted: #475569;
+    --border: #e2e8f0;
+    --primary: #1d4ed8;
+    --primary-dark: #1e3a8a;
+    --accent: #0f766e;
+    --radius: 14px;
+    --shadow: 0 6px 24px rgba(15, 23, 42, 0.05);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+  }
+
+  html[dir='rtl'],
+  html[dir='rtl'] body {
+    font-family: 'Cairo', 'Plus Jakarta Sans', sans-serif;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .container {
+    width: min(1180px, 92%);
+    margin-inline: auto;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 70px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-text strong {
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  .brand-text small {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .main-nav a {
+    padding: 0.45rem 0.8rem;
+    border-radius: 9px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.15s ease;
+  }
+
+  .main-nav a:hover,
+  .main-nav a.active {
+    color: var(--primary);
+    background: #eff6ff;
+    font-weight: 600;
+  }
+
+  .lang-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.45rem 0.9rem;
+    border-radius: 9px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .lang-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .site-main {
+    min-height: 72vh;
+    padding-block: 2.2rem 3.5rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.35rem;
+    box-shadow: var(--shadow);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: var(--primary);
+    color: #fff;
+    padding: 0.7rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.68rem 1.15rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.24rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    background: #eff6ff;
+    color: var(--primary-dark);
+  }
+
+  .badge-score {
+    background: #ecfdf5;
+    color: var(--accent);
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding-block: 1.5rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a:hover {
+    color: var(--primary);
+  }
+</style>

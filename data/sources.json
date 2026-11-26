@@ -414,7 +414,7 @@
     "default_doc_type": "article_presse",
     "max_items": 25,
     "include_title_tokens": [
-      "gouvernement", "ministère", "budget", "finances", "économie",
+      "gouvernement", "ministère", "budget", "finances", "économ",
       "investissement", "industrie", "défense", "sécurité", "gouvernance",
       "réforme", "administration", "emploi", "chômage", "politique publique",
       "infrastructure", "énergie", "eau", "agriculture", "tourisme",

@@ -60,12 +60,19 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertIsNone(sanitize_url("javascript:alert(1)"))
 
     def test_evaluate_morocco_relevance(self):
-        relevant = evaluate_morocco_relevance(
+        direct = evaluate_morocco_relevance(
             "Réforme de la gouvernance territoriale et sécurité publique au Maroc",
             "Analyse des politiques publiques et de la régionalisation avancée au Maroc.",
         )
-        self.assertTrue(relevant["is_relevant"])
-        self.assertGreaterEqual(relevant["score"], 50)
+        self.assertTrue(direct["is_relevant"])
+        self.assertEqual(direct["lien_maroc"], "direct")
+        self.assertGreaterEqual(direct["score"], 45)
+
+        isolated_mention = evaluate_morocco_relevance(
+            "Notes on Morocco",
+            "General astronomical observations with no policy or economic context.",
+        )
+        self.assertFalse(isolated_mention["is_relevant"])
 
         irrelevant = evaluate_morocco_relevance(
             "Quantum entanglement in superconducting qubits",

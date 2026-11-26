@@ -1,11 +1,12 @@
 import json
+import os
 import re
 import time
 from email.utils import parsedate_to_datetime
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.error import HTTPError
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, sanitize_url
@@ -1006,6 +1007,90 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
     return items
 
 
+
+
+def collect_bank_al_maghrib_api(source: dict) -> list[dict]:
+    """Fetch official exchange rates from BAM's authenticated developer API."""
+    api_key = os.environ.get(str(source.get("api_key_env") or "BKAM_API_KEY"), "").strip()
+    if not api_key:
+        raise RuntimeError("Clé API Bank Al-Maghrib manquante : configurer le secret GitHub BKAM_API_KEY.")
+
+    base_url = str(source.get("api_base") or "https://api.centralbankofmorocco.ma/cours/Version1/api").rstrip("/")
+    currencies = source.get("currencies") or ["EUR", "USD", "CAD"]
+    items: list[dict] = []
+    for currency in currencies:
+        code = str(currency).strip().upper()
+        if not re.fullmatch(r"[A-Z]{3}", code):
+            continue
+        endpoint = f"{base_url}/CoursVirement?{urlencode({'libDevise': code})}"
+        request = Request(endpoint, headers={
+            "Accept": "application/json",
+            "User-Agent": _USER_AGENT,
+            "Subscription-key": api_key,
+        })
+        with urlopen(request, timeout=25) as response:
+            payload = json.loads(response.read().decode("utf-8", errors="replace"))
+        if not isinstance(payload, list):
+            raise ValueError(f"Réponse API BAM inattendue pour {code}.")
+        row = next((entry for entry in payload if isinstance(entry, dict) and str(entry.get("libDevise", "")).upper() == code), None)
+        if row is None and payload and isinstance(payload[0], dict):
+            row = payload[0]
+        if not row:
+            continue
+        current = row.get("coursJour")
+        previous = row.get("coursVeille")
+        if current is None:
+            continue
+        try:
+            current_value = float(current)
+            previous_value = float(previous) if previous is not None else None
+        except (TypeError, ValueError):
+            continue
+        label = f"Cours de change {code}/MAD"
+        history = [{"year": "Aujourd'hui", "value": current_value}]
+        previous_point = {"year": "Veille", "value": previous_value} if previous_value is not None else None
+        series = {
+            "id": f"BAM_FX_{code}",
+            "indicator_code": f"BAM_FX_{code}",
+            "label_fr": label,
+            "label_ar": label,
+            "description_fr": f"Cours de virement de la devise {code} en dirhams marocains, publié par Bank Al-Maghrib.",
+            "description_ar": f"سعر تحويل {code} مقابل الدرهم المغربي، صادر عن بنك المغرب.",
+            "unit_fr": "MAD",
+            "unit_ar": "درهم",
+            "scale_divisor": 1,
+            "precision": 4,
+            "category": "Marché des changes",
+            "pole": "economie_finances_publiques",
+            "latest": history[0],
+            "previous": previous_point,
+            "history": history,
+            "source_name": "Bank Al-Maghrib — API officielle",
+            "source_url": "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-des-changes/Cours-de-change/Cours-de-reference",
+            "comparison_label_fr": "par rapport au cours de la veille",
+            "comparison_label_ar": "مقارنة بسعر اليوم السابق",
+            "change_mode": "absolute",
+            "change_unit": "MAD",
+        }
+        items.append({
+            "title": f"{label} — Maroc",
+            "abstract": series["description_fr"],
+            "authors": [],
+            "venue": "Bank Al-Maghrib",
+            "keywords": ["Maroc", "Bank Al-Maghrib", "change", code],
+            "published_date": None,
+            "url": series["source_url"],
+            "doi": None,
+            "espace": "chiffres",
+            "pole": "economie_finances_publiques",
+            "default_doc_type": "statistique",
+            "statistics_series": series,
+            "source_lang_hint": "fr",
+            "statut_validation": "valide",
+        })
+    return items
+
+
 def collect_world_bank_api(source: dict) -> list[dict]:
     """Fetch Morocco time series from the World Bank Indicators API."""
     base_url = str(source.get("url") or "https://api.worldbank.org/v2/country/MAR/indicator/").rstrip("/") + "/"
@@ -1089,6 +1174,8 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_world_bank_api(source)
     if stype == "bank_al_maghrib":
         return collect_bank_al_maghrib(source)
+    if stype == "bank_al_maghrib_api":
+        return collect_bank_al_maghrib_api(source)
     if stype == "hal_api":
         return collect_hal_api(source)
     if stype == "html_links":

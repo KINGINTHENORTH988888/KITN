@@ -108,6 +108,29 @@ button, input, select {
   color: var(--ink);
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-toggle {
+  display: none;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 8px 13px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.menu-toggle:hover {
+  border-color: var(--ink);
+}
+
 .lang {
   border: 1px solid var(--line);
   background: var(--surface);
@@ -745,6 +768,21 @@ html[dir="rtl"] .card-front {
   font-weight: 700;
 }
 
+.active-pole-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(15, 92, 76, 0.25);
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
 .search-bar-wrap {
   margin-bottom: 24px;
 }
@@ -971,6 +1009,10 @@ html[dir="rtl"] .card-front {
   text-transform: uppercase;
 }
 
+html[lang="ar"] .modal-meta dt {
+  text-transform: none;
+}
+
 .modal-meta dd {
   margin: 3px 0 0;
   font-size: 0.88rem;
@@ -1010,8 +1052,27 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+
   .nav {
     display: none;
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 6%;
+    gap: 12px;
+    z-index: 40;
+  }
+
+  .nav.is-open {
+    display: flex;
   }
 }
 

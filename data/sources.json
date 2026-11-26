@@ -403,6 +403,31 @@
     "max_items": 15
   },
   {
+    "id": "aujourdhui_maroc",
+    "name": "Aujourd'hui le Maroc — Actualité stratégique",
+    "domain": "aujourdhui.ma",
+    "target_space": "veille",
+    "type": "rss_atom",
+    "url": "https://aujourdhui.ma/feed",
+    "enabled": true,
+    "lang_hint": "fr",
+    "default_doc_type": "article_presse",
+    "max_items": 25,
+    "include_title_tokens": [
+      "gouvernement", "ministère", "budget", "finances", "économie",
+      "investissement", "industrie", "défense", "sécurité", "gouvernance",
+      "réforme", "administration", "emploi", "chômage", "politique publique",
+      "infrastructure", "énergie", "eau", "agriculture", "tourisme",
+      "commerce", "exportation", "parlement", "diplomatie", "coopération",
+      "souveraineté", "régionalisation", "santé", "éducation", "recherche",
+      "technologie", "intelligence artificielle", "numérique", "cybersécurité"
+    ],
+    "exclude_title_tokens": [
+      "football", "sport", "match", "coupe", "concert", "cinéma",
+      "exposition", "festival", "people", "horoscope"
+    ]
+  },
+  {
     "id": "medias24_maroc",
     "name": "Médias24 — Économie & politiques au Maroc",
     "domain": "medias24.com",

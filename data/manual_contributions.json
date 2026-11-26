@@ -1,4 +1,40 @@
 {
-  "updated_at": "2026-11-26T00:00:00Z",
-  "items": []
+  "items": [
+    {
+      "id": "kitn_manual_veille_gouvernance",
+      "title": "Déconcentration administrative et convergence des politiques territoriales au Maroc",
+      "type_document": "article",
+      "espace": "veille",
+      "pole": "institutions_gouvernance",
+      "published_date": "2026-10-15",
+      "venue": "KITN Veille Stratégique",
+      "keywords": ["déconcentration", "gouvernance territoriale", "politiques publiques", "Maroc"],
+      "resume": "Synthèse des mécanismes de coordination entre l'administration centrale et les services déconcentrés au niveau régional et provincial.",
+      "analyse_strategique": "Enjeu central pour la cohérence de l'action publique et la préparation aux concours d'administration territoriale."
+    },
+    {
+      "id": "kitn_manual_chiffres_macro",
+      "title": "Repères macroéconomiques et finances publiques : lecture structurée des indicateurs du Maroc",
+      "type_document": "statistique",
+      "espace": "chiffres",
+      "pole": "economie_finances_publiques",
+      "published_date": "2026-10-20",
+      "venue": "KITN Maroc en chiffres",
+      "keywords": ["finances publiques", "croissance", "emploi", "indicateurs macroéconomiques"],
+      "resume": "Cadre de lecture des principaux agrégats économiques, budgétaires et sociaux pour suivre les tendances conjoncturelles et structurelles au Maroc.",
+      "analyse_strategique": "Permet de croiser dynamique budgétaire, transformation sectorielle et impact sur le pouvoir d'achat et l'emploi."
+    },
+    {
+      "id": "kitn_manual_biblio_securite",
+      "title": "Fiche documentaire : prévention de proximité, sûreté publique et transformation numérique des services",
+      "type_document": "rapport_institutionnel",
+      "espace": "bibliotheque",
+      "pole": "securite_affaires_interieures",
+      "published_date": "2026-11-02",
+      "venue": "KITN Bibliothèque",
+      "keywords": ["sécurité publique", "prévention", "ordre public", "transformation numérique"],
+      "resume": "Note documentaire structurant les axes de prévention, de coopération et de modernisation des services publics de sécurité.",
+      "analyse_strategique": "Ressource de synthèse pour l'analyse institutionnelle et la préparation aux épreuves de sécurité publique."
+    }
+  ]
 }

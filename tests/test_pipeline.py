@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from datetime import date
@@ -11,10 +12,12 @@ from pipeline.processors import (
     clean_text,
     detect_real_language,
     evaluate_morocco_relevance,
+    process_raw_item,
+    resolve_space,
     sanitize_url,
     validate_publication_date,
 )
-from pipeline.run_pipeline import _content_fingerprint
+from pipeline.run_pipeline import _content_fingerprint, run
 
 
 class TestPipelineProcessors(unittest.TestCase):
@@ -43,8 +46,11 @@ class TestPipelineProcessors(unittest.TestCase):
         )
 
     def test_clean_text_and_sanitize_url(self):
-        cleaned = clean_text("<p>Les m\ufb01tiers du Care &amp; \u201cd\u2019analyse\u201d</p>")
+        cleaned = clean_text("<p>Les m\ufb01tiers du Care &amp; \u200b\u202e\u201cd\u2019analyse\u201d</p>")
         self.assertEqual(cleaned, 'Les mfitiers du Care & "d\'analyse"')
+
+        arabic_cleaned = clean_text("\u200fالسياسات العمومية في المغرب\u202c")
+        self.assertEqual(arabic_cleaned, "السياسات العمومية في المغرب")
 
         dirty_url = "https://link.springer.com/chapter/10.1007/978-3-032-32865-6_9?error=cookies_not_supported&code=abc123"
         self.assertEqual(
@@ -67,13 +73,37 @@ class TestPipelineProcessors(unittest.TestCase):
         )
         self.assertFalse(irrelevant["is_relevant"])
 
-    def test_classify_document_poles(self):
+    def test_classify_document_poles_and_spaces(self):
         sec = classify_document(
             "Sécurité publique, police et ordre public",
             "Prévention de la criminalité et coopération sécuritaire.",
         )
         self.assertEqual(sec["pole"], "securite_affaires_interieures")
         self.assertEqual(sec["confiance_classification"], "eleve")
+        self.assertEqual(resolve_space("concours", "institutions_gouvernance"), "academy")
+        self.assertEqual(resolve_space("statistique", "economie_finances_publiques"), "chiffres")
+        self.assertEqual(resolve_space("rapport_institutionnel", "institutions_gouvernance"), "bibliotheque")
+
+    def test_process_raw_item_metadata(self):
+        proc = process_raw_item(
+            {
+                "title": "Note sur la gouvernance et les finances publiques au Maroc",
+                "abstract": "Analyse budgétaire et réformes administratives.",
+                "authors": ["Auteur Test"],
+                "venue": "Institut Marocain",
+                "keywords": ["gouvernance", "budget"],
+                "published_date": "2026-10-01",
+                "url": "https://example.org/note-gouvernance",
+                "default_doc_type": "rapport_institutionnel",
+            },
+            {"id": "test_inst", "name": "Test Inst", "lang_hint": "fr"},
+            now_iso="2026-11-26T17:00:00Z",
+        )
+        self.assertIsNotNone(proc)
+        self.assertEqual(proc["collecte_le"], "2026-11-26T17:00:00Z")
+        self.assertEqual(proc["mis_a_jour_le"], "2026-11-26T17:00:00Z")
+        self.assertEqual(proc["espace"], "bibliotheque")
+        self.assertEqual(proc["revue_ou_institution"], "Institut Marocain")
 
     def test_stable_id_and_fingerprint(self):
         id1 = build_stable_id("10.1000/xyz", "https://example.org/a", "Titre A", "2025-01-01")
@@ -132,6 +162,65 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["url"], "https://example.org/rapports/rapport-annuel.pdf")
         self.assertEqual(items[0]["pdf_url"], "https://example.org/rapports/rapport-annuel.pdf")
+
+    def test_run_pipeline_preserves_existing_and_merges_manual(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            data_dir = root / "data"
+            idx_dir = data_dir / "index"
+            pub_idx = root / "public" / "data" / "index" / "search-index.json"
+            idx_dir.mkdir(parents=True, exist_ok=True)
+
+            sources_path = data_dir / "sources.json"
+            manual_path = data_dir / "manual_contributions.json"
+            index_path = idx_dir / "search-index.json"
+            health_path = data_dir / "sources-health.json"
+
+            sources_path.write_text("[]", encoding="utf-8")
+            manual_path.write_text(
+                json.dumps({
+                    "items": [{
+                        "id": "kitn_manual_test1",
+                        "title": "Annonce de concours administratif au Maroc",
+                        "type_document": "concours",
+                        "espace": "academy",
+                        "pole": "institutions_gouvernance",
+                        "published_date": "2026-11-10",
+                        "resume": "Conditions et calendrier de préparation.",
+                    }]
+                }),
+                encoding="utf-8",
+            )
+            index_path.write_text(
+                json.dumps({
+                    "items": [{
+                        "id": "kitn_existing_1",
+                        "titre_original": "Étude économique au Maroc",
+                        "auteurs": ["Chercheur A"],
+                        "date_publication": "2026-09-01",
+                        "type_document": "rapport",
+                        "pole": "economie_finances_publiques",
+                        "resume": "Résumé détaillé déjà validé.",
+                    }]
+                }),
+                encoding="utf-8",
+            )
+
+            with (
+                patch("pipeline.run_pipeline.SOURCES_FILE", sources_path),
+                patch("pipeline.run_pipeline.MANUAL_CONTRIBUTIONS_FILE", manual_path),
+                patch("pipeline.run_pipeline.INDEX_DIR", idx_dir),
+                patch("pipeline.run_pipeline.INDEX_FILE", index_path),
+                patch("pipeline.run_pipeline.PUBLIC_INDEX_FILE", pub_idx),
+                patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
+            ):
+                payload = run()
+
+            ids = {it["id"] for it in payload["items"]}
+            self.assertIn("kitn_existing_1", ids)
+            self.assertIn("kitn_manual_test1", ids)
+            self.assertTrue(pub_idx.exists())
+            self.assertTrue(health_path.exists())
 
 
 if __name__ == "__main__":

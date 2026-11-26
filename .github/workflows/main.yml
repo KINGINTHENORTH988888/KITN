@@ -77,7 +77,7 @@ jobs:
             branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
             for attempt in 1 2 3; do
               git fetch origin "$branch"
-              git pull --rebase origin "$branch"
+              git pull --rebase --autostash origin "$branch"
               if git push origin "HEAD:$branch"; then
                 exit 0
               fi

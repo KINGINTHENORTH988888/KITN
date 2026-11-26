@@ -20,36 +20,49 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Python dependencies if present
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
 
       - name: Run KITN pipeline
         env:
           PYTHONPATH: .
         run: python -m pipeline.run_pipeline
 
+      - name: Sync search index to public for Vite production build
+        run: |
+          if [ -f data/index/search-index.json ]; then
+            mkdir -p public/data/index
+            cp data/index/search-index.json public/data/index/search-index.json
+          fi
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: web/package-lock.json
 
-      - name: Install and build KITN Web (Astro)
-        working-directory: web
+      - name: Verify root Vite build
         run: |
           if [ -f package-lock.json ]; then
             npm ci
-          else
+          elif [ -f package.json ]; then
             npm install
           fi
-          npm run build
+          if [ -f package.json ]; then
+            npm run build
+          fi
 
       - name: Commit and push updated data
         run: |
           git config user.name "kitn-bot[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/
+          git add data/ public/data/
           if git diff --staged --quiet; then
-            echo "Aucun changement dans data/ à enregistrer."
+            echo "Aucun changement dans data/ ou public/data/ à enregistrer."
           else
             git commit -m "chore(veille): mise à jour automatique des publications et index"
             git push

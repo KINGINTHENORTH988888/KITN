@@ -238,6 +238,32 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertTrue(Path(".").exists())
 
 
+
+    def test_collect_institutional_html_links_enriches_detail_metadata(self):
+        listing = '<html><a href="/publication/report-2024/">Rapport annuel sur les finances publiques</a></html>'
+        detail = """
+        <html><head>
+          <meta property="og:title" content="Rapport annuel sur les finances publiques - Cour des comptes" />
+          <meta property="og:description" content="Ce rapport présente les résultats du contrôle de l'exécution des finances publiques et les principales recommandations de la Cour des comptes." />
+          <meta property="article:published_time" content="2026-07-08T11:12:24+00:00" />
+        </head><body><h1>Rapport annuel sur les finances publiques</h1>
+        <p>Le rapport analyse l'exécution budgétaire, les dépenses publiques et les principaux résultats de l'exercice.</p></body></html>
+        """
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, detail]):
+            items = collect_from_source({
+                "id": "cour_des_comptes_maroc",
+                "name": "Cour des comptes — Maroc",
+                "type": "html_links",
+                "url": "https://www.courdescomptes.ma/publications/",
+                "default_doc_type": "rapport_institutionnel",
+                "fetch_details": True,
+                "min_anchor_length": 12,
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Rapport annuel sur les finances publiques")
+        self.assertIn("contrôle de l'exécution", items[0]["abstract"])
+        self.assertEqual(items[0]["published_date"], "2026-07-08T11:12:24+00:00")
+
     def test_collect_world_bank_api_builds_historical_series(self):
         payload = [
             {"lastupdated": "2026-11-11"},

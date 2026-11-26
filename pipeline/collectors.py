@@ -340,7 +340,6 @@ def _extract_hcp_detail(page_url: str, source: dict) -> dict | None:
         "texte_integral_disponible": False,
         "source_lang_hint": source.get("lang_hint") or "fr",
         "default_doc_type": doc_type,
-        "espace": source.get("target_space") or source.get("space"),
     }
 
 
@@ -399,7 +398,6 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
             "texte_integral_disponible": is_doc_file,
             "source_lang_hint": source.get("lang_hint") or "fr",
             "default_doc_type": doc_type,
-            "espace": source.get("target_space") or source.get("space"),
         })
 
     return items

@@ -175,7 +175,7 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
     is_national_source = not is_research_aggregator and any(
         k in source_id
         for k in (
-            "maroc", "hcp", "bam", "bkam", "finances", "tgr",
+            "maroc", "hcp", "bam", "bkam", "bank_al_maghrib", "finances", "tgr",
             "cour_des_comptes", "cese", "sgg", "interieur",
             "emploi_public", "prsm", "imist", "map", "hespress", "medias24"
         )

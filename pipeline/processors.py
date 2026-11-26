@@ -12,6 +12,34 @@ from pipeline.config import (
     USER_AGENT,
 )
 
+EXTRA_POLE_KEYWORDS = {
+    "economie_finances_publiques": (
+        "finance", "esg", "investment", "trade", "deficit", "value chain",
+        "automotive", "industrie", "automobile", "export", "import", "phosphate",
+        "macroéconomique", "croissance", "marchés publics", "budget", "fiscal",
+        "économie", "economic", "green finance", "banque", "investissements",
+    ),
+    "institutions_gouvernance": (
+        "gouvernance", "governance", "politiques publiques", "public policy",
+        "décret", "administration", "territorial", "régionalisation", "déconcentration",
+        "service public", "réforme", "institution", "état", "collectivités",
+    ),
+    "relations_internationales_geopolitique": (
+        "géopolitique", "puissance", "diplomatie", "mediterranean", "méditerranée",
+        "expansionism", "international", "coopération", "sahara", "afrique",
+        "europe", "stratégique", "foreign policy", "global value chains",
+    ),
+    "securite_affaires_interieures": (
+        "sécurité", "security", "police", "sûreté", "dgsn", "criminalité",
+        "prévention", "ordre public", "renseignement", "cyber", "frontières",
+    ),
+    "societe_developpement_humain": (
+        "santé", "health", "hospitalière", "malnutrition", "oncology", "université",
+        "étudiants", "students", "éducation", "femmes", "vulnérabilité", "social",
+        "care", "emploi", "jeunesse", "démographie",
+    ),
+}
+
 
 def detect_real_language(text: str, source_hint: str | None = None) -> str:
     """Détecte la langue réelle (fr, ar, en, es, ou autre) sans valeur par défaut erronée."""
@@ -19,19 +47,13 @@ def detect_real_language(text: str, source_hint: str | None = None) -> str:
     if not cleaned:
         return (source_hint or "unknown").lower()
 
-    # Détection rapide de l'alphabet arabe
     arabic_chars = len(re.findall(r"[\u0600-\u06FF]", cleaned))
     alpha_chars = len(re.findall(r"[A-Za-z\u0600-\u06FFÀ-ÿ]", cleaned))
     if alpha_chars > 0 and (arabic_chars / alpha_chars) > 0.25:
         return "ar"
 
     lower = f" {cleaned.lower()} "
-
-    scores = {
-        "fr": 0,
-        "en": 0,
-        "es": 0,
-    }
+    scores = {"fr": 0, "en": 0, "es": 0}
 
     fr_markers = (
         " le ", " la ", " les ", " des ", " du ", " au ", " aux ", " est ", " sont ",
@@ -59,7 +81,6 @@ def detect_real_language(text: str, source_hint: str | None = None) -> str:
         if w in lower:
             scores["es"] += 1
 
-    # Indices morphologiques spécifiques
     if re.search(r"\b(qu'|d'|l'|j'|s'|n'|c')\w+", lower):
         scores["fr"] += 2
     if re.search(r"[àâçéèêëîïôùûüÿ]", lower):
@@ -78,7 +99,7 @@ def detect_real_language(text: str, source_hint: str | None = None) -> str:
 
 
 def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
-    """Évalue si le document concerne réellement le Maroc (et pas seulement un mot isolé)."""
+    """Évalue si le document concerne réellement le Maroc."""
     title_l = (title or "").lower()
     abs_l = (abstract or "").lower()
     full_l = f"{title_l} {abs_l}".strip()
@@ -92,7 +113,6 @@ def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
     if matched_signals:
         score += min(40, len(matched_signals) * 10)
 
-    # Bonus si contexte institutionnel / politique / scientifique / économique clair
     context_terms = (
         "politique", "gouvernance", "économie", "budget", "finance", "sécurité",
         "université", "recherche", "loi", "réforme", "développement", "région",
@@ -120,14 +140,15 @@ def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
 
 
 def classify_document(title: str, abstract: str, default_doc_type: str = "publication_scientifique") -> dict:
-    """Classe sur les 6 pôles de KITN avec un score et un niveau de confiance."""
+    """Classe sur les 6 pôles de KITN sans faux positifs sur le type de document."""
     text_l = f"{title or ''} {abstract or ''}".lower()
     title_l = (title or "").lower()
 
     pole_scores = {}
-    for pole, keywords in POLE_KEYWORDS.items():
+    for pole, base_keywords in POLE_KEYWORDS.items():
+        merged_keywords = set(base_keywords) | set(EXTRA_POLE_KEYWORDS.get(pole, ()))
         s = 0
-        for kw in keywords:
+        for kw in merged_keywords:
             if kw in title_l:
                 s += 3
             elif kw in text_l:
@@ -147,13 +168,12 @@ def classify_document(title: str, abstract: str, default_doc_type: str = "public
     else:
         confidence = "faible"
 
-    # Affinage simple du type documentaire si des indices très clairs apparaissent
     doc_type = default_doc_type
-    if any(k in text_l for k in ("rapport", "report", "تقرير")):
-        doc_type = "rapport_institutionnel"
-    elif any(k in text_l for k in ("loi ", "décret", "dahir", "arrêté", "قانون", "مرسوم")):
+    if re.search(r"\b(dahir|bulletin officiel|texte législatif|code pénal|code du travail)\b", title_l):
         doc_type = "document_juridique"
-    elif any(k in text_l for k in ("statistique", "recensement", "enquête", "إحصاء", "مؤشر")):
+    elif re.search(r"\b(rapport annuel|rapport stratégique|policy brief|working paper|تقرير)\b", title_l):
+        doc_type = "rapport_institutionnel"
+    elif re.search(r"\b(dataset|recensement|enquête nationale|indicateurs statistiques|إحصاء)\b", title_l):
         doc_type = "statistique"
 
     return {
@@ -213,7 +233,6 @@ def verify_url_real(url: str | None) -> dict:
             if code >= 400:
                 status = f"http_{code}"
             elif path_clean == "" and parsed_final.netloc:
-                # L'URL mène uniquement à la racine d'un site (page d'accueil)
                 status = "accueil_generique"
             else:
                 status = "verifie"

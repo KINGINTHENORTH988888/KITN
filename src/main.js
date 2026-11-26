@@ -881,8 +881,12 @@ function renderStatisticsDashboard() {
     const history = Array.isArray(indicator.history) ? indicator.history.slice(-8) : [];
     const latest = indicator.latest || history[history.length - 1];
     const previous = indicator.previous;
-    const delta = previous && Number(previous.value) !== 0
-      ? ((Number(latest.value) - Number(previous.value)) / Math.abs(Number(previous.value))) * 100
+    const delta = previous
+      ? (indicator.change_mode === "absolute"
+          ? Number(latest.value) - Number(previous.value)
+          : (Number(previous.value) !== 0
+              ? ((Number(latest.value) - Number(previous.value)) / Math.abs(Number(previous.value))) * 100
+              : null))
       : null;
     const min = Math.min(...history.map((point) => Number(point.value)));
     const max = Math.max(...history.map((point) => Number(point.value)));
@@ -896,9 +900,15 @@ function renderStatisticsDashboard() {
     const label = isAr ? (indicator.label_ar || indicator.label_fr) : indicator.label_fr;
     const description = isAr ? (indicator.description_ar || indicator.description_fr) : indicator.description_fr;
     const unit = isAr ? (indicator.unit_ar || indicator.unit_fr) : indicator.unit_fr;
+    const formattedDelta = delta === null ? "" : new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", {maximumFractionDigits:1}).format(delta);
+    const comparisonLabel = isAr
+      ? (indicator.comparison_label_ar || "مقارنة بالفترة السابقة")
+      : (indicator.comparison_label_fr || "par rapport à la période précédente");
+    const changeUnit = indicator.change_mode === "absolute" ? (indicator.change_unit || "") : "%";
     const changeText = delta === null ? (isAr ? "لا توجد مقارنة سابقة" : "Pas de comparaison précédente")
-      : `${delta > 0 ? "+" : ""}${new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", {maximumFractionDigits:1}).format(delta)}% ${isAr ? "مقارنة بالسنة السابقة" : "par rapport à l'année précédente"}`;
-    const sourceUrl = isSafeHttpUrl(indicator.source_url) ? indicator.source_url : "https://data.worldbank.org/country/morocco";
+      : `${delta > 0 ? "+" : ""}${formattedDelta}${changeUnit ? ` ${changeUnit}` : ""} ${comparisonLabel}`;
+    const sourceUrl = isSafeHttpUrl(indicator.source_url) ? indicator.source_url : "https://www.bkam.ma/";
+    const sourceLabel = indicator.source_name || "Source institutionnelle";
     return `
       <article class="stat-card">
         <div class="stat-card-top"><span>${escapeHtml(label)}</span><span class="stat-year">${escapeHtml(String(latest?.year || "—"))}</span></div>
@@ -909,7 +919,7 @@ function renderStatisticsDashboard() {
           <polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
           ${history.length ? `<circle cx="${lastPoint[0]}" cy="${lastPoint[1]}" r="3" fill="currentColor"></circle>` : ""}
         </svg>
-        <div class="stat-card-foot"><span>${history.length ? `${history[0].year}–${history[history.length - 1].year}` : ""}</span><a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر: البنك الدولي" : "Source : Banque mondiale"}</a></div>
+        <div class="stat-card-foot"><span>${history.length ? `${history[0].year}–${history[history.length - 1].year}` : ""}</span><a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر" : "Source"} : ${escapeHtml(sourceLabel)}</a></div>
       </article>`;
   }).join("");
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";
@@ -917,7 +927,7 @@ function renderStatisticsDashboard() {
     <section class="stats-dashboard">
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تحديث" : "Mise à jour"} : ${escapeHtml(updateDate)}</span></div>
       <div class="stats-grid">${cards}</div>
-      <p class="stats-source-note">${isAr ? "المصدر: قاعدة بيانات مؤشرات التنمية العالمية للبنك الدولي. آخر سنة متاحة تختلف حسب المؤشر." : "Source : base World Development Indicators de la Banque mondiale. La dernière année disponible varie selon l'indicateur."} <a href="https://data.worldbank.org/country/morocco" target="_blank" rel="noopener noreferrer">${isAr ? "عرض جميع البيانات" : "Consulter les données complètes"}</a></p>
+      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة بجانب كل مؤشر. تتوفر البيانات من البنك الدولي وبنك المغرب." : "La source est indiquée pour chaque indicateur : Banque mondiale ou Bank Al-Maghrib."} <a href="https://www.bkam.ma/fr/Statistiques" target="_blank" rel="noopener noreferrer">${isAr ? "إحصائيات بنك المغرب" : "Statistiques Bank Al-Maghrib"}</a></p>
     </section>`;
 }
 

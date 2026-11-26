@@ -4,20 +4,16 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
-from pipeline.collectors import collect_from_source
 from pipeline.config import (
-    DATA_DIR,
-    HEALTH_FILE,
     INDEX_DIR,
-    PUBLICATIONS_DIR,
-    SEARCH_INDEX_FILE,
+    INDEX_FILE,
+    MANUAL_CONTRIBUTIONS_FILE,
+    PUBLIC_INDEX_FILE,
     SOURCES_FILE,
+    SOURCES_HEALTH_FILE,
 )
-from pipeline.processors import process_raw_item
-
-
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+from pipeline.collectors import collect_from_source
+from pipeline.processors import clean_text, process_raw_item, sanitize_url
 
 
 def _load_json_list(path: Path) -> list[dict]:
@@ -25,168 +21,239 @@ def _load_json_list(path: Path) -> list[dict]:
         return []
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-        return data if isinstance(data, list) else []
+        if isinstance(data, list):
+            return [x for x in data if isinstance(x, dict)]
+        if isinstance(data, dict) and isinstance(data.get("items"), list):
+            return [x for x in data["items"] if isinstance(x, dict)]
     except Exception:
         return []
+    return []
 
 
-def _load_json_dict(path: Path) -> dict:
+def _load_existing_items(path: Path) -> list[dict]:
     if not path.exists():
-        return {}
+        return []
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-        return data if isinstance(data, dict) else {}
+        if isinstance(data, dict) and isinstance(data.get("items"), list):
+            return [x for x in data["items"] if isinstance(x, dict)]
     except Exception:
-        return {}
+        return []
+    return []
 
 
-def _content_fingerprint(record: dict) -> str:
-    relevant = {
-        "id": record.get("id"),
-        "titre_original": record.get("titre_original"),
-        "auteurs": record.get("auteurs"),
-        "date_publication": record.get("date_publication"),
-        "date_statut": record.get("date_statut"),
-        "date_anomalie": record.get("date_anomalie"),
-        "statut_validation": record.get("statut_validation"),
-        "langue_originale": record.get("langue_originale"),
-        "type_document": record.get("type_document"),
-        "pole": record.get("pole"),
-        "poles_secondaires": record.get("poles_secondaires"),
-        "lien_maroc": record.get("lien_maroc"),
-        "score_pertinence": record.get("score_pertinence"),
-        "url_publication": record.get("url_publication"),
-        "pdf_direct": record.get("pdf_direct"),
-        "doi": record.get("doi"),
-        "resume": record.get("resume"),
+def _content_fingerprint(item: dict) -> str:
+    payload = {
+        "id": item.get("id"),
+        "titre_original": item.get("titre_original"),
+        "auteurs": item.get("auteurs"),
+        "revue_ou_institution": item.get("revue_ou_institution"),
+        "mots_cles": item.get("mots_cles"),
+        "date_publication": item.get("date_publication"),
+        "statut_validation": item.get("statut_validation"),
+        "langue_originale": item.get("langue_originale"),
+        "type_document": item.get("type_document"),
+        "espace": item.get("espace"),
+        "pole": item.get("pole"),
+        "poles_secondaires": item.get("poles_secondaires"),
+        "confiance_classification": item.get("confiance_classification"),
+        "url_publication": item.get("url_publication"),
+        "pdf_direct": item.get("pdf_direct"),
+        "resume": item.get("resume"),
+        "analyse_strategique": item.get("analyse_strategique"),
     }
-    raw = json.dumps(relevant, ensure_ascii=False, sort_keys=True)
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True)
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def _merge_existing_metadata(existing: dict | None, incoming: dict, now_ts: str) -> dict:
-    merged = dict(incoming)
-    if existing:
-        merged["first_seen_at"] = existing.get("first_seen_at") or now_ts
-        if not merged.get("resume") and existing.get("resume"):
-            merged["resume"] = existing["resume"]
-        if not merged.get("pdf_direct") and existing.get("pdf_direct"):
-            merged["pdf_direct"] = existing["pdf_direct"]
-        if not merged.get("doi") and existing.get("doi"):
-            merged["doi"] = existing["doi"]
-        if not merged.get("auteurs") and existing.get("auteurs"):
-            merged["auteurs"] = existing["auteurs"]
-    else:
-        merged["first_seen_at"] = now_ts
+def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) -> tuple[dict, bool]:
+    merged = dict(existing)
+    changed = False
 
-    merged["last_seen_at"] = now_ts
-    prev_fp = existing.get("_fingerprint") if existing else None
-    new_fp = _content_fingerprint(merged)
-    if not existing or prev_fp != new_fp:
-        merged["updated_at"] = now_ts
-    else:
-        merged["updated_at"] = existing.get("updated_at") or now_ts
-    merged["_fingerprint"] = new_fp
-    return merged
+    list_fields = ("auteurs", "mots_cles", "poles_secondaires")
+    for lf in list_fields:
+        new_list = incoming.get(lf)
+        if isinstance(new_list, list) and len(new_list) > len(merged.get(lf) or []):
+            merged[lf] = new_list
+            changed = True
+
+    scalar_fields = (
+        "titre_original",
+        "revue_ou_institution",
+        "date_publication",
+        "date_statut",
+        "langue_originale",
+        "type_document",
+        "espace",
+        "pole",
+        "confiance_classification",
+        "lien_maroc",
+        "url_publication",
+        "doi",
+        "pdf_direct",
+        "resume",
+        "analyse_strategique",
+    )
+    for sf in scalar_fields:
+        val = incoming.get(sf)
+        if val is None or (isinstance(val, str) and not val.strip()):
+            continue
+        cur = merged.get(sf)
+        if not cur or (sf == "resume" and len(str(val)) > len(str(cur))):
+            if cur != val:
+                merged[sf] = val
+                changed = True
+
+    if incoming.get("date_anomalie") is not None and merged.get("date_anomalie") != incoming.get("date_anomalie"):
+        merged["date_anomalie"] = bool(incoming.get("date_anomalie"))
+        changed = True
+
+    if incoming.get("texte_integral_disponible") and not merged.get("texte_integral_disponible"):
+        merged["texte_integral_disponible"] = True
+        changed = True
+
+    if isinstance(incoming.get("score_pertinence"), (int, float)):
+        new_score = int(incoming["score_pertinence"])
+        if new_score > int(merged.get("score_pertinence") or 0):
+            merged["score_pertinence"] = new_score
+            changed = True
+
+    if not merged.get("collecte_le") and incoming.get("collecte_le"):
+        merged["collecte_le"] = incoming["collecte_le"]
+        changed = True
+
+    if changed:
+        merged["mis_a_jour_le"] = now_iso
+
+    return merged, changed
+
+
+def _sync_public_index(src_file: Path, dst_file: Path) -> None:
+    if not src_file.exists():
+        return
+    dst_file.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(src_file, dst_file)
 
 
 def run() -> dict:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    PUBLICATIONS_DIR.mkdir(parents=True, exist_ok=True)
-    INDEX_DIR.mkdir(parents=True, exist_ok=True)
-
-    now_ts = _now_iso()
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sources = _load_json_list(SOURCES_FILE)
-    health_map = _load_json_dict(HEALTH_FILE)
+    active_sources = [s for s in sources if s.get("enabled", True)]
 
-    existing_index = _load_json_dict(SEARCH_INDEX_FILE)
-    existing_items = existing_index.get("items") if isinstance(existing_index.get("items"), list) else []
+    existing_items = _load_existing_items(INDEX_FILE)
     by_id: dict[str, dict] = {}
+    order_ids: list[str] = []
+
     for item in existing_items:
-        if isinstance(item, dict) and item.get("id"):
-            by_id[str(item["id"])] = item
-
-    collected_count = 0
-    accepted_count = 0
-    active_sources = 0
-
-    for source in sources:
-        if not isinstance(source, dict) or not source.get("enabled"):
+        iid = str(item.get("id") or "").strip()
+        if not iid:
             continue
-        source_id = str(source.get("id") or source.get("name") or "unknown")
-        active_sources += 1
+        normalized = dict(item)
+        normalized["titre_original"] = clean_text(normalized.get("titre_original"))
+        normalized["resume"] = clean_text(normalized.get("resume"))
+        normalized["url_publication"] = sanitize_url(normalized.get("url_publication"))
+        normalized["pdf_direct"] = sanitize_url(normalized.get("pdf_direct"))
+        if not normalized.get("espace"):
+            from pipeline.processors import resolve_space
+            normalized["espace"] = resolve_space(
+                str(normalized.get("type_document") or ""),
+                str(normalized.get("pole") or ""),
+            )
+        by_id[iid] = normalized
+        order_ids.append(iid)
+
+    manual_raw = _load_json_list(MANUAL_CONTRIBUTIONS_FILE)
+    for m_entry in manual_raw:
+        proc = process_raw_item(m_entry, {"id": "manual_studio", "name": "Contribution manuelle KITN", "enabled": True}, now_iso=now_iso, bypass_relevance=True)
+        if not proc:
+            continue
+        proc["origine"] = "manuel"
+        iid = proc["id"]
+        if iid in by_id:
+            by_id[iid], _ = _merge_preserving_rich_fields(by_id[iid], proc, now_iso)
+        else:
+            by_id[iid] = proc
+            order_ids.append(iid)
+
+    total_fetched = 0
+    total_processed = 0
+    total_added = 0
+    total_updated = 0
+    health_records: list[dict] = []
+
+    for src in active_sources:
+        sid = str(src.get("id") or "unknown")
+        fetched_count = 0
+        accepted_count = 0
+        status = "ok"
+        error_msg = None
 
         try:
-            raw_items = collect_from_source(source)
-            collected_count += len(raw_items)
-            kept_for_source = 0
+            raw_items = collect_from_source(src)
+            fetched_count = len(raw_items)
+            total_fetched += fetched_count
 
             for raw in raw_items:
-                processed = process_raw_item(raw, source)
-                if not processed:
+                proc = process_raw_item(raw, src, now_iso=now_iso)
+                if not proc:
                     continue
-                item_id = processed["id"]
-                merged = _merge_existing_metadata(by_id.get(item_id), processed, now_ts)
-                by_id[item_id] = merged
                 accepted_count += 1
-                kept_for_source += 1
-
-            health_map[source_id] = {
-                "source_id": source_id,
-                "name": source.get("name") or source_id,
-                "status": "ok",
-                "last_run_at": now_ts,
-                "raw_fetched": len(raw_items),
-                "kept": kept_for_source,
-                "error": None,
-            }
+                total_processed += 1
+                iid = proc["id"]
+                if iid in by_id:
+                    before_fp = _content_fingerprint(by_id[iid])
+                    by_id[iid], _ = _merge_preserving_rich_fields(by_id[iid], proc, now_iso)
+                    after_fp = _content_fingerprint(by_id[iid])
+                    if before_fp != after_fp:
+                        total_updated += 1
+                else:
+                    by_id[iid] = proc
+                    order_ids.append(iid)
+                    total_added += 1
         except Exception as exc:
-            health_map[source_id] = {
-                "source_id": source_id,
-                "name": source.get("name") or source_id,
-                "status": "error",
-                "last_run_at": now_ts,
-                "raw_fetched": 0,
-                "kept": 0,
-                "error": str(exc)[:300],
-            }
+            status = "error"
+            error_msg = str(exc)
 
-    final_items = []
-    for rec in by_id.values():
-        clean_rec = {k: v for k, v in rec.items() if k != "_fingerprint"}
-        final_items.append(clean_rec)
+        health_records.append({
+            "source_id": sid,
+            "source_name": src.get("name") or sid,
+            "type": src.get("type") or "",
+            "enabled": True,
+            "status": status,
+            "fetched": fetched_count,
+            "accepted": accepted_count,
+            "error": error_msg,
+            "checked_at": now_iso,
+        })
 
-    final_items.sort(key=lambda x: str(x.get("date_publication") or ""), reverse=True)
+    final_items = [by_id[iid] for iid in order_ids if iid in by_id]
+    final_items.sort(key=lambda it: str(it.get("date_publication") or ""), reverse=True)
 
+    INDEX_DIR.mkdir(parents=True, exist_ok=True)
     index_payload = {
-        "generated_at": now_ts,
+        "generated_at": now_iso,
         "total": len(final_items),
-        "active_sources": active_sources,
-        "fetched_in_run": collected_count,
-        "processed_in_run": accepted_count,
+        "active_sources": len(active_sources),
+        "fetched_in_run": total_fetched,
+        "processed_in_run": total_processed,
+        "added_in_run": total_added,
+        "updated_in_run": total_updated,
         "items": final_items,
     }
+    INDEX_FILE.write_text(json.dumps(index_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    SEARCH_INDEX_FILE.write_text(
-        json.dumps(index_payload, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    HEALTH_FILE.write_text(
-        json.dumps(health_map, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+    health_payload = {
+        "updated_at": now_iso,
+        "active_sources": len(active_sources),
+        "total_fetched": total_fetched,
+        "total_accepted": total_processed,
+        "sources": health_records,
+    }
+    SOURCES_HEALTH_FILE.write_text(json.dumps(health_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    public_index = DATA_DIR.parent / "public" / "data" / "index"
-    if (DATA_DIR.parent / "public").exists():
-        public_index.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(SEARCH_INDEX_FILE, public_index / "search-index.json")
-
+    _sync_public_index(INDEX_FILE, PUBLIC_INDEX_FILE)
     return index_payload
 
 
 if __name__ == "__main__":
-    summary = run()
-    print(
-        f"KITN pipeline terminé : {summary['total']} notices dans l'index "
-        f"({summary['active_sources']} sources actives, {summary['processed_in_run']} traitées)."
-    )
+    run()

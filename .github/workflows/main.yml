@@ -24,18 +24,15 @@ jobs:
       - name: Install Python dependencies if present
         run: |
           if [ -f requirements.txt ]; then
+            pip install --upgrade pip
             pip install -r requirements.txt
           fi
 
       - name: Run unit tests
-        env:
-          PYTHONPATH: .
-        run: python -m unittest discover -s tests -v
+        run: PYTHONPATH=. python -m unittest discover -s tests -v
 
       - name: Run KITN pipeline
-        env:
-          PYTHONPATH: .
-        run: python -m pipeline.run_pipeline
+        run: PYTHONPATH=. python -m pipeline.run_pipeline
 
       - name: Sync search index to public for Vite production build
         run: |
@@ -53,21 +50,19 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then
             npm ci
-          elif [ -f package-json ]; then
+          else
             npm install
           fi
-          if [ -f package.json ]; then
-            npm run build
-          fi
+          npm run build
 
       - name: Commit and push updated data
         run: |
-          git config user.name "kitn-bot[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ public/data/
-          if git diff --staged --quiet; then
-            echo "Aucun changement dans data/ ou public/data/ à enregistrer."
-          else
-            git commit -m "chore(veille): mise à jour automatique des publications et index"
+          git add -A
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(data): mise à jour automatique de la veille KITN"
             git push
+          else
+            echo "Aucun changement détecté à pousser."
           fi

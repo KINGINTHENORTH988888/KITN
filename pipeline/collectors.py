@@ -1,37 +1,46 @@
+import html
 import json
 import re
 import time
+import xml.etree.ElementTree as ET
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from pipeline.config import MAX_RETRIES, REQUEST_TIMEOUT, USER_AGENT
 
 
-def _fetch_json(url: str) -> dict | None:
-    """Télécharge du JSON avec gestion propre des erreurs et limites de débit."""
+def _fetch_text(url: str, accept: str) -> str:
+    """Télécharge une ressource texte/JSON avec gestion des limites de débit et retries."""
     for attempt in range(MAX_RETRIES + 1):
         req = Request(
             url,
             headers={
                 "User-Agent": USER_AGENT,
-                "Accept": "application/json",
+                "Accept": accept,
             },
         )
         try:
             with urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
-                raw = resp.read().decode("utf-8", errors="replace")
-                return json.loads(raw)
+                return resp.read().decode("utf-8", errors="replace")
         except HTTPError as e:
             if e.code == 429 and attempt < MAX_RETRIES:
                 time.sleep(2 * (attempt + 1))
                 continue
             raise RuntimeError(f"Erreur HTTP {e.code} sur {url}") from e
-        except (URLError, TimeoutError, json.JSONDecodeError, OSError) as e:
+        except (URLError, TimeoutError, OSError) as e:
             if attempt < MAX_RETRIES:
                 time.sleep(1.5)
                 continue
             raise RuntimeError(f"Échec de récupération sur {url}: {e}") from e
-    return None
+    raise RuntimeError(f"Échec inattendu sur {url}")
+
+
+def _fetch_json(url: str) -> dict | None:
+    raw = _fetch_text(url, "application/json")
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"JSON invalide reçu depuis {url}: {e}") from e
 
 
 def _reconstruct_openalex_abstract(inv_index: dict | None) -> str:
@@ -51,7 +60,79 @@ def _reconstruct_openalex_abstract(inv_index: dict | None) -> str:
 def _clean_html_tags(text: str | None) -> str:
     if not text:
         return ""
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text)).strip()
+    unescaped = html.unescape(text)
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", unescaped)).strip()
+
+
+def _local_name(tag: str) -> str:
+    return tag.split("}", 1)[-1].lower() if tag else ""
+
+
+def _child_text(elem: ET.Element, names: tuple[str, ...]) -> str:
+    for child in elem:
+        if _local_name(child.tag) in names and child.text:
+            txt = child.text.strip()
+            if txt:
+                return txt
+    return ""
+
+
+def collect_rss_atom(source: dict) -> list[dict]:
+    """Collecte générique pour flux RSS 2.0 ou Atom."""
+    xml_raw = _fetch_text(source["url"], "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8")
+    try:
+        root = ET.fromstring(xml_raw)
+    except ET.ParseError as e:
+        raise RuntimeError(f"Flux RSS/Atom invalide sur {source['url']}: {e}") from e
+
+    entries: list[ET.Element] = []
+    for elem in root.iter():
+        lname = _local_name(elem.tag)
+        if lname in ("item", "entry"):
+            entries.append(elem)
+
+    items: list[dict] = []
+    max_items = int(source.get("max_items") or 15)
+
+    for entry in entries[:max_items]:
+        title = _clean_html_tags(_child_text(entry, ("title",)))
+        if not title:
+            continue
+
+        raw_desc = _child_text(entry, ("description", "summary", "content"))
+        abstract = _clean_html_tags(raw_desc)
+
+        link = _child_text(entry, ("link", "guid"))
+        if not link:
+            for child in entry:
+                if _local_name(child.tag) == "link":
+                    href = (child.attrib.get("href") or "").strip()
+                    if href:
+                        link = href
+                        break
+
+        pub_date = _child_text(entry, ("pubdate", "published", "updated", "date")) or None
+        if pub_date and len(pub_date) >= 10 and re.match(r"^\d{4}-\d{2}-\d{2}", pub_date):
+            pub_date = pub_date[:10]
+
+        author_txt = _child_text(entry, ("author", "creator"))
+        authors = [author_txt] if author_txt else []
+
+        items.append({
+            "title": title,
+            "authors": authors,
+            "published_date": pub_date,
+            "abstract": abstract,
+            "source_lang_hint": source.get("lang_hint"),
+            "url": link or None,
+            "doi": None,
+            "pdf_url": None,
+            "source_id": source["id"],
+            "source_name": source["name"],
+            "default_doc_type": source.get("default_doc_type", "rapport_institutionnel"),
+        })
+
+    return items
 
 
 def collect_openalex(source: dict) -> list[dict]:
@@ -206,4 +287,6 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_hal(source)
     if s_type == "api_crossref":
         return collect_crossref(source)
+    if s_type == "rss_atom":
+        return collect_rss_atom(source)
     raise ValueError(f"Type de source non pris en charge : {s_type}")

@@ -6,6 +6,8 @@
       "Dominique Barjot"
     ],
     "date_publication": "2027",
+    "date_statut": "date_future_a_verifier",
+    "date_anomalie": true,
     "langue_originale": "fr",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -17,17 +19,62 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "verifie",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "relations_internationales_geopolitique",
+    "poles_secondaires": [
+      "institutions_gouvernance",
+      "economie_finances_publiques"
+    ],
     "confiance_classification": "eleve",
     "pertinence_maroc": {
-      "score": 80,
+      "score": 89,
       "justification": "Lien pertinent avec le Maroc identifié via : maroc, marocain."
     },
-    "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "statut_validation": "a_verifier",
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
+  },
+  {
+    "id": "kitn_64e18d7a65e03c24",
+    "titre_original": "Recension de l'ouvrage \" Mille histoires diraient la mienne : l'historienne, les témoins et leurs récits",
+    "auteurs": [
+      "Christian Lochon"
+    ],
+    "date_publication": "2027",
+    "date_statut": "date_future_a_verifier",
+    "date_anomalie": true,
+    "langue_originale": "fr",
+    "source_id": "hal_maroc",
+    "source_nom": "HAL Archives Ouvertes — Maroc",
+    "resume": "L’auteure se présente ainsi « Je suis une historienne de l’Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l’historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l’Institut d’Histoire du Temps Présent que je dirige aujourd’hui » (p.22). Après avoir obtenu l’agrégation en sciences sociales, elle enseigne dans un collège d’Aulnay-sous-Bois (p.141). En 2010, elle est recrutée au CNRS, mise à disposition à l’IHTP qui lui permet de consacrer l’essentiel de son temps à la poursuite de sa thèse avec des séjours longs en Algérie et des cours d’arabe (p.236). Elle consacre sa thèse sous la direction du Pr Benjamin Stora (p.144) à l’Union Démocratique du Manifeste Algérien de Ferhat Abbas (p.171). La famille de Madame Rahal est plusieurs fois émigrée, d’Algérie au Maroc et retour, d’Algérie en France sans retour. Les histoires de migration se dédoublent (p.112). Son père algérien né en 1942 au Maroc, où ses parents s’étaient réfugiés, et sa mère étasunienne, symbolisent la bourgeoisie de Nedroma unie à une ferme coloniale du sud-est du Nebraska, l’islam de la tariqa et les missionnaires protestants presbytériens. A l’indépendance de l’Algérie, Son père étudiait à l’École Polytechnique d’Alger (p.81). Il deviendra exilé non pas de son pays mais de ses propres espoirs (p.89). Sa mère s’installa à Toulouse avec son mari doctorant en physique et enseigna l’anglais comme lectrice à l’Université Jean-Jaurès (p.73).",
+    "url_publication": "https://hal.science/hal-05769879v1",
+    "doi": null,
+    "pdf_direct": "https://hal.science/hal-05769879/document",
+    "verification_liens": {
+      "url_statut": "verifie",
+      "url_content_type": "text/html",
+      "pdf_statut": "verifie",
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
+    },
+    "type_document": "publication_scientifique",
+    "pole": "societe_developpement_humain",
+    "poles_secondaires": [
+      "recherche_scientifique"
+    ],
+    "confiance_classification": "moyen",
+    "pertinence_maroc": {
+      "score": 54,
+      "justification": "Lien pertinent avec le Maroc identifié via : maroc, fes."
+    },
+    "statut_validation": "a_verifier",
+    "first_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   },
   {
     "id": "kitn_3c43a4bd66dbfcd1",
@@ -36,6 +83,8 @@
       "Mounya Khnaba"
     ],
     "date_publication": "2026-11-30",
+    "date_statut": "date_future_a_verifier",
+    "date_anomalie": true,
     "langue_originale": "fr",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -47,17 +96,23 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "economie_finances_publiques",
+    "poles_secondaires": [
+      "institutions_gouvernance"
+    ],
     "confiance_classification": "moyen",
     "pertinence_maroc": {
-      "score": 70,
+      "score": 69,
       "justification": "Lien pertinent avec le Maroc identifié via : maroc, marocain."
     },
-    "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "statut_validation": "a_verifier",
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   },
   {
     "id": "kitn_85b4413f62904f59",
@@ -67,6 +122,8 @@
       "Yousr Ben"
     ],
     "date_publication": "2026-11-21",
+    "date_statut": "date_confirmee",
+    "date_anomalie": false,
     "langue_originale": "fr",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -78,17 +135,24 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "societe_developpement_humain",
+    "poles_secondaires": [
+      "institutions_gouvernance",
+      "economie_finances_publiques"
+    ],
     "confiance_classification": "eleve",
     "pertinence_maroc": {
-      "score": 80,
+      "score": 89,
       "justification": "Lien pertinent avec le Maroc identifié via : maroc, fes."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   },
   {
     "id": "kitn_2f5b3f9e86d89f35",
@@ -99,6 +163,8 @@
       "Nabil Boubrahimi,"
     ],
     "date_publication": "2026-11-18",
+    "date_statut": "date_confirmee",
+    "date_anomalie": false,
     "langue_originale": "en",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -110,17 +176,23 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "verifie",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "economie_finances_publiques",
+    "poles_secondaires": [
+      "relations_internationales_geopolitique"
+    ],
     "confiance_classification": "eleve",
     "pertinence_maroc": {
-      "score": 60,
+      "score": 57,
       "justification": "Lien pertinent avec le Maroc identifié via : morocco."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   },
   {
     "id": "kitn_9efe248a85d43ef7",
@@ -130,6 +202,8 @@
       "Safae Ed-Douadi"
     ],
     "date_publication": "2026-11-12",
+    "date_statut": "date_confirmee",
+    "date_anomalie": false,
     "langue_originale": "fr",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -141,17 +215,23 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "societe_developpement_humain",
+    "poles_secondaires": [
+      "economie_finances_publiques"
+    ],
     "confiance_classification": "eleve",
     "pertinence_maroc": {
       "score": 100,
       "justification": "Lien pertinent avec le Maroc identifié via : maroc, rabat, fes, tanger, oujda."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   },
   {
     "id": "kitn_47e479f4a4fb35a8",
@@ -160,6 +240,8 @@
       "Abdeladim ERRADI"
     ],
     "date_publication": "2026-11-08",
+    "date_statut": "date_confirmee",
+    "date_anomalie": false,
     "langue_originale": "fr",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -171,17 +253,23 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "verifie",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "societe_developpement_humain",
+    "poles_secondaires": [
+      "recherche_scientifique"
+    ],
     "confiance_classification": "eleve",
     "pertinence_maroc": {
-      "score": 40,
+      "score": 65,
       "justification": "Lien pertinent avec le Maroc identifié via : maroc, marocain, marocaine."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   },
   {
     "id": "kitn_6c2f7f2eaa3e6163",
@@ -191,6 +279,8 @@
       "Youssef Samihi"
     ],
     "date_publication": "2026-11-02",
+    "date_statut": "date_confirmee",
+    "date_anomalie": false,
     "langue_originale": "fr",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -202,17 +292,21 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "verifie",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "economie_finances_publiques",
+    "poles_secondaires": [],
     "confiance_classification": "eleve",
     "pertinence_maroc": {
       "score": 100,
       "justification": "Lien pertinent avec le Maroc identifié via : maroc, marocain, marocaine, haut-commissariat au plan."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   },
   {
     "id": "kitn_f428f017c11b5168",
@@ -221,6 +315,8 @@
       "El Mehdi Miftahi"
     ],
     "date_publication": "2026-11-01",
+    "date_statut": "date_confirmee",
+    "date_anomalie": false,
     "langue_originale": "fr",
     "source_id": "hal_maroc",
     "source_nom": "HAL Archives Ouvertes — Maroc",
@@ -232,16 +328,20 @@
       "url_statut": "verifie",
       "url_content_type": "text/html",
       "pdf_statut": "non_fourni",
-      "dernier_controle": "2026-11-26T13:45:52.209968+00:00"
+      "dernier_controle": "2026-11-26T14:00:55.336133+00:00"
     },
     "type_document": "publication_scientifique",
     "pole": "institutions_gouvernance",
+    "poles_secondaires": [],
     "confiance_classification": "eleve",
     "pertinence_maroc": {
-      "score": 80,
+      "score": 89,
       "justification": "Lien pertinent avec le Maroc identifié via : maroc, marocain."
     },
     "statut_validation": "valide",
-    "collecte_le": "2026-11-26T13:45:52.209968+00:00"
+    "first_seen_at": "2026-11-26T13:45:52.209968+00:00",
+    "last_seen_at": "2026-11-26T14:00:55.336133+00:00",
+    "updated_at": "2026-11-26T14:00:55.336133+00:00",
+    "collecte_le": "2026-11-26T14:00:55.336133+00:00"
   }
 ]

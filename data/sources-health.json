@@ -1,25 +1,25 @@
 {
-  "last_run": "2026-11-26T13:45:52.209968+00:00",
+  "last_run": "2026-11-26T14:00:55.336133+00:00",
   "sources": {
     "openalex_maroc": {
       "status": "ok",
       "collected_raw": 15,
-      "accepted_relevant": 3,
-      "last_checked": "2026-11-26T13:45:52.209968+00:00",
+      "accepted_relevant": 1,
+      "last_checked": "2026-11-26T14:00:55.336133+00:00",
       "error": null
     },
     "hal_maroc": {
       "status": "ok",
       "collected_raw": 15,
-      "accepted_relevant": 9,
-      "last_checked": "2026-11-26T13:45:52.209968+00:00",
+      "accepted_relevant": 10,
+      "last_checked": "2026-11-26T14:00:55.336133+00:00",
       "error": null
     },
     "crossref_maroc": {
       "status": "ok",
       "collected_raw": 15,
-      "accepted_relevant": 14,
-      "last_checked": "2026-11-26T13:45:52.209968+00:00",
+      "accepted_relevant": 0,
+      "last_checked": "2026-11-26T14:00:55.336133+00:00",
       "error": null
     }
   }

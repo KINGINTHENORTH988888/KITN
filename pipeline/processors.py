@@ -1,9 +1,9 @@
 import hashlib
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
-from urllib.error import URLError, HTTPError
 
 from pipeline.config import (
     MOROCCO_STRONG_SIGNALS,
@@ -98,8 +98,42 @@ def detect_real_language(text: str, source_hint: str | None = None) -> str:
     return "unknown"
 
 
+def validate_publication_date(raw_date: str | None, reference_date: date | None = None) -> dict:
+    """Valide une date de publication (YYYY, YYYY-MM ou YYYY-MM-DD) face à la date du jour."""
+    ref = reference_date or datetime.now(timezone.utc).date()
+    val = (raw_date or "").strip()
+
+    if not val:
+        return {"date_statut": "date_invalide", "date_anomalie": True}
+
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", val):
+        try:
+            parsed = date.fromisoformat(val)
+        except ValueError:
+            return {"date_statut": "date_invalide", "date_anomalie": True}
+        if parsed > ref:
+            return {"date_statut": "date_future_a_verifier", "date_anomalie": True}
+        return {"date_statut": "date_confirmee", "date_anomalie": False}
+
+    if re.fullmatch(r"\d{4}-\d{2}", val):
+        year, month = map(int, val.split("-"))
+        if not (1 <= month <= 12):
+            return {"date_statut": "date_invalide", "date_anomalie": True}
+        if (year, month) > (ref.year, ref.month):
+            return {"date_statut": "date_future_a_verifier", "date_anomalie": True}
+        return {"date_statut": "date_confirmee", "date_anomalie": False}
+
+    if re.fullmatch(r"\d{4}", val):
+        year = int(val)
+        if year > ref.year:
+            return {"date_statut": "date_future_a_verifier", "date_anomalie": True}
+        return {"date_statut": "date_confirmee", "date_anomalie": False}
+
+    return {"date_statut": "date_invalide", "date_anomalie": True}
+
+
 def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
-    """Évalue si le document concerne réellement le Maroc."""
+    """Évalue si le document concerne réellement le Maroc au-delà d'une mention isolée."""
     title_l = (title or "").lower()
     abs_l = (abstract or "").lower()
     full_l = f"{title_l} {abs_l}".strip()
@@ -107,30 +141,33 @@ def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
     matched_signals = [sig for sig in MOROCCO_STRONG_SIGNALS if sig in full_l]
     in_title = [sig for sig in MOROCCO_STRONG_SIGNALS if sig in title_l]
 
-    score = 0
-    if in_title:
-        score += 50
-    if matched_signals:
-        score += min(40, len(matched_signals) * 10)
-
     context_terms = (
         "politique", "gouvernance", "économie", "budget", "finance", "sécurité",
         "université", "recherche", "loi", "réforme", "développement", "région",
         "policy", "governance", "economy", "security", "research", "development",
         "السياسة", "الحكامة", "الاقتصاد", "الأمن", "البحث", "التنمية"
     )
-    if any(term in full_l for term in context_terms) and matched_signals:
+    has_context = any(term in full_l for term in context_terms)
+
+    score = 0
+    if in_title:
+        score += 35
+    if matched_signals:
+        score += min(35, len(matched_signals) * 12)
+    if matched_signals and has_context:
+        score += 20
+    if len((abstract or "").strip()) >= 80 and matched_signals:
         score += 10
 
     score = min(100, score)
-    is_relevant = score >= 40
+    is_relevant = bool(matched_signals) and (score >= 50 or (in_title and has_context))
 
     if not matched_signals:
         justification = "Aucun signal explicite lié au Maroc détecté dans le titre ou le résumé."
     elif is_relevant:
         justification = f"Lien pertinent avec le Maroc identifié via : {', '.join(matched_signals[:5])}."
     else:
-        justification = f"Mention faible ou isolée ({', '.join(matched_signals[:3])}) ; pertinence stratégique à vérifier."
+        justification = f"Mention limitée ({', '.join(matched_signals[:3])}) sans contexte analytique suffisant."
 
     return {
         "score": score,
@@ -140,7 +177,7 @@ def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
 
 
 def classify_document(title: str, abstract: str, default_doc_type: str = "publication_scientifique") -> dict:
-    """Classe sur les 6 pôles de KITN sans faux positifs sur le type de document."""
+    """Classe sur les pôles de KITN avec pôles secondaires éventuels et détection du type."""
     text_l = f"{title or ''} {abstract or ''}".lower()
     title_l = (title or "").lower()
 
@@ -155,8 +192,9 @@ def classify_document(title: str, abstract: str, default_doc_type: str = "public
                 s += 1
         pole_scores[pole] = s
 
-    best_pole = max(pole_scores, key=pole_scores.get)
-    best_score = pole_scores[best_pole]
+    ranked_poles = sorted(pole_scores.items(), key=lambda kv: kv[1], reverse=True)
+    best_pole, best_score = ranked_poles[0]
+    secondary_poles = [p for p, sc in ranked_poles[1:] if sc >= 2 and p != best_pole][:2]
 
     if best_score == 0:
         best_pole = "recherche_scientifique"
@@ -178,6 +216,7 @@ def classify_document(title: str, abstract: str, default_doc_type: str = "public
 
     return {
         "pole": best_pole,
+        "poles_secondaires": secondary_poles,
         "confidence": confidence,
         "doc_type": doc_type,
     }

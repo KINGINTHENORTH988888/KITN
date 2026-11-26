@@ -39,17 +39,26 @@ _LIGATURES = {
     "\u2014": "-",
 }
 
+# Retire les caractères invisibles / directionnels de contrôle tout en préservant
+# l'alphabet arabe (\u0600-\u06FF, \u0750-\u077F, \u08A0-\u08FF, \uFB50-\uFDFF, \uFE70-\uFEFF).
+_INVISIBLE_CONTROL_RE = re.compile(
+    r"[\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff\x00-\x08\x0b\x0c\x0e-\x1f\x7f]"
+)
+
 
 def clean_text(raw: str | None) -> str:
     if not raw:
         return ""
     text = html.unescape(str(raw))
+    text = _INVISIBLE_CONTROL_RE.sub("", text)
     for k, v in _LIGATURES.items():
         text = text.replace(k, v)
     text = re.sub(r"<script\b[^>]*>.*?</script>", " ", text, flags=re.IGNORECASE | re.DOTALL)
     text = re.sub(r"<style\b[^>]*>.*?</style>", " ", text, flags=re.IGNORECASE | re.DOTALL)
     text = re.sub(r"<[^>]+>", " ", text)
     text = unicodedata.normalize("NFC", text)
+    text = re.sub(r"\s+([,.;:!?…»)\]\}])", r"\1", text)
+    text = re.sub(r"([«(\[\{])\s+", r"\1", text)
     return re.sub(r"\s+", " ", text).strip()
 
 
@@ -147,19 +156,46 @@ def validate_publication_date(raw_date: str | None, reference_date: date | None 
 
 
 def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | None = None) -> dict:
-    combined = f"{clean_text(title)} {clean_text(abstract)}".lower()
+    clean_t = clean_text(title).lower()
+    clean_a = clean_text(abstract).lower()
+    combined = f"{clean_t} {clean_a}".strip()
+
     strong_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if sig.lower() in combined]
+    title_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if sig.lower() in clean_t]
+
+    pole_hits = 0
+    for keywords in POLE_KEYWORDS.values():
+        if any(kw.lower() in combined for kw in keywords):
+            pole_hits += 1
+
     source_id = str((source or {}).get("id") or "").lower()
+    is_national_source = any(
+        k in source_id
+        for k in (
+            "maroc", "hcp", "bam", "bkam", "finances", "tgr",
+            "cour_des_comptes", "cese", "sgg", "interieur",
+            "emploi_public", "prsm", "imist", "map", "hespress", "medias24"
+        )
+    )
 
     score = 0
     if strong_matches:
-        score += min(80, 35 + 15 * len(strong_matches))
-    if any(k in source_id for k in ("maroc", "hcp", "bam", "bkam", "finances", "tgr", "cour_des_comptes", "cese", "sgg", "interieur", "emploi_public", "prsm", "imist", "map", "hespress", "medias24")):
-        score += 20
+        score += 40 if title_matches else 25
+        score += min(30, 10 * max(0, len(strong_matches) - 1))
+    if pole_hits >= 1:
+        score += min(20, 10 * pole_hits)
+    if is_national_source and (strong_matches or pole_hits >= 1):
+        score += 15
 
     score = min(100, score)
-    is_relevant = score >= 35
-    lien_maroc = "direct" if len(strong_matches) >= 1 else ("indirect_ou_source_nationale" if is_relevant else "aucun")
+    # Exige soit un signal Maroc explicite avec un minimum de contexte thématique/titre,
+    # soit un score >= 45 pour éviter les mentions incidentes hors axes stratégiques.
+    is_relevant = score >= 45 and (len(strong_matches) >= 1 or is_national_source)
+    lien_maroc = (
+        "direct"
+        if title_matches or len(strong_matches) >= 2
+        else ("indirect_ou_source_nationale" if is_relevant else "aucun")
+    )
 
     return {
         "is_relevant": is_relevant,

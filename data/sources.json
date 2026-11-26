@@ -89,12 +89,22 @@
     "name": "Bank Al-Maghrib (BAM)",
     "domain": "www.bkam.ma",
     "target_space": "chiffres",
-    "type": "html_links",
+    "type": "bank_al_maghrib",
     "url": "https://www.bkam.ma/",
-    "enabled": false,
+    "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
-    "max_items": 15
+    "max_items": 20,
+    "statistics_pages": [
+      {
+        "kind": "monthly_indicators",
+        "url": "https://www.bkam.ma/fr/Statistiques/Statistiques-monetaires/Principaux-indicateurs"
+      },
+      {
+        "kind": "monia",
+        "url": "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-monetaire/Indice-monia-moroccan-overnight-index-average"
+      }
+    ]
   },
   {
     "id": "cese_maroc",

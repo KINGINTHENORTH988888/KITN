@@ -168,7 +168,11 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
             pole_hits += 1
 
     source_id = str((source or {}).get("id") or "").lower()
-    is_national_source = any(
+    is_research_aggregator = any(
+        token in source_id
+        for token in ("openalex", "crossref", "hal_", "arxiv", "semantic_scholar")
+    )
+    is_national_source = not is_research_aggregator and any(
         k in source_id
         for k in (
             "maroc", "hcp", "bam", "bkam", "finances", "tgr",

@@ -64,21 +64,38 @@ MOROCCO_STRONG_SIGNALS = (
     "bank al-maghrib",
     "haut-commissariat au plan",
     "hcp",
+    "tgr",
+    "cour des comptes",
+    "cese",
+    "sgg",
+    "emploi public",
+    "imist",
+    "prsm",
+    "cnrst",
+    "tanger med",
+    "casablanca finance city",
+    "dirham",
     "loi de finances",
     "régionalisation avancée",
     "sahara marocain",
+    "المندوبية السامية للتخطيط",
+    "بنك المغرب",
+    "الدرهم",
+    "المجلس الاقتصادي والاجتماعي",
 )
 
 POLE_KEYWORDS = {
     "institutions_gouvernance": (
         "constitution", "parlement", "gouvernement", "ministère", "administration publique",
         "collectivités territoriales", "régionalisation", "décentralisation", "gouvernance",
-        "service public", "transparence", "corruption", "حكامة", "الجهوية", "الإدارة", "البرلمان"
+        "service public", "transparence", "corruption", "concours", "bulletin officiel", "décret",
+        "حكامة", "الجهوية", "الإدارة", "البرلمان", "مباراة", "الجريدة الرسمية"
     ),
     "economie_finances_publiques": (
         "économie", "budget", "loi de finances", "dette publique", "fiscalité", "impôt",
         "investissement", "emploi", "chômage", "inflation", "pouvoir d'achat", "banque centrale",
-        "اقتصاد", "المالية العمومية", "قانون المالية", "التضخم", "الاستثمار", "الشغل"
+        "statistiques", "conjoncture", "balance commerciale", "trésorerie",
+        "اقتصاد", "المالية العمومية", "قانون المالية", "التضخم", "الاستثمار", "الشغل", "إحصاء"
     ),
     "societe_developpement_humain": (
         "éducation", "enseignement supérieur", "université", "santé publique", "protection sociale",
@@ -88,6 +105,7 @@ POLE_KEYWORDS = {
     "securite_affaires_interieures": (
         "dgsn", "sûreté nationale", "sécurité intérieure", "police", "criminalité",
         "cybersécurité", "terrorisme", "sécurité routière", "protection civile", "crise",
+        "administration territoriale", "prévention", "frontières",
         "الأمن الوطني", "السلامة الطرقية", "الأمن السيبراني", "الوقاية المدنية", "الداخلية"
     ),
     "recherche_scientifique": (

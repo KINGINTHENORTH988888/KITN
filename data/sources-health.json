@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-26T20:31:24Z",
+  "updated_at": "2026-11-26T20:32:32Z",
   "active_sources": 3,
-  "total_fetched": 35,
-  "total_accepted": 26,
+  "total_fetched": 60,
+  "total_accepted": 39,
   "sources": [
     {
       "source_id": "hcp_maroc",
@@ -16,7 +16,7 @@
       "fetched": 15,
       "accepted": 9,
       "error": null,
-      "checked_at": "2026-11-26T20:31:24Z"
+      "checked_at": "2026-11-26T20:32:32Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -30,7 +30,7 @@
       "fetched": 20,
       "accepted": 17,
       "error": null,
-      "checked_at": "2026-11-26T20:31:24Z"
+      "checked_at": "2026-11-26T20:32:32Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -39,12 +39,12 @@
       "target_space": "science",
       "type": "crossref",
       "enabled": true,
-      "status": "error",
-      "stage": "erreur_collecte",
-      "fetched": 0,
-      "accepted": 0,
-      "error": "int() argument must be a string, a bytes-like object or a real number, not 'NoneType'",
-      "checked_at": "2026-11-26T20:31:24Z"
+      "status": "ok",
+      "stage": "collecte_effectuee",
+      "fetched": 25,
+      "accepted": 13,
+      "error": null,
+      "checked_at": "2026-11-26T20:32:32Z"
     }
   ]
 }

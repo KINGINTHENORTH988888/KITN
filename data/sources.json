@@ -5,6 +5,7 @@
     "type": "api_openalex",
     "url": "https://api.openalex.org/works?search=Morocco&per-page=15&sort=publication_date:desc",
     "default_doc_type": "publication_scientifique",
+    "rubriques": ["articles_scientifiques", "bibliotheque_documentaire"],
     "enabled": true
   },
   {
@@ -13,6 +14,7 @@
     "type": "api_hal",
     "url": "https://api.archives-ouvertes.fr/search/?q=Maroc&wt=json&rows=15&sort=producedDate_tdate+desc&fl=docid,title_s,authFullName_s,producedDate_s,abstract_s,language_s,uri_s,doiId_s,fileMain_s",
     "default_doc_type": "publication_scientifique",
+    "rubriques": ["articles_scientifiques", "bibliotheque_documentaire"],
     "enabled": true
   },
   {
@@ -21,33 +23,177 @@
     "type": "api_crossref",
     "url": "https://api.crossref.org/works?query=Morocco&rows=15&sort=published&order=desc",
     "default_doc_type": "publication_scientifique",
+    "rubriques": ["articles_scientifiques", "bibliotheque_documentaire"],
     "enabled": true
   },
   {
-    "id": "hcp_flux_a_valider",
-    "name": "HCP — Statistiques et notes (flux à vérifier)",
-    "type": "rss_atom",
-    "url": "",
+    "id": "hcp_maroc",
+    "name": "Haut-Commissariat au Plan (HCP)",
+    "type": "html_links",
+    "url": "https://www.hcp.ma/",
     "lang_hint": "fr",
     "default_doc_type": "statistique",
+    "rubriques": ["maroc_en_chiffres", "bibliotheque_documentaire", "actualite_veille"],
     "enabled": false
   },
   {
-    "id": "bam_flux_a_valider",
-    "name": "Bank Al-Maghrib — Publications & conjoncture (flux à vérifier)",
-    "type": "rss_atom",
-    "url": "",
+    "id": "bam_maroc",
+    "name": "Bank Al-Maghrib",
+    "type": "html_links",
+    "url": "https://www.bkam.ma/",
     "lang_hint": "fr",
     "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["maroc_en_chiffres", "actualite_veille", "bibliotheque_documentaire"],
     "enabled": false
   },
   {
-    "id": "institutions_securite_flux_a_valider",
-    "name": "Institutions / Sécurité / Politiques publiques (flux à vérifier)",
-    "type": "rss_atom",
-    "url": "",
+    "id": "finances_maroc",
+    "name": "Ministère de l'Économie et des Finances",
+    "type": "html_links",
+    "url": "https://www.finances.gov.ma/",
     "lang_hint": "fr",
     "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["actualite_veille", "maroc_en_chiffres", "bibliotheque_documentaire"],
+    "enabled": false
+  },
+  {
+    "id": "tgr_maroc",
+    "name": "Trésorerie générale du Royaume (TGR)",
+    "type": "html_links",
+    "url": "https://www.tgr.gov.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "statistique",
+    "rubriques": ["maroc_en_chiffres", "bibliotheque_documentaire", "actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "cour_des_comptes",
+    "name": "Cour des comptes",
+    "type": "html_links",
+    "url": "https://www.courdescomptes.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["bibliotheque_documentaire", "actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "cese_maroc",
+    "name": "Conseil économique, social et environnemental (CESE)",
+    "type": "html_links",
+    "url": "https://www.cese.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["bibliotheque_documentaire", "actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "sgg_maroc",
+    "name": "Secrétariat général du gouvernement",
+    "type": "html_links",
+    "url": "https://www.sgg.gov.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "document_juridique",
+    "rubriques": ["actualite_veille", "bibliotheque_documentaire"],
+    "enabled": false
+  },
+  {
+    "id": "interieur_maroc",
+    "name": "Ministère de l'Intérieur",
+    "type": "html_links",
+    "url": "https://www.interieur.gov.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["actualite_veille", "bibliotheque_documentaire", "concours_academy"],
+    "enabled": false
+  },
+  {
+    "id": "emploi_public_maroc",
+    "name": "Emploi public",
+    "type": "html_links",
+    "url": "https://www.emploi-public.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["concours_academy", "actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "prsm_imist",
+    "name": "Portail des revues scientifiques marocaines (PRSM)",
+    "type": "html_links",
+    "url": "https://revues.imist.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "publication_scientifique",
+    "rubriques": ["articles_scientifiques", "bibliotheque_documentaire"],
+    "enabled": false
+  },
+  {
+    "id": "imist_maroc",
+    "name": "Institut marocain de l'information scientifique et technique (IMIST)",
+    "type": "html_links",
+    "url": "https://www.imist.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "publication_scientifique",
+    "rubriques": ["articles_scientifiques", "bibliotheque_documentaire"],
+    "enabled": false
+  },
+  {
+    "id": "banque_mondiale_maroc",
+    "name": "Banque mondiale – Maroc",
+    "type": "html_links",
+    "url": "https://www.worldbank.org/en/country/morocco",
+    "lang_hint": "en",
+    "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["maroc_en_chiffres", "bibliotheque_documentaire", "actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "fmi_maroc",
+    "name": "Fonds monétaire international (FMI) – Maroc",
+    "type": "html_links",
+    "url": "https://www.imf.org/en/Countries/MAR",
+    "lang_hint": "en",
+    "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["maroc_en_chiffres", "bibliotheque_documentaire", "actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "ocde_maroc",
+    "name": "Organisation de coopération et de développement économiques (OCDE)",
+    "type": "html_links",
+    "url": "https://www.oecd.org/en/countries/morocco.html",
+    "lang_hint": "en",
+    "default_doc_type": "rapport_institutionnel",
+    "rubriques": ["bibliotheque_documentaire", "maroc_en_chiffres", "actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "map_presse",
+    "name": "Maghreb Arabe Presse (MAP)",
+    "type": "html_links",
+    "url": "https://www.mapnews.ma/",
+    "lang_hint": "fr",
+    "default_doc_type": "article_presse",
+    "rubriques": ["actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "hespress_presse",
+    "name": "Hespress",
+    "type": "html_links",
+    "url": "https://www.hespress.com/",
+    "lang_hint": "ar",
+    "default_doc_type": "article_presse",
+    "rubriques": ["actualite_veille"],
+    "enabled": false
+  },
+  {
+    "id": "medias24_presse",
+    "name": "Médias24",
+    "type": "html_links",
+    "url": "https://medias24.com/",
+    "lang_hint": "fr",
+    "default_doc_type": "article_presse",
+    "rubriques": ["actualite_veille"],
     "enabled": false
   }
 ]

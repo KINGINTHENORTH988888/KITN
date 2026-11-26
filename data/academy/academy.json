@@ -1,13 +1,20 @@
 {
-  "version": "1.0.0",
-  "updated_at": "2026-11-26",
+  "version": "1.0",
   "tracks": {
     "fr": [
       {
         "id": "dgsn",
         "label": "DGSN",
+        "level": "Supérieur / Cadres",
+        "domain": "Sécurité publique & ordre public",
+        "deadline": "Session annuelle — selon annonce officielle",
         "title": "Concours DGSN — Sécurité & ordre public",
-        "sheet": "Police de proximité, coopération sécuritaire, digitalisation des services et protection des droits.",
+        "sheet": "Police de proximité, coopération sécuritaire, digitalisation des services, protection des droits et veille sur les nouvelles menaces.",
+        "methodology": "Structurer l'analyse autour du cadre juridique, de la prévention de proximité, de la coordination territoriale et de l'efficacité opérationnelle.",
+        "past_topics": [
+          "La police de proximité et le renforcement de la confiance citoyenne",
+          "Sécurité publique et transformation numérique des services de police"
+        ],
         "question": "Quel principe résume le mieux la doctrine moderne de sécurité publique au Maroc ?",
         "options": [
           "La prévention, la proximité citoyenne et la légalité",
@@ -20,8 +27,16 @@
       {
         "id": "irat",
         "label": "IRAT",
+        "level": "Administrateurs / Cadres territoriaux",
+        "domain": "Administration territoriale & gouvernance",
+        "deadline": "Session annuelle — selon annonce officielle",
         "title": "IRAT — Administration territoriale & gouvernance",
-        "sheet": "Déconcentration administrative, régionalisation avancée, coordination locale et politiques publiques.",
+        "sheet": "Déconcentration administrative, régionalisation avancée, coordination locale, politiques publiques territoriales et aménagement du territoire.",
+        "methodology": "Croiser le cadre de la Charte de déconcentration, le rôle des collectivités territoriales, la convergence des politiques publiques et l'impact local.",
+        "past_topics": [
+          "La déconcentration administrative au service de la cohérence des politiques territoriales",
+          "Régionalisation avancée et développement territorial intégré"
+        ],
         "question": "Quel levier renforce l'efficacité de l'action publique au niveau territorial ?",
         "options": [
           "La déconcentration et la convergence des programmes locaux",
@@ -34,8 +49,16 @@
       {
         "id": "admin",
         "label": "Concours admin",
+        "level": "Administration publique",
+        "domain": "Finances publiques & réformes",
+        "deadline": "Selon annonces Emploi Public & ministères",
         "title": "Concours administratifs — Finances & réformes",
-        "sheet": "Budgétisation axée sur la performance, protection sociale, transition numérique et service public.",
+        "sheet": "Budgétisation axée sur la performance, loi organique relative aux finances, protection sociale, transition numérique et qualité du service public.",
+        "methodology": "Annoncer l'enjeu stratégique, analyser le dispositif budgétaire ou juridique, illustrer par un exemple concret et conclure sur l'impact citoyen.",
+        "past_topics": [
+          "La performance de la dépense publique et la qualité du service rendu à l'usager",
+          "Transition numérique et modernisation de l'administration publique"
+        ],
         "question": "Que vise principalement la réforme de la gestion publique axée sur les résultats ?",
         "options": [
           "L'efficacité de la dépense, la redevabilité et la qualité du service",
@@ -50,8 +73,16 @@
       {
         "id": "dgsn",
         "label": "الأمن الوطني DGSN",
+        "level": "أطر عليا / أمني",
+        "domain": "الأمن العمومي والنظام العام",
+        "deadline": "حسب الإعلان الرسمي للمباراة",
         "title": "مباريات الأمن الوطني — الأمن والنظام العام",
-        "sheet": "شرطة القرب، التعاون الأمني، رقمنة الخدمات وحماية الحقوق.",
+        "sheet": "شرطة القرب، التعاون الأمني، رقمنة الخدمات، حماية الحقوق ورصد التحديات الأمنية المستجدة.",
+        "methodology": "هيكلة التحليل حول الإطار القانوني والوقاية القريبة والتنسيق الترابي والنجاعة الميدانية.",
+        "past_topics": [
+          "شرطة القرب وتعزيز الثقة مع المواطن",
+          "الأمن العمومي والتحول الرقمي للخدمات الشرطية"
+        ],
         "question": "ما المبدأ الذي يلخص بأفضل شكل المقاربة الحديثة للأمن العمومي بالمغرب؟",
         "options": [
           "الوقاية والقرب من المواطن واحترام القانون",
@@ -64,8 +95,16 @@
       {
         "id": "irat",
         "label": "الإدارة الترابية IRAT",
+        "level": "أطر الإدارة الترابية",
+        "domain": "الإدارة الترابية والحكامة",
+        "deadline": "حسب الإعلان الرسمي للمباراة",
         "title": "الإدارة الترابية والحكامة",
-        "sheet": "اللاتمركز الإداري، الجهوية المتقدمة، التنسيق المحلي والسياسات العمومية.",
+        "sheet": "اللاتمركز الإداري، الجهوية المتقدمة، التنسيق المحلي، السياسات العمومية الترابية والتنمية المجالية.",
+        "methodology": "الربط بين ميثاق اللاتمركز وأدوار الجماعات الترابية والتقائية السياسات العمومية والأثر المحلي.",
+        "past_topics": [
+          "اللاتمركز الإداري في خدمة انسجام السياسات الترابية",
+          "الجهوية المتقدمة والتنمية المجالية المندمجة"
+        ],
         "question": "ما الآلية التي تعزز نجاعة العمل العمومي على المستوى الترابي؟",
         "options": [
           "اللاتمركز وتكامل البرامج المحلية",
@@ -78,8 +117,16 @@
       {
         "id": "admin",
         "label": "المباريات الإدارية",
+        "level": "الإدارة العمومية",
+        "domain": "المالية العمومية والإصلاحات",
+        "deadline": "حسب إعلانات التشغيل العمومي والوزارات",
         "title": "المباريات الإدارية — المالية والإصلاحات",
-        "sheet": "الميزانية المبنية على النجاعة، الحماية الاجتماعية، التحول الرقمي والمرفق العام.",
+        "sheet": "الميزانية المبنية على النجاعة، القانون التنظيمي للمالية، الحماية الاجتماعية، التحول الرقمي وجودة المرفق العام.",
+        "methodology": "تحديد الرهان الاستراتيجي، تحليل الآلية المالية أو التنظيمية، دعم الفكرة بمثال عملي وإبراز الأثر على المرتفق.",
+        "past_topics": [
+          "نجاعة الإنفاق العمومي وجودة الخدمة المقدمة للمرتفق",
+          "التحول الرقمي وتحديث الإدارة العمومية"
+        ],
         "question": "ما الهدف الأساسي لإصلاح التدبير العمومي القائم على النتائج؟",
         "options": [
           "نجاعة الإنفاق والمساءلة وجودة الخدمة للمرتفق",

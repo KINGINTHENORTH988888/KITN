@@ -54,7 +54,7 @@
     "target_space": "chiffres",
     "type": "html_links",
     "url": "https://www.hcp.ma/",
-    "enabled": false,
+    "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
     "max_items": 15

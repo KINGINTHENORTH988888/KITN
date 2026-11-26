@@ -2,6 +2,8 @@
   {
     "id": "openalex_morocco_policy",
     "name": "OpenAlex — Recherche & politiques publiques (Maroc)",
+    "domain": "api.openalex.org",
+    "target_space": "science",
     "type": "openalex",
     "url": "https://api.openalex.org/works?search=morocco&per-page=15",
     "enabled": true,
@@ -12,6 +14,8 @@
   {
     "id": "banque_mondiale_maroc",
     "name": "Banque mondiale — Maroc",
+    "domain": "www.banquemondiale.org",
+    "target_space": "bibliotheque",
     "type": "html_links",
     "url": "https://www.banquemondiale.org/fr/country/morocco",
     "enabled": false,
@@ -22,6 +26,8 @@
   {
     "id": "emploi_public_maroc",
     "name": "Emploi Public — Concours Maroc",
+    "domain": "www.emploi-public.ma",
+    "target_space": "academy",
     "type": "html_links",
     "url": "https://www.emploi-public.ma/",
     "enabled": false,
@@ -32,6 +38,8 @@
   {
     "id": "cour_des_comptes_maroc",
     "name": "Cour des comptes — Maroc",
+    "domain": "www.courdescomptes.ma",
+    "target_space": "bibliotheque",
     "type": "html_links",
     "url": "https://www.courdescomptes.ma/fr/publications",
     "enabled": false,
@@ -42,6 +50,8 @@
   {
     "id": "hcp_maroc",
     "name": "Haut-Commissariat au Plan (HCP)",
+    "domain": "www.hcp.ma",
+    "target_space": "chiffres",
     "type": "html_links",
     "url": "https://www.hcp.ma/",
     "enabled": false,
@@ -52,6 +62,8 @@
   {
     "id": "bank_al_maghrib",
     "name": "Bank Al-Maghrib (BAM)",
+    "domain": "www.bkam.ma",
+    "target_space": "chiffres",
     "type": "html_links",
     "url": "https://www.bkam.ma/",
     "enabled": false,
@@ -62,6 +74,8 @@
   {
     "id": "cese_maroc",
     "name": "Conseil économique, social et environnemental (CESE)",
+    "domain": "www.cese.ma",
+    "target_space": "bibliotheque",
     "type": "html_links",
     "url": "https://www.cese.ma/",
     "enabled": false,
@@ -72,6 +86,8 @@
   {
     "id": "sgg_maroc",
     "name": "Secrétariat Général du Gouvernement (SGG)",
+    "domain": "www.sgg.gov.ma",
+    "target_space": "bibliotheque",
     "type": "html_links",
     "url": "https://www.sgg.gov.ma/",
     "enabled": false,

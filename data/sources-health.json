@@ -27,7 +27,7 @@
     "source_id": "openalex_maroc",
     "name": "OpenAlex — Travaux liés au Maroc",
     "status": "ok",
-    "last_run_at": "2026-11-26T15:23:24Z",
+    "last_run_at": "2026-11-26T16:33:57Z",
     "raw_fetched": 15,
     "kept": 4,
     "error": null
@@ -36,7 +36,7 @@
     "source_id": "hal_maroc",
     "name": "HAL Archives Ouvertes — Maroc",
     "status": "ok",
-    "last_run_at": "2026-11-26T15:23:24Z",
+    "last_run_at": "2026-11-26T16:33:57Z",
     "raw_fetched": 15,
     "kept": 12,
     "error": null
@@ -45,7 +45,7 @@
     "source_id": "crossref_maroc",
     "name": "Crossref — Publications indexées Maroc",
     "status": "ok",
-    "last_run_at": "2026-11-26T15:23:24Z",
+    "last_run_at": "2026-11-26T16:33:57Z",
     "raw_fetched": 15,
     "kept": 14,
     "error": null

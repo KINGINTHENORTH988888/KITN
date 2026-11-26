@@ -752,7 +752,6 @@ function matchesSpace(item, space) {
   if (!space || space === "all") return true;
   if (space === "contribuer") return item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_");
   const itemSpace = resolveItemSpace(item);
-  if (space === "veille") return itemSpace === "veille" || space === activeSpace;
   return itemSpace === space;
 }
 

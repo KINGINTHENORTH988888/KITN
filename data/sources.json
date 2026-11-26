@@ -22,5 +22,32 @@
     "url": "https://api.crossref.org/works?query=Morocco&rows=15&sort=published&order=desc",
     "default_doc_type": "publication_scientifique",
     "enabled": true
+  },
+  {
+    "id": "hcp_flux_a_valider",
+    "name": "HCP — Statistiques et notes (flux à vérifier)",
+    "type": "rss_atom",
+    "url": "",
+    "lang_hint": "fr",
+    "default_doc_type": "statistique",
+    "enabled": false
+  },
+  {
+    "id": "bam_flux_a_valider",
+    "name": "Bank Al-Maghrib — Publications & conjoncture (flux à vérifier)",
+    "type": "rss_atom",
+    "url": "",
+    "lang_hint": "fr",
+    "default_doc_type": "rapport_institutionnel",
+    "enabled": false
+  },
+  {
+    "id": "institutions_securite_flux_a_valider",
+    "name": "Institutions / Sécurité / Politiques publiques (flux à vérifier)",
+    "type": "rss_atom",
+    "url": "",
+    "lang_hint": "fr",
+    "default_doc_type": "rapport_institutionnel",
+    "enabled": false
   }
 ]

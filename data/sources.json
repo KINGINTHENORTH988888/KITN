@@ -60,7 +60,8 @@
     ],
     "listing_urls": [
       "https://www.courdescomptes.ma/publications/"
-    ]
+    ],
+    "fetch_details": true
   },
   {
     "id": "hcp_maroc",
@@ -211,7 +212,8 @@
     "listing_urls": [
       "https://www.ires.ma/fr/publications/rapports-generaux",
       "https://www.ires.ma/fr/publications/rapports-thematiques"
-    ]
+    ],
+    "fetch_details": true
   },
   {
     "id": "ircam_maroc",

@@ -12,6 +12,7 @@ from pipeline.config import (
 from pipeline.processors import (
     build_stable_id,
     classify_document,
+    clean_text,
     detect_real_language,
     evaluate_morocco_relevance,
     validate_publication_date,
@@ -93,8 +94,8 @@ def run() -> None:
             accepted_for_source = 0
 
             for raw in raw_items:
-                title = (raw.get("title") or "").strip()
-                abstract = (raw.get("abstract") or "").strip()
+                title = clean_text(raw.get("title"))
+                abstract = clean_text(raw.get("abstract"))
                 if not title:
                     continue
 
@@ -111,7 +112,8 @@ def run() -> None:
                 prev = existing_by_id.get(pub_id)
 
                 # Préserver un résumé ou PDF déjà connu si la source ne le renvoie plus
-                merged_abstract = abstract or (prev.get("resume") if prev else None) or None
+                prev_resume = clean_text(prev.get("resume")) if prev else ""
+                merged_abstract = abstract or prev_resume or None
                 lang = detect_real_language(
                     f"{title}. {merged_abstract or ''}",
                     raw.get("source_lang_hint") or (prev.get("langue_originale") if prev else None),
@@ -122,13 +124,14 @@ def run() -> None:
                     raw.get("default_doc_type", "publication_scientifique"),
                 )
 
-                published_date = raw.get("published_date") or (prev.get("date_publication") if prev else None)
+                published_date = (raw.get("published_date") or (prev.get("date_publication") if prev else None) or "").strip() or None
                 date_check = validate_publication_date(published_date)
 
-                url_check = verify_url_real(raw.get("url"))
+                url_check = verify_url_real(raw.get("url") or (prev.get("url_publication") if prev else None))
+                pdf_source_url = raw.get("pdf_url") or (prev.get("pdf_direct") if prev else None)
                 pdf_check = (
-                    verify_url_real(raw.get("pdf_url"))
-                    if raw.get("pdf_url")
+                    verify_url_real(pdf_source_url)
+                    if pdf_source_url
                     else {
                         "status": "non_fourni",
                         "final_url": None,
@@ -197,7 +200,6 @@ def run() -> None:
                     candidate["collecte_le"] = now_iso
                     changed_count += 1
                 elif prev:
-                    # Conserver l'enregistrement existant sans modifier son empreinte éditoriale
                     candidate["updated_at"] = prev.get("updated_at") or prev.get("collecte_le") or now_iso
                     candidate["collecte_le"] = prev.get("collecte_le") or now_iso
 

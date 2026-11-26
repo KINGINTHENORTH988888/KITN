@@ -373,11 +373,15 @@ def run() -> dict:
                     statistics_series.setdefault(str(previous["indicator_code"]), previous)
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
+    statistics_sources = sorted({
+        str(item.get("source_name") or "")
+        for item in statistics_series.values()
+        if item.get("source_name")
+    })
     statistics_payload = {
         "generated_at": now_iso,
-        "source": "Sources officielles — Banque mondiale et Bank Al-Maghrib",
-        "sources": sorted({str(item.get("source_name") or "") for item in statistics_series.values() if item.get("source_name")}),
-        "source_url": "https://data.worldbank.org/country/morocco",
+        "source": "Sources officielles — " + " et ".join(statistics_sources) if statistics_sources else "Aucune source statistique disponible",
+        "sources": statistics_sources,
         "indicators": list(statistics_series.values()),
     }
     STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)

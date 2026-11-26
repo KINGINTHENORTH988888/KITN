@@ -1,8 +1,9 @@
 import hashlib
+import html
 import re
 from datetime import date, datetime, timezone
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from urllib.request import Request, urlopen
 
 from pipeline.config import (
@@ -40,10 +41,71 @@ EXTRA_POLE_KEYWORDS = {
     ),
 }
 
+LIGATURE_MAP = str.maketrans({
+    "\ufb00": "ff",
+    "\ufb01": "fi",
+    "\ufb02": "fl",
+    "\ufb03": "ffi",
+    "\ufb04": "ffl",
+    "\u2019": "'",
+    "\u2018": "'",
+    "\u201c": '"',
+    "\u201d": '"',
+})
+
+NOISY_QUERY_KEYS = {
+    "error",
+    "code",
+    "state",
+    "session",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
+}
+
+
+def clean_text(text: str | None) -> str:
+    """Nettoie les balises HTML, entités, ligatures et espaces superflus."""
+    if not text:
+        return ""
+    unescaped = html.unescape(str(text))
+    no_tags = re.sub(r"<[^>]+>", " ", unescaped)
+    normalized = no_tags.translate(LIGATURE_MAP)
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def sanitize_url(url: str | None) -> str | None:
+    """Nettoie une URL HTTP(S) en retirant les paramètres d'erreur ou de tracking."""
+    if not url or not isinstance(url, str):
+        return None
+    raw = url.strip()
+    if not raw.startswith(("http://", "https://")):
+        return None
+    try:
+        parsed = urlparse(raw)
+        clean_params = [
+            (k, v)
+            for k, v in parse_qsl(parsed.query, keep_blank_values=False)
+            if k.lower() not in NOISY_QUERY_KEYS
+        ]
+        clean_query = urlencode(clean_params)
+        return urlunparse((
+            parsed.scheme.lower(),
+            parsed.netloc.lower(),
+            parsed.path,
+            "",
+            clean_query,
+            "",
+        ))
+    except ValueError:
+        return raw
+
 
 def detect_real_language(text: str, source_hint: str | None = None) -> str:
     """Détecte la langue réelle (fr, ar, en, es, ou autre) sans valeur par défaut erronée."""
-    cleaned = (text or "").strip()
+    cleaned = clean_text(text)
     if not cleaned:
         return (source_hint or "unknown").lower()
 
@@ -106,7 +168,8 @@ def validate_publication_date(raw_date: str | None, reference_date: date | None 
     if not val:
         return {"date_statut": "date_invalide", "date_anomalie": True}
 
-    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", val):
+    iso_match = re.match(r"^(\d{4}-\d{2}-\d{2})", val)
+    if iso_match and re.fullmatch(r"\d{4}-\d{2}-\d{2}", val):
         try:
             parsed = date.fromisoformat(val)
         except ValueError:
@@ -134,8 +197,8 @@ def validate_publication_date(raw_date: str | None, reference_date: date | None 
 
 def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
     """Évalue si le document concerne réellement le Maroc au-delà d'une mention isolée."""
-    title_l = (title or "").lower()
-    abs_l = (abstract or "").lower()
+    title_l = clean_text(title).lower()
+    abs_l = clean_text(abstract).lower()
     full_l = f"{title_l} {abs_l}".strip()
 
     matched_signals = [sig for sig in MOROCCO_STRONG_SIGNALS if sig in full_l]
@@ -156,7 +219,7 @@ def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
         score += min(35, len(matched_signals) * 12)
     if matched_signals and has_context:
         score += 20
-    if len((abstract or "").strip()) >= 80 and matched_signals:
+    if len(abs_l) >= 80 and matched_signals:
         score += 10
 
     score = min(100, score)
@@ -178,8 +241,8 @@ def evaluate_morocco_relevance(title: str, abstract: str) -> dict:
 
 def classify_document(title: str, abstract: str, default_doc_type: str = "publication_scientifique") -> dict:
     """Classe sur les pôles de KITN avec pôles secondaires éventuels et détection du type."""
-    text_l = f"{title or ''} {abstract or ''}".lower()
-    title_l = (title or "").lower()
+    text_l = f"{clean_text(title)} {clean_text(abstract)}".lower()
+    title_l = clean_text(title).lower()
 
     pole_scores = {}
     for pole, base_keywords in POLE_KEYWORDS.items():
@@ -228,11 +291,12 @@ def build_stable_id(doi: str | None, url: str | None, title: str, published_date
         clean_doi = doi.strip().lower().replace("https://doi.org/", "").replace("http://doi.org/", "")
         base = f"doi:{clean_doi}"
     elif url:
-        parsed = urlparse(url.strip())
+        cleaned = sanitize_url(url) or url.strip()
+        parsed = urlparse(cleaned)
         clean_url = f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{parsed.path.rstrip('/')}"
         base = f"url:{clean_url}"
     else:
-        norm_title = re.sub(r"\s+", " ", (title or "").strip().lower())
+        norm_title = re.sub(r"\s+", " ", clean_text(title).lower())
         year = (published_date or "")[:4]
         base = f"title:{norm_title}|year:{year}"
 
@@ -243,7 +307,8 @@ def build_stable_id(doi: str | None, url: str | None, title: str, published_date
 def verify_url_real(url: str | None) -> dict:
     """Vérifie réellement une URL (statut HTTP, redirections, type de contenu, détection d'accueil générique)."""
     now_iso = datetime.now(timezone.utc).isoformat()
-    if not url or not url.startswith(("http://", "https://")):
+    cleaned_url = sanitize_url(url)
+    if not cleaned_url:
         return {
             "status": "manquant_ou_invalide",
             "final_url": None,
@@ -252,7 +317,7 @@ def verify_url_real(url: str | None) -> dict:
         }
 
     req = Request(
-        url,
+        cleaned_url,
         headers={
             "User-Agent": USER_AGENT,
             "Accept": "text/html,application/pdf,application/json;q=0.9,*/*;q=0.8",
@@ -263,7 +328,7 @@ def verify_url_real(url: str | None) -> dict:
     try:
         with urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
             code = getattr(resp, "status", 200)
-            final_url = resp.geturl() or url
+            final_url = sanitize_url(resp.geturl()) or resp.geturl() or cleaned_url
             content_type = (resp.headers.get("Content-Type") or "").split(";")[0].strip().lower()
 
             parsed_final = urlparse(final_url)
@@ -285,14 +350,14 @@ def verify_url_real(url: str | None) -> dict:
     except HTTPError as e:
         return {
             "status": f"http_{e.code}",
-            "final_url": url,
+            "final_url": cleaned_url,
             "content_type": None,
             "checked_at": now_iso,
         }
     except (URLError, TimeoutError, ValueError, OSError):
         return {
             "status": "inaccessible",
-            "final_url": url,
+            "final_url": cleaned_url,
             "content_type": None,
             "checked_at": now_iso,
         }

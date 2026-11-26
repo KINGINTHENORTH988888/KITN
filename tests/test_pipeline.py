@@ -17,7 +17,7 @@ from pipeline.processors import (
     sanitize_url,
     validate_publication_date,
 )
-from pipeline.run_pipeline import _content_fingerprint, run
+from pipeline.run_pipeline import _content_fingerprint, _merge_preserving_rich_fields, run
 
 
 class TestPipelineProcessors(unittest.TestCase):
@@ -112,6 +112,23 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(proc["espace"], "bibliotheque")
         self.assertEqual(proc["revue_ou_institution"], "Institut Marocain")
 
+    def test_merge_preserves_rich_resume(self):
+        existing = {
+            "id": "kitn_test_merge",
+            "titre_original": "Étude stratégique au Maroc",
+            "resume": "Résumé détaillé et complet couvrant les politiques publiques et les réformes territoriales.",
+            "auteurs": ["Auteur 1", "Auteur 2"],
+        }
+        incoming = {
+            "id": "kitn_test_merge",
+            "titre_original": "Étude stratégique au Maroc",
+            "resume": "Court.",
+            "auteurs": ["Auteur 1"],
+        }
+        merged, _ = _merge_preserving_rich_fields(existing, incoming, "2026-11-26T18:00:00Z")
+        self.assertEqual(merged["resume"], existing["resume"])
+        self.assertEqual(merged["auteurs"], existing["auteurs"])
+
     def test_stable_id_and_fingerprint(self):
         id1 = build_stable_id("10.1000/xyz", "https://example.org/a", "Titre A", "2025-01-01")
         id2 = build_stable_id("https://doi.org/10.1000/XYZ", "https://example.org/b", "Titre A", "2025-01-01")
@@ -183,7 +200,19 @@ class TestPipelineProcessors(unittest.TestCase):
             index_path = idx_dir / "search-index.json"
             health_path = data_dir / "sources-health.json"
 
-            sources_path.write_text("[]", encoding="utf-8")
+            sources_path.write_text(
+                json.dumps([{
+                    "id": "src_health_check",
+                    "name": "Source Audit Check",
+                    "domain": "example.ma",
+                    "target_space": "chiffres",
+                    "type": "html_links",
+                    "url": "https://example.ma/stats",
+                    "enabled": True,
+                    "default_doc_type": "statistique",
+                }]),
+                encoding="utf-8",
+            )
             manual_path.write_text(
                 json.dumps({
                     "items": [{
@@ -220,6 +249,7 @@ class TestPipelineProcessors(unittest.TestCase):
                 patch("pipeline.run_pipeline.INDEX_FILE", index_path),
                 patch("pipeline.run_pipeline.PUBLIC_INDEX_FILE", pub_idx),
                 patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
+                patch("pipeline.run_pipeline.collect_from_source", return_value=[]),
             ):
                 payload = run()
 
@@ -228,6 +258,10 @@ class TestPipelineProcessors(unittest.TestCase):
             self.assertIn("kitn_manual_test1", ids)
             self.assertTrue(pub_idx.exists())
             self.assertTrue(health_path.exists())
+            health_data = json.loads(health_path.read_text(encoding="utf-8"))
+            self.assertEqual(health_data["sources"][0]["domain"], "example.ma")
+            self.assertEqual(health_data["sources"][0]["target_space"], "chiffres")
+            self.assertEqual(health_data["sources"][0]["stage"], "collecte_effectuee")
 
 
 if __name__ == "__main__":

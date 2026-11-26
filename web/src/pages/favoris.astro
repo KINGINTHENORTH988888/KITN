@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadSearchIndex } from '../lib/data';
+import { POLE_LABELS, UI_TEXT } from '../lib/i18n';
+
+const indexData = loadSearchIndex();
+---
+
+<BaseLayout title="Favoris" activeNav="favorites">
+  <section class="page-head">
+    <div>
+      <h1 data-i18n="favTitle">{UI_TEXT.fr.favTitle}</h1>
+      <p class="muted" data-i18n="favDesc">{UI_TEXT.fr.favDesc}</p>
+    </div>
+    <a href="/veille" class="btn-primary" data-i18n="ctaWatch">{UI_TEXT.fr.ctaWatch}</a>
+  </section>
+
+  <section id="fav-list" class="fav-grid"></section>
+
+  <script
+    is:inline
+    define:vars={{
+      allItems: indexData.items,
+      poleLabels: POLE_LABELS,
+      uiText: UI_TEXT
+    }}
+  >
+    const listEl = document.getElementById('fav-list');
+
+    function getLang() {
+      return document.documentElement.getAttribute('data-lang') === 'ar' ? 'ar' : 'fr';
+    }
+
+    function getFavs() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('kitn_favorites') || '[]');
+        return Array.isArray(raw) ? raw : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function removeFav(id) {
+      const next = getFavs().filter((x) => x !== id);
+      localStorage.setItem('kitn_favorites', JSON.stringify(next));
+      renderFavs();
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderFavs() {
+      if (!listEl) return;
+      const lang = getLang();
+      const t = uiText[lang];
+      const favIds = getFavs();
+      const items = allItems.filter((item) => favIds.includes(item.id));
+
+      if (items.length === 0) {
+        listEl.innerHTML = `<div class="card empty-box">${escapeHtml(t.favEmpty)}</div>`;
+        return;
+      }
+
+      listEl.innerHTML = items
+        .map((item) => {
+          const poleText = poleLabels[item.pole]?.[lang] || item.pole;
+          return `
+            <article class="card fav-card">
+              <div class="fav-top">
+                <span class="badge">${escapeHtml(poleText)}</span>
+                <span class="badge badge-score">Score ${escapeHtml(item.score_pertinence)}</span>
+              </div>
+              <h3><a href="/fiche?id=${encodeURIComponent(item.id)}">${escapeHtml(item.titre_original)}</a></h3>
+              <p class="fav-meta">${escapeHtml(item.source_nom)} • ${escapeHtml(item.date_publication || 'N/A')}</p>
+              <div class="fav-actions">
+                ${
+                  item.url_publication
+                    ? `<a href="${escapeHtml(item.url_publication)}" target="_blank" rel="noopener noreferrer" class="btn-secondary">${escapeHtml(t.openSource)}</a>`
+                    : ''
+                }
+                <button type="button" class="btn-secondary remove-fav" data-id="${escapeHtml(item.id)}">✕ ${escapeHtml(t.savedFav)}</button>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+
+      listEl.querySelectorAll('.remove-fav').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          if (id) removeFav(id);
+        });
+      });
+    }
+
+    window.addEventListener('kitn:lang-change', renderFavs);
+    renderFavs();
+  </script>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .page-head h1 {
+    margin: 0;
+    font-size: 1.7rem;
+  }
+
+  .muted {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .fav-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  :global(.fav-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  :global(.fav-top) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  :global(.fav-card h3) {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  :global(.fav-meta) {
+    margin: 0;
+    font-size: 0.83rem;
+    color: var(--muted);
+  }
+
+  :global(.fav-actions) {
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+
+  :global(.empty-box) {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--muted);
+    padding: 2rem;
+  }
+
+  @media (max-width: 800px) {
+    .fav-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

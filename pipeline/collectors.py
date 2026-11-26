@@ -787,8 +787,8 @@ class _BAMPageExtractor(HTMLParser):
 
 
 def _bam_number(raw: str) -> float | None:
-    value = clean_text(raw).replace("\\u00a0", "").replace(" ", "").replace("%", "").replace(",", ".")
-    value = re.sub(r"[^0-9.\\-]", "", value)
+    value = clean_text(raw).replace("\u00a0", "").replace(" ", "").replace("%", "").replace(",", ".")
+    value = re.sub(r"[^0-9.\-]", "", value)
     try:
         return float(value)
     except (TypeError, ValueError):
@@ -802,7 +802,7 @@ def _bam_period(text: str) -> tuple[str, str] | None:
         "août": "08", "aout": "08", "septembre": "09", "octobre": "10",
         "novembre": "11", "décembre": "12", "decembre": "12",
     }
-    match = re.search(r"(?:mois de\\s+|en\\s+)([A-Za-zÀ-ÿ]+)\\s*(20\\d{2})", text, re.IGNORECASE)
+    match = re.search(r"(?:mois de\s+|en\s+)([A-Za-zÀ-ÿ]+)\s*(20\d{2})", text, re.IGNORECASE)
     if not match:
         return None
     month = month_names.get(match.group(1).lower())
@@ -891,7 +891,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                     continue
                 rate = _bam_number(row[0])
                 volume = _bam_number(row[1])
-                ref_date = re.search(r"(\\d{2})/(\\d{2})/(20\\d{2})", row[2])
+                ref_date = re.search(r"(\d{2})/(\d{2})/(20\d{2})", row[2])
                 if rate is None or volume is None or not ref_date:
                     continue
                 iso_date = f"{ref_date.group(3)}-{ref_date.group(2)}-{ref_date.group(1)}"
@@ -935,7 +935,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                     items.append(item)
 
             m3_stock = re.search(
-                r"masse monétaire.*?pour atteindre\\s*([0-9\\s\\u00a0,.]+)\\s*MMDH",
+                r"masse monétaire.*?pour atteindre\s*([0-9\s\u00a0,.]+)\s*MMDH",
                 visible_text, re.IGNORECASE,
             )
             if m3_stock:
@@ -950,7 +950,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                         items.append(item)
 
             m3_growth = re.search(
-                r"masse monétaire.*?de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                r"masse monétaire.*?de\s*([0-9,.]+)\s*%\s*après\s*([0-9,.]+)\s*%",
                 visible_text, re.IGNORECASE,
             )
             if m3_growth:
@@ -958,7 +958,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                          "Variation en glissement annuel de la masse monétaire M3.", m3_growth.group(1), m3_growth.group(2))
 
             reserves = re.search(
-                r"avoirs officiels de réserve.*?hausses respectives de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%\\s*et de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                r"avoirs officiels de réserve.*?hausses respectives de\s*([0-9,.]+)\s*%\s*après\s*([0-9,.]+)\s*%\s*et de\s*([0-9,.]+)\s*%\s*après\s*([0-9,.]+)\s*%",
                 visible_text, re.IGNORECASE,
             )
             if reserves:
@@ -969,7 +969,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                          reserves.group(3), reserves.group(4))
 
             credit = re.search(
-                r"crédit bancaire au secteur non financier s'est accru de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                r"crédit bancaire au secteur non financier s'est accru de\s*([0-9,.]+)\s*%\s*après\s*([0-9,.]+)\s*%",
                 visible_text, re.IGNORECASE,
             )
             if credit:
@@ -977,7 +977,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                          "Variation annuelle du crédit bancaire au secteur non financier.", credit.group(1), credit.group(2))
 
             private_credit = re.search(
-                r"sociétés non financières privées de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                r"sociétés non financières privées de\s*([0-9,.]+)\s*%\s*après\s*([0-9,.]+)\s*%",
                 visible_text, re.IGNORECASE,
             )
             if private_credit:
@@ -986,7 +986,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                          private_credit.group(1), private_credit.group(2))
 
             household_credit = re.search(
-                r"ménages de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                r"ménages de\s*([0-9,.]+)\s*%\s*après\s*([0-9,.]+)\s*%",
                 visible_text, re.IGNORECASE,
             )
             if household_credit:
@@ -994,7 +994,7 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
                          "Variation annuelle des concours bancaires aux ménages.", household_credit.group(1), household_credit.group(2))
 
             npl = re.search(
-                r"créances en souffrance.*?décéléré de\\s*([0-9,.]+)\\s*%\\s*à\\s*([0-9,.]+)\\s*%.*?ratio.*?établi à\\s*([0-9,.]+)\\s*%\\s*contre\\s*([0-9,.]+)\\s*%",
+                r"créances en souffrance.*?décéléré de\s*([0-9,.]+)\s*%\s*à\s*([0-9,.]+)\s*%.*?ratio.*?établi à\s*([0-9,.]+)\s*%\s*contre\s*([0-9,.]+)\s*%",
                 visible_text, re.IGNORECASE,
             )
             if npl:

@@ -127,9 +127,8 @@ def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) 
     # Prefer richer metadata from a fresh extraction of the same record.
     old_title = str(merged.get("titre_original") or "")
     new_title = str(incoming.get("titre_original") or "")
-    old_title_is_listing_label = bool(re.match(r"^\\d{1,2}\\s+[A-Za-zÀ-ÿ.]+\\s+20\\d{2}\\s+-", old_title))
-    new_title_is_listing_label = bool(re.match(r"^\\d{1,2}\\s+[A-Za-zÀ-ÿ.]+\\s+20\\d{2}\\s+-", new_title))
-    same_url = bool(incoming.get("url_publication") and incoming.get("url_publication") == merged.get("url_publication"))
+    old_title_is_listing_label = bool(re.match(r"^\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+20\d{2}\s+-", old_title))
+    new_title_is_listing_label = bool(re.match(r"^\d{1,2}\s+[A-Za-zÀ-ÿ.]+\s+20\d{2}\s+-", new_title))
     if (
         new_title
         and incoming.get("source_id") == merged.get("source_id")

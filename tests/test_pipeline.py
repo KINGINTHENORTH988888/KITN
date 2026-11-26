@@ -238,24 +238,40 @@ class TestPipelineProcessors(unittest.TestCase):
               <pubDate>2026-10-12</pubDate>
               <description>&lt;p&gt;Indicateurs économiques et emploi au Maroc.&lt;/p&gt;</description>
             </item>
+            <item>
+              <title>Résumé du match de football</title>
+              <link>https://example.org/sport</link>
+              <pubDate>2026-10-13</pubDate>
+              <description>Sport et football.</description>
+            </item>
+            <item>
+              <title>Industrie de défense : financement et souveraineté</title>
+              <link>https://example.org/defense</link>
+              <pubDate>2026-10-14</pubDate>
+              <description>Une feuille de route stratégique pour le Maroc.</description>
+            </item>
           </channel>
         </rss>"""
 
-        with tempfile.TemporaryDirectory():
-            with patch("pipeline.collectors._fetch_text", return_value=sample_rss):
-                items = collect_from_source({
-                    "id": "test_rss",
-                    "name": "Flux Test",
-                    "type": "rss_atom",
-                    "url": "https://example.org/rss.xml",
-                    "lang_hint": "fr",
-                    "default_doc_type": "statistique",
-                })
-        self.assertEqual(len(items), 1)
+        with patch("pipeline.collectors._fetch_text", return_value=sample_rss):
+            items = collect_from_source({
+                "id": "test_rss",
+                "name": "Flux Test",
+                "type": "rss_atom",
+                "url": "https://example.org/rss.xml",
+                "lang_hint": "fr",
+                "default_doc_type": "article_presse",
+                "target_space": "veille",
+                "max_items": 10,
+                "include_title_tokens": ["économie", "défense"],
+                "exclude_title_tokens": ["football"],
+            })
+        self.assertEqual(len(items), 2)
         self.assertEqual(items[0]["title"], "Note de conjoncture au Maroc")
         self.assertEqual(items[0]["published_date"], "2026-10-12")
-        self.assertEqual(items[0]["default_doc_type"], "statistique")
-        self.assertTrue(Path(".").exists())
+        self.assertEqual(items[0]["default_doc_type"], "article_presse")
+        self.assertEqual(items[0]["espace"], "veille")
+        self.assertEqual(items[1]["title"], "Industrie de défense : financement et souveraineté")
 
 
 

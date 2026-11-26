@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T19:09:53Z",
+  "updated_at": "2026-11-26T19:12:49Z",
   "active_sources": 1,
   "total_fetched": 15,
   "total_accepted": 4,
@@ -16,7 +16,7 @@
       "fetched": 15,
       "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T19:09:53Z"
+      "checked_at": "2026-11-26T19:12:49Z"
     }
   ]
 }

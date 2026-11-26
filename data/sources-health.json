@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-26T19:46:09Z",
-  "active_sources": 3,
+  "updated_at": "2026-11-26T20:12:01Z",
+  "active_sources": 2,
   "total_fetched": 15,
-  "total_accepted": 15,
+  "total_accepted": 9,
   "sources": [
     {
       "source_id": "openalex_morocco_policy",
@@ -16,7 +16,7 @@
       "fetched": 0,
       "accepted": 0,
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-26T19:46:09Z"
+      "checked_at": "2026-11-26T20:12:01Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -28,23 +28,9 @@
       "status": "ok",
       "stage": "collecte_effectuee",
       "fetched": 15,
-      "accepted": 15,
+      "accepted": 9,
       "error": null,
-      "checked_at": "2026-11-26T19:46:09Z"
-    },
-    {
-      "source_id": "bank_al_maghrib",
-      "source_name": "Bank Al-Maghrib (BAM)",
-      "domain": "www.bkam.ma",
-      "target_space": "chiffres",
-      "type": "html_links",
-      "enabled": true,
-      "status": "error",
-      "stage": "erreur_collecte",
-      "fetched": 0,
-      "accepted": 0,
-      "error": "HTTP Error 403: Forbidden",
-      "checked_at": "2026-11-26T19:46:09Z"
+      "checked_at": "2026-11-26T20:12:01Z"
     }
   ]
 }

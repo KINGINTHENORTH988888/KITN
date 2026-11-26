@@ -1,6 +1,7 @@
 import json
 import re
 import time
+from email.utils import parsedate_to_datetime
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.error import HTTPError
@@ -663,8 +664,11 @@ def collect_rss_atom(source: dict) -> list[dict]:
                 summary = clean_text("".join(child.itertext()))
             elif tag in ("pubdate", "published", "updated", "date") and not pub_date:
                 raw_d = "".join(child.itertext()).strip()
-                m = re.search(r"(\d{4}-\d{2}-\d{2}|\d{4}-\d{2}|\d{4})", raw_d)
-                pub_date = m.group(1) if m else raw_d[:10]
+                try:
+                    pub_date = parsedate_to_datetime(raw_d).date().isoformat()
+                except (TypeError, ValueError, OverflowError):
+                    m = re.search(r"(\d{4}-\d{2}-\d{2}|\d{4}-\d{2}|\d{4})", raw_d)
+                    pub_date = m.group(1) if m else raw_d[:10]
             elif tag in ("author", "creator"):
                 aname = clean_text("".join(child.itertext()))
                 if aname:

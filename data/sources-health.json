@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-26T19:35:48Z",
-  "active_sources": 2,
+  "updated_at": "2026-11-26T19:41:17Z",
+  "active_sources": 3,
   "total_fetched": 30,
   "total_accepted": 19,
   "sources": [
@@ -16,7 +16,7 @@
       "fetched": 15,
       "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T19:35:48Z"
+      "checked_at": "2026-11-26T19:41:17Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -30,7 +30,21 @@
       "fetched": 15,
       "accepted": 15,
       "error": null,
-      "checked_at": "2026-11-26T19:35:48Z"
+      "checked_at": "2026-11-26T19:41:17Z"
+    },
+    {
+      "source_id": "bank_al_maghrib",
+      "source_name": "Bank Al-Maghrib (BAM)",
+      "domain": "www.bkam.ma",
+      "target_space": "chiffres",
+      "type": "html_links",
+      "enabled": true,
+      "status": "error",
+      "stage": "erreur_collecte",
+      "fetched": 0,
+      "accepted": 0,
+      "error": "HTTP Error 403: Forbidden",
+      "checked_at": "2026-11-26T19:41:17Z"
     }
   ]
 }

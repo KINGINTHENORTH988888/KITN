@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-26T22:59:12Z",
+  "updated_at": "2026-11-26T23:00:20Z",
   "active_sources": 8,
-  "total_fetched": 108,
-  "total_accepted": 74,
+  "total_fetched": 97,
+  "total_accepted": 67,
   "sources": [
     {
       "source_id": "cour_des_comptes_maroc",
@@ -16,7 +16,7 @@
       "fetched": 20,
       "accepted": 15,
       "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "checked_at": "2026-11-26T23:00:20Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -30,7 +30,7 @@
       "fetched": 15,
       "accepted": 9,
       "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "checked_at": "2026-11-26T23:00:20Z"
     },
     {
       "source_id": "bank_al_maghrib",
@@ -39,12 +39,12 @@
       "target_space": "chiffres",
       "type": "bank_al_maghrib",
       "enabled": true,
-      "status": "ok",
-      "stage": "collecte_effectuee",
-      "fetched": 11,
-      "accepted": 7,
-      "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "status": "error",
+      "stage": "erreur_collecte",
+      "fetched": 0,
+      "accepted": 0,
+      "error": "HTTP Error 403: Forbidden",
+      "checked_at": "2026-11-26T23:00:20Z"
     },
     {
       "source_id": "cese_maroc",
@@ -58,7 +58,7 @@
       "fetched": 10,
       "accepted": 10,
       "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "checked_at": "2026-11-26T23:00:20Z"
     },
     {
       "source_id": "ires_maroc",
@@ -72,7 +72,7 @@
       "fetched": 6,
       "accepted": 3,
       "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "checked_at": "2026-11-26T23:00:20Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -86,7 +86,7 @@
       "fetched": 20,
       "accepted": 20,
       "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "checked_at": "2026-11-26T23:00:20Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -100,7 +100,7 @@
       "fetched": 20,
       "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "checked_at": "2026-11-26T23:00:20Z"
     },
     {
       "source_id": "world_bank_maroc",
@@ -114,7 +114,7 @@
       "fetched": 6,
       "accepted": 6,
       "error": null,
-      "checked_at": "2026-11-26T22:59:12Z"
+      "checked_at": "2026-11-26T23:00:20Z"
     }
   ]
 }

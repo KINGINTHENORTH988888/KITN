@@ -2,12 +2,17 @@ import json
 import re
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
+from urllib.error import HTTPError
 from urllib.parse import urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, sanitize_url
 
-_USER_AGENT = "Mozilla/5.0 (compatible; KITN-Veille-Bot/1.0; +https://kitn.ma)"
+_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/131.0.0.0 Safari/537.36"
+)
 
 _NOISE_PATH_TOKENS = (
     "/contact",
@@ -57,15 +62,22 @@ _HCP_RELEVANT_TOKENS = (
 )
 
 
-def _fetch_text(url: str, timeout: int = 20) -> str:
-    req = Request(
-        url,
-        headers={
-            "User-Agent": _USER_AGENT,
-            "Accept": "application/json, application/xml, text/xml, text/html;q=0.9, */*;q=0.8",
-            "Accept-Language": "fr-FR,fr;q=0.9,ar;q=0.8,en;q=0.7",
-        },
-    )
+def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
+    parsed = urlsplit(url)
+    origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "https://www.bkam.ma/"
+    headers = {
+        "User-Agent": _USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8",
+        "Accept-Language": "fr-FR,fr;q=0.9,ar-MA;q=0.8,en-US;q=0.7,en;q=0.6",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Referer": referer or f"{origin}/",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "same-origin" if referer else "none",
+    }
+    req = Request(url, headers=headers)
     with urlopen(req, timeout=timeout) as resp:
         raw = resp.read()
         charset = resp.headers.get_content_charset() or "utf-8"
@@ -297,7 +309,29 @@ def collect_html_links(source: dict) -> list[dict]:
     if not base_url:
         return []
     max_items = int(source.get("max_items", 20))
-    html_body = _fetch_text(base_url)
+
+    try:
+        html_body = _fetch_text(base_url)
+    except HTTPError as exc:
+        if exc.code == 403 and "bkam.ma" in base_url.lower():
+            fallback_urls = [
+                urljoin(base_url, "/fr"),
+                urljoin(base_url, "/Publications-et-recherche"),
+            ]
+            html_body = ""
+            for fb in fallback_urls:
+                try:
+                    html_body = _fetch_text(fb, referer=base_url)
+                    if html_body:
+                        base_url = fb
+                        break
+                except Exception:
+                    continue
+            if not html_body:
+                raise
+        else:
+            raise
+
     parser = _AnchorExtractor()
     parser.feed(html_body)
 

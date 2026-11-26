@@ -1,19 +1,22 @@
 {
-  "updated_at": "2026-11-26T17:53:59Z",
+  "updated_at": "2026-11-26T19:07:29Z",
   "active_sources": 1,
   "total_fetched": 15,
-  "total_accepted": 6,
+  "total_accepted": 4,
   "sources": [
     {
       "source_id": "openalex_morocco_policy",
       "source_name": "OpenAlex — Recherche & politiques publiques (Maroc)",
+      "domain": "api.openalex.org",
+      "target_space": "science",
       "type": "openalex",
       "enabled": true,
       "status": "ok",
+      "stage": "collecte_effectuee",
       "fetched": 15,
-      "accepted": 6,
+      "accepted": 4,
       "error": null,
-      "checked_at": "2026-11-26T17:53:59Z"
+      "checked_at": "2026-11-26T19:07:29Z"
     }
   ]
 }

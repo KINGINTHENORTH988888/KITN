@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-26T17:53:59Z",
-  "total": 50,
+  "generated_at": "2026-11-26T19:07:29Z",
+  "total": 39,
   "active_sources": 1,
   "fetched_in_run": 15,
-  "processed_in_run": 6,
-  "added_in_run": 6,
+  "processed_in_run": 4,
+  "added_in_run": 0,
   "updated_in_run": 0,
   "items": [
     {
@@ -645,8 +645,10 @@
       "url_publication": "https://hal.science/hal-05806135v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05806135/document",
-      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné",
-      "espace": "science"
+      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné Senior Fellow par l'École Blavatnik de gouvernance de l'Université d'Oxford où il se consacre à la recherche sur les politiques publiques en Afrique. Son ouvrage retrace la trajectoire économique, politique, sociale et géopolitique du Maroc depuis son indépendance en 1955. Pays contrasté, à la fois puissant et vulnérable, le Maroc peut-il bâtir une véritable puissance durable? Tel est l'objectif du livre. Dans son introduction, il situe le point de départ de son étude au 16 novembre 1955, date du retour au Maroc du sultan Mohammed V. Ce retour s'effectue dans un contexte difficile. Si le pays navigue entre les appétits des grandes puissances, il construit avec patience «sa souveraineté industrielle, économique et diplomatique, tout en affirmant l'islam du milieu», prôné par Mohammed VI. En effet, «au Maroc… le roi… empêche la dérive, équilibre les forces et maintient la stabilité du cap». Plusieurs dynamiques traversent l'ouvrage: la quête de souveraineté, le défi des transitions industrielles, énergétiques et agricoles, l'industrialisation, le chantier persistant du rééquilibrage social. L'objectif du livre est donc de comprendre comment le pays a appris à peser sur son environnement, pourquoi, malgré ses succès, il peine à concilier croissance forte et solidarité, enfin «quelle est la nature du sentier étroit, mais résolu que le royaume chérifien a emprunté pour atteindre la position qui est la sienne». L'ouvrage se penche sur ces interrogations en onze chapitres.",
+      "espace": "science",
+      "lien_maroc": "direct",
+      "mis_a_jour_le": "2026-11-26T19:07:29Z"
     },
     {
       "id": "kitn_64e18d7a65e03c24",
@@ -667,12 +669,14 @@
         "recherche_scientifique"
       ],
       "confiance_classification": "moyen",
-      "score_pertinence": 54,
+      "score_pertinence": 85,
       "url_publication": "https://hal.science/hal-05769879v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05769879/document",
-      "resume": "L'auteure se présente ainsi «Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui» (p.22). Après avoir",
-      "espace": "science"
+      "resume": "L'auteure se présente ainsi «Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui» (p.22). Après avoir obtenu l'agrégation en sciences sociales, elle enseigne dans un collège d'Aulnay-sous-Bois (p.141). En 2010, elle est recrutée au CNRS, mise à disposition à l'IHTP qui lui permet de consacrer l'essentiel de son temps à la poursuite de sa thèse avec des séjours longs en Algérie et des cours d'arabe (p.236). Elle consacre sa thèse sous la direction du Pr Benjamin Stora (p.144) à l'Union Démocratique du Manifeste Algérien de Ferhat Abbas (p.171). La famille de Madame Rahal est plusieurs fois émigrée, d'Algérie au Maroc et retour, d'Algérie en France sans retour. Les histoires de migration se dédoublent (p.112). Son père algérien né en 1942 au Maroc, où ses parents s'étaient réfugiés, et sa mère étasunienne, symbolisent la bourgeoisie de Nedroma unie à une ferme coloniale du sud-est du Nebraska, l'islam de la tariqa et les missionnaires protestants presbytériens. A l'indépendance de l'Algérie, Son père étudiait à l'École Polytechnique d'Alger (p.81). Il deviendra exilé non pas de son pays mais de ses propres espoirs (p.89). Sa mère s'installa à Toulouse avec son mari doctorant en physique et enseigna l'anglais comme lectrice à l'Université Jean-Jaurès (p.73).",
+      "espace": "science",
+      "lien_maroc": "direct",
+      "mis_a_jour_le": "2026-11-26T19:07:29Z"
     },
     {
       "id": "kitn_d892d1fff882faba",
@@ -702,158 +706,6 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
       "updated_at": "2026-11-26T15:05:17Z",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_e7dd4bbe50911871",
-      "titre_original": "Recension de l'ouvrage \" Maroc: le défi de la puissance",
-      "auteurs": [
-        "Dominique Barjot"
-      ],
-      "date_publication": "2027",
-      "date_statut": "date_future_a_verifier",
-      "date_anomalie": true,
-      "statut_validation": "a_verifier",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "relations_internationales_geopolitique",
-      "poles_secondaires": [
-        "institutions_gouvernance",
-        "societe_developpement_humain"
-      ],
-      "confiance_classification": "eleve",
-      "lien_maroc": "direct",
-      "score_pertinence": 85,
-      "url_publication": "https://hal.science/hal-05806135v1",
-      "doi": null,
-      "pdf_direct": "https://hal.science/hal-05806135/document",
-      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné Senior Fellow par l'École Blavatnik de gouvernance de l'Université d'Oxford où il se consacre à la recherche sur les politiques publiques en Afrique. Son ouvrage retrace la trajectoire économique, politique, sociale et géopolitique du Maroc depuis son indépendance en 1955. Pays contrasté, à la fois puissant et vulnérable, le Maroc peut-il bâtir une véritable puissance durable? Tel est l'objectif du livre. Dans son introduction, il situe le point de départ de son étude au 16 novembre 1955, date du retour au Maroc du sultan Mohammed V. Ce retour s'effectue dans un contexte difficile. Si le pays navigue entre les appétits des grandes puissances, il construit avec patience «sa souveraineté industrielle, économique et diplomatique, tout en affirmant l'islam du milieu», prôné par Mohammed VI. En effet, «au Maroc… le roi… empêche la dérive, équilibre les forces et maintient la stabilité du cap». Plusieurs dynamiques traversent l'ouvrage: la quête de souveraineté, le défi des transitions industrielles, énergétiques et agricoles, l'industrialisation, le chantier persistant du rééquilibrage social. L'objectif du livre est donc de comprendre comment le pays a appris à peser sur son environnement, pourquoi, malgré ses succès, il peine à concilier croissance forte et solidarité, enfin «quelle est la nature du sentier étroit, mais résolu que le royaume chérifien a emprunté pour atteindre la position qui est la sienne». L'ouvrage se penche sur ces interrogations en onze chapitres.",
-      "first_seen_at": "2026-11-26T15:05:17Z",
-      "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_00c988759d44186a",
-      "titre_original": "Recension de l'ouvrage \" Mille histoires diraient la mienne: l'historienne, les témoins et leurs récits",
-      "auteurs": [
-        "Christian Lochon"
-      ],
-      "date_publication": "2027",
-      "date_statut": "date_future_a_verifier",
-      "date_anomalie": true,
-      "statut_validation": "a_verifier",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "recherche_scientifique",
-      "poles_secondaires": [
-        "societe_developpement_humain"
-      ],
-      "confiance_classification": "eleve",
-      "lien_maroc": "direct",
-      "score_pertinence": 85,
-      "url_publication": "https://hal.science/hal-05769879v1",
-      "doi": null,
-      "pdf_direct": "https://hal.science/hal-05769879/document",
-      "resume": "L'auteure se présente ainsi «Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui» (p.22). Après avoir obtenu l'agrégation en sciences sociales, elle enseigne dans un collège d'Aulnay-sous-Bois (p.141). En 2010, elle est recrutée au CNRS, mise à disposition à l'IHTP qui lui permet de consacrer l'essentiel de son temps à la poursuite de sa thèse avec des séjours longs en Algérie et des cours d'arabe (p.236). Elle consacre sa thèse sous la direction du Pr Benjamin Stora (p.144) à l'Union Démocratique du Manifeste Algérien de Ferhat Abbas (p.171). La famille de Madame Rahal est plusieurs fois émigrée, d'Algérie au Maroc et retour, d'Algérie en France sans retour. Les histoires de migration se dédoublent (p.112). Son père algérien né en 1942 au Maroc, où ses parents s'étaient réfugiés, et sa mère étasunienne, symbolisent la bourgeoisie de Nedroma unie à une ferme coloniale du sud-est du Nebraska, l'islam de la tariqa et les missionnaires protestants presbytériens. A l'indépendance de l'Algérie, Son père étudiait à l'École Polytechnique d'Alger (p.81). Il deviendra exilé non pas de son pays mais de ses propres espoirs (p.89). Sa mère s'installa à Toulouse avec son mari doctorant en physique et enseigna l'anglais comme lectrice à l'Université Jean-Jaurès (p.73).",
-      "first_seen_at": "2026-11-26T15:05:17Z",
-      "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_60ad922b852ed491",
-      "titre_original": "Recension de l'ouvrage \" Maroc: le défi de la puissance",
-      "auteurs": [
-        "Dominique Barjot"
-      ],
-      "date_publication": "2027",
-      "date_statut": "date_future_a_verifier",
-      "date_anomalie": true,
-      "statut_validation": "a_verifier",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "relations_internationales_geopolitique",
-      "poles_secondaires": [
-        "institutions_gouvernance",
-        "societe_developpement_humain"
-      ],
-      "confiance_classification": "eleve",
-      "lien_maroc": "direct",
-      "score_pertinence": 85,
-      "url_publication": "https://hal.science/hal-05806135v1",
-      "doi": null,
-      "pdf_direct": "https://hal.science/hal-05806135/document",
-      "resume": "Abdelmalek Alaoui est économiste et CEO de la société de conseil Guépard Group. Diplômé de Sciences Po Paris et titulaire d'un MBA d'HEC Paris, il préside le Think Tank Institut Marocain d'Intelligence Stratégique (IMIS). Depuis 2015, il fait partie des Young Global Leaders du Forum de Davos. En 2024, il a été désigné Senior Fellow par l'École Blavatnik de gouvernance de l'Université d'Oxford où il se consacre à la recherche sur les politiques publiques en Afrique. Son ouvrage retrace la trajectoire économique, politique, sociale et géopolitique du Maroc depuis son indépendance en 1955. Pays contrasté, à la fois puissant et vulnérable, le Maroc peut-il bâtir une véritable puissance durable? Tel est l'objectif du livre. Dans son introduction, il situe le point de départ de son étude au 16 novembre 1955, date du retour au Maroc du sultan Mohammed V. Ce retour s'effectue dans un contexte difficile. Si le pays navigue entre les appétits des grandes puissances, il construit avec patience «sa souveraineté industrielle, économique et diplomatique, tout en affirmant l'islam du milieu», prôné par Mohammed VI. En effet, «au Maroc… le roi… empêche la dérive, équilibre les forces et maintient la stabilité du cap». Plusieurs dynamiques traversent l'ouvrage: la quête de souveraineté, le défi des transitions industrielles, énergétiques et agricoles, l'industrialisation, le chantier persistant du rééquilibrage social. L'objectif du livre est donc de comprendre comment le pays a appris à peser sur son environnement, pourquoi, malgré ses succès, il peine à concilier croissance forte et solidarité, enfin «quelle est la nature du sentier étroit, mais résolu que le royaume chérifien a emprunté pour atteindre la position qui est la sienne». L'ouvrage se penche sur ces interrogations en onze chapitres.",
-      "first_seen_at": "2026-11-26T15:23:24Z",
-      "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_1321c7227606814b",
-      "titre_original": "Recension de l'ouvrage \" Rome pour ou contre l'Empire?: missions catholiques et colonies françaises, 1918-1930",
-      "auteurs": [
-        "Jacques Frémeaux"
-      ],
-      "date_publication": "2027",
-      "date_statut": "date_future_a_verifier",
-      "date_anomalie": true,
-      "statut_validation": "a_verifier",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "recherche_scientifique",
-      "poles_secondaires": [
-        "relations_internationales_geopolitique"
-      ],
-      "confiance_classification": "moyen",
-      "lien_maroc": "indirect_ou_source_nationale",
-      "score_pertinence": 60,
-      "url_publication": "https://hal.science/hal-05806258v1",
-      "doi": null,
-      "pdf_direct": "https://hal.science/hal-05806258/document",
-      "resume": "Ce livre, mise en forme d'une thèse soutenue en 2020, décrit avec un grand luxe d'érudition les rapports entre l'État français et l'Église catholique romaine à propos des questions suscitées par l'action missionnaire. La période étudiée dépasse les dates indiquées par le titre, l'auteur évoquant avec précision les conséquences de la politique anticléricale d'avant 1914 et ne se privant pas de mener son étude jusqu'en 1939. La notion de «colonies françaises» est entendue au sens le plus large. Outre l'Indochine, l'Afrique noire et Madagascar, l'étude inclut en effet les «vieilles colonies», l'Algérie, les protectorats de Tunisie et du Maroc, sans oublier le Levant où la France se prévaut du très ancien protectorat sur les catholiques d'Orient. L'ouvrage s'appuie sur un recours approfondi aux archives françaises et vaticanes. Il recense une très vaste bibliographie dans laquelle ne manquent que les ouvrages juridiques (dont l'absence amène l'auteur à confondre à propos des Algériens musulmans la nationalité française dont ils relèvent et la citoyenneté dont ils sont exclus) (voir p. 179). Un plan très précis en sept chapitres permet à l'auteur de traiter l'ensemble de la question. Un premier chapitre est consacré à situer précisément la chronologie de la période étudiée. Il convient d'abord pour l'État français et le Vatican de se consulter et de négocier, en rétablissant les liens très relâchés, sinon totalement rompus, depuis la rupture des relations diplomatiques et le vote de la loi de séparation de 1905. Lorsque ces relations sont reprises en 1921, de grands dossiers attendent les diplomates: la position des missionnaires dans les colonies françaises, l'avenir du concordat d'Alsace-Lorraine après le retour des deux provinces à la France, le remplacement des missionnaires allemands au Cameroun et au Togo après le passage de ces ex-colonies allemandes sous administration française, et enfin l'organisation du Maroc.",
-      "first_seen_at": "2026-11-26T15:23:24Z",
-      "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_033fc0cd2890f872",
-      "titre_original": "Recension de l'ouvrage \" Mille histoires diraient la mienne: l'historienne, les témoins et leurs récits",
-      "auteurs": [
-        "Christian Lochon"
-      ],
-      "date_publication": "2027",
-      "date_statut": "date_future_a_verifier",
-      "date_anomalie": true,
-      "statut_validation": "a_verifier",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "recherche_scientifique",
-      "poles_secondaires": [
-        "societe_developpement_humain"
-      ],
-      "confiance_classification": "eleve",
-      "lien_maroc": "direct",
-      "score_pertinence": 70,
-      "url_publication": "https://hal.science/hal-05769879v1",
-      "doi": null,
-      "pdf_direct": "https://hal.science/hal-05769879/document",
-      "resume": "L'auteure se présente ainsi «Je suis une historienne de l'Algérie contemporaine et me trouve au moment de ma carrière où il convient de me faire l'historienne de mon propre parcours (p.11). Je travaille dans un laboratoire du CNRS, l'Institut d'Histoire du Temps Présent que je dirige aujourd'hui» (p.22). Après avoir obtenu l'agrégation en sciences sociales, elle enseigne dans un collège d'Aulnay-sous-Bois (p.141). En 2010, elle est recrutée au CNRS, mise à disposition à l'IHTP qui lui permet de consacrer l'essentiel de son temps à la poursuite de sa thèse avec des séjours longs en Algérie et des cours d'arabe (p.236). Elle consacre sa thèse sous la direction du Pr Benjamin Stora (p.144) à l'Union Démocratique du Manifeste Algérien de Ferhat Abbas (p.171). La famille de Madame Rahal est plusieurs fois émigrée, d'Algérie au Maroc et retour, d'Algérie en France sans retour. Les histoires de migration se dédoublent (p.112). Son père algérien né en 1942 au Maroc, où ses parents s'étaient réfugiés, et sa mère étasunienne, symbolisent la bourgeoisie de Nedroma unie à une ferme coloniale du sud-est du Nebraska, l'islam de la tariqa et les missionnaires protestants presbytériens. A l'indépendance de l'Algérie, Son père étudiait à l'École Polytechnique d'Alger (p.81). Il deviendra exilé non pas de son pays mais de ses propres espoirs (p.89). Sa mère s'installa à Toulouse avec son mari doctorant en physique et enseigna l'anglais comme lectrice à l'Université Jean-Jaurès (p.73).",
-      "first_seen_at": "2026-11-26T15:23:24Z",
-      "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z",
       "espace": "science"
     },
     {
@@ -942,72 +794,10 @@
       "url_publication": "https://shs.hal.science/halshs-05879601v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "Alors que le travail intérimaire dans le secteur de la santé est historiquement appréhendé comme un simple instrument de flexibilité organisationnelle et de régulation des pénuries de personnel, cette recherche propose une relecture critique de ses fonctions à travers le prisme de la Responsabilité Sociale des Territoi",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_e3a0cb18db9ca20d",
-      "titre_original": "Au-delà de la flexibilité hospitalière: intérimaires en santé, valeur territoriale et limites de la GRH responsable au Maroc",
-      "auteurs": [
-        "Marc Valax",
-        "Yousr Ben"
-      ],
-      "date_publication": "2026-11-21",
-      "date_statut": "date_confirmee",
-      "date_anomalie": false,
-      "statut_validation": "valide",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "institutions_gouvernance",
-      "poles_secondaires": [
-        "economie_finances_publiques",
-        "securite_affaires_interieures"
-      ],
-      "confiance_classification": "moyen",
-      "lien_maroc": "direct",
-      "score_pertinence": 85,
-      "url_publication": "https://shs.hal.science/halshs-05879601v1",
-      "doi": null,
-      "pdf_direct": null,
       "resume": "Alors que le travail intérimaire dans le secteur de la santé est historiquement appréhendé comme un simple instrument de flexibilité organisationnelle et de régulation des pénuries de personnel, cette recherche propose une relecture critique de ses fonctions à travers le prisme de la Responsabilité Sociale des Territoires (RST). En s'appuyant sur une étude qualitative menée au Maroc, contexte caractérisé par des tensions structurelles en ressources humaines médicales, une forte hétérogénéité territoriale de l'offre de soins et des déséquilibres persistants entre régions urbaines et périphériques, l'article interroge les mécanismes par lesquels les professionnels intérimaires participent, souvent de manière invisible, à la régulation des systèmes locaux de santé. Les résultats empiriques mettent en évidence que les intérimaires en santé ne peuvent être réduits à de simples variables d'ajustement organisationnel. Ils apparaissent au contraire comme des acteurs hybrides de régulation territoriale, capables de compenser les défaillances structurelles des établissements, de maintenir la continuité des soins dans des environnements sous-dotés et de contribuer à une forme de stabilisation fonctionnelle du système de santé. Leur mobilité, leur polyvalence et leur capacité d'adaptation rapide favorisent également l'hybridation des pratiques professionnelles, ainsi que la diffusion informelle de savoirs et de normes organisationnelles entre établissements, renforçant ainsi les dynamiques de résilience territoriale. Dans cette perspective, l'étude met en lumière un déplacement analytique important: de la gestion organisationnelle de la flexibilité vers la production de valeur à l'échelle territoriale. Elle introduit ainsi le concept de valeur territoriale des ressources humaines, entendu comme la capacité des dispositifs de GRH à produire des effets dépassant les frontières de l'organisation employeuse, en contribuant à la cohésion, à la continuité et à l'équité d'accès aux soins sur un territoire donné. Cette requalification théorique permet de dépasser une lecture strictement fonctionnelle de l'intérim pour l'inscrire dans une logique de gouvernance élargie des systèmes de santé. Enfin, l'article propose une lecture renouvelée de l'intérim \"gris\", compris comme un mode de régulation informelle, partiellement invisible et structurellement intégré au fonctionnement réel des hôpitaux. Loin d'être une anomalie marginale, ce phénomène apparaît comme un révélateur des tensions contemporaines de la GRH dans les secteurs essentiels, où les logiques de contrainte, de pénurie et de continuité des services redéfinissent les frontières entre emploi stable, travail flexible et responsabilité sociale. En ce sens, cette recherche contribue à une meilleure compréhension des transformations du travail hospitalier dans les contextes à forte contrainte, tout en enrichissant les débats sur la GRH responsable et territorialisée.",
-      "first_seen_at": "2026-11-26T15:05:17Z",
-      "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_5f8099422fae3bd0",
-      "titre_original": "Au-delà de la flexibilité hospitalière: intérimaires en santé, valeur territoriale et limites de la GRH responsable au Maroc",
-      "auteurs": [
-        "Marc Valax",
-        "Yousr Ben"
-      ],
-      "date_publication": "2026-11-21",
-      "date_statut": "date_confirmee",
-      "date_anomalie": false,
-      "statut_validation": "valide",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "institutions_gouvernance",
-      "poles_secondaires": [
-        "economie_finances_publiques",
-        "securite_affaires_interieures"
-      ],
-      "confiance_classification": "moyen",
+      "espace": "science",
       "lien_maroc": "direct",
-      "score_pertinence": 85,
-      "url_publication": "https://shs.hal.science/halshs-05879601v1",
-      "doi": null,
-      "pdf_direct": null,
-      "resume": "Alors que le travail intérimaire dans le secteur de la santé est historiquement appréhendé comme un simple instrument de flexibilité organisationnelle et de régulation des pénuries de personnel, cette recherche propose une relecture critique de ses fonctions à travers le prisme de la Responsabilité Sociale des Territoires (RST). En s'appuyant sur une étude qualitative menée au Maroc, contexte caractérisé par des tensions structurelles en ressources humaines médicales, une forte hétérogénéité territoriale de l'offre de soins et des déséquilibres persistants entre régions urbaines et périphériques, l'article interroge les mécanismes par lesquels les professionnels intérimaires participent, souvent de manière invisible, à la régulation des systèmes locaux de santé. Les résultats empiriques mettent en évidence que les intérimaires en santé ne peuvent être réduits à de simples variables d'ajustement organisationnel. Ils apparaissent au contraire comme des acteurs hybrides de régulation territoriale, capables de compenser les défaillances structurelles des établissements, de maintenir la continuité des soins dans des environnements sous-dotés et de contribuer à une forme de stabilisation fonctionnelle du système de santé. Leur mobilité, leur polyvalence et leur capacité d'adaptation rapide favorisent également l'hybridation des pratiques professionnelles, ainsi que la diffusion informelle de savoirs et de normes organisationnelles entre établissements, renforçant ainsi les dynamiques de résilience territoriale. Dans cette perspective, l'étude met en lumière un déplacement analytique important: de la gestion organisationnelle de la flexibilité vers la production de valeur à l'échelle territoriale. Elle introduit ainsi le concept de valeur territoriale des ressources humaines, entendu comme la capacité des dispositifs de GRH à produire des effets dépassant les frontières de l'organisation employeuse, en contribuant à la cohésion, à la continuité et à l'équité d'accès aux soins sur un territoire donné. Cette requalification théorique permet de dépasser une lecture strictement fonctionnelle de l'intérim pour l'inscrire dans une logique de gouvernance élargie des systèmes de santé. Enfin, l'article propose une lecture renouvelée de l'intérim \"gris\", compris comme un mode de régulation informelle, partiellement invisible et structurellement intégré au fonctionnement réel des hôpitaux. Loin d'être une anomalie marginale, ce phénomène apparaît comme un révélateur des tensions contemporaines de la GRH dans les secteurs essentiels, où les logiques de contrainte, de pénurie et de continuité des services redéfinissent les frontières entre emploi stable, travail flexible et responsabilité sociale. En ce sens, cette recherche contribue à une meilleure compréhension des transformations du travail hospitalier dans les contextes à forte contrainte, tout en enrichissant les débats sur la GRH responsable et territorialisée.",
-      "first_seen_at": "2026-11-26T15:23:24Z",
-      "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "mis_a_jour_le": "2026-11-26T19:07:29Z"
     },
     {
       "id": "kitn_2f5b3f9e86d89f35",
@@ -1109,37 +899,6 @@
       "espace": "science"
     },
     {
-      "id": "kitn_deec81a6a007f2b7",
-      "titre_original": "Administrer l'exil: le Secrétariat général du Gouvernement, architecte de l'aide aux rapatriés (1956-1959)",
-      "auteurs": [
-        "Majid Embarech"
-      ],
-      "date_publication": "2026-11-13",
-      "date_statut": "date_confirmee",
-      "date_anomalie": false,
-      "statut_validation": "valide",
-      "langue_originale": "en",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "institutions_gouvernance",
-      "poles_secondaires": [
-        "recherche_scientifique",
-        "relations_internationales_geopolitique"
-      ],
-      "confiance_classification": "eleve",
-      "lien_maroc": "direct",
-      "score_pertinence": 80,
-      "url_publication": "https://hal.science/hal-05631260v1",
-      "doi": null,
-      "pdf_direct": null,
-      "resume": "L'indépendance du Maroc et de la Tunisie en 1956 confronte la France à un défi administratif, social et politique inédit: organiser l'accueil et l'intégration en métropole des «Français d'Afrique du Nord». Dans le contexte instable de la fin de la IVe République puis des débuts de la Ve, l'État met en place, dans l'urgence, des structures de reclassement et d'assistance. L'enjeu dépasse toutefois la seule gestion matérielle du retour: il s'agit de redéfinir l'action publique, en passant d'une logique de présence outre-mer à une politique d'intégration nationale. Cette communication analyse la manière dont l'État a assuré la continuité de son action malgré l'instabilité des structures et la concurrence des tutelles ministérielles. Elle défend l'hypothèse que le Secrétariat général du gouvernement a occupé une place centrale dans ce dispositif. En assurant, entre 1957 et 1959, le secrétariat des commissions chargées du dossier, le SGG apparaît comme le pivot de l'interministérialité, transformant une gestion fragmentée de l'urgence en une politique publique plus cohérente, qui préfigure les dispositifs de 1962. L'étude s'appuie sur le fonds d'archives du Commissariat général chargé de l'aide aux Français rentrant du Maroc et de Tunisie (cote F/60/4244-F/60/4249), disponible aux Archives nationales. Ce corpus permet de saisir la fabrique administrative de cette politique à travers trois ensembles documentaires: les textes organiques et décrets publiés entre 1956 et 1959, qui retracent la genèse des institutions compétentes; les comptes rendus et procès-verbaux des instances interministérielles, rédigés sous l'égide du SGG, qui révèlent les arbitrages entre l'Intérieur et les Affaires étrangères; enfin, les dossiers de mission de chargés de mission, qui documentent la mise en œuvre concrète de l'aide économique et sociale. Ces sources mettent en évidence la permanence du SGG comme point fixe d'un dispositif en recomposition. Dès 1957, alors que les premières structures de coordination demeurent fragiles, il en assure déjà le secrétariat. Cette fonction se confirme en 1958 avec la création du Commissariat général dirigé par Jacques Ravail. Le rôle du SGG apparaît plus nettement encore dans la gestion des conflits de tutelle, notamment autour du Centre d'orientation et de recensement, partagé entre l'Intérieur et les Affaires étrangères. En garantissant la circulation de l'information, la continuité des arbitrages et la mémoire du dossier, le SGG contribue à éviter que des questions sensibles, comme le reclassement des fonctionnaires, ne soient paralysées par les cloisonnements administratifs. La création, en 1959, du Commissariat d'aide aux rapatriés de Tunisie, du Maroc et d'Indochine confirme cette centralité: à Matignon se concentrent désormais l'expertise, la coordination et la mémoire d'une politique de retour en voie d'institutionnalisation. This paper analyzes how the State ensured the continuity of its actions despite the instability of its structures and the competing oversight of various ministries. It argues that the General Secretariat of the Government played a central role in this process. By providing secretariat services for the commissions handling the matter between 1957 and 1959, the General Secretariat of the Government (SGG) emerged as the linchpin of interministerial cooperation, transforming a fragmented approach to emergency management into a more coherent public policy that foreshadowed the mechanisms of 1962. This study draws on the archives of the General Commissariat for Aid to French Citizens Returning from Morocco and Tunisia (reference numbers F/60/4244-F/60/4249), available at the National Archives. These sources highlight the SGG's enduring role as a fixed point within a system undergoing restructuring. As early as 1957, while the initial coordinating structures remained fragile, the SGG was already providing their secretariat services. This function was confirmed in 1958 with the creation of the General Commissariat headed by Jacques Ravail. The role of the General Secretariat of the Government (SGG) becomes even more apparent in managing supervisory conflicts, particularly concerning the Orientation and Census Center, shared between the Ministries of the Interior and Foreign Affairs. By ensuring the flow of information, the continuity of arbitration, and the preservation of case files, the SGG helps prevent sensitive issues, such as the reassignment of civil servants, from being paralyzed by administrative silos. The creation, in 1959, of the Commissariat for Assistance to Repatriates from Tunisia, Morocco, and Indochina confirms this central role: the expertise, coordination, and institutional memory of a repatriation policy now converge at Matignon.",
-      "first_seen_at": "2026-11-26T15:23:24Z",
-      "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
-    },
-    {
       "id": "kitn_9efe248a85d43ef7",
       "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc: quel rôle pour les associations? (Analyse de trois terrains)",
       "auteurs": [
@@ -1163,66 +922,10 @@
       "url_publication": "https://hal.science/hal-05864419v1",
       "doi": null,
       "pdf_direct": null,
-      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en diffi",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_f08b0b6849e256dd",
-      "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc: quel rôle pour les associations? (Analyse de trois terrains)",
-      "auteurs": [
-        "Rayyane M'Barki",
-        "Safae Ed-Douadi"
-      ],
-      "date_publication": "2026-11-12",
-      "date_statut": "date_confirmee",
-      "date_anomalie": false,
-      "statut_validation": "valide",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "economie_finances_publiques",
-      "poles_secondaires": [],
-      "confiance_classification": "moyen",
-      "lien_maroc": "direct",
-      "score_pertinence": 100,
-      "url_publication": "https://hal.science/hal-05864419v1",
-      "doi": null,
-      "pdf_direct": null,
       "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en difficulté, ce qui en fait un impératif social. Cependant, ce secteur reste confronté à de nombreux défis, y compris dans certains pays développés, où les difficultés d'attractivité, de recrutement et de fidélisation des employés sont au cœur des préoccupations (Amat et al., 2023). Dans les pays émergeants comme le Maroc, d'autres problématiques apparaissent en lien avec l'informalité du Care, touchant en premier lieu les femmes, qui représentent la majorité des professionnels. Souvent faiblement rémunérées, sans contrat de travail et exclues de la sécurité sociale, elles sont en outre exposées à des violences, y compris physiques (HCP, 2023; Mechouat, 2017; OIT, 2022; WiNorsky, 2012). Nous défendons dans ce travail l'idée que le Care doit être abordé non seulement comme des pratiques centrées sur les aidés, mais comme une responsabilité collective vis-à-vis des aidantes professionnelles, notamment à travers la professionnalisation. Dans ce cadre, nous nous appuyons sur une enquête qualitative (observation et entretiens semi-directifs) réalisée auprès de deux catégories de public: les travailleuses du Care et les actrices associatives engagées dans la promotion des droits des femmes et dans leur accompagnement socio-professionnel. Notre étude a été menée en 2025 au sein de trois associations engagées pour l'amélioration des situations des femmes et situées dans des territoires contrastés au Maroc: l'Union Nationale des Femmes du Maroc (Tanger à l'extrême nord); l'Union de l'Action Féministe (Tanger et Rabat au nord-ouest); Aïn Ghazal (Oujda au nord-est). Analyser les enjeux de professionnalisation du Care dans ces trois territoires nous permet de distinguer les effets systémiques nationaux des effets locaux propres aux contextes de chaque territoire. Notre étude montre que la professionnalisation de l'économie du Care constitue un levier stratégique pour prendre soin des travailleuses et pour renforcer leur insertion socio-économique. Si les trois territoires partagent un contexte de vulnérabilité des travailleuses, révélant un problème structurel qui nécessite une transformation profonde, un point positif émerge: le rôle déterminant des associations qui peuvent apporter une part de solution. Les associations peuvent participer à la professionnalisation des métiers du care, grâce à leur rôle d'identification de besoins des femmes et des employeurs, d'accompagnement, de formation, de certification et de lutte pour la reconnaissance institutionnelle des formations et des métiers du care. Cependant, et malgré de nombreuses contributions, leur portée reste limitée. La réussite de la professionnalisation nécessite un cadre juridique protecteur, un effort de reconnaissance et de valorisation, des formations qualifiantes et une approche collaborative et multi-acteurs.",
-      "first_seen_at": "2026-11-26T15:05:17Z",
-      "last_seen_at": "2026-11-26T15:05:17Z",
-      "updated_at": "2026-11-26T15:05:17Z",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_a5d288609b9d4c5e",
-      "titre_original": "Professionnaliser le Care face à la vulnérabilité des femmes au Maroc: quel rôle pour les associations? (Analyse de trois terrains)",
-      "auteurs": [
-        "Rayyane M'Barki",
-        "Safae Ed-Douadi"
-      ],
-      "date_publication": "2026-11-12",
-      "date_statut": "date_confirmee",
-      "date_anomalie": false,
-      "statut_validation": "valide",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "economie_finances_publiques",
-      "poles_secondaires": [],
-      "confiance_classification": "moyen",
+      "espace": "science",
       "lien_maroc": "direct",
-      "score_pertinence": 95,
-      "url_publication": "https://hal.science/hal-05864419v1",
-      "doi": null,
-      "pdf_direct": null,
-      "resume": "Dans un contexte marqué par le vieillissement de la population mondiale et par l'évolution des modes de vie, les besoins liés aux mé;ers du Care connaissent une forte croissance. Ancré dans les valeurs de solidarité et d'altruisme, le Care constitue un levier essentiel pour garantir une vie digne aux personnes en difficulté, ce qui en fait un impératif social. Cependant, ce secteur reste confronté à de nombreux défis, y compris dans certains pays développés, où les difficultés d'attractivité, de recrutement et de fidélisation des employés sont au cœur des préoccupations (Amat et al., 2023). Dans les pays émergeants comme le Maroc, d'autres problématiques apparaissent en lien avec l'informalité du Care, touchant en premier lieu les femmes, qui représentent la majorité des professionnels. Souvent faiblement rémunérées, sans contrat de travail et exclues de la sécurité sociale, elles sont en outre exposées à des violences, y compris physiques (HCP, 2023; Mechouat, 2017; OIT, 2022; WiNorsky, 2012). Nous défendons dans ce travail l'idée que le Care doit être abordé non seulement comme des pratiques centrées sur les aidés, mais comme une responsabilité collective vis-à-vis des aidantes professionnelles, notamment à travers la professionnalisation. Dans ce cadre, nous nous appuyons sur une enquête qualitative (observation et entretiens semi-directifs) réalisée auprès de deux catégories de public: les travailleuses du Care et les actrices associatives engagées dans la promotion des droits des femmes et dans leur accompagnement socio-professionnel. Notre étude a été menée en 2025 au sein de trois associations engagées pour l'amélioration des situations des femmes et situées dans des territoires contrastés au Maroc: l'Union Nationale des Femmes du Maroc (Tanger à l'extrême nord); l'Union de l'Action Féministe (Tanger et Rabat au nord-ouest); Aïn Ghazal (Oujda au nord-est). Analyser les enjeux de professionnalisation du Care dans ces trois territoires nous permet de distinguer les effets systémiques nationaux des effets locaux propres aux contextes de chaque territoire. Notre étude montre que la professionnalisation de l'économie du Care constitue un levier stratégique pour prendre soin des travailleuses et pour renforcer leur insertion socio-économique. Si les trois territoires partagent un contexte de vulnérabilité des travailleuses, révélant un problème structurel qui nécessite une transformation profonde, un point positif émerge: le rôle déterminant des associations qui peuvent apporter une part de solution. Les associations peuvent participer à la professionnalisation des métiers du care, grâce à leur rôle d'identification de besoins des femmes et des employeurs, d'accompagnement, de formation, de certification et de lutte pour la reconnaissance institutionnelle des formations et des métiers du care. Cependant, et malgré de nombreuses contributions, leur portée reste limitée. La réussite de la professionnalisation nécessite un cadre juridique protecteur, un effort de reconnaissance et de valorisation, des formations qualifiantes et une approche collaborative et multi-acteurs.",
-      "first_seen_at": "2026-11-26T15:23:24Z",
-      "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "mis_a_jour_le": "2026-11-26T19:07:29Z"
     },
     {
       "id": "kitn_47e479f4a4fb35a8",
@@ -1243,42 +946,14 @@
         "recherche_scientifique"
       ],
       "confiance_classification": "eleve",
-      "score_pertinence": 65,
-      "url_publication": "https://hal.science/hal-05856392v1",
-      "doi": null,
-      "pdf_direct": "https://hal.science/hal-05856392/document",
-      "resume": "La maîtrise de la langue d'enseignement constitue une condition essentielle à l'appropriation des savoirs disciplinaires, ainsi qu'à l'intégration et à la réussite dans le milieu universitaire. Toutefois, au Maroc, et plus particulièrement dans l'enseignement supérieur, un constat largement partagé par les universitair",
-      "espace": "science"
-    },
-    {
-      "id": "kitn_5e21f1e4c7c5f1b3",
-      "titre_original": "La compétence scripturale des primo-arrivants à l'université",
-      "auteurs": [
-        "Abdeladim ERRADI"
-      ],
-      "date_publication": "2026-11-08",
-      "date_statut": "date_confirmee",
-      "date_anomalie": false,
-      "statut_validation": "valide",
-      "langue_originale": "fr",
-      "source_id": "hal_maroc",
-      "source_nom": "HAL Archives Ouvertes - Maroc",
-      "type_document": "publication_scientifique",
-      "pole": "societe_developpement_humain",
-      "poles_secondaires": [
-        "recherche_scientifique"
-      ],
-      "confiance_classification": "eleve",
-      "lien_maroc": "direct",
       "score_pertinence": 90,
       "url_publication": "https://hal.science/hal-05856392v1",
       "doi": null,
       "pdf_direct": "https://hal.science/hal-05856392/document",
       "resume": "La maîtrise de la langue d'enseignement constitue une condition essentielle à l'appropriation des savoirs disciplinaires, ainsi qu'à l'intégration et à la réussite dans le milieu universitaire. Toutefois, au Maroc, et plus particulièrement dans l'enseignement supérieur, un constat largement partagé par les universitaires et les observateurs s'impose: le profil linguistique du public étudiant a considérablement évolué par rapport à celui des générations des années 1960 et 1970, au lendemain de l'indépendance. Ces dernières disposaient généralement d'un niveau de maîtrise du français leur permettant d'accéder aux contenus disciplinaires, de se les approprier et de mobiliser les méthodologies de travail propres à l'enseignement universitaire. Partant de ce constat et de notre expérience dans l'enseignement du français à l'université marocaine, nous proposons, dans cette contribution, d'examiner les difficultés que rencontrent les nouveaux étudiants en matière de maîtrise de la compétence scripturale en français. Nous chercherons ensuite à dégager quelques pistes de réflexion sociodidactiques susceptibles de contribuer à la prise en charge de ces difficultés. Proficiency in the language of instruction is an essential prerequisite for mastering subject-specific knowledge, as well as for integrating into and succeeding within the university environment. In Morocco, however-particularly in higher education-there is a widely held view among academics and observers that the linguistic profile of the student body has evolved significantly since the generations of the 1960s and 1970s, the period immediately following independence. Those earlier generations generally possessed a level of French proficiency that enabled them to access course content, internalize it, and employ the academic methodologies required for university-level study. Building on this observation-and drawing on our own experience teaching French within the Moroccan university system-this paper examines the challenges new students face in developing written proficiency in French. Furthermore, we aim to outline several socio-didactic approaches that could help address these difficulties.",
-      "first_seen_at": "2026-11-26T15:05:17Z",
-      "last_seen_at": "2026-11-26T16:33:57Z",
-      "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "lien_maroc": "direct",
+      "mis_a_jour_le": "2026-11-26T19:07:29Z"
     },
     {
       "id": "kitn_6c2f7f2eaa3e6163",

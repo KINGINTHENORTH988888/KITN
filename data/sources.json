@@ -6,7 +6,7 @@
     "target_space": "science",
     "type": "openalex",
     "url": "https://api.openalex.org/works?search=morocco&per-page=15",
-    "enabled": true,
+    "enabled": false,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
     "max_items": 15
@@ -301,12 +301,12 @@
     "name": "HAL Archives Ouvertes — Maroc",
     "domain": "api.archives-ouvertes.fr",
     "target_space": "science",
-    "type": "rss_atom",
-    "url": "https://api.archives-ouvertes.fr/search/rss/?q=morocco+OR+maroc",
-    "enabled": false,
+    "type": "hal_api",
+    "url": "https://api.archives-ouvertes.fr/search/?q=title_t%3Amorocco%20OR%20title_t%3Amaroc&wt=json&rows=20&fl=docid,title_s,authFullName_s,producedDateY_i,abstract_s,uri_s",
+    "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 20
   },
   {
     "id": "arxiv_morocco",
@@ -607,5 +607,17 @@
     "lang_hint": "en",
     "default_doc_type": "rapport_institutionnel",
     "max_items": 15
+  },
+  {
+    "id": "crossref_maroc",
+    "name": "Crossref — Publications scientifiques sur le Maroc",
+    "domain": "api.crossref.org",
+    "target_space": "science",
+    "type": "crossref",
+    "url": "https://api.crossref.org/works?query.bibliographic=Morocco%20public%20policy&rows=25&select=DOI,title,author,published-online,published-print,published,issued,abstract,URL,type,publisher,container-title,subject",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 25
   }
 ]

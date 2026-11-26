@@ -27,6 +27,11 @@ jobs:
             pip install -r requirements.txt
           fi
 
+      - name: Run unit tests
+        env:
+          PYTHONPATH: .
+        run: python -m unittest discover -s tests -v
+
       - name: Run KITN pipeline
         env:
           PYTHONPATH: .
@@ -48,7 +53,7 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then
             npm ci
-          elif [ -f package.json ]; then
+          elif [ -f package-json ]; then
             npm install
           fi
           if [ -f package.json ]; then

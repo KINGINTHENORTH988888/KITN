@@ -230,7 +230,7 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertIn("troisième trimestre 2026", items[0]["title"])
         self.assertIn("principaux indicateurs", items[0]["abstract"])
         self.assertEqual(items[0]["published_date"], "2026-11-03T10:00:00+01:00")
-        self.assertEqual(items[0]["authors"], ["HCP — Direction de la statistique"])
+        self.assertEqual(items[0]["authors"], ["HCP - Direction de la statistique"])
         self.assertEqual(items[0]["default_doc_type"], "statistique")
 
     def test_run_pipeline_preserves_existing_and_merges_manual(self):

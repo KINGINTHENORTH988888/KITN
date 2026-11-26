@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from pipeline.collectors import collect_bank_al_maghrib, collect_from_source, collect_world_bank_api
+from pipeline.collectors import collect_bank_al_maghrib, collect_bank_al_maghrib_api, collect_from_source, collect_world_bank_api
 from pipeline.processors import (
     build_stable_id,
     classify_document,
@@ -284,6 +284,38 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertIn("contrôle de l'exécution", items[0]["abstract"])
         self.assertEqual(items[0]["published_date"], "2026-07-08T11:12:24+00:00")
 
+
+
+    def test_collect_bank_al_maghrib_api_uses_subscription_key_and_maps_rates(self):
+        from unittest.mock import MagicMock
+        import os
+
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps([{
+            "coursJour": 10.25,
+            "diffCours": 0.03,
+            "libDevise": "EUR",
+            "coursVeille": 10.22,
+            "diffCoursVeille": 0.01,
+        }]).encode("utf-8")
+        with patch.dict(os.environ, {"BKAM_API_KEY": "test-key"}), patch("pipeline.collectors.urlopen", return_value=response) as mocked:
+            items = collect_bank_al_maghrib_api({
+                "id": "bank_al_maghrib",
+                "api_base": "https://api.centralbankofmorocco.ma/cours/Version1/api",
+                "currencies": ["EUR"],
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["statistics_series"]["latest"]["value"], 10.25)
+        self.assertEqual(items[0]["statistics_series"]["previous"]["value"], 10.22)
+        self.assertEqual(items[0]["statistics_series"]["change_unit"], "MAD")
+        request = mocked.call_args.args[0]
+        self.assertEqual(request.get_header("Subscription-key"), "test-key")
+
+    def test_collect_bank_al_maghrib_api_requires_secret(self):
+        import os
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "BKAM_API_KEY"):
+                collect_bank_al_maghrib_api({"currencies": ["EUR"]})
 
     def test_collect_bank_al_maghrib_extracts_monthly_indicators_and_monia(self):
         monthly_html = """

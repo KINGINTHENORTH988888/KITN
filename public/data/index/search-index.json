@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-26T20:30:49Z",
-  "total": 84,
+  "generated_at": "2026-11-26T20:31:24Z",
+  "total": 85,
   "active_sources": 3,
   "fetched_in_run": 35,
   "processed_in_run": 26,
-  "added_in_run": 17,
+  "added_in_run": 1,
   "updated_in_run": 0,
   "items": [
     {
@@ -2051,6 +2051,40 @@
       "pdf_direct": null,
       "texte_integral_disponible": false,
       "resume": "L'attitude fondamentaliste compte plusieurs déclinaisons. Dans le contexte marocain, les mécanismes du fondamentalisme étatique sont liés notamment au référent généalogique de la dynastie alaouite au pouvoir. Cette dernière revendique l'identité fondamentaliste dans le sens de son lien indéfectible au Prophète de l'islam, par sa fille Fatima. De ce point de vue, le cas du Maroc est intéressant car le pouvoir monarchique, en tant qu'incarnation de l'État marocain et acteur politique suprême, met en avant une définition du fondamentalisme qui s'appuie sur une combinaison des ressources à la fois religieuses, généalogiques et politiques. Par conséquent, les variations autour de la notion de fondamentalisme dans ce contexte offrent des significations particulières dans le sens d'un rapport complexe entre les registres théologiques et politiques. L'appropriation de ces paradigmes permet à l'institution monarchique de se singulariser par rapport aux autres États arabes et de diffuser l'idée d'une identité marocaine traditionnelle stable et intellectuellement moderne.",
+      "analyse_strategique": "",
+      "origine": "automatique"
+    },
+    {
+      "id": "kitn_e85a393ea1b81b3e",
+      "titre_original": "Le Maroc utile et sa mise en récit colonial",
+      "auteurs": [
+        "Jean-Yves Puyo"
+      ],
+      "revue_ou_institution": "HAL Archives Ouvertes - Maroc",
+      "mots_cles": [],
+      "date_publication": "2016",
+      "collecte_le": "2026-11-26T20:31:24Z",
+      "mis_a_jour_le": "2026-11-26T20:31:24Z",
+      "date_statut": "date_partielle",
+      "date_anomalie": false,
+      "statut_validation": "valide",
+      "langue_originale": "fr",
+      "source_id": "hal_science_morocco",
+      "source_nom": "HAL Archives Ouvertes - Maroc",
+      "type_document": "publication_scientifique",
+      "espace": "science",
+      "pole": "relations_internationales_geopolitique",
+      "poles_secondaires": [
+        "recherche_scientifique"
+      ],
+      "confiance_classification": "moyen",
+      "lien_maroc": "direct",
+      "score_pertinence": 89,
+      "url_publication": "https://hal.science/hal-05415752v1",
+      "doi": null,
+      "pdf_direct": null,
+      "texte_integral_disponible": false,
+      "resume": "En décembre 1920, Lyautey définissait un plan général (approuvé par la suite par le gouvernement français) destiné, «non pas [à] occuper ni même [à] pacifier tout le Maroc géographique», mais à étendre en trois ans Protectorat français «effectif» sur ce qu'il nomma alors le Maroc utile [à la colonisation]. L'expression connut par la suite un succès considérable qui ne s'est pas démenti jusqu'à nos jours, avec toutefois des définitions - et interprétations - variées. Ainsi, par exemple, la plus «convenue» consiste à circonscrire le Maroc utile au «[…] riche pays de plaines atlantiques et de plateaux, bien arrosés et peuplés de sédentaires» (Tinthoin, 1947), à savoir, en simplifiant, le triangle Fès-Casablanca-Marrakech. Notre communication cherchera à analyser le regard porté sur ce Maroc utile cher à Lyautey à partir d'un corpus d'écrits de toute nature publiés entre 1905 et 1939. Sans aucune prétention d'exhaustivité, nous mobiliserons les grands «classiques», à savoir les ouvrages des voyageurs français de cette époque (les André Chevrillon, Jean et Jérôme Tharaud, Marc de Mazières, Henriette Wilette, Christian Houel,…), mais aussi les témoignages des militaires (Jean Vial, Paul Chatinières, L.-T. Huot,…) et les écrits des géographes (Augustin Bernard, Louis Gentil, Georges Hardy, Jean Célérier,…).",
       "analyse_strategique": "",
       "origine": "automatique"
     },

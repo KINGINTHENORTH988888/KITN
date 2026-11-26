@@ -129,6 +129,26 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(merged["resume"], existing["resume"])
         self.assertEqual(merged["auteurs"], existing["auteurs"])
 
+
+    def test_merge_prefers_clean_institutional_title_over_listing_label(self):
+        existing = {
+            "id": "kitn_listing",
+            "source_id": "cour_des_comptes_maroc",
+            "url_publication": "https://www.courdescomptes.ma/publication/report/",
+            "titre_original": "08 Juil. 2026 - Rapport annuel Rapport sur l'exécution de la loi de finances",
+        }
+        incoming = {
+            "id": "kitn_detail",
+            "source_id": "cour_des_comptes_maroc",
+            "url_publication": "https://www.courdescomptes.ma/publication/report/",
+            "titre_original": "Rapport sur l'exécution de la loi de finances pour l'année 2024",
+            "resume": "Résumé détaillé du rapport sur l'exécution de la loi de finances.",
+        }
+        merged, changed = _merge_preserving_rich_fields(existing, incoming, "2026-11-26T22:00:00Z")
+        self.assertTrue(changed)
+        self.assertEqual(merged["titre_original"], incoming["titre_original"])
+        self.assertEqual(merged["resume"], incoming["resume"])
+
     def test_stable_id_and_fingerprint(self):
         id1 = build_stable_id("10.1000/xyz", "https://example.org/a", "Titre A", "2025-01-01")
         id2 = build_stable_id("https://doi.org/10.1000/XYZ", "https://example.org/b", "Titre A", "2025-01-01")

@@ -928,7 +928,7 @@ function renderStatisticsDashboard() {
     <section class="stats-dashboard">
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تحديث" : "Mise à jour"} : ${escapeHtml(updateDate)}</span></div>
       <div class="stats-grid">${cards}</div>
-      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة بجانب كل مؤشر. تتوفر البيانات من البنك الدولي وبنك المغرب." : "La source est indiquée pour chaque indicateur : Banque mondiale ou Bank Al-Maghrib."} <a href="https://www.bkam.ma/fr/Statistiques" target="_blank" rel="noopener noreferrer">${isAr ? "إحصائيات بنك المغرب" : "Statistiques Bank Al-Maghrib"}</a></p>
+      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة بجانب كل مؤشر، مع رابط المصدر الأصلي." : "Chaque indicateur indique son institution source et renvoie vers la source originale."}</p>
     </section>`;
 }
 

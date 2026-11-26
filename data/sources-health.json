@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-11-26T19:41:17Z",
+  "updated_at": "2026-11-26T19:44:22Z",
   "active_sources": 3,
-  "total_fetched": 30,
-  "total_accepted": 19,
+  "total_fetched": 15,
+  "total_accepted": 15,
   "sources": [
     {
       "source_id": "openalex_morocco_policy",
@@ -11,12 +11,12 @@
       "target_space": "science",
       "type": "openalex",
       "enabled": true,
-      "status": "ok",
-      "stage": "collecte_effectuee",
-      "fetched": 15,
-      "accepted": 4,
-      "error": null,
-      "checked_at": "2026-11-26T19:41:17Z"
+      "status": "error",
+      "stage": "erreur_collecte",
+      "fetched": 0,
+      "accepted": 0,
+      "error": "HTTP Error 429: Too Many Requests",
+      "checked_at": "2026-11-26T19:44:22Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -30,7 +30,7 @@
       "fetched": 15,
       "accepted": 15,
       "error": null,
-      "checked_at": "2026-11-26T19:41:17Z"
+      "checked_at": "2026-11-26T19:44:22Z"
     },
     {
       "source_id": "bank_al_maghrib",
@@ -44,7 +44,7 @@
       "fetched": 0,
       "accepted": 0,
       "error": "HTTP Error 403: Forbidden",
-      "checked_at": "2026-11-26T19:41:17Z"
+      "checked_at": "2026-11-26T19:44:22Z"
     }
   ]
 }

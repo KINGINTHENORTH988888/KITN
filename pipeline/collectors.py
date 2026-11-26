@@ -749,6 +749,263 @@ def collect_rss_atom(source: dict) -> list[dict]:
 
 
 
+
+
+class _BAMPageExtractor(HTMLParser):
+    """Extract visible text and table rows from Bank Al-Maghrib pages."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.text_parts: list[str] = []
+        self.rows: list[list[str]] = []
+        self._row: list[str] | None = None
+        self._cell: list[str] | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        tag = tag.lower()
+        if tag == "tr":
+            self._row = []
+        elif tag in ("td", "th") and self._row is not None:
+            self._cell = []
+
+    def handle_data(self, data: str) -> None:
+        if data.strip():
+            self.text_parts.append(data.strip())
+            if self._cell is not None:
+                self._cell.append(data.strip())
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        if tag in ("td", "th") and self._cell is not None and self._row is not None:
+            self._row.append(clean_text(" ".join(self._cell)))
+            self._cell = None
+        elif tag == "tr" and self._row is not None:
+            if any(self._row):
+                self.rows.append(self._row)
+            self._row = None
+            self._cell = None
+
+
+def _bam_number(raw: str) -> float | None:
+    value = clean_text(raw).replace("\\u00a0", "").replace(" ", "").replace("%", "").replace(",", ".")
+    value = re.sub(r"[^0-9.\\-]", "", value)
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _bam_period(text: str) -> tuple[str, str] | None:
+    month_names = {
+        "janvier": "01", "février": "02", "fevrier": "02", "mars": "03",
+        "avril": "04", "mai": "05", "juin": "06", "juillet": "07",
+        "août": "08", "aout": "08", "septembre": "09", "octobre": "10",
+        "novembre": "11", "décembre": "12", "decembre": "12",
+    }
+    match = re.search(r"(?:mois de\\s+|en\\s+)([A-Za-zÀ-ÿ]+)\\s*(20\\d{2})", text, re.IGNORECASE)
+    if not match:
+        return None
+    month = month_names.get(match.group(1).lower())
+    return (match.group(2), month) if month else None
+
+
+def _bam_series_item(
+    source: dict,
+    code: str,
+    label: str,
+    description: str,
+    unit: str,
+    history: list[dict],
+    source_url: str,
+    precision: int = 1,
+    comparison_label: str = "par rapport à la période précédente",
+    change_mode: str = "relative",
+    change_unit: str = "%",
+) -> dict | None:
+    history = sorted(
+        [point for point in history if point.get("value") is not None],
+        key=lambda point: str(point.get("year") or ""),
+    )
+    if not history:
+        return None
+    latest = history[-1]
+    previous = history[-2] if len(history) > 1 else None
+    series = {
+        "id": code,
+        "indicator_code": code,
+        "label_fr": label,
+        "label_ar": label,
+        "description_fr": description,
+        "description_ar": description,
+        "unit_fr": unit,
+        "unit_ar": unit,
+        "scale_divisor": 1,
+        "precision": precision,
+        "category": "Monétaire et financier",
+        "pole": "economie",
+        "latest": latest,
+        "previous": previous,
+        "history": history,
+        "source_name": "Bank Al-Maghrib",
+        "source_url": source_url,
+        "comparison_label_fr": comparison_label,
+        "comparison_label_ar": "مقارنة بالفترة السابقة",
+        "change_mode": change_mode,
+        "change_unit": change_unit,
+    }
+    return {
+        "title": f"{label} — Maroc",
+        "abstract": description,
+        "authors": [],
+        "venue": "Bank Al-Maghrib",
+        "keywords": ["Maroc", "Bank Al-Maghrib", "statistiques monétaires", code],
+        "published_date": str(latest["year"]),
+        "url": source_url,
+        "doi": None,
+        "espace": "chiffres",
+        "pole": "economie",
+        "default_doc_type": "statistique",
+        "statistics_series": series,
+        "source_lang_hint": "fr",
+    }
+
+
+def collect_bank_al_maghrib(source: dict) -> list[dict]:
+    """Collect official monthly monetary indicators and daily MONIA observations."""
+    pages = source.get("statistics_pages") or []
+    items: list[dict] = []
+    for page in pages:
+        page_url = str(page.get("url") or "").strip()
+        kind = str(page.get("kind") or "").lower()
+        if not page_url or kind not in ("monthly_indicators", "monia"):
+            continue
+        html_body = _fetch_text(page_url)
+        parser = _BAMPageExtractor()
+        parser.feed(html_body)
+        visible_text = clean_text(" ".join(parser.text_parts))
+
+        if kind == "monia":
+            observations: list[tuple[str, float, float]] = []
+            for row in parser.rows:
+                if len(row) < 4:
+                    continue
+                rate = _bam_number(row[0])
+                volume = _bam_number(row[1])
+                ref_date = re.search(r"(\\d{2})/(\\d{2})/(20\\d{2})", row[2])
+                if rate is None or volume is None or not ref_date:
+                    continue
+                iso_date = f"{ref_date.group(3)}-{ref_date.group(2)}-{ref_date.group(1)}"
+                observations.append((iso_date, rate, volume))
+            observations.sort(key=lambda entry: entry[0])
+            if observations:
+                items.extend(filter(None, [
+                    _bam_series_item(
+                        source, "BAM_MONIA_RATE", "Indice MONIA",
+                        "Taux moyen pondéré des opérations de pension livrée au jour le jour, publié par Bank Al-Maghrib.",
+                        "%", [{"year": d, "value": rate} for d, rate, _ in observations],
+                        page_url, precision=3, comparison_label="par rapport au jour précédent",
+                        change_mode="absolute", change_unit="pt",
+                    ),
+                    _bam_series_item(
+                        source, "BAM_MONIA_VOLUME", "Volume des opérations MONIA",
+                        "Volume des opérations au jour le jour ayant servi au calcul de l'indice MONIA.",
+                        "MDH", [{"year": d, "value": volume} for d, _, volume in observations],
+                        page_url, precision=0, comparison_label="par rapport au jour précédent",
+                    ),
+                ]))
+
+        elif kind == "monthly_indicators":
+            period = _bam_period(visible_text)
+            if not period:
+                continue
+            year, month = period
+            current_period = f"{year}-{month}"
+            previous_period = f"{year}-{int(month) - 1:02d}" if month != "01" else f"{int(year) - 1}-12"
+            def add_pair(code: str, label: str, description: str, current: str, previous: str) -> None:
+                cur, prev = _bam_number(current), _bam_number(previous)
+                if cur is None or prev is None:
+                    return
+                item = _bam_series_item(
+                    source, code, label, description, "%",
+                    [{"year": previous_period, "value": prev}, {"year": current_period, "value": cur}],
+                    page_url, precision=1, comparison_label="par rapport au mois précédent",
+                    change_mode="absolute", change_unit="pt",
+                )
+                if item:
+                    items.append(item)
+
+            m3_stock = re.search(
+                r"masse monétaire.*?pour atteindre\\s*([0-9\\s\\u00a0,.]+)\\s*MMDH",
+                visible_text, re.IGNORECASE,
+            )
+            if m3_stock:
+                value = _bam_number(m3_stock.group(1))
+                if value is not None:
+                    item = _bam_series_item(
+                        source, "BAM_M3_STOCK", "Masse monétaire M3",
+                        "Encours de la masse monétaire au sens large, en milliards de dirhams.",
+                        "MMDH", [{"year": current_period, "value": value}], page_url, precision=1,
+                    )
+                    if item:
+                        items.append(item)
+
+            m3_growth = re.search(
+                r"masse monétaire.*?de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                visible_text, re.IGNORECASE,
+            )
+            if m3_growth:
+                add_pair("BAM_M3_GROWTH", "Croissance annuelle de M3",
+                         "Variation en glissement annuel de la masse monétaire M3.", m3_growth.group(1), m3_growth.group(2))
+
+            reserves = re.search(
+                r"avoirs officiels de réserve.*?hausses respectives de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%\\s*et de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                visible_text, re.IGNORECASE,
+            )
+            if reserves:
+                add_pair("BAM_RESERVES_GROWTH", "Croissance des avoirs officiels de réserve",
+                         "Variation annuelle des avoirs officiels de réserve.", reserves.group(1), reserves.group(2))
+                add_pair("BAM_NET_CLAIMS_GOV_GROWTH", "Créances nettes sur l'administration centrale",
+                         "Variation annuelle des créances nettes des institutions de dépôt sur l'administration centrale.",
+                         reserves.group(3), reserves.group(4))
+
+            credit = re.search(
+                r"crédit bancaire au secteur non financier s'est accru de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                visible_text, re.IGNORECASE,
+            )
+            if credit:
+                add_pair("BAM_CREDIT_NFS_GROWTH", "Croissance du crédit au secteur non financier",
+                         "Variation annuelle du crédit bancaire au secteur non financier.", credit.group(1), credit.group(2))
+
+            private_credit = re.search(
+                r"sociétés non financières privées de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                visible_text, re.IGNORECASE,
+            )
+            if private_credit:
+                add_pair("BAM_PRIVATE_CREDIT_GROWTH", "Crédit aux entreprises privées",
+                         "Variation annuelle des concours bancaires aux sociétés non financières privées.",
+                         private_credit.group(1), private_credit.group(2))
+
+            household_credit = re.search(
+                r"ménages de\\s*([0-9,.]+)\\s*%\\s*après\\s*([0-9,.]+)\\s*%",
+                visible_text, re.IGNORECASE,
+            )
+            if household_credit:
+                add_pair("BAM_HOUSEHOLD_CREDIT_GROWTH", "Crédit aux ménages",
+                         "Variation annuelle des concours bancaires aux ménages.", household_credit.group(1), household_credit.group(2))
+
+            npl = re.search(
+                r"créances en souffrance.*?décéléré de\\s*([0-9,.]+)\\s*%\\s*à\\s*([0-9,.]+)\\s*%.*?ratio.*?établi à\\s*([0-9,.]+)\\s*%\\s*contre\\s*([0-9,.]+)\\s*%",
+                visible_text, re.IGNORECASE,
+            )
+            if npl:
+                add_pair("BAM_NPL_GROWTH", "Croissance des créances en souffrance",
+                         "Variation annuelle des créances en souffrance.", npl.group(2), npl.group(1))
+                add_pair("BAM_NPL_RATIO", "Ratio des créances en souffrance",
+                         "Part des créances en souffrance dans le crédit bancaire.", npl.group(3), npl.group(4))
+
+    return items
+
+
 def collect_world_bank_api(source: dict) -> list[dict]:
     """Fetch Morocco time series from the World Bank Indicators API."""
     base_url = str(source.get("url") or "https://api.worldbank.org/v2/country/MAR/indicator/").rstrip("/") + "/"
@@ -830,6 +1087,8 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_crossref(source)
     if stype == "world_bank_api":
         return collect_world_bank_api(source)
+    if stype == "bank_al_maghrib":
+        return collect_bank_al_maghrib(source)
     if stype == "hal_api":
         return collect_hal_api(source)
     if stype == "html_links":

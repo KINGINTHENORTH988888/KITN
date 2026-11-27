@@ -400,16 +400,16 @@
     "domain": "www.hespress.com",
     "target_space": "veille",
     "type": "hespress_news",
-    "url": "https://www.hespress.com/",
+    "url": "https://www.hespress.com/politique",
     "enabled": true,
     "lang_hint": "ar",
     "default_doc_type": "article_presse",
     "max_items": 15,
     "listing_urls": [
-      "https://www.hespress.com/",
-      "https://fr.hespress.com/politique",
-      "https://fr.hespress.com/economie",
-      "https://fr.hespress.com/societe"
+      "https://www.hespress.com/politique",
+      "https://www.hespress.com/economie",
+      "https://www.hespress.com/societe",
+      "https://www.hespress.com/regions"
     ],
     "include_title_tokens": [
       "gouvernement",

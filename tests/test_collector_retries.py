@@ -48,7 +48,8 @@ class TestCollectorRetries(unittest.TestCase):
 
     def test_retry_after_http_date_is_parsed(self):
         now = datetime(2026, 11, 27, 12, 0, 0, tzinfo=timezone.utc)
-        delay = _retry_delay_seconds("Fri, 27 Nov 2026 12:00:12 GMT", 0, now=now)
+        with patch("pipeline.collectors.random.uniform", return_value=0):
+            delay = _retry_delay_seconds("Fri, 27 Nov 2026 12:00:12 GMT", 0, now=now)
         self.assertEqual(delay, 12.0)
 
     def test_transient_errors_use_exponential_backoff(self):

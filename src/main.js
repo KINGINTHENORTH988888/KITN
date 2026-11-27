@@ -1211,23 +1211,45 @@ function renderWatchDashboard() {
 
 function renderLibraryDirectory() {
   const isAr = lang === "ar";
-  const items = [
+  const sourceDefinitions = [
     {name:"Cour des comptes",desc:isAr ? "تقارير الرقابة وتقييم السياسات العمومية والمالية." : "Rapports de contrôle, audits et évaluations des politiques publiques.",url:"https://www.courdescomptes.ma/publications/",id:"cour_des_comptes_maroc"},
     {name:"CESE",desc:isAr ? "آراء ودراسات وتقارير اقتصادية واجتماعية وبيئية." : "Avis, études et rapports économiques, sociaux et environnementaux.",url:"https://www.cese.ma/",id:"cese_maroc"},
     {name:"IRES",desc:isAr ? "دراسات استراتيجية وتقارير موضوعاتية واستشرافية." : "Études stratégiques, rapports thématiques et prospectifs.",url:"https://www.ires.ma/fr/publications",id:"ires_maroc"},
     {name:"HCP",desc:isAr ? "دراسات وتقارير ومنشورات إحصائية رسمية." : "Études, rapports et publications statistiques officielles.",url:"https://www.hcp.ma/",id:"hcp_maroc"},
     {name:isAr ? "البنك الدولي" : "Banque mondiale",desc:isAr ? "تقارير قطرية وبيانات اقتصادية واجتماعية." : "Rapports pays, données économiques et sociales.",url:"https://data.worldbank.org/country/morocco",id:"world_bank_maroc"}
   ];
-  const title = isAr ? "مؤسسات ومصادر وثائقية" : "Institutions & fonds documentaires";
-  const subtitle = isAr ? "بوابات رسمية للوصول إلى التقارير والدراسات الأصلية." : "Accès direct aux portails institutionnels et aux documents originaux.";
-  const countFor = (id) => indexItems.filter((item) => item.source_id === id && !isFutureDate(item)).length;
-  return `
-    <section class="library-directory">
-      <div class="stats-heading"><div><span class="mini-label">${isAr ? "مراجع موثوقة" : "SOURCES DE RÉFÉRENCE"}</span><h3>${title}</h3><p>${subtitle}</p></div></div>
-      <div class="library-source-grid">${items.map((item) => `
-        <article class="library-source-card"><div class="library-source-meta"><span>${escapeHtml(item.name)}</span><span>${countFor(item.id)} ${isAr ? "مفهرس" : "indexé(s)"}</span></div><p>${escapeHtml(item.desc)}</p><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${isAr ? "فتح المصدر الرسمي" : "Ouvrir le portail officiel"} ↗</a></article>
-      `).join("")}</div>
-    </section>`;
+  const docs = indexItems.filter((item) => matchesSpace(item, "bibliotheque") && !isFutureDate(item));
+  const sourceCount = new Set(docs.map((item) => item.source_id).filter(Boolean)).size;
+  const withPdf = docs.filter((item) => isSafeHttpUrl(item.pdf_direct)).length;
+  const withAbstract = docs.filter((item) => String(item.resume || "").trim()).length;
+  const countFor = (id) => docs.filter((item) => item.source_id === id).length;
+  const latest = [...docs].sort((a,b) => String(b.date_publication || "").localeCompare(String(a.date_publication || ""))).slice(0,4);
+  const typeCounts = new Map();
+  docs.forEach((item) => {
+    const type = item.type_document || "non_classe";
+    typeCounts.set(type,(typeCounts.get(type)||0)+1);
+  });
+  const typeChips = [...typeCounts.entries()].sort((a,b)=>b[1]-a[1]).map(([type,count]) =>
+    '<span class="library-type-chip">' + escapeHtml(formatDocType(type) || type) + '<strong>' + count + '</strong></span>'
+  ).join("");
+  const sourceCards = sourceDefinitions.map((item) => {
+    const count = countFor(item.id);
+    return '<article class="library-source-card"><div class="library-source-meta"><span>' + escapeHtml(item.name) + '</span><span>' + count + ' ' + (isAr ? "مفهرس" : "indexé(s)") + '</span></div><p>' + escapeHtml(item.desc) + '</p><a href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">' + (isAr ? "فتح المصدر الرسمي" : "Ouvrir le portail officiel") + ' ↗</a></article>';
+  }).join("");
+  const recentMarkup = latest.length ? latest.map((item) =>
+    '<button type="button" class="library-recent-item" data-open-home-item="' + escapeHtml(getItemKey(item)) + '">' +
+    '<span>' + escapeHtml(item.date_publication || "—") + ' · ' + escapeHtml(formatDocType(item.type_document) || "") + '</span>' +
+    '<strong>' + escapeHtml(item.titre_original || (isAr ? "وثيقة" : "Document sans titre")) + '</strong>' +
+    '<small>' + escapeHtml(item.source_nom || "") + '</small></button>'
+  ).join("") : '<p class="empty-results">' + (isAr ? "لا توجد وثائق متاحة حالياً." : "Aucun document disponible pour le moment.") + '</p>';
+  return '<section class="library-directory">' +
+    '<div class="library-overview"><div><span class="mini-label">' + (isAr ? "مركز الوثائق" : "CENTRE DOCUMENTAIRE") + '</span><h3>' + (isAr ? "المعرفة والتقارير والمراجع" : "Connaissances, rapports et références") + '</h3><p>' + (isAr ? "استكشف الوثائق المفهرسة والمصادر المؤسسية الأصلية. الأرقام تعكس المحتوى المتاح حالياً في KITN." : "Explorez les documents indexés et les portails institutionnels d’origine. Les chiffres décrivent uniquement le contenu actuellement disponible dans KITN.") + '</p></div></div>' +
+    '<div class="library-metrics"><div><strong>' + docs.length + '</strong><span>' + (isAr ? "وثيقة مفهرسة" : "documents indexés") + '</span></div><div><strong>' + sourceCount + '</strong><span>' + (isAr ? "مصادر ممثلة" : "sources représentées") + '</span></div><div><strong>' + withPdf + '</strong><span>' + (isAr ? "رابط PDF" : "liens PDF renseignés") + '</span></div><div><strong>' + withAbstract + '</strong><span>' + (isAr ? "ملخص متاح" : "résumés disponibles") + '</span></div></div>' +
+    '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "أنواع الوثائق" : "Collections documentaires") + '</h4><span>' + typeCounts.size + ' ' + (isAr ? "أنواع" : "types") + '</span></div><div class="library-type-list">' + typeChips + '</div></div>' +
+    '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "أحدث الوثائق المفهرسة" : "Derniers documents indexés") + '</h4><span>' + (isAr ? "حسب تاريخ النشر" : "Par date de publication") + '</span></div><div class="library-recent-list">' + recentMarkup + '</div></div>' +
+    '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "مصادر ومؤسسات مرجعية" : "Institutions & fonds documentaires") + '</h4><span>' + (isAr ? "الوصول إلى المصادر الأصلية" : "Accès aux sources originales") + '</span></div><div class="library-source-grid">' + sourceCards + '</div></div>' +
+    '<p class="library-scope-note">' + (isAr ? "قد تحتوي بوابات المؤسسات على وثائق إضافية غير مفهرسة في KITN. يظل المصدر الأصلي مرجع النشر." : "Les portails institutionnels peuvent proposer d’autres documents qui ne sont pas encore indexés dans KITN. La source originale reste la référence de publication.") + '</p>' +
+    '</section>';
 }
 
 function renderArticlePage(item) {

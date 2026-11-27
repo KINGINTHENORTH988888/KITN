@@ -1980,29 +1980,50 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
     if output:
         return output
 
-    # Layout B: period values down the first (or second) column, with a header row
-    # that can appear below a workbook title or metadata block.
+    # Layout B: periods down the first (or second) column. Cache period rows
+    # once, then inspect only plausible header rows to avoid quadratic rescans.
     max_columns = min(max((len(row) for row in rows), default=0), 80)
+    period_rows_by_col = {}
+    for date_col in (0, 1):
+        cached = []
+        for row_index, row in enumerate(rows):
+            if date_col >= len(row):
+                continue
+            period = _bam_ckan_period(row[date_col])
+            if period:
+                cached.append((row_index, period))
+        period_rows_by_col[date_col] = cached
+
     for header_index, header_row in enumerate(rows[:60]):
         if not header_row:
             continue
         for date_col in range(min(2, len(header_row))):
+            date_header = clean_text(header_row[date_col]).casefold()
+            if date_header and not any(token in date_header for token in ("date", "période", "periode", "année", "annee", "year", "mois", "month")):
+                continue
+            period_rows = [(row_index, period) for row_index, period in period_rows_by_col[date_col] if row_index > header_index]
+            if len(period_rows) < 2:
+                continue
+            labels = []
             for col in range(date_col + 1, min(max_columns, len(header_row))):
                 header = clean_text(header_row[col])
-                if len(header) < 3 or _bam_ckan_is_numeric(header):
-                    continue
+                if len(header) >= 3 and not _bam_ckan_is_numeric(header):
+                    labels.append((col, header))
+            if not labels:
+                continue
+            for col, header in labels:
                 points = []
-                for row in rows[header_index + 1:]:
-                    if date_col >= len(row) or col >= len(row):
-                        continue
-                    period = _bam_ckan_period(row[date_col])
-                    if not period:
+                for row_index, period in period_rows:
+                    row = rows[row_index]
+                    if col >= len(row):
                         continue
                     value = _bam_ckan_number(row[col])
                     if value is not None:
                         points.append({"year": period, "value": value})
                 if len(points) >= 2:
                     _append_bam_ckan_series(output, header, points, title, f"{notes} {unit_hint}", resource_url, resource_name)
+            if output:
+                break
         if output:
             break
     return output

@@ -1949,6 +1949,7 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
     max_datasets = max(1, min(int(source.get("max_datasets") or 43), 100))
     max_bytes = max(100_000, min(int(source.get("max_resource_bytes") or 8_000_000), 20_000_000))
     output = []
+    extraction_errors = []
     for dataset in datasets[:max_datasets]:
         resources = [
             resource for resource in (dataset.get("resources") or [])
@@ -1967,14 +1968,12 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
             output.extend(extracted)
         except Exception as exc:
             # One unavailable or malformed workbook must not suppress other BAM datasets.
-            output.append({
-                "title": f"Échec de lecture — {clean_text(dataset.get('title') or dataset.get('name') or 'Jeu BAM')}",
-                "abstract": f"Le catalogue CKAN a référencé une ressource XLSX, mais son extraction a échoué : {str(exc)[:300]}",
-                "url": str(resource.get("url") or ""), "published_date": None,
-                "default_doc_type": "statistique", "espace": "chiffres",
-                "statistics_collection_error": True,
-                "source_lang_hint": "fr",
-            })
+            extraction_errors.append(f"{clean_text(dataset.get('title') or dataset.get('name') or 'Jeu BAM')}: {str(exc)[:180]}")
+    if extraction_errors:
+        if output:
+            output[0]["statistics_collection_warnings"] = extraction_errors
+        else:
+            raise RuntimeError("Aucune ressource BAM n'a pu être extraite. " + " | ".join(extraction_errors[:5]))
     return output
 
 

@@ -460,6 +460,7 @@ class _HCPDetailExtractor(HTMLParser):
         self.heading = ""
         self.published_time = ""
         self.paragraphs: list[str] = []
+        self.all_text: list[str] = []
         self.links: list[str] = []
         self._active_tag = ""
         self._active_parts: list[str] = []
@@ -480,6 +481,8 @@ class _HCPDetailExtractor(HTMLParser):
             self._active_parts = []
 
     def handle_data(self, data: str) -> None:
+        if data and data.strip():
+            self.all_text.append(data)
         if self._active_tag:
             self._active_parts.append(data)
 
@@ -742,7 +745,13 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
             continue
         title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title or candidate.get("title"))
         body = clean_text(" ".join(parser.paragraphs))
-        period = period_key({"title": title})
+        if len(body) < 80:
+            # Some HCP releases place the article body in generic divs instead of <p> tags.
+            body = clean_text(" ".join(parser.all_text))
+        period_probe = " ".join(
+            str(value or "") for value in (title, candidate.get("title"), page_url)
+        )
+        period = period_key({"title": period_probe})
         if not body or not period[0] or not period[1]:
             article_errors.append(f"{page_url}: contenu ou période trimestrielle non reconnu")
             continue

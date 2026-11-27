@@ -2,6 +2,7 @@ import json
 import unittest
 from urllib.parse import parse_qs, urlsplit
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 from pipeline.collectors import collect_openalex
 
@@ -93,6 +94,26 @@ class TestOpenAlexPagination(unittest.TestCase):
 
         self.assertEqual(len(items), 2)
         self.assertEqual(fetch.call_count, 2)
+
+
+    def test_rate_limit_without_key_reports_required_secret(self):
+        source = {
+            "url": "https://api.openalex.org/works?search=Morocco&per-page=1",
+            "max_items": 3,
+        }
+        error = HTTPError(
+            "https://api.openalex.org/works",
+            429,
+            "Too Many Requests",
+            None,
+            None,
+        )
+        with (
+            patch.dict("os.environ", {}, clear=True),
+            patch("pipeline.collectors._fetch_text", side_effect=error),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "OPENALEX_API_KEY"):
+                collect_openalex(source)
 
     def test_without_api_key_keeps_keyless_first_page_working(self):
         page = {

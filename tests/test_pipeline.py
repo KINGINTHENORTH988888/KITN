@@ -12,6 +12,7 @@ from pipeline.processors import (
     clean_text,
     detect_real_language,
     evaluate_morocco_relevance,
+    normalize_doi,
     process_raw_item,
     resolve_space,
     sanitize_url,
@@ -25,6 +26,49 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(detect_real_language("Politique publique et gouvernance au Maroc"), "fr")
         self.assertEqual(detect_real_language("Public policy and economic growth in Morocco"), "en")
         self.assertEqual(detect_real_language("تقرير حول الحكامة والسياسات العمومية في المغرب"), "ar")
+
+    def test_normalize_doi(self):
+        self.assertEqual(normalize_doi("https://doi.org/10.1000/ABC.123"), "10.1000/abc.123")
+        self.assertEqual(normalize_doi("doi: 10.1234/Some.Path"), "10.1234/some.path")
+        self.assertIsNone(normalize_doi("not-a-doi"))
+        self.assertIsNone(normalize_doi("10.12/too-short-prefix"))
+        self.assertIsNone(normalize_doi("javascript:alert(1)"))
+
+    def test_process_raw_item_marks_doi_quality(self):
+        source = {
+            "id": "crossref_test",
+            "name": "Crossref",
+            "default_doc_type": "publication_scientifique",
+        }
+        valid = process_raw_item(
+            {
+                "title": "Étude sur la gouvernance publique au Maroc",
+                "abstract": "Analyse de la gouvernance et des politiques publiques au Maroc.",
+                "doi": "https://doi.org/10.1000/ABC.123",
+                "published_date": "2025",
+                "url": "https://example.org/article",
+            },
+            source,
+            now_iso="2026-11-27T00:00:00Z",
+        )
+        self.assertIsNotNone(valid)
+        self.assertEqual(valid["doi"], "10.1000/abc.123")
+        self.assertEqual(valid["doi_statut"], "valide")
+
+        invalid = process_raw_item(
+            {
+                "title": "Étude sur la gouvernance publique au Maroc",
+                "abstract": "Analyse de la gouvernance et des politiques publiques au Maroc.",
+                "doi": "https://example.org/not-a-doi",
+                "published_date": "2025",
+                "url": "https://example.org/article",
+            },
+            source,
+            now_iso="2026-11-27T00:00:00Z",
+        )
+        self.assertIsNotNone(invalid)
+        self.assertIsNone(invalid["doi"])
+        self.assertEqual(invalid["doi_statut"], "invalide")
 
     def test_validate_publication_date(self):
         ref = date(2026, 11, 26)

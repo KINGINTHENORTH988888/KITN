@@ -22,6 +22,7 @@ const payload = {
         { year: "T3/2026", value: 4.6, quality_flag: "medium_significance" },
       ],
       source_name: "HCP — EMO",
+      source_name_ar: "المندوبية السامية للتخطيط — بحث اليد العاملة",
       source_url: "https://www.hcp.ma/attachment/2928207/",
       last_successful_collection_at: "2026-11-26T14:00:00Z",
       collection_status: "carried_forward",
@@ -77,6 +78,7 @@ test("builds a regional comparison table with chronological periods and national
   assert.equal(model.methodologyBreak, true);
   assert.equal(model.lastSuccessfulCollectionAt, "2026-11-26T14:00:00Z");
   assert.equal(model.collectionStatus, "carried_forward");
+  assert.equal(model.sourceNameAr, "المندوبية السامية للتخطيط — بحث اليد العاملة");
 });
 
 test("falls back to an available residence scope when the selected scope is missing", () => {

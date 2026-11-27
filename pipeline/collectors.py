@@ -18,6 +18,8 @@ from urllib.parse import quote, unquote, urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, normalize_doi, sanitize_url
+from pipeline.hcp_regional import parse_hcp_emo_regional_tables
+from pypdf import PdfReader
 
 _USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -157,6 +159,35 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
                 raw = resp.read()
                 charset = resp.headers.get_content_charset() or "utf-8"
                 return raw.decode(charset, errors="replace")
+        except HTTPError as exc:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
+                raise
+            retry_after = exc.headers.get("Retry-After") if exc.headers else None
+            delay = _retry_delay_seconds(retry_after, attempt)
+            if delay is None:
+                raise
+            time.sleep(delay)
+
+
+
+def _fetch_bytes(url: str, timeout: int = 30, referer: str | None = None) -> bytes:
+    """Download a binary source document with the same bounded retry policy as HTML requests."""
+    parsed = urlsplit(url)
+    origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "https://www.hcp.ma/"
+    host = parsed.hostname or ""
+    headers = {
+        "User-Agent": _USER_AGENT,
+        "Accept": "application/pdf,application/octet-stream,*/*;q=0.8",
+        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Referer": referer or f"{origin}/",
+    }
+    req = Request(url, headers=headers)
+    for attempt in range(4):
+        _wait_for_openalex_slot(host)
+        try:
+            with urlopen(req, timeout=timeout) as resp:
+                return resp.read()
         except HTTPError as exc:
             if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
                 raise
@@ -429,6 +460,7 @@ class _HCPDetailExtractor(HTMLParser):
         self.heading = ""
         self.published_time = ""
         self.paragraphs: list[str] = []
+        self.links: list[str] = []
         self._active_tag = ""
         self._active_parts: list[str] = []
 
@@ -441,6 +473,8 @@ class _HCPDetailExtractor(HTMLParser):
                 self.meta[key] = clean_text(value)
         elif tag.lower() == "time" and attr.get("datetime"):
             self.published_time = attr["datetime"]
+        elif tag.lower() == "a" and attr.get("href"):
+            self.links.append(attr["href"])
         elif tag.lower() in ("title", "h1", "p"):
             self._active_tag = tag.lower()
             self._active_parts = []

@@ -5,7 +5,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from pipeline.collectors import collect_bank_al_maghrib, collect_bank_al_maghrib_api, collect_from_source, collect_world_bank_api
+from pipeline.collectors import collect_bank_al_maghrib, collect_bank_al_maghrib_api, collect_crossref_by_doi, collect_from_source, collect_world_bank_api
 from pipeline.processors import (
     build_stable_id,
     classify_document,
@@ -209,6 +209,30 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(_crossref_date({"published": {"date-parts": [[2025, None, None]]}}), "2025")
         self.assertEqual(_crossref_date({"published": {"date-parts": [[2025, 6, None]]}}), "2025-06")
         self.assertEqual(_crossref_date({"published": {"date-parts": [[None, None, None]]}}), "")
+
+    def test_collect_crossref_by_doi_mocked(self):
+        payload = {
+            "status": "ok",
+            "message": {
+                "DOI": "10.1000/example.2026",
+                "title": ["Étude de la gouvernance au Maroc"],
+                "author": [{"given": "Rachid", "family": "Essedik"}],
+                "published": {"date-parts": [[2025, 6, 13]]},
+                "URL": "https://doi.org/10.1000/example.2026",
+                "publisher": "Policy Press",
+                "container-title": ["Public Policy Evaluation"],
+                "abstract": "<jats:p>Résumé scientifique complet sur la gouvernance au Maroc.</jats:p>",
+                "subject": ["Public policy"],
+            },
+        }
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)) as fetch:
+            item = collect_crossref_by_doi("https://doi.org/10.1000/EXAMPLE.2026")
+        self.assertIsNotNone(item)
+        self.assertEqual(item["doi"], "10.1000/example.2026")
+        self.assertEqual(item["authors"], ["Rachid Essedik"])
+        self.assertEqual(item["venue"], "Public Policy Evaluation")
+        self.assertIn("Résumé scientifique complet", item["abstract"])
+        self.assertIn("/works/doi/10.1000/example.2026", fetch.call_args.args[0])
 
     def test_collect_crossref_api_mocked(self):
         payload = {
@@ -670,6 +694,17 @@ class TestPipelineProcessors(unittest.TestCase):
                         "resume": "Second abstract from another source.",
                         "doi": "10.1000/duplicate.1",
                         "source_id": "openalex_test",
+                    }, {
+                        "id": "kitn_existing_enrich",
+                        "titre_original": "Étude scientifique à enrichir sur le Maroc",
+                        "auteurs": ["Auteur initial"],
+                        "date_publication": "2025-05-01",
+                        "type_document": "publication_scientifique",
+                        "espace": "science",
+                        "pole": "recherche_scientifique",
+                        "resume": "",
+                        "doi": "10.1000/enrich.1",
+                        "revue_ou_institution": "Revue initiale",
                     }]
                 }),
                 encoding="utf-8",
@@ -683,14 +718,32 @@ class TestPipelineProcessors(unittest.TestCase):
                 patch("pipeline.run_pipeline.PUBLIC_INDEX_FILE", pub_idx),
                 patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
                 patch("pipeline.run_pipeline.collect_from_source", return_value=[]),
+                patch("pipeline.run_pipeline.collect_crossref_by_doi", return_value={
+                    "title": "Étude scientifique à enrichir sur le Maroc",
+                    "abstract": "Résumé complet de la recherche portant sur les politiques publiques au Maroc.",
+                    "authors": ["Auteur initial", "Auteur complémentaire"],
+                    "venue": "Revue initiale",
+                    "keywords": ["gouvernance"],
+                    "published_date": "2025-05-01",
+                    "url": "https://doi.org/10.1000/enrich.1",
+                    "doi": "10.1000/enrich.1",
+                    "default_doc_type": "publication_scientifique",
+                }),
             ):
                 payload = run()
 
             ids = {it["id"] for it in payload["items"]}
             self.assertIn("kitn_existing_1", ids)
+            self.assertIn("kitn_existing_enrich", ids)
             self.assertNotIn("kitn_existing_duplicate_doi", ids)
             self.assertEqual(sum(1 for it in payload["items"] if normalize_doi(it.get("doi")) == "10.1000/duplicate.1"), 1)
             self.assertIn("kitn_manual_test1", ids)
+            enriched_item = next(it for it in payload["items"] if it["id"] == "kitn_existing_enrich")
+            self.assertIn("Résumé complet de la recherche", enriched_item["resume"])
+            self.assertIn("Auteur complémentaire", enriched_item["auteurs"])
+            self.assertEqual(enriched_item["metadata_source_enrichissement"], "Crossref")
+            self.assertEqual(payload["doi_enrichment_attempted"], 1)
+            self.assertEqual(payload["doi_enrichment_updated"], 1)
             self.assertTrue(pub_idx.exists())
             self.assertTrue(health_path.exists())
             health_data = json.loads(health_path.read_text(encoding="utf-8"))

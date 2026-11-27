@@ -2,6 +2,15 @@ name: HCP EMO Live Validation
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/hcp-live-validation.yml"
+      - "scripts/validate_hcp_emo_regional_live.py"
+      - "pipeline/collectors.py"
+      - "pipeline/hcp_regional.py"
+      - "tests/test_hcp_regional.py"
+      - "requirements.txt"
 
 permissions:
   contents: read

@@ -110,6 +110,7 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
     sourceName: sourceSeries?.source_name || "Haut-Commissariat au Plan",
     sourceNameAr: sourceSeries?.source_name_ar || "المندوبية السامية للتخطيط — بحث اليد العاملة",
     sourceUrl: sourceSeries?.source_url || "",
+    sourcePage: sourceSeries?.source_page || null,
     lastSuccessfulCollectionAt: collectionDates.at(-1) || firstSeries?.last_successful_collection_at || "",
     collectionStatus,
     methodologyNoteFr: selectedSeries.find((item) => item.methodology_note_fr)?.methodology_note_fr || "",

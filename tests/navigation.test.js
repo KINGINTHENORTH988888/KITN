@@ -45,3 +45,14 @@ test("dedicated spaces are addressable with hash routes and browser history", ()
   assert.match(source, /window\.history\.pushState/);
   assert.match(source, /window\.addEventListener\("popstate"/);
 });
+
+
+test("dedicated views do not repeat the full spaces navigation inside the page", () => {
+  assert.ok(!source.includes('class="spaces-bar"'));
+});
+
+test("national statistics expose transparent counts before indicator detail", () => {
+  assert.ok(source.includes("totalObservations"));
+  assert.ok(source.includes("sourceCount"));
+  assert.ok(source.includes("stats-overview"));
+});

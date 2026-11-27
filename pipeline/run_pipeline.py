@@ -528,6 +528,8 @@ def run() -> dict:
         regional_statistics_count = 0
         statistics_codes: list[str] = []
         statistics_warnings: list[str] = []
+        configured_statistics_codes: list[str] = []
+        missing_statistics_codes: list[str] = []
         status = "ok"
         stage = "collecte_effectuee"
         error_msg = None
@@ -656,12 +658,12 @@ def run() -> dict:
             "stage": stage,
             "fetched": fetched_count,
             "accepted": accepted_count,
-            "statistics_configured": len(configured_statistics_codes) if "configured_statistics_codes" in locals() else 0,
-            "statistics_configured_indicators": configured_statistics_codes if "configured_statistics_codes" in locals() else [],
+            "statistics_configured": len(configured_statistics_codes),
+            "statistics_configured_indicators": configured_statistics_codes,
             "statistics_collected": statistics_count,
             "regional_statistics_collected": regional_statistics_count,
             "statistics_indicators": sorted(set(statistics_codes)),
-            "statistics_missing_indicators": missing_statistics_codes if "missing_statistics_codes" in locals() else [],
+            "statistics_missing_indicators": missing_statistics_codes,
             "statistics_warnings": statistics_warnings,
             "error": error_msg,
             "checked_at": now_iso,

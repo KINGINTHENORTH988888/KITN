@@ -796,7 +796,7 @@ def collect_hespress_news(source: dict) -> list[dict]:
         except Exception:
             continue
         title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title or fallback_title)
-        title = re.sub(r"\\s+[|–-]\\s+Hespress.*$", "", title, flags=re.I)
+        title = re.sub(r"\s+[|–-]\s+Hespress.*$", "", title, flags=re.I)
         description = clean_text(parser.meta.get("og:description") or parser.meta.get("description"))
         paragraphs = [p for p in parser.paragraphs if len(p) >= 35]
         excerpt = description if len(description) >= 50 else " ".join(paragraphs[:3])

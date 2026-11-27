@@ -87,6 +87,58 @@ _TABLES = (
     },
 )
 
+
+_AR_TRANSLATIONS = {
+    "HCP_SOCIAL_POPULATION": {
+        "label": "السكان القانونيون",
+        "description": "عدد السكان القانونيين للمغرب، استنادًا إلى الإحصاءات العامة للسكان والسكنى.",
+        "unit": "ألف نسمة",
+        "category": "الديموغرافيا",
+    },
+    "HCP_SOCIAL_URBANIZATION": {
+        "label": "معدل التمدّن",
+        "description": "نسبة السكان المقيمين في الوسط الحضري وفقًا لإحصاءات المندوبية السامية للتخطيط.",
+        "unit": "%",
+        "category": "الديموغرافيا",
+    },
+    "HCP_SOCIAL_FERTILITY": {
+        "label": "مؤشر الخصوبة الإجمالي",
+        "description": "متوسط عدد الأطفال لكل امرأة وفقًا لإحصاءات المندوبية السامية للتخطيط.",
+        "unit": "طفل لكل امرأة",
+        "category": "الديموغرافيا",
+    },
+    "HCP_SOCIAL_UNEMPLOYMENT": {
+        "label": "معدل البطالة الوطني",
+        "description": "معدل البطالة الوطني المستند إلى البحث الوطني حول التشغيل الصادر عن المندوبية السامية للتخطيط.",
+        "unit": "%",
+        "category": "التشغيل والنشاط",
+    },
+    "HCP_SOCIAL_PRIMARY_NET_SCHOOLING": {
+        "label": "معدل التمدرس الصافي بالتعليم الابتدائي",
+        "description": "معدل التمدرس الصافي بالتعليم الابتدائي على المستوى الوطني، وفقًا لبيانات وزارة التربية الوطنية.",
+        "unit": "%",
+        "category": "التعليم",
+    },
+    "HCP_SOCIAL_UPPER_SECONDARY_GROSS_SCHOOLING": {
+        "label": "معدل التمدرس الإجمالي بالتعليم الثانوي التأهيلي",
+        "description": "معدل التمدرس الإجمالي بالتعليم الثانوي التأهيلي على المستوى الوطني، وفقًا لبيانات وزارة التربية الوطنية.",
+        "unit": "%",
+        "category": "التعليم",
+    },
+    "HCP_SOCIAL_UNDER5_MORTALITY": {
+        "label": "معدل وفيات الأطفال دون سن الخامسة",
+        "description": "عدد وفيات الأطفال دون سن الخامسة لكل ألف ولادة حية.",
+        "unit": "وفاة لكل 1,000 ولادة حية",
+        "category": "الصحة",
+    },
+    "HCP_SOCIAL_GINI": {
+        "label": "معامل جيني للنفقات",
+        "description": "معامل جيني لقياس التفاوت في نفقات الأسر.",
+        "unit": "مؤشر (من 0 إلى 1)",
+        "category": "الفقر والتفاوتات",
+    },
+}
+
 _YEAR_RE = re.compile(r"(?<!\d)(?:19|20)\d{2}(?:\s*/\s*\d{2})?(?!\d)")
 _NUMBER_RE = re.compile(r"(?<![\w/])(?:\d{1,3}(?:[ \u00a0]\d{3})+|\d+(?:[,.]\d+)?)(?![\w/])")
 
@@ -173,15 +225,17 @@ def parse_hcp_social_indicators(text: str, source_url: str = HCP_SOCIAL_REPORT_U
         latest = history[-1]
         previous = history[-2] if len(history) > 1 else None
         code = definition["code"]
+        translation = _AR_TRANSLATIONS[code]
         series.append({
             "id": code,
             "indicator_code": code,
             "label_fr": definition["label"],
-            "label_ar": definition["label"],
+            "label_ar": translation["label"],
             "description_fr": definition["description"],
-            "description_ar": definition["description"],
+            "description_ar": translation["description"],
             "unit_fr": definition["unit"],
-            "unit_ar": definition["unit"],
+            "unit_ar": translation["unit"],
+            "category_ar": translation["category"],
             "scale_divisor": 1,
             "precision": 2 if code == "HCP_SOCIAL_GINI" else 1,
             "category": definition["category"],

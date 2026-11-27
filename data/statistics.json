@@ -1,8 +1,9 @@
 {
-  "generated_at": "2026-11-27T01:04:15Z",
-  "source": "Sources officielles — Banque mondiale — World Development Indicators",
+  "generated_at": "2026-11-27T01:29:53Z",
+  "source": "Sources officielles — Banque mondiale — World Development Indicators et Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
   "sources": [
-    "Banque mondiale — World Development Indicators"
+    "Banque mondiale — World Development Indicators",
+    "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB"
   ],
   "indicators": [
     {
@@ -454,6 +455,348 @@
       "source_name": "Banque mondiale — World Development Indicators",
       "source_url": "https://api.worldbank.org/v2/country/MAR/indicator/BX.KLT.DINV.CD.WD?format=json",
       "last_updated": "2026-11-11"
+    },
+    {
+      "id": "MEF_INDUSTRIAL_PRODUCTION",
+      "indicator_code": "MEF_INDUSTRIAL_PRODUCTION",
+      "label_fr": "Indice de la production industrielle",
+      "label_ar": "Indice de la production industrielle",
+      "description_fr": "Indice de la production des industries de transformation.",
+      "description_ar": "Indice de la production des industries de transformation.",
+      "unit_fr": "base 2015=100",
+      "unit_ar": "base 2015=100",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-T2",
+        "value": 115.6
+      },
+      "previous": {
+        "year": "2026-T1",
+        "value": 118.5
+      },
+      "history": [
+        {
+          "year": "2026-T1",
+          "value": 118.5
+        },
+        {
+          "year": "2026-T2",
+          "value": 115.6
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-T2",
+      "published_variation": -2.4,
+      "published_variation_raw": "-2,4"
+    },
+    {
+      "id": "MEF_ORDINARY_REVENUES",
+      "indicator_code": "MEF_ORDINARY_REVENUES",
+      "label_fr": "Recettes ordinaires du Trésor",
+      "label_ar": "Recettes ordinaires du Trésor",
+      "description_fr": "Recettes ordinaires de l'administration centrale.",
+      "description_ar": "Recettes ordinaires de l'administration centrale.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-09",
+        "value": 338877.0
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 295148.0
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 295148.0
+        },
+        {
+          "year": "2026-09",
+          "value": 338877.0
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-09",
+      "published_variation": 14.8,
+      "published_variation_raw": "14,8"
+    },
+    {
+      "id": "MEF_TOTAL_CENTRAL_GOV_DEBT",
+      "indicator_code": "MEF_TOTAL_CENTRAL_GOV_DEBT",
+      "label_fr": "Encours total de la dette de l'administration centrale",
+      "label_ar": "Encours total de la dette de l'administration centrale",
+      "description_fr": "Encours total de la dette de l'administration centrale.",
+      "description_ar": "Encours total de la dette de l'administration centrale.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-T2",
+        "value": 1190381.2
+      },
+      "previous": {
+        "year": "2026-T1",
+        "value": 1169753.3
+      },
+      "history": [
+        {
+          "year": "2026-T1",
+          "value": 1169753.3
+        },
+        {
+          "year": "2026-T2",
+          "value": 1190381.2
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-T2",
+      "published_variation": 1.76,
+      "published_variation_raw": "������������ 1,76 ��"
+    },
+    {
+      "id": "MEF_M1",
+      "indicator_code": "MEF_M1",
+      "label_fr": "Agrégat monétaire M1",
+      "label_ar": "Agrégat monétaire M1",
+      "description_fr": "Agrégat monétaire M1.",
+      "description_ar": "Agrégat monétaire M1.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-09",
+        "value": 1693693.0
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 1669033.0
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 1669033.0
+        },
+        {
+          "year": "2026-09",
+          "value": 1693693.0
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-09",
+      "published_variation": 1.5,
+      "published_variation_raw": "1,5"
+    },
+    {
+      "id": "MEF_M2",
+      "indicator_code": "MEF_M2",
+      "label_fr": "Agrégat monétaire M2",
+      "label_ar": "Agrégat monétaire M2",
+      "description_fr": "Agrégat monétaire M2.",
+      "description_ar": "Agrégat monétaire M2.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-09",
+        "value": 1894236.0
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 1868710.0
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 1868710.0
+        },
+        {
+          "year": "2026-09",
+          "value": 1894236.0
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-09",
+      "published_variation": 1.4,
+      "published_variation_raw": "1,4"
+    },
+    {
+      "id": "MEF_M3",
+      "indicator_code": "MEF_M3",
+      "label_fr": "Agrégat monétaire M3",
+      "label_ar": "Agrégat monétaire M3",
+      "description_fr": "Agrégat monétaire M3.",
+      "description_ar": "Agrégat monétaire M3.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-09",
+        "value": 2237946.0
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 2217026.0
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 2217026.0
+        },
+        {
+          "year": "2026-09",
+          "value": 2237946.0
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-09",
+      "published_variation": 0.9,
+      "published_variation_raw": "0,9"
+    },
+    {
+      "id": "MEF_EXPORTS_FOB",
+      "indicator_code": "MEF_EXPORTS_FOB",
+      "label_fr": "Exportations de biens (FOB)",
+      "label_ar": "Exportations de biens (FOB)",
+      "description_fr": "Valeur totale des exportations de biens, base FOB.",
+      "description_ar": "Valeur totale des exportations de biens, base FOB.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-09",
+        "value": 48526.0
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 35835.0
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 35835.0
+        },
+        {
+          "year": "2026-09",
+          "value": 48526.0
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-09",
+      "published_variation": 35.4,
+      "published_variation_raw": "35,4"
+    },
+    {
+      "id": "MEF_IMPORTS_CIF",
+      "indicator_code": "MEF_IMPORTS_CIF",
+      "label_fr": "Importations de biens (CAF)",
+      "label_ar": "Importations de biens (CAF)",
+      "description_fr": "Valeur totale des importations de biens, base CAF.",
+      "description_ar": "Valeur totale des importations de biens, base CAF.",
+      "unit_fr": "MDH",
+      "unit_ar": "MDH",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026-09",
+        "value": 90458.0
+      },
+      "previous": {
+        "year": "2026-08",
+        "value": 73554.0
+      },
+      "history": [
+        {
+          "year": "2026-08",
+          "value": 73554.0
+        },
+        {
+          "year": "2026-09",
+          "value": 90458.0
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2026-09",
+      "published_variation": 23.0,
+      "published_variation_raw": "23,0"
+    },
+    {
+      "id": "MEF_LEGAL_POPULATION",
+      "indicator_code": "MEF_LEGAL_POPULATION",
+      "label_fr": "Population",
+      "label_ar": "Population",
+      "description_fr": "Population selon la dernière référence statistique affichée.",
+      "description_ar": "Population selon la dernière référence statistique affichée.",
+      "unit_fr": "milliers",
+      "unit_ar": "milliers",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "societe_developpement_humain",
+      "pole": "societe_developpement_humain",
+      "latest": {
+        "year": "2024",
+        "value": 36828.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 33848.0
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 33848.0
+        },
+        {
+          "year": "2024",
+          "value": 36828.0
+        }
+      ],
+      "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+      "source_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+      "last_updated": null,
+      "reference_period": "2024",
+      "published_variation": 8.8,
+      "published_variation_raw": "8,8"
     }
   ]
 }

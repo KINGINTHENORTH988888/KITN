@@ -1116,7 +1116,7 @@ function renderRegionalStatisticsDashboard() {
       ? "ms: دلالة إحصائية متوسطة · ps: غير دال إحصائياً بما يكفي · .: غير متاح."
       : "ms : significativité moyenne · ps : résultat insuffisamment significatif · . : valeur non disponible."}</p>
     <p class="regional-methodology-note">${escapeHtml(methodologyText)}</p>
-    <div class="stat-card-foot"><span>${escapeHtml(model.sourceName)} · ${model.rows.length} ${isAr ? "جهة ومجموع وطني" : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"} ↗</a>` : ""}</div>
+    <div class="stat-card-foot"><span>${escapeHtml(isAr ? model.sourceNameAr : model.sourceName)} · ${model.rows.length} ${isAr ? "جهة ومجموع وطني" : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"} ↗</a>` : ""}</div>
   </section>`;
 }
 

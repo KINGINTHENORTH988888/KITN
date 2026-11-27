@@ -675,7 +675,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
 
         def labeled_percentage(label_pattern: str, context_pattern: str) -> float | None:
             candidates = []
-            for sentence_index, sentence in enumerate(re.split(r"(?<=[.!?])\\s+", body)):
+            for sentence_index, sentence in enumerate(re.split(r"(?<=[.!?])\s+", body)):
                 sentence = sentence.strip()
                 if not re.search(context_pattern, sentence, re.IGNORECASE):
                     continue
@@ -683,25 +683,24 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 # Prefer a value explicitly placed before its group label:
                 # "44,5 % chez les jeunes". Otherwise accept "chez les jeunes: 44,5 %".
                 before_pattern = (
-                    r"([0-9]+(?:[,.][0-9]+)?)\\s*%\\s*(?:chez|parmi|pour)\\s+(?:les\\s+)?"
+                    r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*(?:chez|parmi|pour)\s+(?:les\s+)?"
                     + label_pattern
                 )
-                after_pattern = label_pattern + r".{0,60}?([0-9]+(?:[,.][0-9]+)?)\\s*%"
+                after_pattern = label_pattern + r".{0,60}?([0-9]+(?:[,.][0-9]+)?)\s*%"
                 selected = re.search(before_pattern, sentence, re.IGNORECASE)
                 if not selected:
                     selected = re.search(after_pattern, sentence, re.IGNORECASE)
                 if not selected:
                     continue
 
-                number_group = 1 if selected.re.pattern.startswith("([0-9]") else 1
-                value_match = re.search(r"[0-9]+(?:[,.][0-9]+)?", selected.group(number_group))
+                value_match = re.search(r"[0-9]+(?:[,.][0-9]+)?", selected.group(1))
                 if not value_match:
                     continue
                 value_text = value_match.group(0)
-                value_position = sentence_index * 100000 + selected.start(number_group)
+                value_position = sentence_index * 100000 + selected.start(1)
                 if value_position in used_percentage_positions:
                     continue
-                candidates.append((selected.start(number_group), value_position, value_text))
+                candidates.append((selected.start(1), value_position, value_text))
 
             if not candidates:
                 return None

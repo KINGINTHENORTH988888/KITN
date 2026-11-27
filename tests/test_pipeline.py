@@ -22,6 +22,37 @@ from pipeline.run_pipeline import _content_fingerprint, _doi_key, _merge_preserv
 
 
 class TestPipelineProcessors(unittest.TestCase):
+    def test_hcp_labour_statistics_extracts_latest_official_indicators(self):
+        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>'
+        article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
+        <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
+        </body></html>"""
+        source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+            items = collect_from_source(source)
+        self.assertEqual(len(items), 4, [x["statistics_series"]["indicator_code"] for x in items])
+        values = {x["statistics_series"]["indicator_code"]: x["statistics_series"]["latest"]["value"] for x in items}
+        self.assertEqual(values["HCP_EMO_UNEMPLOYMENT"], 10.5)
+        self.assertEqual(values["HCP_EMO_UNDERUTILIZATION"], 19.6)
+        self.assertEqual(values["HCP_EMO_LABOUR_FORCE"], 11.7)
+        self.assertEqual(values["HCP_EMO_EMPLOYMENT"], 10.5)
+        self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
+
+    def test_bank_al_maghrib_public_monia_scraper_needs_no_api_key(self):
+        html = """<table><tr><th>Indice MONIA</th><th>Volume JJ</th><th>Date de référence</th><th>Date de publication</th></tr>
+        <tr><td>2,195 %</td><td>12709</td><td>25/11/2026</td><td>26/11/2026</td></tr>
+        <tr><td>2,139 %</td><td>13888</td><td>24/11/2026</td><td>25/11/2026</td></tr></table>"""
+        source = {"id":"bank_al_maghrib_monia","type":"bank_al_maghrib","name":"Bank Al-Maghrib","statistics_pages":[{"kind":"monia","url":"https://www.bkam.ma/monia"}]}
+        with patch("pipeline.collectors._fetch_text", return_value=html):
+            items = collect_from_source(source)
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0]["statistics_series"]["indicator_code"], "BAM_MONIA_RATE")
+        self.assertEqual(items[0]["statistics_series"]["latest"]["value"], 2.195)
+        self.assertEqual(items[1]["statistics_series"]["indicator_code"], "BAM_MONIA_VOLUME")
+        self.assertEqual(items[1]["statistics_series"]["latest"]["value"], 12709.0)
+
+
     def test_emploi_public_collector_extracts_official_notice_fields(self):
         listing = '<a href="/fr/concours/details/5200930a-096d-4d16-b1f6-4f140fc3b9e0">Avis de concours de recrutement de Administrateur 2ème grade - echelle 11 Annonce 2 postes</a>'
         detail = """<html><body>Administration qui recrute Archives du Maroc

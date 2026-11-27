@@ -534,6 +534,116 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
     return items
 
 
+
+def collect_hcp_labour_statistics(source: dict) -> list[dict]:
+    """Extract a small set of headline labour-market indicators from the latest HCP release."""
+    base_url = str(source.get("url") or "https://www.hcp.ma/").rstrip("/") + "/"
+    listing_urls = source.get("listing_urls") or ["/Actualite-marche-du-travail_r424.html"]
+    candidates: list[dict] = []
+    seen: set[str] = set()
+    for listing in listing_urls:
+        listing_url = urljoin(base_url, str(listing))
+        try:
+            for candidate in _collect_hcp_page(listing_url, source, strict_tokens=True):
+                title = clean_text(candidate.get("title"))
+                url = sanitize_url(candidate.get("url"))
+                probe = title.casefold()
+                if (
+                    url and url not in seen
+                    and "marché du travail" in probe
+                    and "trimestre" in probe
+                    and re.search(r"20\d{2}", probe)
+                ):
+                    seen.add(url)
+                    candidates.append(candidate)
+        except Exception:
+            continue
+    if not candidates:
+        return []
+
+    def period_key(candidate: dict) -> tuple[int, int]:
+        title = str(candidate.get("title") or "").casefold()
+        year_match = re.search(r"(20\d{2})", title)
+        year = int(year_match.group(1)) if year_match else 0
+        quarter_terms = (("premier", 1), ("deuxième", 2), ("deuxieme", 2), ("second", 2),
+                         ("troisième", 3), ("troisieme", 3), ("quatrième", 4), ("quatrieme", 4))
+        quarter = next((n for word, n in quarter_terms if word in title), 0)
+        return year, quarter
+
+    candidates.sort(key=period_key, reverse=True)
+    max_pages = max(1, min(3, int(source.get("max_pages", 1))))
+    items: list[dict] = []
+    for candidate in candidates[:max_pages]:
+        page_url = str(candidate.get("url") or "")
+        try:
+            parser = _HCPDetailExtractor()
+            parser.feed(_fetch_text(page_url))
+        except Exception:
+            continue
+        title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title or candidate.get("title"))
+        body = clean_text(" ".join(parser.paragraphs))
+        period = period_key({"title": title})
+        if not body or not period[0] or not period[1]:
+            continue
+        period_label = f"T{period[1]}/{period[0]}"
+        published = parser.meta.get("article:published_time") or parser.published_time or candidate.get("published_date")
+
+        def number(pattern: str) -> float | None:
+            match = re.search(pattern, body, re.IGNORECASE)
+            if not match:
+                return None
+            try:
+                return float(match.group(1).replace(" ", "").replace(",", "."))
+            except ValueError:
+                return None
+
+        metrics = [
+            ("HCP_EMO_UNEMPLOYMENT", "Taux de chômage strict", "%",
+             number(r"taux de chômage strict s['’]établit à\s*([0-9]+(?:[,.][0-9]+)?)\s*%"),
+             "Part de la main-d’œuvre au chômage strict selon l'Enquête sur la main-d’œuvre (EMO)."),
+            ("HCP_EMO_UNDERUTILIZATION", "Taux composite de sous-utilisation de la main-d’œuvre", "%",
+             number(r"taux composite.{0,120}?([0-9]+(?:[,.][0-9]+)?)\s*%"),
+             "Mesure élargie des besoins de travail non satisfaits selon l'EMO."),
+            ("HCP_EMO_LABOUR_FORCE", "Main-d’œuvre", "millions",
+             number(r"main.{0,80}?([0-9]+(?:[,.][0-9]+)?)\s*millions"),
+             "Effectif de la main-d’œuvre au Maroc, en millions de personnes."),
+            ("HCP_EMO_EMPLOYMENT", "Personnes en emploi contre revenu", "millions",
+             number(r"nombre de personnes en emploi contre revenu atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
+             "Effectif des personnes en emploi contre revenu, en millions."),
+            ("HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
+             number(r"taux de chômage strict s’élève respectivement à\s*([0-9]+(?:[,.][0-9]+)?)\s*%"),
+             "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO."),
+        ]
+        for code, label, unit, value, description in metrics:
+            if value is None:
+                continue
+            # The first number in the paired youth/women sentence is the youth value.
+            series = {
+                "id": code, "indicator_code": code, "label_fr": label, "label_ar": label,
+                "description_fr": description, "description_ar": description,
+                "unit_fr": unit, "unit_ar": unit, "scale_divisor": 1, "precision": 1,
+                "category": "societe_developpement_humain", "pole": "societe_developpement_humain",
+                "latest": {"year": period_label, "value": value}, "previous": None,
+                "history": [{"year": period_label, "value": value}],
+                "source_name": "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
+                "source_url": page_url, "last_updated": published or period_label,
+            }
+            items.append({
+                "title": f"{label} — {period_label}", "abstract": description,
+                "authors": ["Haut-Commissariat au Plan"], "venue": "HCP — EMO",
+                "keywords": ["HCP", "Maroc", "emploi", "marché du travail", "EMO"],
+                "published_date": published or f"{period[0]}",
+                "url": page_url, "doi": None, "espace": "chiffres",
+                "pole": "societe_developpement_humain", "default_doc_type": "statistique",
+                "statistics_series": series, "source_lang_hint": "fr",
+            })
+        # Avoid mixing multiple quarters into one run; only the latest release is authoritative.
+        if items:
+            break
+    return items
+
+
+
 def collect_hcp(source: dict) -> list[dict]:
     base_url = source.get("url") or "https://www.hcp.ma/"
     max_items = int(source.get("max_items", 15))
@@ -1422,6 +1532,8 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_crossref(source)
     if stype == "world_bank_api":
         return collect_world_bank_api(source)
+    if stype == "hcp_labour_statistics":
+        return collect_hcp_labour_statistics(source)
     if stype == "bank_al_maghrib":
         return collect_bank_al_maghrib(source)
     if stype == "bank_al_maghrib_api":

@@ -197,6 +197,12 @@ Deux comportements ressortent du rapprochement entre `src/main.js` et les collec
 4. nommer les contrôles « 5 dernières observations / 10 dernières observations » si la logique reste fondée sur le nombre de points ;
 5. ajouter des tests spécifiques pour séries annuelles, trimestrielles, mensuelles et quotidiennes.
 
+### 3.8 bis Tri chronologique des séries anciennes — correction complémentaire
+
+Une revue des fonctions de fusion a révélé que le tri des périodes reconnaissait les dates et années à partir de 2000, alors que le filtre qualité BAM CKAN autorise aussi des observations à partir de 1900. Une série historique commençant avant 2000 pouvait donc être mal triée : des observations anciennes étaient placées après des années récentes et pouvaient devenir la valeur `latest`.
+
+Le parseur de périodes de fusion a été élargi aux années 1900–2099, pour les formats annuels, mensuels, quotidiens et trimestriels. Deux tests de non-régression couvrent le tri chronologique et la fusion d'une série commençant en 1998.
+
 ### 3.9 Premières corrections réalisées sur la branche de revue
 
 Les corrections suivantes ont été développées sur `audit/kitn-quality-review-2026-11`, sans fusion dans `main` :

@@ -160,3 +160,13 @@ test("global search overview exposes all content spaces and labels result contex
   assert.match(source, /activeSpace === "all" \? itemSpaceLabel/);
   assert.match(styles, /\.global-search-spaces/);
 });
+
+test("library source cards reflect the real indexed institutional and internal sources", () => {
+  assert.match(source, /id:"cour_des_comptes_maroc"/);
+  assert.match(source, /id:"cese_maroc"/);
+  assert.match(source, /id:"ires_maroc"/);
+  assert.match(source, /id:"hcp_maroc"/);
+  assert.match(source, /id:"manual_studio"/);
+  assert.match(source, /Source interne KITN/);
+  assert.doesNotMatch(source, /id:"world_bank_maroc"/);
+});

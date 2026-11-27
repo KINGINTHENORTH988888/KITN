@@ -624,6 +624,19 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                  float(pair.group(2).replace(",", ".")),
                  "Taux de chômage strict des femmes selon l'EMO."),
             ])
+        underutilization_pair = re.search(
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les jeunes.{0,100}?([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les femmes",
+            body, re.IGNORECASE,
+        )
+        if underutilization_pair:
+            metrics.extend([
+                ("HCP_EMO_YOUTH_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les jeunes (15-24 ans)", "%",
+                 float(underutilization_pair.group(1).replace(",", ".")),
+                 "Taux composite de sous-utilisation de la main-d’œuvre des jeunes de 15 à 24 ans."),
+                ("HCP_EMO_WOMEN_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les femmes", "%",
+                 float(underutilization_pair.group(2).replace(",", ".")),
+                 "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
+            ])
         for code, label, unit, value, description in metrics:
             if value is None:
                 continue

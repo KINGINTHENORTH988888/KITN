@@ -1400,7 +1400,7 @@ function render() {
           <div class="nav-dropdown">
             <button type="button" data-space-id="chiffres">${lang === "ar" ? "المؤشرات الوطنية" : "Indicateurs nationaux"}</button>
             <button type="button" data-space-id="chiffres" data-stat-view-shortcut="regional">${lang === "ar" ? "المقارنة الجهوية" : "Comparaison régionale"}</button>
-            <button type="button" data-space-id="chiffres" data-stat-category-shortcut="economie_finances_publiques">${lang === "ar" ? "الاقتصomie والمالية" : "Économie & finances publiques"}</button>
+            <button type="button" data-space-id="chiffres" data-stat-category-shortcut="economie_finances_publiques">${lang === "ar" ? "الاقتصاد والمالية" : "Économie & finances publiques"}</button>
             <button type="button" data-space-id="chiffres" data-stat-category-shortcut="societe_developpement_humain">${lang === "ar" ? "المجتمع والتنمية" : "Société & développement humain"}</button>
           </div>
         </div>

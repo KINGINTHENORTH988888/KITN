@@ -21,8 +21,7 @@ const SPACES = {
     { id: "science", label: "Articles scientifiques" },
     { id: "chiffres", label: "Maroc en chiffres" },
     { id: "academy", label: "Concours & Academy" },
-    { id: "bibliotheque", label: "Bibliothèque" },
-    { id: "contribuer", label: "Administration & contributions" }
+    { id: "bibliotheque", label: "Bibliothèque" }
   ],
   ar: [
     { id: "all", label: "البوابة والنظرة العامة" },
@@ -30,8 +29,7 @@ const SPACES = {
     { id: "science", label: "المقالات العلمية" },
     { id: "chiffres", label: "المغرب بالأرقام" },
     { id: "academy", label: "المباريات والأكاديمية" },
-    { id: "bibliotheque", label: "المكتبة الوثائقية" },
-    { id: "contribuer", label: "الإدارة والمساهمات" }
+    { id: "bibliotheque", label: "المكتبة الوثائقية" }
   ]
 };
 
@@ -1229,6 +1227,8 @@ function renderResults() {
 }
 
 function render() {
+  // Local contribution tools are not a public navigation space; keep old sessions safe.
+  if (activeSpace === "contribuer") activeSpace = "all";
   const c = COPY[lang];
   const themes = THEMES[lang];
   const principles = PRINCIPLES[lang];

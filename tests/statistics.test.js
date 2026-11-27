@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   filterStatisticsHistory,
   getStatisticsCategory,
+  getLocalizedStatisticField,
   parseStatisticsPeriod,
 } from "../src/statistics.js";
 
@@ -17,6 +18,34 @@ test("category filtering uses the stable pole before a descriptive category labe
     "societe_developpement_humain",
   );
   assert.equal(getStatisticsCategory({ category: "Monétaire et financier" }), "");
+});
+
+test("Arabic HCP social labels fall back to reviewed translations when source fields are still French", () => {
+  const indicator = {
+    indicator_code: "HCP_SOCIAL_UNEMPLOYMENT",
+    label_fr: "Taux de chômage — national",
+    label_ar: "Taux de chômage — national",
+    description_fr: "Taux de chômage national issu du HCP.",
+    description_ar: "Taux de chômage national issu du HCP.",
+    unit_fr: "%",
+    unit_ar: "%",
+  };
+  assert.equal(getLocalizedStatisticField(indicator, "label", "fr"), "Taux de chômage — national");
+  assert.equal(getLocalizedStatisticField(indicator, "label", "ar"), "معدل البطالة الوطني");
+  assert.equal(
+    getLocalizedStatisticField(indicator, "description", "ar"),
+    "معدل البطالة الوطني المستند إلى البحث الوطني حول التشغيل الصادر عن المندوبية السامية للتخطيط.",
+  );
+  assert.equal(getLocalizedStatisticField(indicator, "unit", "ar"), "%");
+});
+
+test("Arabic statistics keep a valid source translation instead of replacing it", () => {
+  const indicator = {
+    indicator_code: "OTHER_INDICATOR",
+    label_fr: "Population",
+    label_ar: "السكان",
+  };
+  assert.equal(getLocalizedStatisticField(indicator, "label", "ar"), "السكان");
 });
 
 test("statistical periods support annual, monthly, quarterly and daily formats", () => {

@@ -370,6 +370,16 @@ def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at
     return merged
 
 
+def _merge_valid_statistics_series(existing: dict | None, incoming: dict, collected_at: str) -> dict | None:
+    """Merge a candidate series only when its new data and resulting history pass quality checks."""
+    if not _is_valid_statistics_series(incoming):
+        return None
+    merged = _merge_statistics_series(existing, incoming, collected_at)
+    if not _is_valid_statistics_series(merged):
+        return None
+    return merged
+
+
 def run() -> dict:
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sources = _load_json_list(SOURCES_FILE)
@@ -485,9 +495,15 @@ def run() -> dict:
                 series = raw.get("statistics_series") if isinstance(raw, dict) else None
                 if isinstance(series, dict) and series.get("indicator_code"):
                     code = str(series["indicator_code"])
-                    statistics_series[code] = _merge_statistics_series(
+                    merged_series = _merge_valid_statistics_series(
                         statistics_series.get(code), series, now_iso
                     )
+                    if merged_series is None:
+                        statistics_warnings.append(
+                            f"Série statistique {code} rejetée : unité, période ou observations non conformes."
+                        )
+                        continue
+                    statistics_series[code] = merged_series
                     statistics_count += 1
                     statistics_codes.append(code)
             statistics_warnings = sorted(set(statistics_warnings))
@@ -532,16 +548,21 @@ def run() -> dict:
                     total_added += 1
 
             if fetched_count > 0 and accepted_count == 0:
-                if statistics_count > 0:
+                if statistics_count > 0 or statistics_warnings:
                     # Statistical series are valid data outputs even when they are
                     # intentionally not indexed as documentary notices.
                     status = "warning" if statistics_warnings else "ok"
                     stage = "collecte_statistique_partielle" if statistics_warnings else "series_statistiques_collectees"
-                    error_msg = f"{len(statistics_warnings)} ressource(s) BAM non exploitable(s)." if statistics_warnings else None
+                    error_msg = "; ".join(statistics_warnings[:3]) if statistics_warnings else None
                 else:
                     status = "warning"
                     stage = "aucun_document_pertinent"
                     error_msg = "Des éléments ont été collectés, mais aucun n'a passé les contrôles de pertinence."
+
+            if statistics_warnings and status == "ok":
+                status = "warning"
+                stage = "collecte_statistique_partielle"
+                error_msg = "; ".join(statistics_warnings[:3])
 
         except Exception as exc:
             status = "error"

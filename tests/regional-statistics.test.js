@@ -166,6 +166,27 @@ test("supports annual HCP social indicators and regional urban/rural scopes", ()
   assert.equal(rural.rows[0].points[0].value, 2.46);
 });
 
+test("identifies regional series manually verified against an official HCP publication", () => {
+  const manualPayload = {
+    series: [{
+      indicator_code: "HCP_SOCIAL_REGIONAL_POVERTY_GAP",
+      label_fr: "Indice volumétrique de la pauvreté",
+      label_ar: "مؤشر فجوة الفقر",
+      geography_code: "FES_MEKNES",
+      geography_name_fr: "Fès-Meknès",
+      geography_name_ar: "فاس-مكناس",
+      residence_scope: "all",
+      history: [{ year: "2022", value: 1.74, quality_flag: "standard" }],
+      collection_status: "manual_verified",
+      source_name: "HCP — Les indicateurs sociaux du Maroc",
+      source_name_ar: "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب",
+    }],
+  };
+  const model = buildRegionalStatisticsModel(manualPayload, "HCP_SOCIAL_REGIONAL_POVERTY_GAP", "all");
+  assert.equal(model.collectionStatus, "manual_verified");
+  assert.equal(model.latestPeriod, "2022");
+});
+
 test("returns a safe empty model when the regional dataset is not yet published", () => {
   const model = buildRegionalStatisticsModel(null);
 

@@ -1,6 +1,6 @@
 import unittest
 
-from pipeline.run_pipeline import _merge_statistics_series, _statistics_period_sort_key
+from pipeline.run_pipeline import _merge_statistics_series, _merge_valid_statistics_series, _statistics_period_sort_key
 
 
 class TestStatisticsSeriesMerge(unittest.TestCase):
@@ -186,6 +186,61 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         )
         self.assertEqual(merged["latest"], {"year": "Aujourd'hui", "value": 10.5})
         self.assertEqual(merged["previous"], {"year": "Veille", "value": 10.4})
+
+    def test_invalid_new_ckan_metadata_does_not_replace_a_valid_published_series(self):
+        existing = {
+            "indicator_code": "BAM_CKAN_TEST",
+            "unit_fr": "MDH",
+            "history": [
+                {"year": "2024", "value": 100},
+                {"year": "2025", "value": 110},
+            ],
+            "latest": {"year": "2025", "value": 110},
+        }
+        invalid_incoming = {
+            "indicator_code": "BAM_CKAN_TEST",
+            "unit_fr": "Unité non précisée",
+            "history": [
+                {"year": "2025", "value": 111},
+                {"year": "2026", "value": 120},
+            ],
+            "latest": {"year": "2026", "value": 120},
+        }
+
+        merged = _merge_valid_statistics_series(
+            existing, invalid_incoming, "2026-11-27T04:00:00Z"
+        )
+
+        self.assertIsNone(merged)
+        self.assertEqual(existing["unit_fr"], "MDH")
+        self.assertEqual(existing["latest"], {"year": "2025", "value": 110})
+
+    def test_invalid_new_ckan_observation_does_not_poison_valid_history(self):
+        existing = {
+            "indicator_code": "BAM_CKAN_TEST",
+            "unit_fr": "MDH",
+            "history": [
+                {"year": "2024", "value": 100},
+                {"year": "2025", "value": 110},
+            ],
+            "latest": {"year": "2025", "value": 110},
+        }
+        invalid_incoming = {
+            "indicator_code": "BAM_CKAN_TEST",
+            "unit_fr": "MDH",
+            "history": [
+                {"year": "2025", "value": 111},
+                {"year": "2099", "value": 120},
+            ],
+            "latest": {"year": "2099", "value": 120},
+        }
+
+        merged = _merge_valid_statistics_series(
+            existing, invalid_incoming, "2026-11-27T04:00:00Z"
+        )
+
+        self.assertIsNone(merged)
+        self.assertEqual(existing["latest"], {"year": "2025", "value": 110})
 
     def test_new_series_is_initialized_without_existing_history(self):
         incoming = {

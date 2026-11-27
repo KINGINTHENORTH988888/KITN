@@ -61,6 +61,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/regional-statistics.json public/data/regional-statistics.json
+          # Another PR workflow may publish data to this same review branch concurrently.
+          # Rebase only this generated-data change onto the latest remote branch tip.
+          git fetch origin "$GITHUB_HEAD_REF"
+          git reset --soft FETCH_HEAD
+          git add -- data/regional-statistics.json public/data/regional-statistics.json
           if ! git diff --staged --quiet; then
             git commit -m "[skip hcp data refresh] chore(data): publish verified HCP regional dataset"
             git push origin "HEAD:$GITHUB_HEAD_REF"

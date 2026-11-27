@@ -174,13 +174,30 @@ def parse_hcp_emo_regional_tables(
             cells = [_parse_cell(match.group(i)) for i in range(1, 4)]
             rows.append((region_name, region_code, cells))
 
-        total_match = re.search(
-            r"\bEnsemble\s+(" + _CELL + r")\s+(" + _CELL + r")\s+(" + _CELL + r")",
-            page,
-            re.IGNORECASE,
-        )
-        if total_match:
-            rows.append(("Ensemble national", "MAR", [_parse_cell(total_match.group(i)) for i in range(1, 4)]))
+        # National summary pages publish the indicator's overall value on the
+        # indicator-title row. A later "Ensemble 100,0" may describe a sector
+        # distribution, not the indicator total; prefer the explicit headline.
+        headline_total_match = None
+        if not rows:
+            headline_total_match = re.search(
+                pattern + r"\s*(?:\(%\))?\s+(" + _CELL + r")\s+(" + _CELL + r")\s+(" + _CELL + r")",
+                page,
+                re.IGNORECASE,
+            )
+        if headline_total_match:
+            rows.append((
+                "Ensemble national",
+                "MAR",
+                [_parse_cell(headline_total_match.group(i)) for i in range(1, 4)],
+            ))
+        else:
+            total_match = re.search(
+                r"\bEnsemble\s+(" + _CELL + r")\s+(" + _CELL + r")\s+(" + _CELL + r")",
+                page,
+                re.IGNORECASE,
+            )
+            if total_match:
+                rows.append(("Ensemble national", "MAR", [_parse_cell(total_match.group(i)) for i in range(1, 4)]))
 
         if not rows:
             continue

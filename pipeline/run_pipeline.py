@@ -284,7 +284,7 @@ def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at
     incoming = dict(incoming) if isinstance(incoming, dict) else {}
 
     for key, value in incoming.items():
-        if key == "history":
+        if key in ("history", "latest", "previous"):
             continue
         if value is not None and value != "":
             merged[key] = value
@@ -299,25 +299,34 @@ def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at
         # for the same period while preserving every other historical point.
         points_by_period[str(point["year"])] = dict(point)
 
+    for field in ("previous", "latest"):
+        point = incoming.get(field)
+        if isinstance(point, dict) and point.get("year") is not None and point.get("value") is not None:
+            points_by_period[str(point["year"])] = dict(point)
+
     if points_by_period:
         merged["history"] = [
             points_by_period[key]
             for key in sorted(points_by_period, key=lambda period: _statistics_period_sort_key(period, collected_at))
         ]
+        # Derive the displayed latest value from the chronological history.
+        # This prevents an older response from replacing a newer observation.
+        merged["latest"] = merged["history"][-1]
+        if len(merged["history"]) > 1:
+            merged["previous"] = merged["history"][-2]
+        elif isinstance(incoming.get("previous"), dict):
+            merged["previous"] = incoming["previous"]
     elif old_history or new_history:
         merged["history"] = old_history or new_history
-
-    latest = incoming.get("latest")
-    if isinstance(latest, dict) and latest.get("value") is not None:
-        merged["latest"] = latest
-    elif merged.get("history"):
-        merged["latest"] = merged["history"][-1]
-
-    previous = incoming.get("previous")
-    if isinstance(previous, dict) and previous.get("value") is not None:
-        merged["previous"] = previous
-    elif "previous" not in merged:
-        merged["previous"] = None
+        if isinstance(incoming.get("latest"), dict):
+            merged["latest"] = incoming["latest"]
+        if isinstance(incoming.get("previous"), dict):
+            merged["previous"] = incoming["previous"]
+    else:
+        if isinstance(incoming.get("latest"), dict):
+            merged["latest"] = incoming["latest"]
+        if isinstance(incoming.get("previous"), dict):
+            merged["previous"] = incoming["previous"]
 
     merged["last_successful_collection_at"] = collected_at
     merged["collection_status"] = "collected"

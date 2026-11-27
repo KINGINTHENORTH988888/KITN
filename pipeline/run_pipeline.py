@@ -220,25 +220,58 @@ def _sync_public_index(src_file: Path, dst_file: Path) -> None:
 
 
 def _is_valid_statistics_series(series: dict) -> bool:
-    """Reject legacy BAM XLSX series with impossible years or footnote-only units."""
+    """Reject BAM CKAN series with unusable units, periods or numeric observations."""
     code = str(series.get("indicator_code") or "")
     if not code.startswith("BAM_CKAN_"):
         return True
+
     unit = clean_text(series.get("unit_fr") or series.get("unit_ar") or "")
-    if unit in {"*", "**", "Unité publiée par BAM"}:
+    if unit in {"", "*", "**", "Unité publiée par BAM", "Unité non précisée"}:
         return False
+
     current_year = datetime.now(timezone.utc).year
     points = list(series.get("history") or [])
-    latest = series.get("latest")
-    if isinstance(latest, dict):
-        points.append(latest)
+    for field in ("previous", "latest"):
+        point = series.get(field)
+        if isinstance(point, dict):
+            points.append(point)
+
+    valid_periods = set()
     for point in points:
-        if not isinstance(point, dict):
-            continue
-        match = re.match(r"(\d{4})", str(point.get("year") or ""))
-        if match and int(match.group(1)) > current_year:
+        if not isinstance(point, dict) or point.get("year") is None or point.get("value") is None:
             return False
-    return True
+
+        period = str(point.get("year") or "").strip()
+        year_match = re.match(r"^(20\d{2}|19\d{2})", period)
+        if not year_match or int(year_match.group(1)) > current_year:
+            return False
+
+        try:
+            value = float(point["value"])
+        except (TypeError, ValueError, OverflowError):
+            return False
+        if not math.isfinite(value):
+            return False
+
+        if re.fullmatch(r"(?:19|20)\d{2}", period):
+            pass
+        elif re.fullmatch(r"(?:19|20)\d{2}-(?:0[1-9]|1[0-2])", period):
+            pass
+        elif re.fullmatch(r"(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])", period):
+            try:
+                datetime.strptime(period, "%Y-%m-%d")
+            except ValueError:
+                return False
+        elif re.fullmatch(r"(?:19|20)\d{2}-T[1-4]", period, re.IGNORECASE):
+            pass
+        else:
+            return False
+
+        valid_periods.add(period)
+
+    return len(valid_periods) >= 2
+
+
 
 
 def _statistics_period_sort_key(period: str, collected_at: str) -> tuple:

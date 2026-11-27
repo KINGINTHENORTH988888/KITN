@@ -1910,3 +1910,44 @@ textarea {
 .global-stat-result strong{font-size:1rem}
 .global-stat-result>span:not(.global-stat-result-type){font-size:.88rem;color:var(--muted,#637381);line-height:1.5}
 .global-stat-result small{font-size:.76rem;color:var(--muted,#637381)}
+
+
+/* Paginated result navigation */
+.results-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.4rem 0 0.5rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+}
+
+.results-pagination span {
+  font-size: 0.9rem;
+}
+
+.results-pagination small {
+  font-size: 0.8rem;
+}
+
+.results-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .results-pagination {
+    gap: 0.5rem;
+  }
+
+  .results-pagination span {
+    order: -1;
+    flex: 0 0 100%;
+  }
+}

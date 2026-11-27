@@ -142,3 +142,13 @@ test("monitoring space exposes thematic entry points with grounded indexed count
   assert.match(source, /Les volumes correspondent aux notices actuellement indexées/);
   assert.match(styles, /\.watch-topic-grid/);
 });
+
+test("library hub metrics are computed from available indexed documents", () => {
+  assert.match(source, /function renderLibraryDirectory\(\)/);
+  assert.match(source, /matchesSpace\(item, "bibliotheque"\)/);
+  assert.match(source, /withPdf = docs\.filter/);
+  assert.match(source, /library-recent-item/);
+  assert.match(source, /Les portails institutionnels peuvent proposer/);
+  assert.match(styles, /\.library-metrics/);
+  assert.match(styles, /\.library-recent-list/);
+});

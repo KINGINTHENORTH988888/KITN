@@ -59,6 +59,9 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
   }));
 
   const selectedIndicator = indicatorOptions.find((item) => item.code === activeIndicatorCode) || null;
+  const latestPeriod = periods[periods.length - 1] || "";
+  const latestValues = rows.map((row) => row.points[row.points.length - 1]).filter((point) => point && Number.isFinite(Number(point.value)));
+  const latestMissing = rows.length - latestValues.length;
   const firstSeries = selectedSeries[0] || indicatorSeries[0] || null;
   const sourceSeries = selectedSeries.find((item) => item.source_name_ar) ||
     selectedSeries.find((item) =>
@@ -92,6 +95,12 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
     activeScope,
     periods,
     rows,
+    latestPeriod,
+    latestAvailableCount: latestValues.length,
+    latestMissingCount: latestMissing,
+    latestAverage: latestValues.length
+      ? latestValues.reduce((sum, point) => sum + Number(point.value), 0) / latestValues.length
+      : null,
     unitFr: firstSeries?.unit_fr || selectedIndicator?.unitFr || "%",
     unitAr: firstSeries?.unit_ar || selectedIndicator?.unitAr || "%",
     sourceName: sourceSeries?.source_name || "Haut-Commissariat au Plan",

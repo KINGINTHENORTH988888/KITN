@@ -152,3 +152,11 @@ test("library hub metrics are computed from available indexed documents", () => 
   assert.match(styles, /\.library-metrics/);
   assert.match(styles, /\.library-recent-list/);
 });
+
+test("global search overview exposes all content spaces and labels result context", () => {
+  assert.match(source, /function renderGlobalSearchOverview\(\)/);
+  assert.match(source, /EXPLORATION TRANSVERSALE/);
+  assert.match(source, /matchesSpace\(item,space\.id\)/);
+  assert.match(source, /activeSpace === "all" \? itemSpaceLabel/);
+  assert.match(styles, /\.global-search-spaces/);
+});

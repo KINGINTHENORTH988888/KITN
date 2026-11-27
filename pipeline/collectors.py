@@ -1982,7 +1982,7 @@ def _append_bam_ckan_series(output: list, label: str, points: list[dict], datase
     if len(history) < 2:
         return
     code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
-    unit_match = re.search(r"(?:\\(|\\[)([^()\\[\\]]{1,40})(?:\\)|\\])", label)
+    unit_match = re.search(r"[(\[]([^()\[\]]{1,40})[)\]]", label)
     unit_match_global = re.search(r"(MDH|MMDH|KDH|Nombre|%)", notes, re.IGNORECASE)
     label_unit = clean_text(unit_match.group(1)) if unit_match else ""
     if label_unit and re.search(r"(?:MDH|MMDH|KDH|%|nombre|millions? de dirhams|milliards? de dirhams|milliers? de dirhams)", label_unit, re.IGNORECASE):

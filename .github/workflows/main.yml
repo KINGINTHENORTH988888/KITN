@@ -10,7 +10,15 @@ on:
       - main
   push:
     branches:
+      - main
       - "chatgpt/kitn-stabilisation-2026-11"
+    paths:
+      - ".github/workflows/main.yml"
+      - "pipeline/**"
+      - "data/sources.json"
+      - "package.json"
+      - "package-lock.json"
+      - "src/**"
 
 # Les vérifications de pull request sont strictement en lecture seule.
 permissions:
@@ -55,7 +63,7 @@ jobs:
           npm run build
 
   collect-and-update:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
       contents: write

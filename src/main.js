@@ -1172,6 +1172,22 @@ function renderRegionalStatisticsDashboard() {
   </section>`;
 }
 
+function renderGlobalSearchOverview() {
+  const isAr = lang === "ar";
+  const spaces = [
+    {id:"chiffres",label:isAr ? "المغرب بالأرقام" : "Maroc en chiffres"},
+    {id:"veille",label:isAr ? "الرصد" : "Veille"},
+    {id:"science",label:isAr ? "الدراسات والبحث" : "Études & recherche"},
+    {id:"bibliotheque",label:isAr ? "المكتبة" : "Bibliothèque"},
+    {id:"academy",label:isAr ? "الأكاديمية" : "Academy"}
+  ];
+  const visible = indexItems.filter((item) => !isFutureDate(item));
+  const cards = spaces.map((space) => {
+    const count = visible.filter((item) => matchesSpace(item,space.id)).length;
+    return '<button type="button" class="global-search-space" data-space-id="' + space.id + '"><strong>' + count.toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + escapeHtml(space.label) + '</span></button>';
+  }).join("");
+  return '<section class="global-search-overview"><div class="global-search-copy"><span class="mini-label">' + (isAr ? "بحث موحد" : "EXPLORATION TRANSVERSALE") + '</span><h3>' + (isAr ? "ابحث عبر جميع مجالات KITN" : "Une recherche à travers tout KITN") + '</h3><p>' + (isAr ? "ابحث في العناوين والملخصات والمؤلفين والمؤسسات والكلمات المفتاحية والمراجع. يمكنك تضييق النتائج حسب المجال." : "Interrogez les titres, résumés, auteurs, institutions, mots-clés et références, puis affinez par espace.") + '</p></div><div class="global-search-spaces">' + cards + '</div><p class="global-search-note">' + (isAr ? "الأعداد تخص المواد المفهرسة والمتاحة حالياً، قبل تطبيق كلمات البحث." : "Volumes des notices actuellement indexées et non exclues, avant application de votre recherche.") + '</p></section>';
+}
 function renderWatchDashboard() {
   const isAr = lang === "ar";
   const watchItems = indexItems.filter((item) => matchesSpace(item, "veille") && !isFutureDate(item));
@@ -1426,7 +1442,9 @@ function renderResults() {
         : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
       const venueText = item.revue_ou_institution || item.source_nom || "";
       const metaLeft = escapeHtml(item.date_publication || "");
-      const metaRight = escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || "");
+      const spaceLabels = { chiffres: lang === "ar" ? "المغرب بالأرقام" : "Maroc en chiffres", veille: lang === "ar" ? "الرصد" : "Veille", science: lang === "ar" ? "الدراسات والبحث" : "Études & recherche", bibliotheque: lang === "ar" ? "المكتبة" : "Bibliothèque", academy: "Academy" };
+      const itemSpaceLabel = spaceLabels[resolveItemSpace(item)] || "";
+      const metaRight = escapeHtml(activeSpace === "all" ? itemSpaceLabel + " · " + (formatDocType(item.type_document) || formatPole(item.pole) || "") : (formatDocType(item.type_document) || formatPole(item.pole) || ""));
       const statusFlag = st === "archive"
         ? `<span class="flag-warn">${escapeHtml(COPY[lang].archivedBadge)}</span>`
         : (isFutureDate(item)
@@ -1808,6 +1826,7 @@ function render() {
       </div>
 
       ${activeSpace === "chiffres" ? renderStatisticsDashboard() : ""}
+      ${activeSpace === "all" ? renderGlobalSearchOverview() : ""}
       ${activeSpace === "bibliotheque" ? renderLibraryDirectory() : ""}
       ${activeSpace === "veille" ? renderWatchDashboard() : ""}
 

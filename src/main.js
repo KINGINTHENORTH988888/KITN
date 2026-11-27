@@ -17,19 +17,19 @@ const REFERENCE_DATE = getDynamicReferenceDate();
 
 const SPACES = {
   fr: [
-    { id: "all", label: "Portail & Vue globale" },
+    { id: "all", label: "Accueil" },
     { id: "veille", label: "Actualité & veille" },
-    { id: "science", label: "Articles scientifiques" },
+    { id: "science", label: "Études & recherche" },
     { id: "chiffres", label: "Maroc en chiffres" },
-    { id: "academy", label: "Concours & Academy" },
+    { id: "academy", label: "KITN Academy" },
     { id: "bibliotheque", label: "Bibliothèque" }
   ],
   ar: [
-    { id: "all", label: "البوابة والنظرة العامة" },
+    { id: "all", label: "الرئيسية" },
     { id: "veille", label: "الأخبار والرصد" },
-    { id: "science", label: "المقالات العلمية" },
+    { id: "science", label: "الدراسات والبحث" },
     { id: "chiffres", label: "المغرب بالأرقام" },
-    { id: "academy", label: "المباريات والأكاديمية" },
+    { id: "academy", label: "أكاديمية KITN" },
     { id: "bibliotheque", label: "المكتبة الوثائقية" }
   ]
 };
@@ -1393,11 +1393,34 @@ function render() {
         <span class="brand-mark">K</span>
         <span>KITN<span class="brand-dot">.</span></span>
       </a>
-      <nav class="nav ${mobileMenuOpen ? "is-open" : ""}" id="main-nav">
-        <a href="#themes">${c.navThemes}</a>
-        <a href="#academy">${c.navAcademy}</a>
-        <a href="#method">${c.navMethod}</a>
-        <a href="#research">${c.navResearch}</a>
+      <nav class="nav ${mobileMenuOpen ? "is-open" : ""}" id="main-nav" aria-label="${lang === "ar" ? "التنقل الرئيسي" : "Navigation principale"}">
+        <button type="button" class="nav-link ${activeSpace === "all" ? "is-active" : ""}" data-space-id="all">${lang === "ar" ? "الرئيسية" : "Accueil"}</button>
+        <div class="nav-group">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "chiffres" ? "is-active" : ""}" data-space-id="chiffres">${lang === "ar" ? "المغرب بالأرقام" : "Maroc en chiffres"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown">
+            <button type="button" data-space-id="chiffres">${lang === "ar" ? "المؤشرات الوطنية" : "Indicateurs nationaux"}</button>
+            <button type="button" data-space-id="chiffres" data-stat-view-shortcut="regional">${lang === "ar" ? "المقارنة الجهوية" : "Comparaison régionale"}</button>
+            <button type="button" data-space-id="chiffres" data-stat-category-shortcut="economie_finances_publiques">${lang === "ar" ? "الاقتصomie والمالية" : "Économie & finances publiques"}</button>
+            <button type="button" data-space-id="chiffres" data-stat-category-shortcut="societe_developpement_humain">${lang === "ar" ? "المجتمع والتنمية" : "Société & développement humain"}</button>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "veille" ? "is-active" : ""}" data-space-id="veille">${lang === "ar" ? "الرصد" : "Veille"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown">
+            <button type="button" data-space-id="veille">${lang === "ar" ? "الأخبار والمؤسسات" : "Actualités & institutions"}</button>
+            <button type="button" data-space-id="veille" data-pole-shortcut="institutions_gouvernance">${lang === "ar" ? "المؤسسات والحكامة" : "Institutions & gouvernance"}</button>
+            <button type="button" data-space-id="veille" data-pole-shortcut="securite_affaires_interieures">${lang === "ar" ? "الأمن والشؤون الداخلية" : "Sécurité & affaires intérieures"}</button>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "science" ? "is-active" : ""}" data-space-id="science">${lang === "ar" ? "الدراسات والبحث" : "Études & recherche"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown">
+            <button type="button" data-space-id="science">${lang === "ar" ? "المنشورات العلمية" : "Publications scientifiques"}</button>
+            <button type="button" data-space-id="science" data-pole-shortcut="recherche_scientifique">${lang === "ar" ? "البحث العلمي" : "Recherche scientifique"}</button>
+          </div>
+        </div>
+        <button type="button" class="nav-link ${activeSpace === "bibliotheque" ? "is-active" : ""}" data-space-id="bibliotheque">${lang === "ar" ? "المكتبة" : "Bibliothèque"}</button>
+        <button type="button" class="nav-link ${activeSpace === "academy" ? "is-active" : ""}" data-space-id="academy">KITN Academy</button>
       </nav>
       <div class="topbar-actions">
         ${isDedicatedSpace ? `<button type="button" class="lang" id="back-portal-top">${escapeHtml(c.backPortalBtn)}</button>` : ""}
@@ -1530,7 +1553,7 @@ function render() {
       </section>
     ` : ""}
 
-    ${(!isDedicatedSpace || activeSpace === "academy") ? `
+    ${activeSpace === "academy" ? `
       <section class="section" id="academy">
         <div class="section-head">
           <div>
@@ -1581,7 +1604,7 @@ function render() {
       </section>
     ` : ""}
 
-    ${!isDedicatedSpace ? `
+    ${false ? `
       <section class="section" id="method">
         <div class="section-head">
           <div>
@@ -1603,6 +1626,7 @@ function render() {
       </section>
     ` : ""}
 
+    ${isDedicatedSpace ? `
     <section class="section" id="research">
       <div class="section-head">
         <div>
@@ -1770,6 +1794,24 @@ function render() {
 
       <div id="results-grid" class="results-grid"></div>
     </section>
+    ` : `
+    <section class="section home-discovery">
+      <div class="section-head">
+        <div><span class="eyebrow">${lang === "ar" ? "آخر المستجدات" : "À LA UNE"}</span><h2>${lang === "ar" ? "مختارات من الرصد" : "Une sélection pour commencer"}</h2></div>
+        <p>${lang === "ar" ? "اكتشف أحدث الموارد داخل فضاءات KITN." : "Quelques publications récentes, sans surcharger votre espace d'accueil."}</p>
+      </div>
+      <div class="home-featured-grid">
+        ${visibleItems.slice(0, 3).map((item) => `
+          <article class="home-featured-card">
+            <span class="mini-label">${escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || (lang === "ar" ? "منشور" : "Publication"))}</span>
+            <h3>${escapeHtml(item.titre_original || "")}</h3>
+            <p>${escapeHtml(String(item.resume || "").slice(0, 180))}${String(item.resume || "").length > 180 ? "…" : ""}</p>
+            <button type="button" class="link-btn" data-open-home-item="${escapeHtml(getItemKey(item))}">${lang === "ar" ? "قراءة التفاصيل" : "Lire la suite"}</button>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+    `}
 
     <footer class="footer">
       <span>${escapeHtml(c.footerCopy)}</span>
@@ -1798,13 +1840,7 @@ function render() {
     render();
   });
 
-  document.querySelectorAll("#main-nav a").forEach((a) => {
-    a.addEventListener("click", () => {
-      mobileMenuOpen = false;
-      if (activeSpace !== "all") activeSpace = "all";
-      render();
-    });
-  });
+  
 
   document.querySelectorAll("[data-jump-space]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1863,7 +1899,24 @@ function render() {
   document.querySelectorAll("[data-space-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
       activeSpace = btn.getAttribute("data-space-id") || "all";
+      if (btn.hasAttribute("data-stat-view-shortcut")) statisticsView = "regional";
+      if (btn.hasAttribute("data-stat-category-shortcut")) statisticsCategory = btn.getAttribute("data-stat-category-shortcut");
+      if (btn.hasAttribute("data-pole-shortcut")) {
+        selectedSinglePoleFilter = btn.getAttribute("data-pole-shortcut");
+        selectedPolesFilter = null;
+        activePoleLabel = "";
+      }
+      window.history.pushState({ kitnSpace: activeSpace }, "", activeSpace === "all" ? "#/" : "#/" + activeSpace);
+      mobileMenuOpen = false;
       render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+  document.querySelectorAll("[data-open-home-item]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-open-home-item");
+      activeModalItem = indexItems.find((item) => getItemKey(item) === key) || null;
+      renderModal();
     });
   });
   document.querySelectorAll("[data-stat-view]").forEach((btn) => {
@@ -2131,6 +2184,13 @@ async function initIndex() {
   render();
 }
 
+const initialRoute = window.location.hash.match(/^#\\/(all|veille|science|chiffres|academy|bibliotheque)$/);
+if (initialRoute) activeSpace = initialRoute[1];
+window.addEventListener("popstate", () => {
+  const route = window.location.hash.match(/^#\\/(all|veille|science|chiffres|academy|bibliotheque)$/);
+  activeSpace = route ? route[1] : "all";
+  render();
+});
 render();
 initAcademy();
 initIndex();

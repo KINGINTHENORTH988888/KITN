@@ -109,6 +109,63 @@ test("falls back to an available residence scope when the selected scope is miss
   assert.equal(model.rows.length, 2);
 });
 
+test("supports annual HCP social indicators and regional urban/rural scopes", () => {
+  const socialPayload = {
+    generated_at: "2026-11-27T17:00:00Z",
+    series: [
+      {
+        indicator_code: "HCP_SOCIAL_REGIONAL_FERTILITY",
+        label_fr: "Indice synthétique de fécondité",
+        label_ar: "مؤشر الخصوبة الإجمالي",
+        unit_fr: "enfants par femme",
+        unit_ar: "طفل لكل امرأة",
+        geography_code: "FES_MEKNES",
+        geography_name_fr: "Fès-Meknès",
+        geography_name_ar: "فاس-مكناس",
+        residence_scope: "urban",
+        history: [{ year: "2024", value: 1.8, quality_flag: "standard" }],
+        source_name: "HCP — Les indicateurs sociaux du Maroc",
+        source_name_ar: "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب",
+        source_url: "https://www.hcp.ma/file/248623/",
+      },
+      {
+        indicator_code: "HCP_SOCIAL_REGIONAL_FERTILITY",
+        label_fr: "Indice synthétique de fécondité",
+        label_ar: "مؤشر الخصوبة الإجمالي",
+        unit_fr: "enfants par femme",
+        unit_ar: "طفل لكل امرأة",
+        geography_code: "FES_MEKNES",
+        geography_name_fr: "Fès-Meknès",
+        geography_name_ar: "فاس-مكناس",
+        residence_scope: "rural",
+        history: [{ year: "2024", value: 2.46, quality_flag: "standard" }],
+      },
+      {
+        indicator_code: "HCP_SOCIAL_REGIONAL_FERTILITY",
+        label_fr: "Indice synthétique de fécondité",
+        label_ar: "مؤشر الخصوبة الإجمالي",
+        unit_fr: "enfants par femme",
+        unit_ar: "طفل لكل امرأة",
+        geography_code: "FES_MEKNES",
+        geography_name_fr: "Fès-Meknès",
+        geography_name_ar: "فاس-مكناس",
+        residence_scope: "all",
+        history: [{ year: "2024", value: 2.02, quality_flag: "standard" }],
+      },
+    ],
+  };
+
+  const urban = buildRegionalStatisticsModel(socialPayload, "HCP_SOCIAL_REGIONAL_FERTILITY", "urban");
+  assert.deepEqual(urban.periods, ["2024"]);
+  assert.deepEqual(urban.availableScopes, ["all", "urban", "rural"]);
+  assert.equal(urban.rows[0].points[0].value, 1.8);
+  assert.equal(urban.selectedIndicator.labelAr, "مؤشر الخصوبة الإجمالي");
+  assert.equal(urban.unitAr, "طفل لكل امرأة");
+
+  const rural = buildRegionalStatisticsModel(socialPayload, "HCP_SOCIAL_REGIONAL_FERTILITY", "rural");
+  assert.equal(rural.rows[0].points[0].value, 2.46);
+});
+
 test("returns a safe empty model when the regional dataset is not yet published", () => {
   const model = buildRegionalStatisticsModel(null);
 

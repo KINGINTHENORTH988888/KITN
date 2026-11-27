@@ -678,8 +678,6 @@ def _extract_hcp_emo_regional_statistics(
                 source_url=attachment_url,
                 published_date=published_date,
             )
-            if len(parsed) > len(best_series):
-                best_series = parsed
             expected_geographies = {code for _name, code in HCP_EMO_REGIONS} | {"MAR"}
             expected_keys = {
                 f"{indicator_code}:{scope}:{geography_code}"
@@ -691,10 +689,13 @@ def _extract_hcp_emo_regional_statistics(
                 str(item.get("series_key") or item.get("id") or "")
                 for item in parsed if isinstance(item, dict)
             }
+            if parsed_keys == expected_keys and len(parsed) == len(expected_keys):
+                # Prefer a complete extraction even when an earlier attachment
+                # produced the same number of rows with a different/malformed key set.
+                best_series = parsed
+                break
             if len(parsed) > len(best_series):
                 best_series = parsed
-            if parsed_keys == expected_keys:
-                break
         except Exception as exc:
             errors.append(f"{attachment_url}: {type(exc).__name__}: {exc}")
 

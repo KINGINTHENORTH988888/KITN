@@ -241,6 +241,43 @@ def _is_valid_statistics_series(series: dict) -> bool:
     return True
 
 
+def _statistics_period_sort_key(period: str, collected_at: str) -> tuple:
+    """Return a chronological key for the period formats used by KITN collectors."""
+    raw = str(period or "").strip()
+    parsed = None
+
+    for pattern, fmt in (
+        (r"20\\d{2}-\\d{2}-\\d{2}", "%Y-%m-%d"),
+        (r"20\\d{2}-\\d{2}", "%Y-%m"),
+        (r"20\\d{2}", "%Y"),
+    ):
+        if re.fullmatch(pattern, raw):
+            parsed = datetime.strptime(raw, fmt)
+            break
+
+    quarter = re.fullmatch(r"(20\\d{2})-T([1-4])", raw, re.IGNORECASE)
+    if quarter:
+        parsed = datetime(int(quarter.group(1)), (int(quarter.group(2)) - 1) * 3 + 1, 1)
+    else:
+        quarter = re.fullmatch(r"T([1-4])[-/](20\\d{2})", raw, re.IGNORECASE)
+        if quarter:
+            parsed = datetime(int(quarter.group(2)), (int(quarter.group(1)) - 1) * 3 + 1, 1)
+
+    normalized = raw.casefold().replace("’", "'")
+    try:
+        anchor = datetime.strptime(str(collected_at)[:10], "%Y-%m-%d")
+    except ValueError:
+        anchor = datetime.now(timezone.utc).replace(tzinfo=None)
+    if normalized in ("aujourd'hui", "aujourdhui", "today"):
+        parsed = anchor
+    elif normalized in ("veille", "hier", "yesterday"):
+        parsed = anchor - timedelta(days=1)
+
+    if parsed is not None:
+        return (0, parsed.strftime("%Y-%m-%d"), raw)
+    return (1, raw, raw)
+
+
 def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at: str) -> dict:
     """Merge a newly collected series with its history without losing older observations."""
     merged = dict(existing) if isinstance(existing, dict) else {}
@@ -263,7 +300,10 @@ def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at
         points_by_period[str(point["year"])] = dict(point)
 
     if points_by_period:
-        merged["history"] = [points_by_period[key] for key in sorted(points_by_period)]
+        merged["history"] = [
+            points_by_period[key]
+            for key in sorted(points_by_period, key=lambda period: _statistics_period_sort_key(period, collected_at))
+        ]
     elif old_history or new_history:
         merged["history"] = old_history or new_history
 

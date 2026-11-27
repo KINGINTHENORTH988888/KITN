@@ -625,14 +625,14 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                  "Taux de chômage strict des femmes selon l'EMO."),
             ])
         underutilization_sentence = next(
-            (sentence for sentence in re.split(r"(?<=[.!?])\\s+", body)
+            (sentence for sentence in re.split(r"(?<=[.!?])\s+", body)
              if "taux composite" in sentence.casefold()
              and "jeunes" in sentence.casefold()
              and "femmes" in sentence.casefold()),
             "",
         )
         underutilization_pair = re.search(
-            r"([0-9]+(?:[,.][0-9]+)?)\\s*%.*?jeunes.*?([0-9]+(?:[,.][0-9]+)?)\\s*%.*?femmes",
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%.*?jeunes.*?([0-9]+(?:[,.][0-9]+)?)\s*%.*?femmes",
             underutilization_sentence, re.IGNORECASE,
         )
         if underutilization_pair:

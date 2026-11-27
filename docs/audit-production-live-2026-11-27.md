@@ -50,8 +50,8 @@ Le contrôle mobile de la prévisualisation a observé un rendu plus propre que 
 
 - La vue nationale affiche 853 indicateurs, 80 186 observations historiques et 5 sources identifiées. Le filtre « Économie & finances publiques » fonctionne et ramène la liste à 842 indicateurs.
 - La vue régionale a été activée depuis le bouton « Comparaison régionale ». Le titre, le sélecteur d'indicateur, le tableau des régions et les périodes T1/2026, T2/2026 et T3/2026 sont apparus. Pour le taux de chômage strict sélectionné, l'interface affiche 12/12 régions couvertes et 12/12 valeurs disponibles.
-- La page Academy expose les onglets DGSN, IRAT et Concours admin ainsi qu'un QCM de cinq questions. La présence est confirmée ; le changement de parcours et le retour de correction après réponse restent à valider par interaction.
-- La page Bibliothèque et ses commandes de recherche/filtrage sont présentes. Le test de recherche ciblé est encore en cours.
+- La page Academy expose les onglets DGSN, IRAT et Concours admin. Le fichier de contenu contient 3 parcours en français et 3 en arabe, avec 5 questions et 2 anciens sujets par parcours. Le passage DGSN → IRAT fonctionne ; le QCM DGSN affiche une correction après sélection de la bonne réponse.
+- La page Bibliothèque répond à la recherche « HCP » avec 3 notices correspondantes. Les titres, dates, auteurs et résumés restent lisibles dans les cartes.
 
 ### Données régionales vérifiées dans le dépôt de la branche
 

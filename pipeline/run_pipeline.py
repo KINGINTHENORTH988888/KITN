@@ -621,12 +621,19 @@ def run() -> dict:
         try:
             previous_statistics = json.loads(STATISTICS_FILE.read_text(encoding="utf-8"))
             for previous in previous_statistics.get("indicators", []):
-                if isinstance(previous, dict) and previous.get("indicator_code"):
-                    code = str(previous["indicator_code"])
-                    if code not in statistics_series:
-                        carried = dict(previous)
-                        carried["collection_status"] = "carried_forward"
-                        statistics_series[code] = carried
+                if not isinstance(previous, dict) or not previous.get("indicator_code"):
+                    continue
+                code = str(previous["indicator_code"])
+                if code in statistics_series:
+                    # Merge the prior published history into the current collection;
+                    # the new observation wins if the source revised the same period.
+                    statistics_series[code] = _merge_statistics_series(
+                        previous, statistics_series[code], now_iso
+                    )
+                else:
+                    carried = dict(previous)
+                    carried["collection_status"] = "carried_forward"
+                    statistics_series[code] = carried
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
     statistics_series = {

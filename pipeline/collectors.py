@@ -671,19 +671,42 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
              number(r"nombre de personnes en emploi contre revenu atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
              "Effectif des personnes en emploi contre revenu, en millions."),
         ]
-        pair = re.search(
-            r"taux de chômage strict.{0,100}?respectivement à\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*et\s*([0-9]+(?:[,.][0-9]+)?)\s*%",
-            body, re.IGNORECASE,
-        )
-        if pair:
-            metrics.extend([
-                ("HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
-                 float(pair.group(1).replace(",", ".")),
-                 "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO."),
-                ("HCP_EMO_WOMEN_UNEMPLOYMENT", "Taux de chômage strict des femmes", "%",
-                 float(pair.group(2).replace(",", ".")),
-                 "Taux de chômage strict des femmes selon l'EMO."),
-            ])
+        used_percentage_positions: set[int] = set()
+
+        def labeled_percentage(label_pattern: str) -> float | None:
+            labels = list(re.finditer(label_pattern, body, re.IGNORECASE))
+            percentages = list(re.finditer(r"([0-9]+(?:[,.][0-9]+)?)\s*%", body))
+            candidates = []
+            for label_match in labels:
+                for percentage in percentages:
+                    if percentage.start() in used_percentage_positions:
+                        continue
+                    distance = min(
+                        abs(percentage.start() - label_match.end()),
+                        abs(label_match.start() - percentage.end()),
+                    )
+                    if distance <= 100:
+                        candidates.append((distance, percentage))
+            if not candidates:
+                return None
+            _, selected = min(candidates, key=lambda item: item[0])
+            used_percentage_positions.add(selected.start())
+            return float(selected.group(1).replace(",", "."))
+
+        youth_unemployment = labeled_percentage(r"\b(?:jeunes|15\s*[-–]\s*24\s*ans)\b")
+        women_unemployment = labeled_percentage(r"\bfemmes\b")
+        if youth_unemployment is not None:
+            metrics.append((
+                "HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
+                youth_unemployment,
+                "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO.",
+            ))
+        if women_unemployment is not None:
+            metrics.append((
+                "HCP_EMO_WOMEN_UNEMPLOYMENT", "Taux de chômage strict des femmes", "%",
+                women_unemployment,
+                "Taux de chômage strict des femmes selon l'EMO.",
+            ))
         underutilization_pair = re.search(
             r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les jeunes.{0,100}?([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les femmes",
             body, re.IGNORECASE,

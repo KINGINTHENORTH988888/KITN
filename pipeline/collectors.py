@@ -687,7 +687,7 @@ def _extract_hcp_emo_regional_statistics(
     if best_series:
         if len(best_series) >= 200:
             return best_series, []
-        diagnostics = " | ".join(page_diagnostics[:8])
+        diagnostics = " | ".join(page_diagnostics[-20:])
         return best_series, [
             f"Extraction régionale HCP partielle ({len(best_series)} séries sur 234 attendues). "
             f"Pages reconnues : {diagnostics or 'aucune page de tableau identifiée'}."

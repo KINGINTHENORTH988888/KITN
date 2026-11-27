@@ -673,11 +673,11 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
         ]
         used_percentage_positions: set[tuple[int, int]] = set()
 
-        def labeled_percentage(label_pattern: str) -> float | None:
+        def labeled_percentage(label_pattern: str, context_pattern: str) -> float | None:
             candidates = []
             for sentence_index, sentence in enumerate(re.split(r"(?<=[.!?])\s+", body)):
                 sentence = sentence.strip()
-                if not re.search(r"ch[oô]mage", sentence, re.IGNORECASE):
+                if not re.search(context_pattern, sentence, re.IGNORECASE):
                     continue
                 labels = list(re.finditer(label_pattern, sentence, re.IGNORECASE))
                 percentages = list(re.finditer(r"([0-9]+(?:[,.][0-9]+)?)\s*%", sentence))
@@ -698,8 +698,8 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
             used_percentage_positions.add(position)
             return float(selected.group(1).replace(",", "."))
 
-        youth_unemployment = labeled_percentage(r"\b(?:jeunes|15\s*[-–]\s*24\s*ans)\b")
-        women_unemployment = labeled_percentage(r"\bfemmes\b")
+        youth_unemployment = labeled_percentage(r"\b(?:jeunes|15\s*[-–]\s*24\s*ans)\b", r"ch[oô]mage")
+        women_unemployment = labeled_percentage(r"\bfemmes\b", r"ch[oô]mage")
         if youth_unemployment is not None:
             metrics.append((
                 "HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
@@ -712,19 +712,22 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 women_unemployment,
                 "Taux de chômage strict des femmes selon l'EMO.",
             ))
-        underutilization_pair = re.search(
-            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les jeunes.{0,100}?([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les femmes",
-            body, re.IGNORECASE,
+        youth_underutilization = labeled_percentage(
+            r"\b(?:jeunes|15\s*[-–]\s*24\s*ans)\b", r"sous[- ]utilisation"
         )
-        if underutilization_pair:
-            metrics.extend([
-                ("HCP_EMO_YOUTH_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les jeunes (15-24 ans)", "%",
-                 float(underutilization_pair.group(1).replace(",", ".")),
-                 "Taux composite de sous-utilisation de la main-d’œuvre des jeunes de 15 à 24 ans."),
-                ("HCP_EMO_WOMEN_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les femmes", "%",
-                 float(underutilization_pair.group(2).replace(",", ".")),
-                 "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
-            ])
+        women_underutilization = labeled_percentage(r"\bfemmes\b", r"sous[- ]utilisation")
+        if youth_underutilization is not None:
+            metrics.append((
+                "HCP_EMO_YOUTH_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les jeunes (15-24 ans)", "%",
+                youth_underutilization,
+                "Taux composite de sous-utilisation de la main-d’œuvre des jeunes de 15 à 24 ans.",
+            ))
+        if women_underutilization is not None:
+            metrics.append((
+                "HCP_EMO_WOMEN_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les femmes", "%",
+                women_underutilization,
+                "Taux composite de sous-utilisation de la main-d’œuvre des femmes.",
+            ))
 
         for code, label, unit, value, description in metrics:
             if value is None:

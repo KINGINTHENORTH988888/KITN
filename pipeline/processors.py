@@ -154,17 +154,27 @@ def validate_publication_date(raw_date: str | None, reference_date: date | None 
     return {"date_statut": "date_invalide", "date_anomalie": True}
 
 
+def _contains_phrase(text: str, phrase: str) -> bool:
+    """Match a complete word or phrase, avoiding accidental hits such as MAD in 'made'."""
+    normalized_text = clean_text(text).casefold()
+    normalized_phrase = clean_text(phrase).casefold()
+    if not normalized_text or not normalized_phrase:
+        return False
+    pattern = r"(?<!\\w)" + r"\\s+".join(re.escape(part) for part in normalized_phrase.split()) + r"(?!\\w)"
+    return re.search(pattern, normalized_text, flags=re.UNICODE) is not None
+
+
 def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | None = None) -> dict:
-    clean_t = clean_text(title).lower()
-    clean_a = clean_text(abstract).lower()
+    clean_t = clean_text(title).casefold()
+    clean_a = clean_text(abstract).casefold()
     combined = f"{clean_t} {clean_a}".strip()
 
-    strong_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if sig.lower() in combined]
-    title_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if sig.lower() in clean_t]
+    strong_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if _contains_phrase(combined, sig)]
+    title_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if _contains_phrase(clean_t, sig)]
 
     pole_hits = 0
     for keywords in POLE_KEYWORDS.values():
-        if any(kw.lower() in combined for kw in keywords):
+        if any(_contains_phrase(combined, kw) for kw in keywords):
             pole_hits += 1
 
     source_id = str((source or {}).get("id") or "").lower()

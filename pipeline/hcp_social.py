@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-import unicodedata
 
 from pipeline.hcp_regional import HCP_EMO_REGIONS, HCP_EMO_REGION_NAMES_AR
 

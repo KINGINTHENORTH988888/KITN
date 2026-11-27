@@ -1172,6 +1172,43 @@ function renderRegionalStatisticsDashboard() {
   </section>`;
 }
 
+function renderWatchDashboard() {
+  const isAr = lang === "ar";
+  const watchItems = indexItems.filter((item) => matchesSpace(item, "veille") && !isFutureDate(item));
+  const reviewedItems = watchItems.filter((item) => getEffectiveStatus(item) === "valide");
+  const reviewItems = watchItems.filter((item) => getEffectiveStatus(item) === "a_verifier");
+  const poleCards = [
+    { id: "institutions_gouvernance", title: isAr ? "المؤسسات والحكامة" : "Institutions & gouvernance", desc: isAr ? "الإصلاحات والسياسات العمومية والعمل المؤسساتي." : "Réformes, politiques publiques et action institutionnelle." },
+    { id: "economie_finances_publiques", title: isAr ? "الاقتصاد والمالية العمومية" : "Économie & finances publiques", desc: isAr ? "الميزانية والاقتصاد والأسواق والمالية العمومية." : "Budget, conjoncture, marchés et finances publiques." },
+    { id: "societe_developpement_humain", title: isAr ? "المجتمع والتنمية البشرية" : "Société & développement humain", desc: isAr ? "التشغيل والتعليم والصحة والتحولات الاجتماعية." : "Emploi, éducation, santé et mutations sociales." },
+    { id: "securite_affaires_interieures", title: isAr ? "الأمن والشؤون الداخلية" : "Sécurité & affaires intérieures", desc: isAr ? "الأمن والوقاية والشؤون الترابية." : "Sécurité, prévention et affaires territoriales." },
+    { id: "relations_internationales_geopolitique", title: isAr ? "العلاقات الدولية والجيوسياسة" : "Relations internationales & géopolitique", desc: isAr ? "العلاقات الخارجية والتوازنات الإقليمية." : "Relations extérieures et équilibres régionaux." }
+  ];
+  const cards = poleCards.map((pole) => {
+    const count = watchItems.filter((item) => item.pole === pole.id || (Array.isArray(item.poles_secondaires) && item.poles_secondaires.includes(pole.id))).length;
+    return '<button type="button" class="watch-topic-card" data-pole-shortcut="' + pole.id + '">' +
+      '<span class="watch-topic-count">' + count.toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</span>' +
+      '<strong>' + escapeHtml(pole.title) + '</strong><span>' + escapeHtml(pole.desc) + '</span>' +
+      '<span class="watch-topic-link">' + (isAr ? "استكشف الملفات" : "Explorer les notices") + ' ↗</span></button>';
+  }).join("");
+  const types = new Map();
+  watchItems.forEach((item) => {
+    const key = item.type_document || "non_classe";
+    types.set(key, (types.get(key) || 0) + 1);
+  });
+  const topTypes = [...types.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+  const typeLabels = topTypes.map(([type, count]) => '<span class="watch-type-chip">' + escapeHtml(formatDocType(type) || (isAr ? "غير مصنف" : "Non classé")) + ' <strong>' + count + '</strong></span>').join("");
+  return '<section class="watch-dashboard">' +
+    '<div class="watch-intro"><div><span class="mini-label">' + (isAr ? "رصد متعدد المجالات" : "VEILLE MULTITHÉMATIQUE") + '</span>' +
+    '<h3>' + (isAr ? "متابعة المستجدات وفهمها" : "Suivre les évolutions, comprendre les enjeux") + '</h3>' +
+    '<p>' + (isAr ? "استكشف المحتوى المفهرس حسب المجالات. كل بطاقة تفتح notices المطابقة ويمكنك مواصلة التصفية والبحث." : "Parcourez les notices indexées par grand domaine. Chaque rubrique ouvre les contenus correspondants, avec les filtres et la recherche documentaire.") + '</p></div>' +
+    '<div class="watch-total"><strong>' + watchItems.length.toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "مادة مفهرسة" : "notices indexées") + '</span></div></div>' +
+    '<div class="watch-quality-row"><span>' + (isAr ? "تم التحقق" : "Validées") + ' <strong>' + reviewedItems.length + '</strong></span><span>' + (isAr ? "تحتاج إلى المراجعة" : "À vérifier") + ' <strong>' + reviewItems.length + '</strong></span><span>' + (isAr ? "أنواع الوثائق الأكثر حضوراً" : "Types documentaires les plus présents") + '</span>' + typeLabels + '</div>' +
+    '<div class="watch-topic-grid">' + cards + '</div>' +
+    '<p class="watch-footnote">' + (isAr ? "الأعداد تمثل les notices actuellement indexées dans KITN، وليست قياساً شاملاً لكل الأخبار المنشورة." : "Les volumes correspondent aux notices actuellement indexées dans KITN ; ils ne représentent pas un recensement exhaustif de toute l’actualité.") + '</p>' +
+    '</section>';
+}
+
 function renderLibraryDirectory() {
   const isAr = lang === "ar";
   const items = [
@@ -1750,6 +1787,7 @@ function render() {
 
       ${activeSpace === "chiffres" ? renderStatisticsDashboard() : ""}
       ${activeSpace === "bibliotheque" ? renderLibraryDirectory() : ""}
+      ${activeSpace === "veille" ? renderWatchDashboard() : ""}
 
       ${activeSpace === "contribuer" ? `
         <form class="manual-form" id="manual-form">

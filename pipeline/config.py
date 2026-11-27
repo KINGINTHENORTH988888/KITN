@@ -11,6 +11,8 @@ PUBLIC_INDEX_FILE = PUBLIC_DIR / "data" / "index" / "search-index.json"
 SOURCES_HEALTH_FILE = DATA_DIR / "sources-health.json"
 STATISTICS_FILE = DATA_DIR / "statistics.json"
 PUBLIC_STATISTICS_FILE = PUBLIC_DIR / "data" / "statistics.json"
+REGIONAL_STATISTICS_FILE = DATA_DIR / "regional-statistics.json"
+PUBLIC_REGIONAL_STATISTICS_FILE = PUBLIC_DIR / "data" / "regional-statistics.json"
 ACADEMY_FILE = DATA_DIR / "academy" / "academy.json"
 
 SUPPORTED_LANGUAGES = ("fr", "ar", "en")

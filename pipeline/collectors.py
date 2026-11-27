@@ -1281,7 +1281,10 @@ def _bam_monia_csv_rows(payload: str) -> list[list[str]]:
         reader = csv.reader(io.StringIO(text), dialect)
     except csv.Error:
         reader = csv.reader(io.StringIO(text), delimiter=";")
-    return [row for row in reader if any(str(cell).strip() for cell in row)]
+    rows = [row for row in reader if any(str(cell).strip() for cell in row)]
+    if len(rows) < 2 or not any(_bam_number(row[0]) is not None for row in rows[1:] if row):
+        return []
+    return rows
 
 
 def collect_bank_al_maghrib(source: dict) -> list[dict]:

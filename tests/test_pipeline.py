@@ -942,6 +942,7 @@ class TestPipelineProcessors(unittest.TestCase):
                 "type": "mef_tand_statistics",
                 "enabled": True,
                 "default_doc_type": "statistique",
+                "indicators": [{"code": "MEF_GDP_CONSTANT"}, {"code": "MEF_MISSING_TEST"}],
             }]), encoding="utf-8")
             manual_path.write_text(json.dumps({"items": []}), encoding="utf-8")
             index_path.write_text(json.dumps({"items": []}), encoding="utf-8")
@@ -986,8 +987,12 @@ class TestPipelineProcessors(unittest.TestCase):
 
             health = json.loads(health_path.read_text(encoding="utf-8"))
             source_health = health["sources"][0]
-            self.assertEqual(source_health["status"], "ok")
-            self.assertEqual(source_health["stage"], "series_statistiques_collectees")
+            self.assertEqual(source_health["status"], "warning")
+            self.assertEqual(source_health["stage"], "collecte_statistique_partielle")
+            self.assertEqual(source_health["statistics_configured"], 2)
+            self.assertEqual(source_health["statistics_configured_indicators"], ["MEF_GDP_CONSTANT", "MEF_MISSING_TEST"])
+            self.assertEqual(source_health["statistics_missing_indicators"], ["MEF_MISSING_TEST"])
+            self.assertTrue(any("MEF_MISSING_TEST" in warning for warning in source_health["statistics_warnings"]))
             self.assertEqual(source_health["fetched"], 1)
             self.assertEqual(source_health["accepted"], 0)
             self.assertEqual(source_health["statistics_collected"], 1)

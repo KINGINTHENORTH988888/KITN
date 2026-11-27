@@ -218,6 +218,29 @@ def _sync_public_index(src_file: Path, dst_file: Path) -> None:
     shutil.copyfile(src_file, dst_file)
 
 
+
+def _is_valid_statistics_series(series: dict) -> bool:
+    """Reject legacy BAM XLSX series with impossible years or footnote-only units."""
+    code = str(series.get("indicator_code") or "")
+    if not code.startswith("BAM_CKAN_"):
+        return True
+    unit = clean_text(series.get("unit_fr") or series.get("unit_ar") or "")
+    if unit in {"*", "**", "Unité publiée par BAM"}:
+        return False
+    current_year = datetime.now(timezone.utc).year
+    points = list(series.get("history") or [])
+    latest = series.get("latest")
+    if isinstance(latest, dict):
+        points.append(latest)
+    for point in points:
+        if not isinstance(point, dict):
+            continue
+        match = re.match(r"(\\d{4})", str(point.get("year") or ""))
+        if match and int(match.group(1)) > current_year:
+            return False
+    return True
+
+
 def run() -> dict:
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sources = _load_json_list(SOURCES_FILE)
@@ -517,6 +540,10 @@ def run() -> dict:
                     statistics_series.setdefault(str(previous["indicator_code"]), previous)
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
+    statistics_series = {
+        code: series for code, series in statistics_series.items()
+        if _is_valid_statistics_series(series)
+    }
     statistics_sources = sorted({
         str(item.get("source_name") or "")
         for item in statistics_series.values()
@@ -526,6 +553,7 @@ def run() -> dict:
         "generated_at": now_iso,
         "source": "Sources officielles — " + " et ".join(statistics_sources) if statistics_sources else "Aucune source statistique disponible",
         "sources": statistics_sources,
+        "indicator_count": len(statistics_series),
         "indicators": list(statistics_series.values()),
     }
     STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)

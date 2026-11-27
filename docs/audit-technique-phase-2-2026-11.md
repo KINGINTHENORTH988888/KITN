@@ -205,6 +205,10 @@ Le parseur de périodes de fusion a été élargi aux années 1900–2099, pour 
 
 Une protection supplémentaire empêche une nouvelle série BAM CKAN non conforme (unité inconnue, période future/invalide ou observations non numériques) de remplacer les métadonnées ou l'historique précédemment publiés. La série invalide est signalée dans la santé de la source ; l'ancienne série reste conservée comme donnée reportée.
 
+### 3.8 ter Observations futures — protection de la valeur affichée
+
+Le filtrage des observations futures ne doit pas se limiter au graphique : la valeur principale et le calcul de variation doivent également ignorer une observation postérieure à la date de génération du fichier. Le tableau utilise désormais la dernière observation valide de l'historique et vérifie aussi les champs `latest` et `previous` avant de les afficher ou de les comparer. Des tests couvrent le cas d'une observation future placée en fin de série, pour les vues « toute la série » et « 5 ans ».
+
 ### 3.9 Premières corrections réalisées sur la branche de revue
 
 Les corrections suivantes ont été développées sur `audit/kitn-quality-review-2026-11`, sans fusion dans `main` :

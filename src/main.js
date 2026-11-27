@@ -656,6 +656,7 @@ let regionalStatisticsData = null;
 let regionalIndicatorCode = "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT";
 let regionalResidenceScope = "all";
 let statisticsCategory = "all";
+let statisticsSearch = "";
 let statisticsRange = "all";
 let statisticsView = "national";
 
@@ -933,9 +934,13 @@ function renderStatisticsDashboard() {
     return `${viewTabs}${renderRegionalStatisticsDashboard()}`;
   }
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
-  const filteredIndicators = allIndicators.filter((indicator) =>
-    statisticsCategory === "all" || getStatisticsCategory(indicator) === statisticsCategory
-  );
+  const normalizedSearch = statisticsSearch.trim().toLocaleLowerCase(isAr ? "ar" : "fr");
+  const filteredIndicators = allIndicators.filter((indicator) => {
+    if (statisticsCategory !== "all" && getStatisticsCategory(indicator) !== statisticsCategory) return false;
+    if (!normalizedSearch) return true;
+    const searchable = [indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code].filter(Boolean).join(" ").toLocaleLowerCase(isAr ? "ar" : "fr");
+    return searchable.includes(normalizedSearch);
+  });
   const categoryControls = [
     { id: "all", label: isAr ? "جميع المؤشرات" : "Tous les indicateurs" },
     { id: "economie_finances_publiques", label: categoryLabels.economie_finances_publiques },
@@ -948,6 +953,7 @@ function renderStatisticsDashboard() {
   ];
   const controls = `
     <div class="stats-controls">
+      <label class="stats-search-wrap"><span>${isAr ? "البحث في المؤشرات" : "Rechercher un indicateur"}</span><input type="search" data-stat-search value="${escapeHtml(statisticsSearch)}" placeholder="${isAr ? "مثلاً: البطالة، السكان، التضخم..." : "Ex. : chômage, population, inflation…"}" autocomplete="off"></label>
       <div class="stats-filter-group" role="group" aria-label="${isAr ? "تصنيف المؤشرات" : "Filtrer les indicateurs"}">
         ${categoryControls.map((item) => `<button type="button" class="stats-filter-btn ${statisticsCategory === item.id ? "is-active" : ""}" data-stat-category="${item.id}" aria-pressed="${statisticsCategory === item.id}">${escapeHtml(item.label)}</button>`).join("")}
       </div>
@@ -1046,6 +1052,7 @@ function renderStatisticsDashboard() {
       ${overview}
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تاريخ إنشاء ملف البيانات" : "Fichier statistique généré le"} : ${escapeHtml(updateDate)}</span></div>
       ${controls}
+      <div class="stats-results-meta">${isAr ? "المؤشرات المعروضة" : "Indicateurs affichés"} : <strong>${filteredIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong> / ${allIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</div>
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
       <p class="stats-source-note">${isAr ? "تاريخ إنشاء الملف لا يعني بالضرورة أن كل مؤشر قد حُيّن. الفترات المعروضة هي الفترات الفعلية للقيم المتاحة." : "La date de génération du fichier ne correspond pas nécessairement à la date de la dernière observation. Les périodes affichées correspondent aux valeurs réellement disponibles."}</p>
     </section>`;
@@ -2006,6 +2013,11 @@ function render() {
       statisticsView = btn.getAttribute("data-stat-view") === "regional" ? "regional" : "national";
       render();
     });
+  });
+
+  document.querySelector("[data-stat-search]")?.addEventListener("change", (event) => {
+    statisticsSearch = event.target.value || "";
+    render();
   });
 
   document.querySelectorAll("[data-stat-category]").forEach((btn) => {

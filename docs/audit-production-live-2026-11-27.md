@@ -110,6 +110,22 @@ Le commit `f27bf50`, plus récent que `9bfe778`, a reçu un déploiement Cloudfl
 
 Cette URL est une prévisualisation de branche, pas le domaine public `kitn.pages.dev`. Sur le commit `f27bf50`, la vue régionale du chômage strict conserve bien 12/12 régions et 12/12 valeurs disponibles.
 
+## 10. Vérification du menu responsive dans le code
+
+La lecture du code confirme le mécanisme prévu :
+- sous 820 px, le bouton « Menu » devient visible et la navigation est masquée par défaut ;
+- le clic sur ce bouton inverse l'état du menu ;
+- sous 760 px, les liens prennent toute la largeur, les sous-menus passent en flux vertical et les grilles d'accueil se réduisent ;
+- le clic sur un espace referme le menu.
+
+C'est une vérification statique du code, pas un test réel sur un écran de 390 px. Le test navigateur mobile reste donc ouvert.
+
+## 11. Résultat CI et correction du test de données
+
+Sur le commit audité, le workflow de tests Python a réussi et la validation HCP en direct a réussi. Le workflow de validation PR a toutefois échoué au build frontend parce que le nouveau test attendait déjà 342 séries, alors que le snapshot de la PR utilisé par ce run contenait encore les 234 séries EMO, avant l'ajout automatisé des 108 séries sociales. Le test de structure des valeurs et celui d'Academy ont réussi.
+
+Le test a été corrigé pour accepter les deux états cohérents du pipeline (234 séries EMO avant publication sociale, ou 342 séries après publication sociale complète), tout en refusant un jeu social partiel. Le commit correctif est `40e035c`. Aucun nouveau résultat CI n'est encore disponible pour ce correctif ; il ne faut donc pas annoncer la validation finale comme acquise.
+
 ## 9. Contrôles automatisés de données ajoutés
 
 Un nouveau fichier `tests/published-data.test.js` ajoute des contrôles automatisés sur :

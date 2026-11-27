@@ -939,7 +939,7 @@ def run() -> dict:
             "indicators": list(statistics_series.values()),
         }
         STATISTICS_FILE.write_text(
-            json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\n",
+            json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\\n",
             encoding="utf-8",
         )
         _sync_public_index(STATISTICS_FILE, PUBLIC_STATISTICS_FILE)

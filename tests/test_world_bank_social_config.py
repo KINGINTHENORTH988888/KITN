@@ -27,7 +27,7 @@ class TestWorldBankSocialConfiguration(unittest.TestCase):
 
         self.assertTrue(SOCIAL_CODES.issubset(configured))
         self.assertEqual(source["max_items"], len(source["indicators"]))
-        self.assertGreaterEqual(source["history_points"], 20)
+        self.assertGreaterEqual(source["history_points"], 66)
         for code in SOCIAL_CODES:
             self.assertEqual(configured[code]["pole"], "societe_developpement_humain")
 

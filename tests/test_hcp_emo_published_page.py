@@ -5,6 +5,17 @@ from pipeline.collectors import collect_hcp_labour_statistics
 
 
 class TestHcpEmoPublishedPage(unittest.TestCase):
+    def test_listing_fetch_failure_is_reported_instead_of_silently_hidden(self):
+        source = {
+            "id": "hcp_labour_statistics",
+            "type": "hcp_labour_statistics",
+            "url": "https://www.hcp.ma/",
+            "listing_urls": ["https://m.hcp.ma/Actualite-marche-du-travail_r424.html"],
+        }
+        with patch("pipeline.collectors._fetch_text", side_effect=RuntimeError("403 Forbidden")):
+            with self.assertRaisesRegex(RuntimeError, "403 Forbidden"):
+                collect_hcp_labour_statistics(source)
+
     def test_latest_published_hcp_emo_page_is_extracted_from_realistic_listing(self):
         article_url = (
             "https://m.hcp.ma/Situation-du-marche-du-travail-au-Maroc-au-troisieme-"

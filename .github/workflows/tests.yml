@@ -7,6 +7,7 @@ on:
       - "pipeline/**"
       - "tests/**"
       - "data/sources.json"
+      - "requirements.txt"
       - ".github/workflows/tests.yml"
   push:
     branches: [main]

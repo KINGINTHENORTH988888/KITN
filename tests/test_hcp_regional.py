@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from pipeline.hcp_regional import parse_hcp_emo_regional_tables
+from pipeline.hcp_regional import HCP_EMO_REGIONS, parse_hcp_emo_regional_tables
 from pipeline.run_pipeline import _merge_regional_statistics_series
 from pipeline.collectors import _extract_hcp_emo_regional_statistics
 
@@ -200,6 +200,54 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
                 source_url="https://www.hcp.ma/attachment/2928207/",
             ),
             [],
+        )
+
+
+    def test_pdf_page_breaks_are_preserved_when_parsing_multiple_regional_tables(self):
+        class FakePage:
+            def __init__(self, text):
+                self.text = text
+
+            def extract_text(self, extraction_mode=None):
+                return self.text
+
+        class FakeReader:
+            def __init__(self, _stream):
+                rows = "\n".join(
+                    f"{region_name} 40,0 41,0 42,0"
+                    for region_name, _region_code in HCP_EMO_REGIONS
+                )
+                total = "Ensemble 40,0 41,0 42,0"
+                self.pages = [
+                    FakePage(
+                        "Indicateurs T1/2026 T2/2026 T3/2026\n"
+                        "Urbain\nTaux de participation à la main-d’œuvre (%)\n"
+                        f"{rows}\n{total}"
+                    ),
+                    FakePage(
+                        "Indicateurs T1/2026 T2/2026 T3/2026\n"
+                        "Rural\nTaux de chômage strict (%)\n"
+                        f"{rows}\n{total}"
+                    ),
+                ]
+
+        with patch("pipeline.collectors._fetch_pdf_bytes", return_value=b"%PDF-test"):
+            with patch("pipeline.collectors.PdfReader", side_effect=FakeReader):
+                series, warnings = _extract_hcp_emo_regional_statistics(
+                    ["https://www.hcp.ma/attachment/2928207/"],
+                    "https://www.hcp.ma/emo-2026.html",
+                    "2026-11-03",
+                )
+
+        self.assertEqual(warnings, [])
+        self.assertEqual(len(series), 26)
+        self.assertEqual({item["residence_scope"] for item in series}, {"urban", "rural"})
+        self.assertEqual(
+            {item["indicator_code"] for item in series},
+            {
+                "HCP_EMO_REGIONAL_LABOUR_FORCE_PARTICIPATION",
+                "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT",
+            },
         )
 
 

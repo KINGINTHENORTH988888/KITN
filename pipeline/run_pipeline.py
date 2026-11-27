@@ -316,6 +316,7 @@ def run() -> dict:
         accepted_count = 0
         statistics_count = 0
         statistics_codes: list[str] = []
+        statistics_warnings: list[str] = []
         status = "ok"
         stage = "collecte_effectuee"
         error_msg = None
@@ -325,6 +326,10 @@ def run() -> dict:
             fetched_count = len(raw_items)
             total_fetched += fetched_count
             for raw in raw_items:
+                if isinstance(raw, dict):
+                    warnings = raw.get("statistics_collection_warnings")
+                    if isinstance(warnings, list):
+                        statistics_warnings.extend(str(warning) for warning in warnings if warning)
                 series = raw.get("statistics_series") if isinstance(raw, dict) else None
                 if isinstance(series, dict) and series.get("indicator_code"):
                     code = str(series["indicator_code"])
@@ -375,9 +380,9 @@ def run() -> dict:
                 if statistics_count > 0:
                     # Statistical series are valid data outputs even when they are
                     # intentionally not indexed as documentary notices.
-                    status = "ok"
-                    stage = "series_statistiques_collectees"
-                    error_msg = None
+                    status = "warning" if statistics_warnings else "ok"
+                    stage = "collecte_statistique_partielle" if statistics_warnings else "series_statistiques_collectees"
+                    error_msg = f"{len(statistics_warnings)} ressource(s) BAM non exploitable(s)." if statistics_warnings else None
                 else:
                     status = "warning"
                     stage = "aucun_document_pertinent"
@@ -401,6 +406,7 @@ def run() -> dict:
             "accepted": accepted_count,
             "statistics_collected": statistics_count,
             "statistics_indicators": sorted(set(statistics_codes)),
+            "statistics_warnings": statistics_warnings,
             "error": error_msg,
             "checked_at": now_iso,
         })

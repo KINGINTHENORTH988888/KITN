@@ -1079,8 +1079,8 @@ function renderRegionalStatisticsDashboard() {
   );
   const title = isAr ? "المقارنة الإحصائية بين الجهات" : "Comparaison statistique entre les régions";
   const intro = isAr
-    ? "بيانات بحث القوى العاملة حسب المؤشر والمجال الحضري أو القروي."
-    : "Données de l’Enquête sur la main-d’œuvre, par indicateur et milieu de résidence.";
+    ? "استكشف المؤشرات الاجتماعية والاقتصادية حسب الجهة والفترة، مع التمييز بين الوسط الحضري والقروي عند توفر البيانات."
+    : "Explorez les indicateurs sociaux et économiques par région et par période, avec distinction urbain/rural lorsque les données le permettent.";
   if (!model.available) {
     return `<section class="regional-stats-dashboard">
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div></div>
@@ -1138,7 +1138,9 @@ function renderRegionalStatisticsDashboard() {
       const value = new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", { maximumFractionDigits: 1 }).format(Number(point.value));
       const marker = point.quality_flag === "medium_significance"
         ? `<sup class="regional-quality" title="${isAr ? "دلالة إحصائية متوسطة" : "Significativité moyenne"}">ms</sup>`
-        : "";
+        : point.quality_flag === "estimated"
+          ? `<sup class="regional-quality" title="${isAr ? "قيمة مقدّرة" : "Valeur estimée"}">*</sup>`
+          : "";
       return `<td>${escapeHtml(value)}${marker}</td>`;
     }).join("");
     return `<tr><th scope="row">${escapeHtml(isAr ? row.nameAr : row.nameFr)}</th>${cells}</tr>`;

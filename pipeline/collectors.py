@@ -553,13 +553,21 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
             for candidate in _collect_hcp_page(listing_url, source, strict_tokens=True):
                 title = clean_text(candidate.get("title"))
                 url = sanitize_url(candidate.get("url"))
-                probe = title.casefold()
+                url_slug = ""
+                if url:
+                    url_slug = unquote(urlsplit(url).path.rsplit("/", 1)[-1])
+                    url_slug = re.sub(r"_a\d+\.html$", "", url_slug, flags=re.IGNORECASE)
+                probe = f"{title} {url_slug}".casefold()
                 if (
                     url and url not in seen
-                    and "marché du travail" in probe
+                    and "marche du travail" in probe.replace("marché", "marche")
                     and "trimestre" in probe
                     and re.search(r"20\d{2}", probe)
                 ):
+                    # HCP listing pages often label the article link only "Lire la suite".
+                    # Recover a useful title from the article slug before ranking quarters.
+                    if len(title) < 25 or "lire la suite" in title.casefold():
+                        candidate["title"] = clean_text(url_slug.replace("-", " ").replace("_", " "))
                     seen.add(url)
                     candidates.append(candidate)
         except Exception:

@@ -110,18 +110,19 @@ def _extract_table_observations(lines: list[str], definition: dict) -> tuple[lis
     if not starts:
         return [], f"{definition['code']} : tableau HCP introuvable ({definition['table']})."
 
+    mismatch_warning = None
     for start in starts:
         block = []
         for line in lines[start + 1 : start + 65]:
-            if re.search(r"\\bTableau\\s+\\d+\\.\\d+(?:\\s+[a-z])?\\s*:", line, re.IGNORECASE):
+            if re.search(r"\bTableau\s+\d+\.\d+(?:\s+[a-z])?\s*:", line, re.IGNORECASE):
                 break
-            block.append(re.sub(r"\\s+", " ", line).strip())
+            block.append(re.sub(r"\s+", " ", line).strip())
 
         years = []
         for line in block:
             candidates = _YEAR_RE.findall(line)
             if len(candidates) >= 2:
-                years = [re.sub(r"\\s+", "", item) for item in candidates]
+                years = [re.sub(r"\s+", "", item) for item in candidates]
                 break
         if not years:
             # The first occurrence is often the table of contents; keep looking
@@ -131,7 +132,7 @@ def _extract_table_observations(lines: list[str], definition: dict) -> tuple[lis
         national_seen = not definition.get("national_section", False)
         selected = None
         for line in block:
-            if definition.get("national_section") and re.match(r"^National\\b", line, re.IGNORECASE):
+            if definition.get("national_section") and re.match(r"^National\b", line, re.IGNORECASE):
                 national_seen = True
                 continue
             if not national_seen:
@@ -144,12 +145,18 @@ def _extract_table_observations(lines: list[str], definition: dict) -> tuple[lis
             continue
         values = _numbers_from_row(selected)
         if len(values) != len(years):
+            mismatch_warning = (
+                f"{definition['code']} : {len(values)} valeurs détectées pour "
+                f"{len(years)} périodes ; série ignorée par prudence."
+            )
             continue
         return [
             {"year": year, "value": value}
             for year, value in zip(years, values)
         ], None
 
+    if mismatch_warning:
+        return [], mismatch_warning
     return [], f"{definition['code']} : tableau trouvé mais ligne nationale ou périodes non exploitables."
 
 def parse_hcp_social_indicators(text: str, source_url: str = HCP_SOCIAL_REPORT_URL) -> tuple[list[dict], list[str]]:

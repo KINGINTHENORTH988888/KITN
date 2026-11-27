@@ -1927,7 +1927,7 @@ function render() {
         selectedPolesFilter = null;
         activePoleLabel = "";
       }
-      window.history.pushState({ kitnSpace: activeSpace }, "", activeSpace === "all" ? "#/" : "#/" + activeSpace);
+      window.history.pushState({ kitnSpace: activeSpace }, "", SPACE_PATHS[activeSpace] || "/");
       mobileMenuOpen = false;
       render();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2205,11 +2205,24 @@ async function initIndex() {
   render();
 }
 
-const initialRoute = window.location.hash.match(/^#\/(all|veille|science|chiffres|academy|bibliotheque)$/);
-if (initialRoute) activeSpace = initialRoute[1];
+const SPACE_PATHS = {
+  all: "/",
+  chiffres: "/maroc-en-chiffres",
+  veille: "/veille",
+  science: "/etudes-recherche",
+  bibliotheque: "/bibliotheque",
+  academy: "/academy"
+};
+function getSpaceFromLocation() {
+  const pathname = window.location.pathname.replace(/\\/+$/, "") || "/";
+  const match = Object.entries(SPACE_PATHS).find(([, path]) => path === pathname);
+  if (match) return match[0];
+  const legacyRoute = window.location.hash.match(/^#\\/(all|veille|science|chiffres|academy|bibliotheque)$/);
+  return legacyRoute ? legacyRoute[1] : "all";
+}
+activeSpace = getSpaceFromLocation();
 window.addEventListener("popstate", () => {
-  const route = window.location.hash.match(/^#\/(all|veille|science|chiffres|academy|bibliotheque)$/);
-  activeSpace = route ? route[1] : "all";
+  activeSpace = getSpaceFromLocation();
   render();
 });
 render();

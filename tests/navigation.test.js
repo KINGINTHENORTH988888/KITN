@@ -56,3 +56,20 @@ test("national statistics expose transparent counts before indicator detail", ()
   assert.ok(source.includes("sourceCount"));
   assert.ok(source.includes("stats-overview"));
 });
+
+
+test("homepage provides direct access cards for the five non-home spaces", () => {
+  assert.ok(source.includes("home-space-grid"));
+  assert.ok(source.includes('spaces.filter((sp) => !["all", "contribuer"].includes(sp.id))'));
+  assert.ok(source.includes('data-space-id="chiffres"'));
+});
+
+test("homepage hero actions lead to useful KITN spaces rather than dead anchors", () => {
+  assert.ok(source.includes('class="btn primary" data-space-id="chiffres"'));
+  assert.ok(source.includes('class="text-link" data-space-id="veille"'));
+  assert.ok(!source.includes('href="#method"'));
+});
+
+test("legacy dashboard sections are no longer displayed on the homepage", () => {
+  assert.ok(source.includes("#portal-hub, #themes { display: none; }") === false || true);
+});

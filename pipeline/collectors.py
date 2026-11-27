@@ -423,7 +423,20 @@ def collect_openalex(source: dict) -> list[dict]:
     seen_cursors = {cursor}
     while len(works) < max_items:
         page_url = _openalex_cursor_url(url, cursor, page_size)
-        payload = json.loads(_fetch_text(page_url, extra_headers=request_headers))
+        try:
+            response_text = _fetch_text(page_url, extra_headers=request_headers)
+        except HTTPError as exc:
+            if exc.code == 429:
+                key_hint = (
+                    " Vérifier le quota et l'activation de la clé OPENALEX_API_KEY."
+                    if api_key
+                    else " Ajouter une clé API activée dans le secret GitHub OPENALEX_API_KEY."
+                )
+                raise RuntimeError(
+                    "OpenAlex a appliqué une limitation de débit (HTTP 429)." + key_hint
+                ) from exc
+            raise
+        payload = json.loads(response_text)
         page_results = payload.get("results") or []
         if not isinstance(page_results, list) or not page_results:
             break

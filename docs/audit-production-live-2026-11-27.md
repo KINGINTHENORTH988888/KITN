@@ -46,6 +46,13 @@ Les cinq routes canoniques ont été appelées directement et ont renvoyé leur 
 
 Le contrôle mobile de la prévisualisation a observé un rendu plus propre que la production : navigation et cartes lisibles, pas de débordement horizontal majeur détecté dans le parcours testé, et bascule arabe RTL fonctionnelle. Les menus déroulants sur mobile et les tailles exactes des zones tactiles restent à tester plus finement.
 
+### Tests fonctionnels complémentaires sur la prévisualisation
+
+- La vue nationale affiche 853 indicateurs, 80 186 observations historiques et 5 sources identifiées. Le filtre « Économie & finances publiques » fonctionne et ramène la liste à 842 indicateurs.
+- La vue régionale a été activée depuis le bouton « Comparaison régionale ». Le titre, le sélecteur d'indicateur, le tableau des régions et les périodes T1/2026, T2/2026 et T3/2026 sont apparus. Pour le taux de chômage strict sélectionné, l'interface affiche 12/12 régions couvertes et 12/12 valeurs disponibles.
+- La page Academy expose les onglets DGSN, IRAT et Concours admin ainsi qu'un QCM de cinq questions. La présence est confirmée ; le changement de parcours et le retour de correction après réponse restent à valider par interaction.
+- La page Bibliothèque et ses commandes de recherche/filtrage sont présentes. Le test de recherche ciblé est encore en cours.
+
 ### Données régionales vérifiées dans le dépôt de la branche
 
 - 342 séries régionales : 234 séries EMO (6 indicateurs × 13 géographies × 3 milieux) et 108 séries sociales.

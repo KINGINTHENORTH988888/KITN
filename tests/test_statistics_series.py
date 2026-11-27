@@ -78,6 +78,13 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         ordered = sorted(periods, key=lambda value: _statistics_period_sort_key(value, collected_at))
         self.assertEqual(ordered, ["1998", "1999-T4", "2000-01", "2001-02-03", "2026"])
 
+    def test_invalid_calendar_period_does_not_crash_history_sorting(self):
+        collected_at = "2026-11-27T04:00:00Z"
+        periods = ["2026-02-31", "2026-02-01", "2025-13"]
+        ordered = sorted(periods, key=lambda value: _statistics_period_sort_key(value, collected_at))
+        self.assertEqual(ordered[0], "2026-02-01")
+        self.assertEqual(set(ordered[1:]), {"2026-02-31", "2025-13"})
+
     def test_merge_keeps_pre_2000_history_before_recent_observations(self):
         existing = {
             "indicator_code": "LONG_RUNNING_INDICATOR",

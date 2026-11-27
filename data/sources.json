@@ -1069,5 +1069,21 @@
     "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "statistique"
+  },
+  {
+    "id": "bank_al_maghrib_ckan",
+    "name": "Bank Al-Maghrib — Données ouvertes (CKAN)",
+    "domain": "data.gov.ma",
+    "target_space": "chiffres",
+    "type": "bank_al_maghrib_ckan",
+    "url": "https://data.gov.ma/data/api/3/action/package_search",
+    "api_base": "https://data.gov.ma/data/api/3/action",
+    "organization": "bank-al-maghrib",
+    "enabled": true,
+    "lang_hint": "fr",
+    "default_doc_type": "statistique",
+    "max_datasets": 43,
+    "max_resource_bytes": 8000000,
+    "download_timeout": 30
   }
 ]

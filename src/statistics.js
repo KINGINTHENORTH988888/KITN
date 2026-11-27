@@ -1,6 +1,58 @@
 const ECONOMY_POLE = "economie_finances_publiques";
 const SOCIETY_POLE = "societe_developpement_humain";
 
+const HCP_SOCIAL_AR = {
+  HCP_SOCIAL_POPULATION: {
+    label: "السكان القانونيون",
+    description: "عدد السكان القانونيين للمغرب، استنادًا إلى الإحصاءات العامة للسكان والسكنى.",
+    unit: "ألف نسمة",
+  },
+  HCP_SOCIAL_URBANIZATION: {
+    label: "معدل التمدّن",
+    description: "نسبة السكان المقيمين في الوسط الحضري وفقًا لإحصاءات المندوبية السامية للتخطيط.",
+    unit: "%",
+  },
+  HCP_SOCIAL_FERTILITY: {
+    label: "مؤشر الخصوبة الإجمالي",
+    description: "متوسط عدد الأطفال لكل امرأة وفقًا لإحصاءات المندوبية السامية للتخطيط.",
+    unit: "طفل لكل امرأة",
+  },
+  HCP_SOCIAL_UNEMPLOYMENT: {
+    label: "معدل البطالة الوطني",
+    description: "معدل البطالة الوطني المستند إلى البحث الوطني حول التشغيل الصادر عن المندوبية السامية للتخطيط.",
+    unit: "%",
+  },
+  HCP_SOCIAL_PRIMARY_NET_SCHOOLING: {
+    label: "معدل التمدرس الصافي بالتعليم الابتدائي",
+    description: "معدل التمدرس الصافي بالتعليم الابتدائي على المستوى الوطني، وفقًا لبيانات وزارة التربية الوطنية.",
+    unit: "%",
+  },
+  HCP_SOCIAL_UPPER_SECONDARY_GROSS_SCHOOLING: {
+    label: "معدل التمدرس الإجمالي بالتعليم الثانوي التأهيلي",
+    description: "معدل التمدرس الإجمالي بالتعليم الثانوي التأهيلي على المستوى الوطني، وفقًا لبيانات وزارة التربية الوطنية.",
+    unit: "%",
+  },
+  HCP_SOCIAL_UNDER5_MORTALITY: {
+    label: "معدل وفيات الأطفال دون سن الخامسة",
+    description: "عدد وفيات الأطفال دون سن الخامسة لكل ألف ولادة حية.",
+    unit: "وفاة لكل 1,000 ولادة حية",
+  },
+  HCP_SOCIAL_GINI: {
+    label: "معامل جيني للنفقات",
+    description: "معامل جيني لقياس التفاوت في نفقات الأسر.",
+    unit: "مؤشر (من 0 إلى 1)",
+  },
+};
+
+export function getLocalizedStatisticField(indicator, field, language = "fr") {
+  if (!indicator || !["label", "description", "unit"].includes(field)) return "";
+  const french = indicator[`${field}_fr`] || "";
+  const localized = indicator[`${field}_ar`] || "";
+  if (language !== "ar") return french || localized;
+  if (localized && localized !== french) return localized;
+  return HCP_SOCIAL_AR[indicator.indicator_code]?.[field] || localized || french;
+}
+
 export function getStatisticsCategory(indicator) {
   const pole = String(indicator?.pole || indicator?.category_code || "").trim();
   if (pole === ECONOMY_POLE || pole === SOCIETY_POLE) return pole;

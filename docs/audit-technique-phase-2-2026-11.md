@@ -164,6 +164,21 @@ Le prototype Astro ne doit pas devenir la base de production avant :
 - tests de navigation et des pages de détail ;
 - validation de la sortie statique et de l'hébergement.
 
+### 3.8 Tableau statistique — filtres de catégorie et périodes mal adaptés aux fréquences
+
+Deux comportements ressortent du rapprochement entre `src/main.js` et les collecteurs :
+
+**Filtre de catégorie :** le tableau propose seulement les catégories `economie_finances_publiques` et `societe_developpement_humain`, puis compare ces valeurs directement à `indicator.category`. Or le collecteur BAM générique crée des séries avec `category: "Monétaire et financier"`. Certaines séries BAM CKAN utilisent également des libellés de catégorie descriptifs. Elles peuvent donc apparaître dans « Tous les indicateurs » mais disparaître lorsqu'un utilisateur sélectionne « Économie & finances publiques ». Le champ `pole` est plus cohérent pour filtrer les grands domaines ; la catégorie détaillée doit rester un niveau secondaire.
+
+**Période historique :** les boutons sont libellés « 5 ans » et « 10 ans », mais le code applique `history.slice(-5)` ou `history.slice(-10)`. Cela signifie cinq ou dix observations, pas cinq ou dix années. Pour une série annuelle, le résultat peut sembler correct ; pour une série mensuelle, il ne montre que cinq ou dix mois ; pour MONIA, il peut ne montrer que cinq ou dix jours.
+
+**Correction recommandée :**
+1. filtrer les grands domaines à partir d'un code stable (`pole` ou `category_code`) et non d'un libellé libre ;
+2. garder les catégories descriptives comme métadonnées ;
+3. calculer les bornes temporelles à partir des périodes réelles, en tenant compte de la fréquence ;
+4. nommer les contrôles « 5 dernières observations / 10 dernières observations » si la logique reste fondée sur le nombre de points ;
+5. ajouter des tests spécifiques pour séries annuelles, trimestrielles, mensuelles et quotidiennes.
+
 ## 4. État de la couverture de tests
 
 Le workflow exécute `python -m unittest discover -s tests -v`. Le fichier `tests/test_pipeline.py` couvre déjà de nombreux scénarios : pertinence Maroc, DOI, dates, HCP, MEF, MONIA, Banque mondiale, HAL, Crossref, concours, fusion de notices et CKAN.

@@ -18,6 +18,8 @@ class TestArabicPressSources(unittest.TestCase):
         self.assertEqual(source["lang_hint"], "ar")
         self.assertEqual(source["default_doc_type"], "article_presse")
         self.assertEqual(source["url"], "https://www.alalam.ma/xml/syndication.rss")
+        self.assertEqual(source["domain"], "www.alalam.ma")
+        self.assertEqual(source["max_items"], 25)
         self.assertIn("الأمن", source["include_title_tokens"])
         self.assertIn("رياضة", source["exclude_title_tokens"])
 

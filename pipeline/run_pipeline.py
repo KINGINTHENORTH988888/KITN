@@ -444,6 +444,7 @@ def run() -> dict:
                     )
                     statistics_count += 1
                     statistics_codes.append(code)
+            statistics_warnings = sorted(set(statistics_warnings))
             if not raw_items:
                 status = "warning"
                 stage = "aucun_contenu"

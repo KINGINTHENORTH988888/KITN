@@ -60,6 +60,10 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
 
   const selectedIndicator = indicatorOptions.find((item) => item.code === activeIndicatorCode) || null;
   const firstSeries = selectedSeries[0] || indicatorSeries[0] || null;
+  const sourceSeries = selectedSeries.find((item) =>
+    item.source_name || item.source_name_ar || item.source_url ||
+    item.methodology_note_fr || item.methodology_note_ar
+  ) || firstSeries;
   const collectionDates = selectedSeries
     .map((item) => item.last_successful_collection_at || "")
     .filter(Boolean)
@@ -90,13 +94,13 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
     rows,
     unitFr: firstSeries?.unit_fr || selectedIndicator?.unitFr || "%",
     unitAr: firstSeries?.unit_ar || selectedIndicator?.unitAr || "%",
-    sourceName: firstSeries?.source_name || "Haut-Commissariat au Plan",
-    sourceNameAr: firstSeries?.source_name_ar || "المندوبية السامية للتخطيط",
-    sourceUrl: firstSeries?.source_url || "",
+    sourceName: sourceSeries?.source_name || "Haut-Commissariat au Plan",
+    sourceNameAr: sourceSeries?.source_name_ar || "المندوبية السامية للتخطيط — بحث اليد العاملة",
+    sourceUrl: sourceSeries?.source_url || "",
     lastSuccessfulCollectionAt: collectionDates.at(-1) || firstSeries?.last_successful_collection_at || "",
     collectionStatus,
-    methodologyNoteFr: firstSeries?.methodology_note_fr || "",
-    methodologyNoteAr: firstSeries?.methodology_note_ar || "",
-    methodologyBreak: Boolean(firstSeries?.methodology_break),
+    methodologyNoteFr: selectedSeries.find((item) => item.methodology_note_fr)?.methodology_note_fr || "",
+    methodologyNoteAr: selectedSeries.find((item) => item.methodology_note_ar)?.methodology_note_ar || "",
+    methodologyBreak: selectedSeries.some((item) => Boolean(item.methodology_break)),
   };
 }

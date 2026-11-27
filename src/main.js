@@ -1447,8 +1447,8 @@ function render() {
           <h1>${c.heroTitle}</h1>
           <p class="hero-intro">${c.heroIntro}</p>
           <div class="hero-actions">
-            <a href="#research" class="btn primary">${c.heroPrimary}</a>
-            <a href="#method" class="text-link">${c.heroSecondary}</a>
+            <button type="button" class="btn primary" data-space-id="chiffres">${c.heroPrimary}</button>
+            <button type="button" class="text-link" data-space-id="veille">${c.heroSecondary}</button>
           </div>
           <div class="hero-note">
             <span class="note-line"></span>
@@ -1563,6 +1563,23 @@ function render() {
       </section>
     ` : ""}
 
+    ${activeSpace === "all" ? `
+      <section class="section home-spaces">
+        <div class="section-head">
+          <div><span class="eyebrow">${lang === "ar" ? "استكشف KITN" : "EXPLORER KITN"}</span><h2>${lang === "ar" ? "مساحات المعرفة" : "Six espaces pour explorer le Maroc"}</h2></div>
+          <p>${lang === "ar" ? "كل مساحة لها محتواها وأدواتها الخاصة." : "Des espaces indépendants, chacun organisé autour d'un besoin précis."}</p>
+        </div>
+        <div class="home-space-grid">
+          ${spaces.filter((sp) => !["all", "contribuer"].includes(sp.id)).map((sp) => `
+            <button type="button" class="home-space-card" data-space-id="${sp.id}">
+              <span class="home-space-mark">${({ chiffres: "01", veille: "02", science: "03", bibliotheque: "04", academy: "05" })[sp.id] || "•"}</span>
+              <strong>${escapeHtml(sp.label)}</strong>
+              <span>${lang === "ar" ? "اكتشف المساحة" : "Explorer l'espace"} ↗</span>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+    ` : ""}
     ${activeSpace === "academy" ? `
       <section class="section" id="academy">
         <div class="section-head">

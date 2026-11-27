@@ -207,7 +207,15 @@ Les corrections suivantes ont été développées sur `audit/kitn-quality-review
 - Chaque série collectée reçoit `last_successful_collection_at` et `collection_status=collected`. Une série conservée faute de nouvelle collecte reçoit `collection_status=carried_forward` et garde sa date de collecte connue.
 - L'interface distingue la date de génération du fichier statistique de la date de collecte individuelle lorsqu'elle est disponible.
 
-Les changements statistiques, OpenAlex, HCP et le premier filtre qualité BAM CKAN ont été validés par GitHub Actions sur le commit `d538cb3` : 59 tests Python, 6 tests JavaScript et build Vite réussis. Les mises à jour documentaires suivantes ne modifient pas le code applicatif. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+Les changements statistiques, OpenAlex, HCP, BAM CKAN, navigation publique et Vite 6.4.6 ont été validés par GitHub Actions sur le commit `3eb4e69` : 59 tests Python, 9 tests JavaScript, build Vite 6.4.6 réussi et zéro vulnérabilité npm. Les mises à jour documentaires suivantes ne modifient pas le code applicatif. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+
+### 3.10 Navigation publique et dépendances frontend
+
+- L'espace « Administration & contributions » a été retiré de la navigation publique en français et en arabe. Les anciennes sessions qui pointaient vers cet espace reviennent à l'accueil. Les fonctions de contribution locales restent dans le code pour préserver le travail existant, mais elles ne sont plus exposées comme un espace public ; elles devront être remplacées par un vrai circuit de proposition et de modération.
+- La navigation publique comporte maintenant six espaces. Trois tests JavaScript vérifient le nombre d'espaces, l'absence de l'administration et le comportement des anciennes sessions.
+- L'audit npm a identifié deux vulnérabilités dans Vite 5.4.21 et son esbuild associé (une modérée, une élevée). La migration vers Vite 6.4.6 a été testée sur la branche : tests frontend et build réussis, `npm audit` ne signale plus aucune vulnérabilité. Les fichiers `package.json` et `package-lock.json` ont été mis à jour sur cette branche uniquement.
+- Le comptage automatisé du fichier statistique de production donne 845 séries : 842 en économie et finances publiques, 3 en société et développement humain, aucune sans code de domaine. Le problème de couverture sociale est donc confirmé : elle est très faible, mais pas inexistante. Les trois séries sociales doivent être identifiées précisément avant d'élargir la collecte.
+- Le navigateur de prévisualisation confirme que l'index documentaire affiche 240 notices après exclusion des notices dont la date est signalée comme future ; l'index source contient 265 notices. Le nombre exact de dates futures sera consigné par le rapport CI dédié.
 
 ## 4. État de la couverture de tests
 

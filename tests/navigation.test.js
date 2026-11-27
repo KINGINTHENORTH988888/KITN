@@ -170,14 +170,3 @@ test("library source cards reflect the real indexed institutional and internal s
   assert.match(source, /Source interne KITN/);
   assert.doesNotMatch(source, /id:"world_bank_maroc"/);
 });
-
-
-test("global search includes national statistical indicators and opens their dedicated view", () => {
-  assert.match(source, /globalStatisticMatches = activeSpace === "all"/);
-  assert.match(source, /statisticsData\?\.indicators/);
-  assert.match(source, /data-global-stat=/);
-  assert.match(source, /statisticsSearch = code/);
-  assert.match(source, /INDICATEURS STATISTIQUES/);
-  assert.match(styles, /\.global-stat-results/);
-  assert.match(styles, /\.global-stat-result/);
-});

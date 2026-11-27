@@ -1836,15 +1836,3 @@ textarea {
 @media (max-width: 520px) {
   .global-search-spaces { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
-/* Cross-dataset global search: documentary and statistical results. */
-
-.global-stat-results{grid-column:1/-1;margin:1.2rem 0 0;padding-top:1.1rem;border-top:1px solid var(--line,#e4e9ed)}
-.global-stat-results-heading{display:flex;align-items:baseline;gap:.8rem;margin-bottom:.8rem;flex-wrap:wrap}
-.global-stat-results-heading strong{font-size:1rem;color:var(--ink,#172b3a)}
-.global-stat-result{display:flex;flex-direction:column;gap:.3rem;width:100%;text-align:start;padding:1rem 1.1rem;margin:.55rem 0;border:1px solid var(--line,#e4e9ed);border-radius:12px;background:#fff;color:inherit;cursor:pointer;transition:border-color .18s,box-shadow .18s}
-.global-stat-result:hover{border-color:var(--accent,#185a83);box-shadow:0 5px 18px rgba(22,57,78,.07)}
-.global-stat-result-type{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#185a83)}
-.global-stat-result strong{font-size:1rem}
-.global-stat-result>span:not(.global-stat-result-type){font-size:.88rem;color:var(--muted,#637381);line-height:1.5}
-.global-stat-result small{font-size:.76rem;color:var(--muted,#637381)}

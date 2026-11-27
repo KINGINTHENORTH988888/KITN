@@ -78,7 +78,7 @@ jobs:
           cp data/statistics.json /tmp/kitn-hcp-preview/data/statistics.json
           cp public/data/statistics.json /tmp/kitn-hcp-preview/public/data/statistics.json
           git fetch origin "$GITHUB_HEAD_REF"
-          git checkout --detach FETCH_HEAD
+          git checkout --force --detach FETCH_HEAD
           cp /tmp/kitn-hcp-preview/data/regional-statistics.json data/regional-statistics.json
           cp /tmp/kitn-hcp-preview/public/data/regional-statistics.json public/data/regional-statistics.json
           cp /tmp/kitn-hcp-preview/data/statistics.json data/statistics.json

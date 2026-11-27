@@ -31,7 +31,7 @@ class TestPipelineProcessors(unittest.TestCase):
         source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
         with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
             items = collect_from_source(source)
-        self.assertEqual(len(items), 4)
+        self.assertEqual(len(items), 4, [x["statistics_series"]["indicator_code"] for x in items])
         values = {x["statistics_series"]["indicator_code"]: x["statistics_series"]["latest"]["value"] for x in items}
         self.assertEqual(values["HCP_EMO_UNEMPLOYMENT"], 10.5)
         self.assertEqual(values["HCP_EMO_UNDERUTILIZATION"], 19.6)

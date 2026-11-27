@@ -168,8 +168,9 @@ def parse_hcp_emo_regional_tables(
                 }
                 for period, (value, quality_flag) in zip(periods, cells)
             ]
-            valid = [point for point in history if point["value"] is not None]
-            latest = valid[-1] if valid else history[-1]
+            # The latest period stays explicit even when HCP suppresses its value.
+            # Never fall back to an older quarter and present it as the current one.
+            latest = history[-1]
             output.append({
                 "id": key,
                 "series_key": key,

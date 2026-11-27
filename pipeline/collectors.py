@@ -1825,10 +1825,13 @@ def _bam_ckan_period(value: str) -> str | None:
     numeric = re.search(r"\b(20\d{2})[-/.](0?[1-9]|1[0-2])(?:[-/.](?:0?[1-9]|[12]\d|3[01]))?\b", text)
     if numeric:
         return f"{numeric.group(1)}-{int(numeric.group(2)):02d}"
+    month_year_numeric = re.search(r"\b(0?[1-9]|1[0-2])[-/.](20\d{2})\b", text)
+    if month_year_numeric:
+        return f"{month_year_numeric.group(2)}-{int(month_year_numeric.group(1)):02d}"
     day_first = re.search(r"\b(?:0?[1-9]|[12]\d|3[01])[-/.](0?[1-9]|1[0-2])[-/.](20\d{2})\b", text)
     if day_first:
         return f"{day_first.group(2)}-{int(day_first.group(1)):02d}"
-    compact = re.fullmatch(r"(20\d{2})(0[1-9]|1[0-2])", text)
+    compact = re.fullmatch(r"(20\d{2})(?:m)?(0[1-9]|1[0-2])", text)
     if compact:
         return f"{compact.group(1)}-{compact.group(2)}"
 
@@ -1983,7 +1986,7 @@ def _append_bam_ckan_series(output: list, label: str, points: list[dict], datase
         return
     code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"[(\[]([^()\[\]]{1,40})[)\]]", label)
-    unit_match_global = re.search(r"(MDH|MMDH|KDH|Nombre|%)", notes, re.IGNORECASE)
+    unit_match_global = re.search(r"(MMDH|MDH|KDH|Nombre|%)", notes, re.IGNORECASE)
     label_unit = clean_text(unit_match.group(1)) if unit_match else ""
     if label_unit and re.search(r"(?:MDH|MMDH|KDH|%|nombre|millions? de dirhams|milliards? de dirhams|milliers? de dirhams)", label_unit, re.IGNORECASE):
         unit = label_unit

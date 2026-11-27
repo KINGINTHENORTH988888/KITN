@@ -155,3 +155,32 @@ Une vérification ultérieure des exécutions GitHub Actions associées au commi
 L'arborescence complète de la branche a été inspectée. Elle contient l'application Vite racine et un prototype Astro statique dans `web/`, mais aucun fichier Worker identifiable, aucune configuration Wrangler (`wrangler.toml`, `wrangler.json` ou `wrangler.jsonc`) et aucun workflow GitHub de déploiement Worker. Le code Vite charge les données publiées depuis des fichiers statiques `/data/*.json`.
 
 Cela ne prouve pas que le service Cloudflare Worker externe est inutile : il peut être configuré séparément dans le tableau de bord Cloudflare ou dans un autre dépôt. En revanche, le dépôt KITN actuellement audité ne fournit pas de code ni de configuration permettant d'expliquer ou de réparer son build. Il faut obtenir le journal détaillé du build Worker et identifier le projet Cloudflare concerné avant toute modification. Le déploiement Cloudflare Pages de prévisualisation reste un service distinct.
+
+
+
+## 13. Correctifs de revue et validation CI complète
+
+Trois corrections de qualité ont été ajoutées après la revue ciblée :
+
+- Le parseur des indicateurs HCP associe désormais les taux annoncés « respectivement » à l'ordre réel des catégories nommées dans le texte (jeunes/femmes), au lieu de supposer un ordre fixe. Deux tests couvrent l'ordre inversé et le cas où les catégories ne sont pas explicitement identifiées.
+- L'extraction des tableaux régionaux HCP exige la couverture exacte des 234 clés attendues. Une pièce jointe complète est maintenant préférée à une pièce jointe partielle de même taille apparente. Un test reproduit le cas d'une extraction de 234 lignes contenant une clé inattendue, suivie d'une extraction réellement complète.
+- Le modèle régional sélectionne les métadonnées de collecte disponibles dans les séries, sans dépendre uniquement de la première série nationale.
+
+### Résultats CI obtenus sur le commit de code 04fa659
+
+- **90 tests Python réussis**, dont les deux nouveaux tests de catégories HCP.
+- **47 tests frontend réussis, aucun échec.**
+- **Build Vite réussi** avec Vite 6.4.6.
+- **Validation HCP EMO en direct réussie** : PDF régional extrait, indicateurs sociaux extraits et publiés dans la prévisualisation, données téléversées comme artefact, tests frontend et build réussis avec les données régionales réelles.
+- Le workflow principal PR a terminé avec succès : tests Python, validations des deux PDF HCP, rapport de distribution des données, tests frontend et build Vite.
+- Le job de collecte automatique est resté ignoré pour la PR, conformément à la configuration.
+
+Exécutions vérifiables :
+- [Tests et build de la PR — run 46055863772](https://github.com/KINGINTHENORTH988888/KITN/actions/runs/46055863772)
+- [Validation HCP en direct — run 46055863928](https://github.com/KINGINTHENORTH988888/KITN/actions/runs/46055863928)
+
+Après ces validations, le workflow HCP a publié les fichiers JSON vérifiés dans la branche isolée. Le commit de code testé (04fa659) est l'ancêtre direct du dernier commit de données (24516d8). La comparaison entre les deux ne montre que quatre fichiers de données générées : data/regional-statistics.json, data/statistics.json et leurs copies dans public/data/. Aucun code source n'a été modifié par cette publication automatique.
+
+GitHub a ensuite marqué les nouveaux runs déclenchés sur le commit de données comme action_required, sans démarrer de jobs. Les tests et le build du code ont néanmoins bien réussi sur le commit parent, avec le jeu de données réel utilisé avant sa publication dans la branche. Si l'on veut que les checks soient également attachés au SHA le plus récent, les exécutions en attente devront être approuvées dans l'interface GitHub Actions.
+
+**Limites restantes :** le contrôle Cloudflare Workers Build reste non résolu faute de journal détaillé et de configuration Worker dans le dépôt ; le contrôle réel du menu sur un viewport mobile de 360–390 px reste à effectuer. La PR demeure en brouillon et aucune fusion ou publication sur kitn.pages.dev n'a été faite.

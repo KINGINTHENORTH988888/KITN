@@ -62,7 +62,7 @@ jobs:
           npm ci
           npm audit --json > /tmp/kitn-npm-audit.json || true
           node -e 'const a=require("/tmp/kitn-npm-audit.json"); for (const [name,v] of Object.entries(a.vulnerabilities||{})) console.log("NPM AUDIT:", name, "| severity:", v.severity, "| direct:", v.isDirect, "| fix:", JSON.stringify(v.fixAvailable), "| via:", (v.via||[]).map(x => typeof x === "string" ? x : x.name).join(", "))'
-          npm run test:statistics
+          npm run test:frontend
           npm run build
 
   collect-and-update:
@@ -113,7 +113,7 @@ jobs:
       - name: Verify root Vite build
         run: |
           npm ci
-          npm run test:statistics
+          npm run test:frontend
           npm run build
 
       - name: Commit and push generated data only

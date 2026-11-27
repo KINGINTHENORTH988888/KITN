@@ -247,7 +247,7 @@ Cinq fichiers Python compilés (`__pycache__/*.pyc`) suivis par Git ont été su
 ### Validation frontend confirmée sur un commit précédent
 
 Sur le commit de revue `1c7a628`, le job HCP a exécuté avec succès :
-- les 52 tests frontend ;
+- les 53 tests frontend ;
 - le build Vite de production ;
 - les validations des deux publications HCP et la préparation des données d'aperçu.
 
@@ -255,4 +255,4 @@ La première publication finale des données avait échoué à cause d'une mise 
 
 Le commit de données HCP qui suit (`9fc42df`) ne contient que les fichiers JSON vérifiés. Les exécutions `action_required` déclenchées après ce commit n'ont créé aucun job, conformément aux gardes ajoutées pour éviter de relancer des validations complètes sur une simple publication de données. Elles ne sont pas des échecs de test.
 
-Le CSS responsive et son test ont été inclus avant la validation réussie sur `46e69f0). La limitation de navigateur demeure : aucun viewport réel de 390 px n'a pu être émule, donc l'absence de débordement à cette largeur reste à confirmer sur un vrai appareil ou émulateur.
+L'audit npm exécuté dans le job Vite n'a signalé aucune vulnérabilité dans les dépendances installées. Le CSS responsive et son test ont été inclus avant la validation réussie sur `46e69f0). La limitation de navigateur demeure : aucun viewport réel de 390 px n'a pu être émule, donc l'absence de débordement à cette largeur reste à confirmer sur un vrai appareil ou émulateur.

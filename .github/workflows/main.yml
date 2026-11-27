@@ -55,6 +55,9 @@ jobs:
       - name: Validate current HCP regional PDF (read-only)
         run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py
 
+      - name: Validate HCP 2026 social indicators PDF (read-only)
+        run: PYTHONPATH=. python scripts/validate_hcp_social_live.py
+
       - name: Report statistical dataset distribution
         run: |
           python - <<'PY'

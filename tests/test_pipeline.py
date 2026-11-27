@@ -1064,6 +1064,9 @@ class TestPipelineProcessors(unittest.TestCase):
         from pipeline.collectors import _bam_ckan_period, _bam_ckan_number
         self.assertEqual(_bam_ckan_period("Août 2026"), "2026-08")
         self.assertEqual(_bam_ckan_period("2026-T3"), "2026-T3")
+        self.assertEqual(_bam_ckan_period("31/08/2026"), "2026-08")
+        self.assertEqual(_bam_ckan_period("2098"), None)
+        self.assertEqual(_bam_ckan_period("2026"), "2026")
         self.assertEqual(_bam_ckan_number("1 234,56"), 1234.56)
         self.assertEqual(_bam_ckan_number("(25,5)"), -25.5)
         self.assertIsNone(_bam_ckan_number("—"))
@@ -1110,6 +1113,30 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(values["HCP_EMO_YOUTH_UNEMPLOYMENT"], 30.5)
         self.assertEqual(values["HCP_EMO_WOMEN_UNEMPLOYMENT"], 16.7)
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
+
+
+
+    def test_bam_ckan_parser_finds_vertical_table_below_title_rows_and_unit_hint(self):
+        from pipeline.collectors import _bam_ckan_series_from_rows
+
+        rows = [
+            ["Bank Al-Maghrib"],
+            ["Compte de patrimoine"],
+            ["En millions de dirhams"],
+            ["Période", "Actif total", "Passif total"],
+            ["2024", "1000", "990"],
+            ["2025", "1100", "1080"],
+            ["2026", "1200", "1180"],
+        ]
+        items = _bam_ckan_series_from_rows(
+            rows,
+            {"title": "Compte de patrimoine des banques", "notes": "Données annuelles"},
+            {"url": "https://data.gov.ma/banques.xlsx", "name": "banques.xlsx"},
+        )
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0]["statistics_series"]["latest"], {"year": "2026", "value": 1200.0})
+        self.assertEqual(items[0]["statistics_series"]["unit_fr"], "MDH")
+        self.assertEqual(items[1]["statistics_series"]["latest"]["value"], 1180.0)
 
 
 

@@ -637,6 +637,9 @@ let selectedAcademyIndex = 0;
 let selectedQuizOption = null;
 let selectedQuizQuestionIndex = 0;
 let searchQuery = "";
+let scienceAuthorFilter = "";
+let scienceDisciplineFilter = "";
+let scienceYearFilter = "";
 let futureDatesOnly = false;
 let favoritesOnly = false;
 let favorites = loadJsonStorage(FAVORITES_KEY, []);
@@ -665,6 +668,12 @@ function isSafeHttpUrl(url) {
   } catch {
     return false;
   }
+}
+
+function getDoiUrl(doi) {
+  const value = String(doi || "").trim().replace(/^https?:\\/\\/(dx\\.)?doi\\.org\\//i, "");
+  if (!/^10\\.\\d{4,9}\\/\\S+$/i.test(value)) return "";
+  return "https://doi.org/" + value.split("/").map(encodeURIComponent).join("/");
 }
 
 function isFutureDate(item) {
@@ -783,6 +792,9 @@ function resetAllFilters() {
   dateToFilter = "";
   sortOrder = "newest";
   searchQuery = "";
+  scienceAuthorFilter = "";
+  scienceDisciplineFilter = "";
+  scienceYearFilter = "";
   futureDatesOnly = false;
   favoritesOnly = false;
   render();
@@ -790,8 +802,23 @@ function resetAllFilters() {
 
 function getFilteredItems() {
   const q = searchQuery.trim().toLowerCase();
+  const authorQuery = scienceAuthorFilter.trim().toLowerCase();
+  const disciplineQuery = scienceDisciplineFilter.trim().toLowerCase();
   const list = indexItems.filter((item) => {
     if (!matchesSpace(item, activeSpace)) return false;
+    if (activeSpace === "science") {
+      const authorsForFilter = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
+      const disciplineText = [
+        ...(Array.isArray(item.mots_cles) ? item.mots_cles : []),
+        item.pole || "",
+        item.revue_ou_institution || "",
+        item.titre_original || "",
+        item.resume || ""
+      ].join(" ").toLowerCase();
+      if (authorQuery && !authorsForFilter.includes(authorQuery)) return false;
+      if (disciplineQuery && !disciplineText.includes(disciplineQuery)) return false;
+      if (scienceYearFilter && String(item.date_publication || "").slice(0, 4) !== scienceYearFilter) return false;
+    }
     const matchesThemePoles = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
     if (!matchesThemePoles) return false;
     if (selectedSinglePoleFilter && item.pole !== selectedSinglePoleFilter) return false;
@@ -1019,6 +1046,7 @@ function renderModal() {
 
   const safeUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
   const safePdf = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
+  const doiUrl = getDoiUrl(item.doi);
   const isManual = item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_");
 
   const modal = document.createElement("div");
@@ -1043,7 +1071,7 @@ function renderModal() {
         ${item.langue_originale ? `<div><dt>${escapeHtml(c.labelDocLang)}</dt><dd>${escapeHtml(formatDocLang(item.langue_originale))}</dd></div>` : ""}
         ${item.confiance_classification ? `<div><dt>${escapeHtml(c.labelConfidence)}</dt><dd>${escapeHtml(formatConfidence(item.confiance_classification))}</dd></div>` : ""}
         ${typeof item.score_pertinence === "number" ? `<div><dt>${escapeHtml(c.labelScore)}</dt><dd>${escapeHtml(String(item.score_pertinence))}</dd></div>` : ""}
-        ${item.doi ? `<div><dt>${escapeHtml(c.labelDoi)}</dt><dd>${escapeHtml(item.doi)}</dd></div>` : ""}
+        ${item.doi ? `<div><dt>${escapeHtml(c.labelDoi)}</dt><dd>${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.doi)}</a>` : escapeHtml(item.doi)}</dd></div>` : ""}
         ${keywordsText ? `<div><dt>${escapeHtml(c.labelKeywords)}</dt><dd>${escapeHtml(keywordsText)}</dd></div>` : ""}
       </dl>
       <div class="modal-resume">
@@ -1058,6 +1086,7 @@ function renderModal() {
       ` : ""}
       <div class="result-actions">
         ${safeUrl ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceLink)}</a>` : ""}
+        ${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">DOI ↗</a>` : ""}
         ${safePdf ? `<a href="${escapeHtml(safePdf)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.pdfLink)}</a>` : ""}
         <button type="button" class="link-btn" id="modal-validate-btn">${escapeHtml(c.validateBtn)}</button>
         <button type="button" class="link-btn" id="modal-archive-btn">${escapeHtml(c.archiveBtn)}</button>
@@ -1137,6 +1166,10 @@ function renderResults() {
         : "";
       const safePdf = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
       const safeUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
+      const doiUrl = getDoiUrl(item.doi);
+      const doiHtml = doiUrl
+        ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">DOI ↗</a>`
+        : "";
       const pdfHtml = safePdf
         ? `<a href="${escapeHtml(safePdf)}" target="_blank" rel="noopener noreferrer">${escapeHtml(COPY[lang].pdfLink)}</a>`
         : "";
@@ -1156,6 +1189,7 @@ function renderResults() {
           ${resumeSnippet}
           <div class="result-actions">
             ${sourceHtml}
+            ${doiHtml}
             ${pdfHtml}
             <button type="button" class="link-btn" data-open-index="${idx}">${escapeHtml(COPY[lang].detailsBtn)}</button>
             <button type="button" class="fav-btn ${isSaved ? "is-saved" : ""}" data-fav-index="${idx}">${isSaved ? "★ " : "☆ "}${escapeHtml(isSaved ? COPY[lang].savedBtn : COPY[lang].saveBtn)}</button>
@@ -1199,6 +1233,14 @@ function render() {
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
   const availableConfidence = [...new Set(indexItems.map((it) => it.confiance_classification).filter(Boolean))];
   const availableDocLangs = [...new Set(indexItems.map((it) => it.langue_originale).filter(Boolean))];
+  const scienceItems = indexItems.filter((it) => resolveItemSpace(it) === "science");
+  const scienceYears = [...new Set(scienceItems
+    .map((it) => String(it.date_publication || "").slice(0, 4))
+    .filter((year) => /^\\d{4}$/.test(year)))]
+    .sort((a, b) => b.localeCompare(a));
+  const scienceWithAbstract = scienceItems.filter((it) => String(it.resume || "").trim()).length;
+  const scienceWithDoi = scienceItems.filter((it) => getDoiUrl(it.doi)).length;
+  const scienceNeedsReview = scienceItems.filter((it) => isFutureDate(it) || it.statut_validation === "a_verifier").length;
 
   const visibleItems = indexItems.filter((it) => !isFutureDate(it));
   const scienceCount = visibleItems.filter((it) => resolveItemSpace(it) === "science").length;
@@ -1515,8 +1557,35 @@ function render() {
 
       <div id="active-pole-banner" class="pole-banner" style="display:none;"></div>
 
+      ${activeSpace === "science" ? `
+        <div class="science-search-panel">
+          <div class="science-metrics">
+            <div><strong>${scienceItems.length}</strong><span>${lang === "ar" ? "منشور مفهرس" : "publications indexées"}</span></div>
+            <div><strong>${scienceWithAbstract}</strong><span>${lang === "ar" ? "ملخص متاح" : "résumés disponibles"}</span></div>
+            <div><strong>${scienceWithDoi}</strong><span>DOI</span></div>
+            <div><strong>${scienceNeedsReview}</strong><span>${lang === "ar" ? "تحتاج إلى التحقق" : "à vérifier"}</span></div>
+          </div>
+          <div class="science-specific-filters">
+            <label>
+              <span>${lang === "ar" ? "الباحث / المؤلف" : "Auteur / chercheur"}</span>
+              <input type="search" id="science-author-input" value="${escapeHtml(scienceAuthorFilter)}" placeholder="${lang === "ar" ? "ابحث عن اسم المؤلف" : "Nom d'un auteur"}" />
+            </label>
+            <label>
+              <span>${lang === "ar" ? "التخصص / الكلمات المفتاحية" : "Discipline / mots-clés"}</span>
+              <input type="search" id="science-discipline-input" value="${escapeHtml(scienceDisciplineFilter)}" placeholder="${lang === "ar" ? "اقتصاد، أمن، حكامة..." : "Économie, sécurité, gouvernance..."}" />
+            </label>
+            <label>
+              <span>${lang === "ar" ? "سنة النشر" : "Année de publication"}</span>
+              <select id="science-year-select">
+                <option value="">${lang === "ar" ? "كل السنوات" : "Toutes les années"}</option>
+                ${scienceYears.map((year) => \`<option value="${year}" ${scienceYearFilter === year ? "selected" : ""}>${year}</option>\`).join("")}
+              </select>
+            </label>
+          </div>
+        </div>
+      ` : ""}
       <div class="filters-bar">
-        <input type="search" id="search-input" placeholder="${escapeHtml(c.searchPlaceholder)}" value="${escapeHtml(searchQuery)}" />
+        <input type="search" id="search-input" placeholder="${escapeHtml(activeSpace === "science" ? (lang === "ar" ? "ابحث بعنوان المنشور أو الملخص..." : "Rechercher un titre, un résumé, une revue...") : c.searchPlaceholder)}" value="${escapeHtml(searchQuery)}" />
         <label class="date-range-field">
           <span>${escapeHtml(c.dateFromLabel)}</span>
           <input type="date" id="date-from-input" value="${escapeHtml(dateFromFilter)}" />
@@ -1776,6 +1845,21 @@ function render() {
 
   document.getElementById("search-input")?.addEventListener("input", (e) => {
     searchQuery = e.target.value || "";
+    renderResults();
+  });
+
+  document.getElementById("science-author-input")?.addEventListener("input", (e) => {
+    scienceAuthorFilter = e.target.value || "";
+    renderResults();
+  });
+
+  document.getElementById("science-discipline-input")?.addEventListener("input", (e) => {
+    scienceDisciplineFilter = e.target.value || "";
+    renderResults();
+  });
+
+  document.getElementById("science-year-select")?.addEventListener("change", (e) => {
+    scienceYearFilter = e.target.value || "";
     renderResults();
   });
 

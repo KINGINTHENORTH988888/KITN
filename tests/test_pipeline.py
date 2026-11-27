@@ -46,6 +46,49 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
 
 
+    def test_hcp_labour_statistics_maps_respectively_values_to_named_category_order(self):
+        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>'
+        article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
+        <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 28,5% chez les femmes et 44,5% chez les jeunes de 15-24 ans.</p>
+        <p>Le taux de chômage strict s’élève respectivement à 16,7% et 30,5% pour ces deux catégories.</p>
+        </body></html>"""
+        source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
+
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+            items = collect_from_source(source)
+
+        values = {
+            item["statistics_series"]["indicator_code"]: item["statistics_series"]["latest"]["value"]
+            for item in items
+        }
+        self.assertEqual(values["HCP_EMO_YOUTH_UNEMPLOYMENT"], 30.5)
+        self.assertEqual(values["HCP_EMO_WOMEN_UNEMPLOYMENT"], 16.7)
+        self.assertEqual(values["HCP_EMO_YOUTH_UNDERUTILIZATION"], 44.5)
+        self.assertEqual(values["HCP_EMO_WOMEN_UNDERUTILIZATION"], 28.5)
+
+    def test_hcp_labour_statistics_does_not_guess_categories_from_respectively_alone(self):
+        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>'
+        article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
+        <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
+        <p>Le taux de chômage strict s’élève respectivement à 30,5% et 16,7% pour ces deux catégories.</p>
+        </body></html>"""
+        source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
+
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+            items = collect_from_source(source)
+
+        codes = {item["statistics_series"]["indicator_code"] for item in items}
+        self.assertEqual(len(items), 4)
+        self.assertFalse(any(code in codes for code in {
+            "HCP_EMO_YOUTH_UNEMPLOYMENT",
+            "HCP_EMO_WOMEN_UNEMPLOYMENT",
+            "HCP_EMO_YOUTH_UNDERUTILIZATION",
+            "HCP_EMO_WOMEN_UNDERUTILIZATION",
+        }))
+
     def test_mef_tand_statistics_extracts_public_finance_monetary_and_real_indicators(self):
         html = """<table>
         <tr><th>Catégories de données</th><th>Unité</th><th>Période de référence</th><th>Données actuelles</th><th>Données précédentes</th><th>Variation</th></tr>

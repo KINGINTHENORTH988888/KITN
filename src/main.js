@@ -2184,10 +2184,10 @@ async function initIndex() {
   render();
 }
 
-const initialRoute = window.location.hash.match(/^#\\/(all|veille|science|chiffres|academy|bibliotheque)$/);
+const initialRoute = window.location.hash.match(/^#\/(all|veille|science|chiffres|academy|bibliotheque)$/);
 if (initialRoute) activeSpace = initialRoute[1];
 window.addEventListener("popstate", () => {
-  const route = window.location.hash.match(/^#\\/(all|veille|science|chiffres|academy|bibliotheque)$/);
+  const route = window.location.hash.match(/^#\/(all|veille|science|chiffres|academy|bibliotheque)$/);
   activeSpace = route ? route[1] : "all";
   render();
 });

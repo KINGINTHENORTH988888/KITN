@@ -113,14 +113,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:\${GITHUB_TOKEN}@github.com/\${GITHUB_REPOSITORY}.git"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git add package.json package-lock.json
           if git diff --cached --quiet; then
             echo "Vite 6.4.6 is already installed on the review branch."
             exit 0
           fi
           git commit -m "chore(deps): upgrade Vite to 6.4.6"
-          git push origin "HEAD:\${BRANCH}"
+          git push origin "HEAD:${BRANCH}"
 
   collect-and-update:
     timeout-minutes: 20

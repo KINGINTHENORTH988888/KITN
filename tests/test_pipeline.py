@@ -42,6 +42,35 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(values["HCP_EMO_WOMEN_UNEMPLOYMENT"], 16.7)
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
 
+
+    def test_mef_tand_statistics_extracts_public_finance_monetary_and_real_indicators(self):
+        html = """<table>
+        <tr><th>Catégories de données</th><th>Unité</th><th>Période de référence</th><th>Données actuelles</th><th>Données précédentes</th><th>Variation</th></tr>
+        <tr><td>a) PIB à prix constant (2014)</td><td>MDH</td><td>T2-2026</td><td>350.273</td><td>347.396</td><td>0,8</td></tr>
+        <tr><td>Taux de Chômage</td><td>%</td><td>T3-2026</td><td>10,5%</td><td>9,5%</td><td></td></tr>
+        <tr><td>1- Recettes Ordinaires</td><td>MDH</td><td>sept.-26</td><td>338.877</td><td>295.148</td><td>14,8</td></tr>
+        <tr><td>M3</td><td>MDH</td><td>sept.-26</td><td>2.237.946</td><td>2.217.026</td><td>0,9</td></tr>
+        <tr><td>Total encours de la dette</td><td>MDH</td><td>T2-2026</td><td>1.190.381,2</td><td>1.169.753,3</td><td>1,76</td></tr>
+        </table>"""
+        source = {"id":"mef_tand_statistics","type":"mef_tand_statistics","statistics_url":"https://www.finances.gov.ma/tand"}
+        with patch("pipeline.collectors._fetch_text", return_value=html):
+            items = collect_from_source(source)
+        series = {x["statistics_series"]["indicator_code"]: x["statistics_series"] for x in items}
+        self.assertEqual(len(items), 5)
+        self.assertEqual(series["MEF_GDP_CONSTANT"]["latest"]["value"], 350273.0)
+        self.assertEqual(series["MEF_UNEMPLOYMENT_RATE"]["latest"]["value"], 10.5)
+        self.assertEqual(series["MEF_ORDINARY_REVENUES"]["latest"]["value"], 338877.0)
+        self.assertEqual(series["MEF_M3"]["latest"]["value"], 2237946.0)
+        self.assertEqual(series["MEF_TOTAL_CENTRAL_GOV_DEBT"]["latest"]["value"], 1190381.2)
+        self.assertEqual(series["MEF_GDP_CONSTANT"]["latest"]["year"], "2026-T2")
+        self.assertEqual(series["MEF_ORDINARY_REVENUES"]["latest"]["year"], "2026-09")
+
+    def test_mef_number_parses_french_grouping_and_decimal_separators(self):
+        from pipeline.collectors import _mef_number
+        self.assertEqual(_mef_number("862.341,94"), 862341.94)
+        self.assertEqual(_mef_number("350.273"), 350273.0)
+        self.assertEqual(_mef_number("-0,56"), -0.56)
+
     def test_bank_al_maghrib_public_monia_scraper_needs_no_api_key(self):
         html = """<table><tr><th>Indice MONIA</th><th>Volume JJ</th><th>Date de référence</th><th>Date de publication</th></tr>
         <tr><td>2,195 %</td><td>12709</td><td>25/11/2026</td><td>26/11/2026</td></tr>

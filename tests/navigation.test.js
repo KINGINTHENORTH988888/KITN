@@ -134,3 +134,11 @@ test("regional HCP dashboard ranks only available regional observations for the 
   assert.ok(source.includes("latestRanking"));
   assert.ok(source.includes("model.latestPeriod"));
 });
+
+test("monitoring space exposes thematic entry points with grounded indexed counts", () => {
+  assert.match(source, /function renderWatchDashboard\(\)/);
+  assert.match(source, /watchItems = indexItems\.filter\(\(item\) => matchesSpace\(item, "veille"\)/);
+  assert.match(source, /data-pole-shortcut=/);
+  assert.match(source, /Les volumes correspondent aux notices actuellement indexées/);
+  assert.match(styles, /\.watch-topic-grid/);
+});

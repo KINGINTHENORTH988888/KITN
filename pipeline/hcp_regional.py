@@ -33,7 +33,7 @@ HCP_EMO_REGIONAL_INDICATORS = (
     (
         "EMPLOYMENT_RATE",
         "Taux d’emploi contre revenu",
-        "Taux d’emploi contre revenu",
+        "Taux d[’']emploi contre revenu",
     ),
     (
         "UNDERUTILIZATION",

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T01:29:53Z",
+  "updated_at": "2026-11-27T01:48:06Z",
   "active_sources": 19,
   "total_fetched": 122,
   "total_accepted": 87,
@@ -15,8 +15,10 @@
       "stage": "erreur_collecte",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "emploi_public_maroc",
@@ -29,8 +31,10 @@
       "stage": "collecte_effectuee",
       "fetched": 18,
       "accepted": 18,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "cour_des_comptes_maroc",
@@ -43,8 +47,10 @@
       "stage": "collecte_effectuee",
       "fetched": 20,
       "accepted": 19,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -57,8 +63,10 @@
       "stage": "collecte_effectuee",
       "fetched": 15,
       "accepted": 10,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "cese_maroc",
@@ -71,8 +79,10 @@
       "stage": "collecte_effectuee",
       "fetched": 3,
       "accepted": 3,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "ires_maroc",
@@ -85,8 +95,10 @@
       "stage": "collecte_effectuee",
       "fetched": 6,
       "accepted": 3,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -99,8 +111,10 @@
       "stage": "collecte_effectuee",
       "fetched": 20,
       "accepted": 20,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "hespress_ar",
@@ -113,8 +127,10 @@
       "stage": "collecte_effectuee",
       "fetched": 2,
       "accepted": 2,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "aujourdhui_maroc",
@@ -127,8 +143,10 @@
       "stage": "collecte_effectuee",
       "fetched": 3,
       "accepted": 1,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -141,8 +159,10 @@
       "stage": "collecte_effectuee",
       "fetched": 20,
       "accepted": 5,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "world_bank_maroc",
@@ -155,8 +175,17 @@
       "stage": "collecte_effectuee",
       "fetched": 6,
       "accepted": 6,
+      "statistics_collected": 6,
+      "statistics_indicators": [
+        "BX.KLT.DINV.CD.WD",
+        "FP.CPI.TOTL.ZG",
+        "NY.GDP.MKTP.CD",
+        "NY.GDP.MKTP.KD.ZG",
+        "SL.UEM.TOTL.ZS",
+        "SP.POP.TOTL"
+      ],
       "error": null,
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "openalex_morocco_governance",
@@ -169,8 +198,10 @@
       "stage": "erreur_collecte",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "openalex_morocco_economy",
@@ -183,8 +214,10 @@
       "stage": "erreur_collecte",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "openalex_morocco_security",
@@ -197,8 +230,10 @@
       "stage": "erreur_collecte",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "openalex_morocco_social",
@@ -211,8 +246,10 @@
       "stage": "erreur_collecte",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "openalex_morocco_geopolitics",
@@ -225,8 +262,10 @@
       "stage": "erreur_collecte",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "bank_al_maghrib_monia",
@@ -239,8 +278,10 @@
       "stage": "erreur_collecte",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "HTTP Error 403: Forbidden",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "hcp_labour_statistics",
@@ -253,8 +294,10 @@
       "stage": "aucun_contenu",
       "fetched": 0,
       "accepted": 0,
+      "statistics_collected": 0,
+      "statistics_indicators": [],
       "error": "Aucun document exploitable détecté par le collecteur.",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "checked_at": "2026-11-27T01:48:06Z"
     },
     {
       "source_id": "mef_tand_statistics",
@@ -263,12 +306,24 @@
       "target_space": "chiffres",
       "type": "mef_tand_statistics",
       "enabled": true,
-      "status": "warning",
-      "stage": "aucun_document_pertinent",
+      "status": "ok",
+      "stage": "series_statistiques_collectees",
       "fetched": 9,
       "accepted": 0,
-      "error": "Des éléments ont été collectés, mais aucun n'a passé les contrôles de pertinence.",
-      "checked_at": "2026-11-27T01:29:53Z"
+      "statistics_collected": 9,
+      "statistics_indicators": [
+        "MEF_EXPORTS_FOB",
+        "MEF_IMPORTS_CIF",
+        "MEF_INDUSTRIAL_PRODUCTION",
+        "MEF_LEGAL_POPULATION",
+        "MEF_M1",
+        "MEF_M2",
+        "MEF_M3",
+        "MEF_ORDINARY_REVENUES",
+        "MEF_TOTAL_CENTRAL_GOV_DEBT"
+      ],
+      "error": null,
+      "checked_at": "2026-11-27T01:48:06Z"
     }
   ]
 }

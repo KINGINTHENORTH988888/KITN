@@ -46,6 +46,30 @@ class TestHcpEmoDiscovery(unittest.TestCase):
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
         self.assertEqual(items[0]["statistics_series"]["source_url"], "https://m.hcp.ma/actualites/situation-marche-du-travail-t3-2026")
 
+    def test_does_not_guess_youth_and_women_rates_from_unlabelled_respectively_pair(self):
+        listing = '<a href="/actualites/situation-marche-du-travail-t3-2026">Lire la suite</a>'
+        detail = """
+        <html><head><meta property="og:title" content="Situation du marché du travail au Maroc T3 2026" /></head><body>
+        <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
+        <p>Le taux de chômage strict s’élève respectivement à 30,5% et 16,7% pour ces deux catégories.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 44,5% chez les jeunes de 15-24 ans et 28,5% chez les femmes.</p>
+        </body></html>
+        """
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, detail]):
+            items = collect_hcp_labour_statistics({
+                "id": "hcp_labour_statistics",
+                "url": "https://www.hcp.ma/",
+                "listing_urls": ["/Actualite-marche-du-travail_r424.html"],
+            })
+
+        codes = {item["statistics_series"]["indicator_code"] for item in items}
+        self.assertEqual(len(items), 6)
+        self.assertNotIn("HCP_EMO_YOUTH_UNEMPLOYMENT", codes)
+        self.assertNotIn("HCP_EMO_WOMEN_UNEMPLOYMENT", codes)
+        self.assertIn("HCP_EMO_YOUTH_UNDERUTILIZATION", codes)
+        self.assertIn("HCP_EMO_WOMEN_UNDERUTILIZATION", codes)
+
     def test_ignores_non_hcp_and_non_labour_links(self):
         listing = """
         <a href="https://example.org/emploi-maroc-t3-2026">Emploi au Maroc T3 2026</a>

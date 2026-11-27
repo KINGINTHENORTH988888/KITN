@@ -205,7 +205,7 @@ Les corrections suivantes ont été développées sur `audit/kitn-quality-review
 - Chaque série collectée reçoit `last_successful_collection_at` et `collection_status=collected`. Une série conservée faute de nouvelle collecte reçoit `collection_status=carried_forward` et garde sa date de collecte connue.
 - L'interface distingue la date de génération du fichier statistique de la date de collecte individuelle lorsqu'elle est disponible.
 
-Les changements statistiques et OpenAlex ont été validés sur le commit `0762c55` : 55 tests Python, 6 tests JavaScript et build Vite réussis. Le correctif de diagnostic HCP et son test de régression ont ensuite été ajoutés ; leur validation CI est en cours sur le dernier commit de la branche. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+Les changements statistiques, OpenAlex et HCP ont été validés par GitHub Actions sur le commit `68596aa` : 57 tests Python, 6 tests JavaScript et build Vite réussis. Les mises à jour documentaires suivantes ne modifient pas le code applicatif. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
 
 ## 4. État de la couverture de tests
 

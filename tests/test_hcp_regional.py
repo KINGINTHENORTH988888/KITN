@@ -1,6 +1,7 @@
 import unittest
 
 from pipeline.hcp_regional import parse_hcp_emo_regional_tables
+from pipeline.run_pipeline import _merge_regional_statistics_series
 
 
 class HcpEmoRegionalParserTests(unittest.TestCase):
@@ -82,6 +83,45 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
         self.assertEqual(laayoune["history"][0]["value"], None)
         self.assertEqual(laayoune["history"][0]["quality_flag"], "not_available")
         self.assertEqual(laayoune["latest"]["value"], None)
+
+    def test_pipeline_merge_keeps_earlier_quarters_and_replaces_revised_periods(self):
+        existing = {
+            "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "history": [
+                {"year": "T1/2026", "value": 41.8, "quality_flag": "standard"},
+                {"year": "T2/2026", "value": 42.2, "quality_flag": "standard"},
+            ],
+        }
+        incoming = {
+            "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "history": [
+                {"year": "T2/2026", "value": 42.3, "quality_flag": "standard"},
+                {"year": "T3/2026", "value": 41.8, "quality_flag": "standard"},
+            ],
+        }
+
+        merged = _merge_regional_statistics_series(
+            existing, incoming, "2026-11-27T14:00:00Z"
+        )
+
+        self.assertEqual(
+            [(point["year"], point["value"]) for point in merged["history"]],
+            [("T1/2026", 41.8), ("T2/2026", 42.3), ("T3/2026", 41.8)],
+        )
+        self.assertEqual(merged["latest"]["year"], "T3/2026")
+        self.assertEqual(merged["collection_status"], "collected")
+
+    def test_pipeline_merge_rejects_non_numeric_regional_values(self):
+        incoming = {
+            "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "history": [{"year": "T3/2026", "value": "41,8"}],
+        }
+        self.assertIsNone(
+            _merge_regional_statistics_series(None, incoming, "2026-11-27T14:00:00Z")
+        )
 
     def test_ignores_pages_without_a_supported_period_header_or_indicator(self):
         self.assertEqual(

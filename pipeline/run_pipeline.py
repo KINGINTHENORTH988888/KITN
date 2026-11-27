@@ -17,7 +17,7 @@ from pipeline.config import (
     PUBLIC_STATISTICS_FILE,
 )
 from pipeline.collectors import collect_from_source
-from pipeline.processors import clean_text, process_raw_item, resolve_space, sanitize_url
+from pipeline.processors import clean_text, normalize_doi, process_raw_item, resolve_space, sanitize_url
 
 
 def _load_json_list(path: Path) -> list[dict]:
@@ -55,6 +55,10 @@ def _title_date_key(item: dict) -> str:
 def _url_key(item: dict) -> str:
     url = sanitize_url(item.get("url_publication"))
     return url.rstrip("/").lower() if url else ""
+
+
+def _doi_key(item: dict) -> str:
+    return normalize_doi(item.get("doi")) or ""
 
 
 def _extract_domain(source: dict) -> str:
@@ -209,6 +213,7 @@ def run() -> dict:
     by_id: dict[str, dict] = {}
     td_to_id: dict[str, str] = {}
     url_to_id: dict[str, str] = {}
+    doi_to_id: dict[str, str] = {}
     order_ids: list[str] = []
 
     for item in existing_items:
@@ -227,7 +232,9 @@ def run() -> dict:
             )
         td = _title_date_key(normalized)
         url_key = _url_key(normalized)
-        existing_id = td_to_id.get(td) if td else None
+        doi_key = _doi_key(normalized)
+        existing_id = doi_to_id.get(doi_key) if doi_key else None
+        existing_id = existing_id or (td_to_id.get(td) if td else None)
         existing_id = existing_id or (url_to_id.get(url_key) if url_key else None)
         if existing_id:
             by_id[existing_id], _ = _merge_preserving_rich_fields(by_id[existing_id], normalized, now_iso)
@@ -235,12 +242,16 @@ def run() -> dict:
                 td_to_id.setdefault(td, existing_id)
             if url_key:
                 url_to_id[url_key] = existing_id
+            if doi_key:
+                doi_to_id[doi_key] = existing_id
             continue
         by_id[iid] = normalized
         if td:
             td_to_id[td] = iid
         if url_key:
             url_to_id[url_key] = iid
+        if doi_key:
+            doi_to_id[doi_key] = iid
         order_ids.append(iid)
 
     manual_raw = _load_json_list(MANUAL_CONTRIBUTIONS_FILE)
@@ -257,19 +268,25 @@ def run() -> dict:
         iid = proc["id"]
         td = _title_date_key(proc)
         url_key = _url_key(proc)
-        target_id = iid if iid in by_id else (td_to_id.get(td) or (url_to_id.get(url_key) if url_key else None))
+        doi_key = _doi_key(proc)
+        target_id = iid if iid in by_id else (doi_to_id.get(doi_key) if doi_key else None)
+        target_id = target_id or td_to_id.get(td) or (url_to_id.get(url_key) if url_key else None)
         if target_id:
             by_id[target_id], _ = _merge_preserving_rich_fields(by_id[target_id], proc, now_iso)
             if td:
                 td_to_id.setdefault(td, target_id)
             if url_key:
                 url_to_id[url_key] = target_id
+            if doi_key:
+                doi_to_id[doi_key] = target_id
         else:
             by_id[iid] = proc
             if td:
                 td_to_id[td] = iid
             if url_key:
                 url_to_id[url_key] = iid
+            if doi_key:
+                doi_to_id[doi_key] = iid
             order_ids.append(iid)
 
     total_fetched = 0
@@ -309,7 +326,9 @@ def run() -> dict:
                 iid = proc["id"]
                 td = _title_date_key(proc)
                 url_key = _url_key(proc)
-                target_id = iid if iid in by_id else (td_to_id.get(td) or (url_to_id.get(url_key) if url_key else None))
+                doi_key = _doi_key(proc)
+                target_id = iid if iid in by_id else (doi_to_id.get(doi_key) if doi_key else None)
+                target_id = target_id or td_to_id.get(td) or (url_to_id.get(url_key) if url_key else None)
                 if target_id:
                     before_fp = _content_fingerprint(by_id[target_id])
                     by_id[target_id], _ = _merge_preserving_rich_fields(by_id[target_id], proc, now_iso)
@@ -317,6 +336,8 @@ def run() -> dict:
                         td_to_id.setdefault(td, target_id)
                     if url_key:
                         url_to_id[url_key] = target_id
+                    if doi_key:
+                        doi_to_id[doi_key] = target_id
                     after_fp = _content_fingerprint(by_id[target_id])
                     if before_fp != after_fp:
                         total_updated += 1
@@ -326,6 +347,8 @@ def run() -> dict:
                         td_to_id[td] = iid
                     if url_key:
                         url_to_id[url_key] = iid
+                    if doi_key:
+                        doi_to_id[doi_key] = iid
                     order_ids.append(iid)
                     total_added += 1
 

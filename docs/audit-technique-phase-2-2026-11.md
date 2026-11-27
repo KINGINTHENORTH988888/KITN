@@ -141,6 +141,24 @@ La configuration KITN a été élargie à `history_points = 100`, afin de récup
 
 Cette vérification confirme que les URLs et codes d'indicateurs sont valides et que la configuration demande désormais l'ensemble de l'historique disponible. Elle ne signifie pas encore que ces huit séries sont présentes dans le fichier statistique publié : cela nécessite une exécution complète du pipeline sur la branche de revue.
 
+### 3.2 quater Données régionales EMO — nouveau flux séparé
+
+Le PDF français de l'EMO T3 2026 contient 18 tableaux régionaux : six indicateurs, chacun ventilé par ensemble du territoire, milieu urbain et milieu rural. Chaque tableau présente les 12 régions et le total national sur T1, T2 et T3 2026.
+
+Un parseur dédié a été ajouté et testé sur un extrait de référence provenant du PDF officiel. Il produit 234 séries (6 indicateurs × 3 milieux × 13 géographies), sans les mélanger aux indicateurs nationaux :
+- une série identifiée par indicateur, milieu et région ;
+- historique trimestriel ;
+- code géographique stable ;
+- URL de la pièce jointe et page source ;
+- notes de rupture méthodologique ENE/EMO ;
+- drapeaux de qualité conservés : `standard`, `medium_significance`, `insufficient_significance`, `not_available`.
+
+Les cellules `ps` (signification statistique insuffisante) et `.` (valeur non disponible) restent des valeurs nulles avec leur motif. Elles ne deviennent jamais zéro. Si la dernière période est supprimée, le système ne remplace pas cette valeur par une période antérieure.
+
+Le pipeline enregistre ces séries dans `data/regional-statistics.json` et les synchronise vers `public/data/regional-statistics.json`. Le fichier est distinct de `statistics.json` pour éviter de faire apparaître 234 séries régionales comme autant d'indicateurs nationaux. Les historiques antérieurs sont fusionnés par trimestre et conservés si une collecte ultérieure échoue.
+
+Une validation réseau ponctuelle a été ajoutée pour tester le téléchargement réel du PDF par le collecteur Python et son extraction avec pypdf. Cette validation est en lecture seule : elle ne déclenche aucune écriture de données ni aucun déploiement. Le résultat doit être contrôlé avant de considérer la collecte régionale comme opérationnelle.
+
 ### 3.3 MEF — séries statistiques et notices documentaires sont deux flux différents
 
 Le collecteur MEF renvoie des objets portant `statistics_series`. L'orchestrateur les compte et les place dans le fichier statistique avant le traitement des notices documentaires.

@@ -936,7 +936,8 @@ function renderStatisticsDashboard() {
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
   const normalizedSearch = statisticsSearch.trim().toLocaleLowerCase(isAr ? "ar" : "fr");
   const filteredIndicators = allIndicators.filter((indicator) => {
-    if (statisticsCategory !== "all" && getStatisticsCategory(indicator) !== statisticsCategory) return false;
+    const category = getStatisticsCategory(indicator);
+    if (statisticsCategory === "unclassified" ? Boolean(category) : statisticsCategory !== "all" && category !== statisticsCategory) return false;
     if (!normalizedSearch) return true;
     const searchable = [indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code].filter(Boolean).join(" ").toLocaleLowerCase(isAr ? "ar" : "fr");
     return searchable.includes(normalizedSearch);
@@ -944,7 +945,8 @@ function renderStatisticsDashboard() {
   const categoryControls = [
     { id: "all", label: isAr ? "جميع المؤشرات" : "Tous les indicateurs" },
     { id: "economie_finances_publiques", label: categoryLabels.economie_finances_publiques },
-    { id: "societe_developpement_humain", label: categoryLabels.societe_developpement_humain }
+    { id: "societe_developpement_humain", label: categoryLabels.societe_developpement_humain },
+    { id: "unclassified", label: isAr ? "غير مصنفة" : "À classer" }
   ];
   const rangeControls = [
     { id: "5", label: isAr ? "5 سنوات" : "5 ans" },

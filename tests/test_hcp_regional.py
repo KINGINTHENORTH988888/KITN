@@ -239,7 +239,8 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
                     "2026-11-03",
                 )
 
-        self.assertEqual(warnings, [])
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("26 séries sur 234 attendues", warnings[0])
         self.assertEqual(len(series), 26)
         self.assertEqual({item["residence_scope"] for item in series}, {"urban", "rural"})
         self.assertEqual(

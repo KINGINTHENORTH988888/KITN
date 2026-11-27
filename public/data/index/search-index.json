@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-11-27T00:31:18Z",
+  "generated_at": "2026-11-27T00:47:35Z",
   "total": 235,
   "active_sources": 14,
   "fetched_in_run": 193,
   "processed_in_run": 151,
-  "added_in_run": 79,
-  "updated_in_run": 69,
+  "added_in_run": 0,
+  "updated_in_run": 5,
   "doi_enrichment_attempted": 12,
-  "doi_enrichment_updated": 10,
+  "doi_enrichment_updated": 9,
   "items": [
     {
       "id": "kitn_1f4e7211af24b298",
@@ -489,7 +489,7 @@
       "poles_secondaires": [],
       "confiance_classification": "faible",
       "lien_maroc": "direct",
-      "score_pertinence": 55,
+      "score_pertinence": 90,
       "url_publication": "https://doi.org/10.1016/j.funbio.2026.101893",
       "doi": "10.1016/j.funbio.2026.101893",
       "pdf_direct": null,
@@ -497,7 +497,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Fungal Biology",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_01050376a76f0b6b",
@@ -519,7 +526,7 @@
       "poles_secondaires": [],
       "confiance_classification": "faible",
       "lien_maroc": "direct",
-      "score_pertinence": 55,
+      "score_pertinence": 90,
       "url_publication": "https://doi.org/10.1016/j.jup.2026.102366",
       "doi": "10.1016/j.jup.2026.102366",
       "pdf_direct": null,
@@ -527,7 +534,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Utilities Policy",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_57cdbe68937dd5cd",
@@ -556,7 +570,7 @@
       "poles_secondaires": [],
       "confiance_classification": "faible",
       "lien_maroc": "direct",
-      "score_pertinence": 55,
+      "score_pertinence": 90,
       "url_publication": "https://doi.org/10.1016/j.foodcont.2026.112523",
       "doi": "10.1016/j.foodcont.2026.112523",
       "pdf_direct": null,
@@ -564,7 +578,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Food Control",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_f09b56973133c464",
@@ -600,7 +621,7 @@
       "poles_secondaires": [],
       "confiance_classification": "faible",
       "lien_maroc": "direct",
-      "score_pertinence": 55,
+      "score_pertinence": 90,
       "url_publication": "https://doi.org/10.1016/j.suronc.2026.102613",
       "doi": "10.1016/j.suronc.2026.102613",
       "pdf_direct": null,
@@ -608,7 +629,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Surgical Oncology",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_70e625cb0043f439",
@@ -629,7 +657,7 @@
       "poles_secondaires": [],
       "confiance_classification": "faible",
       "lien_maroc": "direct",
-      "score_pertinence": 55,
+      "score_pertinence": 90,
       "url_publication": "https://doi.org/10.4337/9781800882324.morocco",
       "doi": "10.4337/9781800882324.morocco",
       "pdf_direct": null,
@@ -637,7 +665,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Elgar Encyclopedia of International Economic Law",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_fa3d5814a66506ab",
@@ -654,10 +689,13 @@
       "source_nom": "OpenAlex - Travaux liés au Maroc",
       "type_document": "publication_scientifique",
       "pole": "recherche_scientifique",
-      "poles_secondaires": [],
-      "confiance_classification": "faible",
+      "poles_secondaires": [
+        "relations_internationales_geopolitique",
+        "institutions_gouvernance"
+      ],
+      "confiance_classification": "eleve",
       "lien_maroc": "direct",
-      "score_pertinence": 70,
+      "score_pertinence": 90,
       "url_publication": "https://doi.org/10.52909/aslpi.v2i1.440",
       "doi": "10.52909/aslpi.v2i1.440",
       "pdf_direct": "https://abnus.co/index.php/aslpi/article/download/440/974/2014",
@@ -665,7 +703,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
       "updated_at": "2026-11-26T15:05:17Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Advanced Studies in Law, Policy Innovation, and Institutional Reform",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_598ae2de3ffa64aa",
@@ -693,7 +738,8 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z"
     },
     {
       "id": "kitn_b36c48fb0a9b351c",
@@ -805,7 +851,7 @@
       "poles_secondaires": [],
       "confiance_classification": "moyen",
       "lien_maroc": "direct",
-      "score_pertinence": 85,
+      "score_pertinence": 90,
       "url_publication": "https://hal.science/hal-05724374v1",
       "doi": "10.1016/j.marpolbul.2026.120244",
       "pdf_direct": null,
@@ -813,7 +859,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Marine Pollution Bulletin",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_3c43a4bd66dbfcd1",
@@ -833,7 +886,7 @@
       "poles_secondaires": [],
       "confiance_classification": "eleve",
       "lien_maroc": "direct",
-      "score_pertinence": 85,
+      "score_pertinence": 90,
       "url_publication": "https://hal.science/hal-05846699v1",
       "doi": "10.23882/emss26383",
       "pdf_direct": null,
@@ -841,7 +894,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "RMd, Economics, Management & Social Sciences",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_3449f4a62e2ef372",
@@ -1147,7 +1207,8 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z"
     },
     {
       "id": "kitn_344bcd31ad5bd782",
@@ -1177,7 +1238,7 @@
       "poles_secondaires": [],
       "confiance_classification": "faible",
       "lien_maroc": "direct",
-      "score_pertinence": 70,
+      "score_pertinence": 90,
       "url_publication": "https://hal.science/hal-05883146v1",
       "doi": "10.3390/plants15223611",
       "pdf_direct": "https://hal.science/hal-05883146/document",
@@ -1185,7 +1246,14 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T15:05:17Z",
       "updated_at": "2026-11-26T15:05:17Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z",
+      "revue_ou_institution": "Plants",
+      "doi_statut": "valide",
+      "collecte_le": "2026-11-27T00:47:35Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
+      "metadata_enrichie_le": "2026-11-27T00:47:35Z",
+      "metadata_source_enrichissement": "Crossref"
     },
     {
       "id": "kitn_c612e60e1fb6d538",
@@ -1627,7 +1695,8 @@
       "first_seen_at": "2026-11-26T15:05:17Z",
       "last_seen_at": "2026-11-26T16:33:57Z",
       "updated_at": "2026-11-26T16:33:57Z",
-      "espace": "science"
+      "espace": "science",
+      "metadata_enrichissement_tente_le": "2026-11-27T00:47:35Z"
     },
     {
       "id": "kitn_manual_biblio_securite",
@@ -2261,7 +2330,7 @@
       ],
       "date_publication": "2026-07-08",
       "collecte_le": "2026-11-27T00:31:18Z",
-      "mis_a_jour_le": "2026-11-27T00:31:18Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
       "date_statut": "date_confirmee",
       "date_anomalie": false,
       "statut_validation": "valide",
@@ -2361,7 +2430,7 @@
       ],
       "date_publication": "2026-06-30",
       "collecte_le": "2026-11-27T00:31:18Z",
-      "mis_a_jour_le": "2026-11-27T00:31:18Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
       "date_statut": "date_confirmee",
       "date_anomalie": false,
       "statut_validation": "valide",
@@ -5629,7 +5698,7 @@
       "mots_cles": [],
       "date_publication": "2023",
       "collecte_le": "2026-11-26T20:33:57Z",
-      "mis_a_jour_le": "2026-11-26T20:33:57Z",
+      "mis_a_jour_le": "2026-11-27T00:47:35Z",
       "date_statut": "date_partielle",
       "date_anomalie": false,
       "statut_validation": "valide",
@@ -5652,7 +5721,8 @@
       "texte_integral_disponible": false,
       "resume": "Les montages de Leveraged Buyouts (LBO) occupent une place cruciale au sein de l'écosystème du capitalinvestissement régulé au Maroc, malgré leur développement limité et les défis auxquels ils font face. En comparaison avec les marchés publics, ces montages continuent de présenter une performance robuste. Fondée sur la théorie de l'agence, qui explore les relations entre propriétaires et gestionnaires au sein des entreprises, cette étude vise avant tout à examiner profondément comment l'effet de levier et la gouvernance influencent la création de valeur dans ces transactions. La méthodologie adoptée est qualitative, basée sur des entretiens semistructurés avec six experts du secteur des LBO au Maroc. Ce choix méthodologique est justifié par la nature exploratoire de la recherche, permettant une profondeur d'analyse et une compréhension des nuances et des pratiques de ce domaine spécifique. De plus, des questions exploratoires tirées de la littérature existante ont été employées pour orienter l'enquête et guider les échanges. Les résultats issus de cette démarche qualitative mettent en évidence un impact discernable et significatif que ces deux facteurs - l'effet de levier et la gouvernance - exercent sur le processus de création de richesse. Les apports théoriques de cette recherche enrichissent la compréhension des LBO au Maroc en soulignant l'importance de l'effet de levier financier, de la gouvernance transparente et de l'alignement des intérêts pour le succès de ces transactions. Sur le plan pratique, elle offre des perspectives précieuses pour les investisseurs, les gestionnaires et les professionnels du secteur des LBO au Maroc. Cependant, il est primordial de prendre en compte les limites inhérentes à cette recherche, notamment la taille limitée de l'échantillon et le caractère qualitatif des entretiens.",
       "analyse_strategique": "",
-      "origine": "automatique"
+      "origine": "automatique",
+      "doi_statut": "absent"
     },
     {
       "id": "kitn_566674f603bcd1e3",

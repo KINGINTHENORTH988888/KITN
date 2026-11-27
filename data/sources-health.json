@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T00:31:18Z",
+  "updated_at": "2026-11-27T00:47:35Z",
   "active_sources": 14,
   "total_fetched": 193,
   "total_accepted": 151,
@@ -16,7 +16,7 @@
       "fetched": 25,
       "accepted": 13,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "cour_des_comptes_maroc",
@@ -30,7 +30,7 @@
       "fetched": 20,
       "accepted": 19,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -44,7 +44,7 @@
       "fetched": 15,
       "accepted": 10,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "cese_maroc",
@@ -58,7 +58,7 @@
       "fetched": 3,
       "accepted": 3,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "ires_maroc",
@@ -72,7 +72,7 @@
       "fetched": 6,
       "accepted": 3,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -86,7 +86,7 @@
       "fetched": 20,
       "accepted": 20,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "aujourdhui_maroc",
@@ -100,7 +100,7 @@
       "fetched": 3,
       "accepted": 1,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -114,7 +114,7 @@
       "fetched": 20,
       "accepted": 5,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "world_bank_maroc",
@@ -128,7 +128,7 @@
       "fetched": 6,
       "accepted": 6,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "openalex_morocco_governance",
@@ -142,7 +142,7 @@
       "fetched": 15,
       "accepted": 14,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "openalex_morocco_economy",
@@ -156,7 +156,7 @@
       "fetched": 15,
       "accepted": 14,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "openalex_morocco_security",
@@ -170,7 +170,7 @@
       "fetched": 15,
       "accepted": 14,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "openalex_morocco_social",
@@ -184,7 +184,7 @@
       "fetched": 15,
       "accepted": 14,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     },
     {
       "source_id": "openalex_morocco_geopolitics",
@@ -198,7 +198,7 @@
       "fetched": 15,
       "accepted": 15,
       "error": null,
-      "checked_at": "2026-11-27T00:31:18Z"
+      "checked_at": "2026-11-27T00:47:35Z"
     }
   ]
 }

@@ -91,7 +91,7 @@ jobs:
       - name: Checkout review branch without persisted credentials
         uses: actions/checkout@v4
         with:
-          ref: \${{ github.head_ref }}
+          ref: ${{ github.head_ref }}
           persist-credentials: false
 
       - name: Set up Node.js
@@ -108,8 +108,8 @@ jobs:
 
       - name: Commit tested dependency files to the review branch
         env:
-          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
-          BRANCH: \${{ github.head_ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.head_ref }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

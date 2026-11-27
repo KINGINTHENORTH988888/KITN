@@ -1,0 +1,30 @@
+name: HCP EMO Live Validation
+
+on:
+  push:
+    branches:
+      - audit/kitn-quality-review-2026-11
+    paths:
+      - "scripts/validate_hcp_emo_regional_live.py"
+      - ".github/workflows/hcp-live-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-hcp-regional-pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout review branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Validate live HCP EMO PDF extraction
+        run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py

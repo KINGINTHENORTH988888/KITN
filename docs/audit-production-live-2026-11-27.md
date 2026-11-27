@@ -100,15 +100,15 @@ Le contrôle mobile a relevé que le titre de l'accueil annonçait « Six espace
 
 ## 8. Vérification du déploiement Pages le plus récent
 
-Le commit `9bfe778` a reçu un déploiement Cloudflare Pages réussi sur l'URL de prévisualisation dédiée :
+Le commit `f27bf50`, plus récent que `9bfe778`, a reçu un déploiement Cloudflare Pages réussi sur l'URL de prévisualisation dédiée :
 
-- URL : https://03e651ac.kitn.pages.dev/
-- La page d'accueil affiche bien « Cinq espaces thématiques pour explorer le Maroc ».
+- URL : https://71e1cea2.kitn.pages.dev/
+- Les cinq routes ont été revérifiées sur ce déploiement le plus récent et restent accessibles. Le contrôle précédent sur `9bfe778` avait confirmé le titre « Cinq espaces thématiques pour explorer le Maroc ».
 - Les cinq routes canoniques ont été ouvertes directement et rendent leur contenu : veille (8 notices), études & recherche (157 publications), Maroc en chiffres, bibliothèque (37 documents) et Academy.
 - La vue régionale du taux de chômage strict affiche 12/12 régions couvertes, 12/12 valeurs disponibles et aucune valeur manquante pour T3/2026.
 - Le parcours Academy passe correctement de DGSN à IRAT et remplace le titre ainsi que le contenu du QCM.
 
-Cette URL est une prévisualisation de branche, pas le domaine public `kitn.pages.dev`.
+Cette URL est une prévisualisation de branche, pas le domaine public `kitn.pages.dev`. Sur le commit `f27bf50`, la vue régionale du chômage strict conserve bien 12/12 régions et 12/12 valeurs disponibles.
 
 ## 9. Contrôles automatisés de données ajoutés
 
@@ -119,6 +119,6 @@ Un nouveau fichier `tests/published-data.test.js` ajoute des contrôles automati
 - la conservation explicite des valeurs manquantes ;
 - les trois parcours Academy bilingues et la validité des index de réponses.
 
-Le commit contenant ce test a été poussé sur la branche. Le déploiement Pages confirme la compilation du site, mais **ne prouve pas à lui seul que les tests Node ont été exécutés**. Le résultat CI de ce nouveau test reste à confirmer.
+Le commit contenant ce test a été poussé sur la branche. Le déploiement Pages confirme la compilation du site, mais **ne prouve pas à lui seul que les tests Node ont été exécutés**. Le résultat CI de ce nouveau test reste à confirmer : sur la page Checks de la PR #22, au moment du contrôle du commit `f27bf50`, les entrées `Tests`, `HCP EMO Live Validation` et `KITN Veille Automatisée` étaient encore en attente, tandis que `Cloudflare Pages` était réussi.
 
 **Décision :** continuer le travail sur la branche de revue. Ne pas fusionner ni basculer le domaine public tant que les vérifications fonctionnelles et la stratégie de déploiement ne sont pas terminées.

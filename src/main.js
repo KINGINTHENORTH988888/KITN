@@ -1412,9 +1412,11 @@ function render() {
   const activeQuizQuestion = quizQuestions[Math.min(selectedQuizQuestionIndex, quizQuestions.length - 1)];
   const activeSpaceObj = spaces.find((s) => s.id === activeSpace) || spaces[0];
   const activeArticleItem = activeArticleId ? indexItems.find((item) => getItemKey(item) === activeArticleId) || null : null;
-  document.title = activeSpace === "all"
-    ? "KITN — De l'information à la maîtrise"
-    : `${activeSpaceObj.label} | KITN`;
+  document.title = activeArticleItem
+    ? `${activeArticleItem.titre_original || "Publication"} | KITN`
+    : activeSpace === "all"
+      ? "KITN — De l'information à la maîtrise"
+      : `${activeSpaceObj.label} | KITN`;
   const isDedicatedSpace = activeSpace !== "all";
   const allPoleKeys = Object.keys(POLE_LABELS[lang]);
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
@@ -1893,6 +1895,7 @@ function render() {
   document.getElementById("brand-home")?.addEventListener("click", (e) => {
     e.preventDefault();
     activeSpace = "all";
+    activeArticleId = null;
     window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all);
     render();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1900,6 +1903,7 @@ function render() {
 
   document.getElementById("back-portal-top")?.addEventListener("click", () => {
     activeSpace = "all";
+    activeArticleId = null;
     window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all);
     render();
   });

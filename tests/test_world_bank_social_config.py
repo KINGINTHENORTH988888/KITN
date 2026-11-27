@@ -31,6 +31,42 @@ class TestWorldBankSocialConfiguration(unittest.TestCase):
         for code in SOCIAL_CODES:
             self.assertEqual(configured[code]["pole"], "societe_developpement_humain")
 
+    def test_missing_social_observations_are_reported_instead_of_silently_disappearing(self):
+        source = {
+            "id": "world_bank_maroc",
+            "url": "https://api.worldbank.org/v2/country/MAR/indicator/",
+            "max_items": 1,
+            "history_points": 100,
+            "indicators": [{
+                "code": "SE.PRM.ENRR",
+                "label_fr": "Taux brut de scolarisation dans le primaire",
+                "pole": "societe_developpement_humain",
+            }],
+        }
+        empty_payload = [{"lastupdated": "2026-11-11"}, []]
+
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(empty_payload)):
+            items = collect_world_bank_api(source)
+
+        self.assertEqual(len(items), 1)
+        self.assertNotIn("statistics_series", items[0])
+        self.assertIn("SE.PRM.ENRR", items[0]["statistics_collection_warnings"][0])
+        self.assertIn("aucune observation numérique", items[0]["statistics_collection_warnings"][0])
+
+    def test_world_bank_request_errors_are_reported_in_source_diagnostics(self):
+        source = {
+            "id": "world_bank_maroc",
+            "url": "https://api.worldbank.org/v2/country/MAR/indicator/",
+            "max_items": 1,
+            "indicators": [{"code": "SP.DYN.LE00.IN", "label_fr": "Espérance de vie"}],
+        }
+        with patch("pipeline.collectors._fetch_text", side_effect=TimeoutError("provider timeout")):
+            items = collect_world_bank_api(source)
+
+        self.assertEqual(len(items), 1)
+        self.assertIn("SP.DYN.LE00.IN", items[0]["statistics_collection_warnings"][0])
+        self.assertIn("TimeoutError", items[0]["statistics_collection_warnings"][0])
+
     def test_world_bank_collector_uses_configured_history_window_and_social_pole(self):
         payload = [
             {"lastupdated": "2026-11-11"},

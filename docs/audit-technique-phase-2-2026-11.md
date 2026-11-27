@@ -47,6 +47,10 @@ Le pipeline est séparé en collecteurs, processeurs et orchestration :
 
 Le workflow ne construit pas l'application Astro.
 
+Le dépôt possède également un second workflow, `.github/workflows/tests.yml`, qui exécute les tests Python sur les changements de `pipeline/**`, `tests/**` et `data/sources.json`. Il ne construit pas le frontend. Les deux workflows ont donc des rôles distincts : tests Python seuls dans `Tests`, puis tests Python + build Vite dans le workflow principal selon ses déclencheurs.
+
+Au moment de cet audit, les deux dernières exécutions liées au commit du 27 novembre à 02:15 sont réussies : le workflow principal (run #198) et le workflow `Tests` (run #50). Le dernier fichier de santé des sources disponible reste daté de 02:15:39 UTC. La liste des exécutions consultée ne montrait pas encore de nouvelle exécution planifiée le 27 novembre à 03:30 UTC ; cela mérite une vérification opérationnelle, sans conclure à une désactivation du planificateur (les exécutions programmées peuvent être retardées).
+
 ## 3. Constats techniques importants
 
 ### 3.1 OpenAlex — six sources séparées, toutes en erreur 429

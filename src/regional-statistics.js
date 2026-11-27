@@ -60,8 +60,9 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
 
   const selectedIndicator = indicatorOptions.find((item) => item.code === activeIndicatorCode) || null;
   const latestPeriod = periods[periods.length - 1] || "";
-  const latestValues = rows.map((row) => row.points[row.points.length - 1]).filter((point) => point && Number.isFinite(Number(point.value)));
-  const latestMissing = rows.length - latestValues.length;
+  const regionalRows = rows.filter((row) => row.geographyCode !== "MAR");
+  const latestValues = regionalRows.map((row) => row.points[row.points.length - 1]).filter((point) => point && Number.isFinite(Number(point.value)));
+  const latestMissing = regionalRows.length - latestValues.length;
   const firstSeries = selectedSeries[0] || indicatorSeries[0] || null;
   const sourceSeries = selectedSeries.find((item) => item.source_name_ar) ||
     selectedSeries.find((item) =>
@@ -96,6 +97,7 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
     periods,
     rows,
     latestPeriod,
+    regionalCount: regionalRows.length,
     latestAvailableCount: latestValues.length,
     latestMissingCount: latestMissing,
     latestAverage: latestValues.length

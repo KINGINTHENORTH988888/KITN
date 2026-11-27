@@ -651,6 +651,7 @@ def _extract_hcp_emo_regional_statistics(
         return [], ["Aucune pièce jointe HCP détectée pour les tableaux régionaux EMO."]
 
     errors: list[str] = []
+    page_diagnostics: list[str] = []
     best_series: list[dict] = []
     for attachment_url in attachment_urls[:4]:
         try:
@@ -663,6 +664,11 @@ def _extract_hcp_emo_regional_statistics(
                 except TypeError:
                     page_text = page.extract_text() or ""
                 pages.append(page_text)
+                compact_page = re.sub(r"\\s+", " ", page_text).strip()
+                if "indicateur" in compact_page.casefold() or "taux de" in compact_page.casefold():
+                    page_diagnostics.append(
+                        f"p{len(pages)} ({len(page_text)} caractères): {compact_page[:220]}"
+                    )
             extracted_text = "\\f".join(pages)
             if "taux de participation" not in extracted_text.casefold():
                 continue
@@ -679,8 +685,17 @@ def _extract_hcp_emo_regional_statistics(
             errors.append(f"{attachment_url}: {type(exc).__name__}: {exc}")
 
     if best_series:
-        return best_series, []
+        if len(best_series) >= 200:
+            return best_series, []
+        diagnostics = " | ".join(page_diagnostics[:8])
+        return best_series, [
+            f"Extraction régionale HCP partielle ({len(best_series)} séries sur 234 attendues). "
+            f"Pages reconnues : {diagnostics or 'aucune page de tableau identifiée'}."
+        ]
     detail = " | ".join(errors[:2]) if errors else "aucun tableau régional français reconnu"
+    diagnostics = " | ".join(page_diagnostics[:8])
+    if diagnostics:
+        detail = f"{detail} | pages : {diagnostics}"
     return [], [f"Extraction des tableaux régionaux HCP EMO impossible : {detail}"]
 
 

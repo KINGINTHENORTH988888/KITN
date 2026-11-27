@@ -1639,12 +1639,6 @@ function render() {
       ${activeSpace === "chiffres" ? renderStatisticsDashboard() : ""}
       ${activeSpace === "bibliotheque" ? renderLibraryDirectory() : ""}
 
-      <div class="spaces-bar" role="tablist">
-        ${spaces.map((sp) => `
-          <button type="button" class="space-tab ${activeSpace === sp.id ? "is-active" : ""}" data-space-id="${sp.id}">${escapeHtml(sp.label)}</button>
-        `).join("")}
-      </div>
-
       ${activeSpace === "contribuer" ? `
         <form class="manual-form" id="manual-form">
           <h3>${escapeHtml(c.manualTitle)}</h3>

@@ -10,7 +10,7 @@ from email.utils import parsedate_to_datetime
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.error import HTTPError
-from urllib.parse import quote, urlencode, urljoin, urlsplit
+from urllib.parse import quote, unquote, urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, normalize_doi, sanitize_url

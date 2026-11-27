@@ -75,15 +75,17 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
   const collectionStatuses = new Set(
     selectedSeries
       .map((item) => item.collection_status)
-      .filter((status) => status === "collected" || status === "carried_forward")
+      .filter((status) => ["collected", "carried_forward", "manual_verified"].includes(status))
   );
-  const collectionStatus = collectionStatuses.has("collected") && collectionStatuses.has("carried_forward")
+  const collectionStatus = collectionStatuses.size > 1
     ? "partial"
     : collectionStatuses.has("collected")
       ? "collected"
       : collectionStatuses.has("carried_forward")
         ? "carried_forward"
-        : "unknown";
+        : collectionStatuses.has("manual_verified")
+          ? "manual_verified"
+          : "unknown";
 
   return {
     available: series.length > 0,

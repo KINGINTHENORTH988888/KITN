@@ -1780,3 +1780,59 @@ textarea {
   .library-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .library-recent-list { grid-template-columns: 1fr; }
 }
+
+.global-search-overview {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1rem 0 1.25rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface-alt);
+}
+.global-search-copy h3 {
+  margin: 0.35rem 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+}
+.global-search-copy p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+}
+.global-search-spaces {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+.global-search-space {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.75rem 0.85rem;
+  text-align: start;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: var(--surface);
+  cursor: pointer;
+}
+.global-search-space:hover {
+  border-color: var(--accent);
+}
+.global-search-space strong {
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.global-search-space span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.global-search-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+@media (max-width: 800px) {
+  .global-search-spaces { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .global-search-spaces { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

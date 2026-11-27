@@ -91,6 +91,8 @@ Les notices scientifiques incomplètes disposant d'un DOI peuvent être enrichie
 
 La veille académique combine HAL, Crossref et OpenAlex, avec des recherches thématiques distinctes : gouvernance et administration, économie et finances publiques, sécurité, développement humain, relations internationales et géopolitique. Les résultats restent soumis aux contrôles de pertinence Maroc et de dédoublonnage (DOI canonique, puis titre/date et URL lorsque le DOI manque).
 
+La collecte OpenAlex utilise une pagination par curseur avec un plafond par source. Pour dépasser la première page, le workflow de collecte doit disposer du secret GitHub Actions `OPENALEX_API_KEY` (clé gratuite OpenAlex activée). Sans ce secret, le collecteur conserve volontairement le fonctionnement sans clé sur la première page et ne tente pas une pagination qui échouerait. La clé est transmise via l'en-tête Bearer et n'est jamais inscrite dans le dépôt.
+
 ## Environnements et déploiement
 
 La branche main est la branche de référence de production. Les audits et corrections doivent être réalisés sur une branche isolée, puis validés par tests et prévisualisation avant toute fusion. Le dépôt contient à la fois une application Vite et un prototype Astro : toute modification de la configuration Cloudflare doit donc préciser explicitement le projet, la branche, la commande de build et le répertoire de sortie concernés.

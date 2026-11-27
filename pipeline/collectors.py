@@ -1836,6 +1836,12 @@ def _bam_ckan_number(value: str) -> float | None:
         return None
 
 
+
+def _bam_ckan_is_numeric(value: str) -> bool:
+    text = str(value or "").strip()
+    return bool(text and re.fullmatch(r"[()+\\-0-9.,%\\s]+", text) and _bam_ckan_number(text) is not None)
+
+
 def _bam_ckan_slug(value: str) -> str:
     text = clean_text(str(value or "")).upper()
     text = re.sub(r"[^A-Z0-9]+", "_", text).strip("_")
@@ -1869,7 +1875,7 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
             if not labels:
                 continue
             label = labels[-1]
-            if _bam_ckan_number(label) is not None or len(label) < 3:
+            if _bam_ckan_is_numeric(label) or len(label) < 3:
                 continue
             points = []
             for col, period in period_columns:
@@ -1886,7 +1892,7 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
     if len(rows) > 1:
         for col in range(1, min(max((len(row) for row in rows), default=0), 80)):
             header = clean_text(rows[0][col] if col < len(rows[0]) else "")
-            if len(header) < 3 or _bam_ckan_number(header) is not None:
+            if len(header) < 3 or _bam_ckan_is_numeric(header):
                 continue
             points = []
             for row in rows[1:]:

@@ -625,7 +625,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                  "Taux de chômage strict des femmes selon l'EMO."),
             ])
         underutilization_pair = re.search(
-            r"taux composite de la sous[- ]utilisation de la main[- ]d’œuvre atteint\\s*([0-9]+(?:[,.][0-9]+)?)\\s*%\\s*chez les jeunes de 15[- ]24 ans et\\s*([0-9]+(?:[,.][0-9]+)?)\\s*%\\s*chez les femmes",
+            r"taux composite de la sous[- ]utilisation de la main[- ]d’œuvre atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les jeunes de 15[- ]24 ans et\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les femmes",
             body, re.IGNORECASE,
         )
         if underutilization_pair:

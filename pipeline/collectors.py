@@ -1272,18 +1272,16 @@ def _bam_series_item(
 
 
 def _bam_monia_csv_rows(payload: str) -> list[list[str]]:
-    text = str(payload or "").lstrip("\\ufeff").strip()
+    text = str(payload or "").lstrip("\ufeff").strip()
     if not text or text.startswith("<!DOCTYPE") or text.startswith("<html"):
         return []
-    sample = "\\n".join(text.splitlines()[:8])
+    sample = "\n".join(text.splitlines()[:8])
     try:
-        dialect = csv.Sniffer().sniff(sample, delimiters=";,\\t")
+        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t")
+        reader = csv.reader(io.StringIO(text), dialect)
     except csv.Error:
-        dialect = csv.excel
-        dialect.delimiter = ";"
-    rows = [row for row in csv.reader(io.StringIO(text), dialect) if any(str(cell).strip() for cell in row)]
-    return rows
-
+        reader = csv.reader(io.StringIO(text), delimiter=";")
+    return [row for row in reader if any(str(cell).strip() for cell in row)]
 
 
 def collect_bank_al_maghrib(source: dict) -> list[dict]:

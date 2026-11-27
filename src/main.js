@@ -1366,6 +1366,9 @@ function render() {
     : [{ question: activeTrack.question, options: activeTrack.options, answer: activeTrack.answer, correction: activeTrack.correction }];
   const activeQuizQuestion = quizQuestions[Math.min(selectedQuizQuestionIndex, quizQuestions.length - 1)];
   const activeSpaceObj = spaces.find((s) => s.id === activeSpace) || spaces[0];
+  document.title = activeSpace === "all"
+    ? "KITN — De l'information à la maîtrise"
+    : `${activeSpaceObj.label} | KITN`;
   const isDedicatedSpace = activeSpace !== "all";
   const allPoleKeys = Object.keys(POLE_LABELS[lang]);
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
@@ -1842,12 +1845,14 @@ function render() {
   document.getElementById("brand-home")?.addEventListener("click", (e) => {
     e.preventDefault();
     activeSpace = "all";
+    window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all);
     render();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   document.getElementById("back-portal-top")?.addEventListener("click", () => {
     activeSpace = "all";
+    window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all);
     render();
   });
 

@@ -30,5 +30,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-      - name: Validate live HCP EMO PDF extraction
+      - name: Validate live HCP EMO PDF extraction and build preview dataset
         run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py
+      - name: Upload HCP regional dataset preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcp-regional-statistics-preview
+          path: |
+            data/regional-statistics.json
+            public/data/regional-statistics.json
+          if-no-files-found: error
+          retention-days: 7

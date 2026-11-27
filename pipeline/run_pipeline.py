@@ -15,6 +15,7 @@ from pipeline.config import (
     PUBLIC_INDEX_FILE,
     SOURCES_FILE,
     SOURCES_HEALTH_FILE,
+    PUBLIC_SOURCES_HEALTH_FILE,
     STATISTICS_FILE,
     PUBLIC_STATISTICS_FILE,
     REGIONAL_STATISTICS_FILE,
@@ -765,6 +766,7 @@ def run() -> dict:
         "sources": health_records,
     }
     SOURCES_HEALTH_FILE.write_text(json.dumps(health_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _sync_public_index(SOURCES_HEALTH_FILE, PUBLIC_SOURCES_HEALTH_FILE)
 
     _sync_public_index(INDEX_FILE, PUBLIC_INDEX_FILE)
     if STATISTICS_FILE.exists():

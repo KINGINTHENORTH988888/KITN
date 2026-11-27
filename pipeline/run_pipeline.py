@@ -241,6 +241,49 @@ def _is_valid_statistics_series(series: dict) -> bool:
     return True
 
 
+def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at: str) -> dict:
+    """Merge a newly collected series with its history without losing older observations."""
+    merged = dict(existing) if isinstance(existing, dict) else {}
+    incoming = dict(incoming) if isinstance(incoming, dict) else {}
+
+    for key, value in incoming.items():
+        if key == "history":
+            continue
+        if value is not None and value != "":
+            merged[key] = value
+
+    old_history = merged.get("history") if isinstance(merged.get("history"), list) else []
+    new_history = incoming.get("history") if isinstance(incoming.get("history"), list) else []
+    points_by_period: dict[str, dict] = {}
+    for point in old_history + new_history:
+        if not isinstance(point, dict) or point.get("year") is None or point.get("value") is None:
+            continue
+        # Incoming observations are processed last and replace revised values
+        # for the same period while preserving every other historical point.
+        points_by_period[str(point["year"])] = dict(point)
+
+    if points_by_period:
+        merged["history"] = [points_by_period[key] for key in sorted(points_by_period)]
+    elif old_history or new_history:
+        merged["history"] = old_history or new_history
+
+    latest = incoming.get("latest")
+    if isinstance(latest, dict) and latest.get("value") is not None:
+        merged["latest"] = latest
+    elif merged.get("history"):
+        merged["latest"] = merged["history"][-1]
+
+    previous = incoming.get("previous")
+    if isinstance(previous, dict) and previous.get("value") is not None:
+        merged["previous"] = previous
+    elif "previous" not in merged:
+        merged["previous"] = None
+
+    merged["last_successful_collection_at"] = collected_at
+    merged["collection_status"] = "collected"
+    return merged
+
+
 def run() -> dict:
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sources = _load_json_list(SOURCES_FILE)
@@ -356,7 +399,9 @@ def run() -> dict:
                 series = raw.get("statistics_series") if isinstance(raw, dict) else None
                 if isinstance(series, dict) and series.get("indicator_code"):
                     code = str(series["indicator_code"])
-                    statistics_series[code] = series
+                    statistics_series[code] = _merge_statistics_series(
+                        statistics_series.get(code), series, now_iso
+                    )
                     statistics_count += 1
                     statistics_codes.append(code)
             if not raw_items:
@@ -537,7 +582,11 @@ def run() -> dict:
             previous_statistics = json.loads(STATISTICS_FILE.read_text(encoding="utf-8"))
             for previous in previous_statistics.get("indicators", []):
                 if isinstance(previous, dict) and previous.get("indicator_code"):
-                    statistics_series.setdefault(str(previous["indicator_code"]), previous)
+                    code = str(previous["indicator_code"])
+                    if code not in statistics_series:
+                        carried = dict(previous)
+                        carried["collection_status"] = "carried_forward"
+                        statistics_series[code] = carried
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
     statistics_series = {

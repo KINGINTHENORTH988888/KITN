@@ -18,7 +18,7 @@ from pipeline.processors import (
     sanitize_url,
     validate_publication_date,
 )
-from pipeline.run_pipeline import _content_fingerprint, _merge_preserving_rich_fields, run
+from pipeline.run_pipeline import _content_fingerprint, _doi_key, _merge_preserving_rich_fields, run
 
 
 class TestPipelineProcessors(unittest.TestCase):
@@ -658,6 +658,18 @@ class TestPipelineProcessors(unittest.TestCase):
                         "type_document": "rapport",
                         "pole": "economie_finances_publiques",
                         "resume": "Résumé détaillé déjà validé.",
+                        "doi": "https://doi.org/10.1000/DUPLICATE.1",
+                        "source_id": "crossref_test",
+                    }, {
+                        "id": "kitn_existing_duplicate_doi",
+                        "titre_original": "A differently titled record for the same DOI",
+                        "auteurs": ["Chercheur A", "Chercheur B"],
+                        "date_publication": "2026-09-02",
+                        "type_document": "publication_scientifique",
+                        "pole": "recherche_scientifique",
+                        "resume": "Second abstract from another source.",
+                        "doi": "10.1000/duplicate.1",
+                        "source_id": "openalex_test",
                     }]
                 }),
                 encoding="utf-8",
@@ -676,6 +688,8 @@ class TestPipelineProcessors(unittest.TestCase):
 
             ids = {it["id"] for it in payload["items"]}
             self.assertIn("kitn_existing_1", ids)
+            self.assertNotIn("kitn_existing_duplicate_doi", ids)
+            self.assertEqual(sum(1 for it in payload["items"] if normalize_doi(it.get("doi")) == "10.1000/duplicate.1"), 1)
             self.assertIn("kitn_manual_test1", ids)
             self.assertTrue(pub_idx.exists())
             self.assertTrue(health_path.exists())

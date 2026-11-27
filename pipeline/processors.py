@@ -275,10 +275,10 @@ def normalize_doi(raw_doi: str | None) -> str | None:
     if not raw_doi or not isinstance(raw_doi, str):
         return None
     value = clean_text(raw_doi).strip()
-    value = re.sub(r"^(?:doi:\\s*)", "", value, flags=re.IGNORECASE)
-    value = re.sub(r"^https?://(?:dx\\.)?doi\\.org/", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"^(?:doi:\s*)", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"^https?://(?:dx\.)?doi\.org/", "", value, flags=re.IGNORECASE)
     value = value.strip().rstrip(".,;)")
-    if not re.fullmatch(r"10\\.\\d{4,9}/\\S+", value, flags=re.IGNORECASE):
+    if not re.fullmatch(r"10\.\d{4,9}/\S+", value, flags=re.IGNORECASE):
         return None
     return value.lower()
 

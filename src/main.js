@@ -1091,6 +1091,7 @@ function renderRegionalStatisticsDashboard() {
     return `<tr><th scope="row">${escapeHtml(isAr ? row.nameAr : row.nameFr)}</th>${cells}</tr>`;
   }).join("");
   const sourceUrl = isSafeHttpUrl(model.sourceUrl) ? model.sourceUrl : "";
+  const regionalUnit = isAr ? model.unitAr : model.unitFr;
   const updateDate = model.generatedAt ? String(model.generatedAt).slice(0, 10) : "";
   const methodologyNote = isAr ? model.methodologyNoteAr : model.methodologyNoteFr;
   const methodologyText = methodologyNote || (isAr
@@ -1103,7 +1104,7 @@ function renderRegionalStatisticsDashboard() {
       <div class="stats-filter-group" role="group" aria-label="${isAr ? "مجال الإقامة" : "Milieu de résidence"}">${scopeButtons}</div>
     </div>
     <div class="regional-table-wrap"><table class="regional-table">
-      <thead><tr><th scope="col">${isAr ? "الجهة" : "Région"}</th>${model.periods.map((period) => `<th scope="col">${escapeHtml(period)}</th>`).join("")}</tr></thead>
+      <thead><tr><th scope="col">${isAr ? "الجهة" : "Région"}</th>${model.periods.map((period) => `<th scope="col">${escapeHtml(period)}${regionalUnit ? ` (${escapeHtml(regionalUnit)})` : ""}</th>`).join("")}</tr></thead>
       <tbody>${rows || `<tr><td colspan="${model.periods.length + 1}">${isAr ? "لا توجد بيانات متاحة." : "Aucune observation disponible."}</td></tr>`}</tbody>
     </table></div>
     <p class="regional-legend">${isAr

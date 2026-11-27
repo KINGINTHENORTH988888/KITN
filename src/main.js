@@ -1777,7 +1777,7 @@ function render() {
     ${activeSpace === "all" ? `
       <section class="section home-spaces">
         <div class="section-head">
-          <div><span class="eyebrow">${lang === "ar" ? "استكشف KITN" : "EXPLORER KITN"}</span><h2>${lang === "ar" ? "مساحات المعرفة" : "Six espaces pour explorer le Maroc"}</h2></div>
+          <div><span class="eyebrow">${lang === "ar" ? "استكشف KITN" : "EXPLORER KITN"}</span><h2>${lang === "ar" ? "خمسة فضاءات موضوعاتية لاستكشاف المغرب" : "Cinq espaces thématiques pour explorer le Maroc"}</h2></div>
           <p>${lang === "ar" ? "كل مساحة لها محتواها وأدواتها الخاصة." : "Des espaces indépendants, chacun organisé autour d'un besoin précis."}</p>
         </div>
         <div class="home-space-grid">

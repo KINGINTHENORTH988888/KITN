@@ -1954,3 +1954,77 @@ textarea {
     flex: 0 0 100%;
   }
 }
+
+
+/* Source diagnostics in the monitoring space */
+.watch-source-issues {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line, #dbe3ec);
+  border-radius: 14px;
+  background: var(--surface-soft, #f8fafc);
+}
+.watch-source-issues h5 {
+  margin: 0 0 .75rem;
+  color: var(--ink, #172b4d);
+  font-size: .95rem;
+}
+.watch-source-issues ul {
+  display: grid;
+  gap: .65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.watch-source-issue {
+  min-width: 0;
+  padding: .75rem;
+  border-inline-start: 3px solid #b7791f;
+  border-radius: 8px;
+  background: #fff;
+}
+.watch-source-issue.is-error {
+  border-inline-start-color: #b42318;
+}
+.watch-source-issue-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .35rem .75rem;
+}
+.watch-source-issue-heading strong {
+  overflow-wrap: anywhere;
+  color: var(--ink, #172b4d);
+}
+.watch-source-issue-heading span {
+  color: #8a4b12;
+  font-size: .78rem;
+  font-weight: 700;
+}
+.watch-source-issue.is-error .watch-source-issue-heading span {
+  color: #b42318;
+}
+.watch-source-issue small {
+  display: block;
+  margin-top: .25rem;
+  color: var(--muted, #64748b);
+}
+.watch-source-issue p {
+  margin: .35rem 0 0;
+  color: var(--muted, #475569);
+  font-size: .85rem;
+  overflow-wrap: anywhere;
+}
+.watch-source-all-ok {
+  margin-top: .75rem;
+  color: var(--muted, #475569);
+}
+@media (max-width: 520px) {
+  .watch-source-issues {
+    padding: .75rem;
+  }
+  .watch-source-issue {
+    padding: .65rem;
+  }
+}

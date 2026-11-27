@@ -675,28 +675,40 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
 
         def labeled_percentage(label_pattern: str, context_pattern: str) -> float | None:
             candidates = []
-            for sentence_index, sentence in enumerate(re.split(r"(?<=[.!?])\s+", body)):
+            for sentence_index, sentence in enumerate(re.split(r"(?<=[.!?])\\s+", body)):
                 sentence = sentence.strip()
                 if not re.search(context_pattern, sentence, re.IGNORECASE):
                     continue
-                labels = list(re.finditer(label_pattern, sentence, re.IGNORECASE))
-                percentages = list(re.finditer(r"([0-9]+(?:[,.][0-9]+)?)\s*%", sentence))
-                for label_match in labels:
-                    for percentage in percentages:
-                        position = (sentence_index, percentage.start())
-                        if position in used_percentage_positions:
-                            continue
-                        distance = min(
-                            abs(percentage.start() - label_match.end()),
-                            abs(label_match.start() - percentage.end()),
-                        )
-                        if distance <= 100:
-                            candidates.append((distance, position, percentage))
+
+                # Prefer a value explicitly placed before its group label:
+                # "44,5 % chez les jeunes". Otherwise accept "chez les jeunes: 44,5 %".
+                before_pattern = (
+                    r"([0-9]+(?:[,.][0-9]+)?)\\s*%\\s*(?:chez|parmi|pour)\\s+(?:les\\s+)?"
+                    + label_pattern
+                )
+                after_pattern = label_pattern + r".{0,60}?([0-9]+(?:[,.][0-9]+)?)\\s*%"
+                selected = re.search(before_pattern, sentence, re.IGNORECASE)
+                if not selected:
+                    selected = re.search(after_pattern, sentence, re.IGNORECASE)
+                if not selected:
+                    continue
+
+                number_group = 1 if selected.re.pattern.startswith("([0-9]") else 1
+                value_match = re.search(r"[0-9]+(?:[,.][0-9]+)?", selected.group(number_group))
+                if not value_match:
+                    continue
+                value_text = value_match.group(0)
+                value_position = sentence_index * 100000 + selected.start(number_group)
+                if value_position in used_percentage_positions:
+                    continue
+                candidates.append((selected.start(number_group), value_position, value_text))
+
             if not candidates:
                 return None
-            _, position, selected = min(candidates, key=lambda item: item[0])
+            _, position, value_text = min(candidates, key=lambda item: item[0])
             used_percentage_positions.add(position)
-            return float(selected.group(1).replace(",", "."))
+            return float(value_text.replace(",", "."))
+
 
         youth_unemployment = labeled_percentage(r"\b(?:jeunes(?:\s+de\s+15\s*[-–]\s*24\s*ans)?|15\s*[-–]\s*24\s*ans)\b", r"ch[oô]mage")
         women_unemployment = labeled_percentage(r"\bfemmes\b", r"ch[oô]mage")

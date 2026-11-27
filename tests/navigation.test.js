@@ -41,10 +41,14 @@ test("homepage keeps Academy and the full research index out of the landing view
   assert.ok(source.includes("home-featured-grid"));
 });
 
-test("dedicated spaces are addressable with hash routes and browser history", () => {
-  assert.match(source, /window\.location\.hash\.match\(\/\^#\\\//);
+test("dedicated spaces have clean URLs and browser history navigation", () => {
+  assert.ok(source.includes('chiffres: "/maroc-en-chiffres"'));
+  assert.ok(source.includes('science: "/etudes-recherche"'));
+  assert.ok(source.includes('bibliotheque: "/bibliotheque"'));
+  assert.ok(source.includes('academy: "/academy"'));
   assert.match(source, /window\.history\.pushState/);
   assert.match(source, /window\.addEventListener\("popstate"/);
+  assert.match(source, /function getSpaceFromLocation\(\)/);
 });
 
 

@@ -499,7 +499,9 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
         host = (parsed.hostname or "").lower()
         path_lower = parsed.path.lower()
 
-        if base_host and host != base_host and not _DOC_EXT_RE.search(abs_url):
+        hcp_hosts = {"hcp.ma", "www.hcp.ma", "m.hcp.ma"}
+        same_hcp_site = host in hcp_hosts and base_host in hcp_hosts
+        if base_host and host != base_host and not same_hcp_site and not _DOC_EXT_RE.search(abs_url):
             continue
         if any(tok in path_lower for tok in _NOISE_PATH_TOKENS):
             continue

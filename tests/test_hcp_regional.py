@@ -203,6 +203,54 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
         self.assertIn("34 combinaisons manquantes", warnings[0])
         fetch_bytes.assert_called_once()
 
+    def test_prefers_complete_attachment_when_partial_attachment_has_same_row_count(self):
+        fixture_path = Path(__file__).parent / "fixtures" / "hcp_emo_t3_2026_regional_tables.txt"
+        extracted = fixture_path.read_text(encoding="utf-8")
+        complete = parse_hcp_emo_regional_tables(
+            extracted,
+            source_url="https://www.hcp.ma/attachment/complete/",
+            published_date="2026-11-03",
+        )
+        partial = [dict(item) for item in complete]
+        partial[-1] = {
+            **partial[-1],
+            "id": "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT:all:UNKNOWN",
+            "series_key": "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT:all:UNKNOWN",
+        }
+        self.assertEqual(len(partial), len(complete))
+
+        class FakePage:
+            def extract_text(self, extraction_mode=None):
+                return "Taux de participation — tableau régional"
+
+        class FakeReader:
+            def __init__(self, stream):
+                self.pages = [FakePage()]
+
+        with patch(
+            "pipeline.collectors._fetch_pdf_bytes",
+            side_effect=[b"%PDF-partial", b"%PDF-complete"],
+        ):
+            with patch("pipeline.collectors.PdfReader", FakeReader):
+                with patch(
+                    "pipeline.collectors.parse_hcp_emo_regional_tables",
+                    side_effect=[partial, complete],
+                ):
+                    series, warnings = _extract_hcp_emo_regional_statistics(
+                        [
+                            "https://www.hcp.ma/attachment/partial/",
+                            "https://www.hcp.ma/attachment/complete/",
+                        ],
+                        "https://www.hcp.ma/emo-2026.html",
+                        "2026-11-03",
+                    )
+
+        self.assertEqual(warnings, [])
+        self.assertEqual(
+            {item["series_key"] for item in series},
+            {item["series_key"] for item in complete},
+        )
+
     def test_pipeline_merge_keeps_earlier_quarters_and_replaces_revised_periods(self):
         existing = {
             "id": "HCP_EMO_REGIONAL_TEST:all:MAR",

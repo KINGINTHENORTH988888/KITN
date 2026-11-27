@@ -52,6 +52,9 @@ jobs:
       - name: Run unit tests
         run: PYTHONPATH=. python -m unittest discover -s tests -v
 
+      - name: Validate current HCP regional PDF (read-only)
+        run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py
+
       - name: Report statistical dataset distribution
         run: |
           python - <<'PY'

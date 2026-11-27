@@ -116,3 +116,12 @@ test("returns a safe empty model when the regional dataset is not yet published"
   assert.deepEqual(model.rows, []);
   assert.deepEqual(model.periods, []);
 });
+
+test("reports latest regional coverage separately from the national aggregate", () => {
+  const model = buildRegionalStatisticsModel(payload, "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT", "all");
+  assert.equal(model.regionalCount, 1);
+  assert.equal(model.latestAvailableCount, 1);
+  assert.equal(model.latestMissingCount, 0);
+  assert.equal(model.latestPeriod, "T3/2026");
+  assert.equal(model.latestAverage, 4.6);
+});

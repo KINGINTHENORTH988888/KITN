@@ -247,19 +247,19 @@ def _statistics_period_sort_key(period: str, collected_at: str) -> tuple:
     parsed = None
 
     for pattern, fmt in (
-        (r"20\\d{2}-\\d{2}-\\d{2}", "%Y-%m-%d"),
-        (r"20\\d{2}-\\d{2}", "%Y-%m"),
-        (r"20\\d{2}", "%Y"),
+        (r"20\d{2}-\d{2}-\d{2}", "%Y-%m-%d"),
+        (r"20\d{2}-\d{2}", "%Y-%m"),
+        (r"20\d{2}", "%Y"),
     ):
         if re.fullmatch(pattern, raw):
             parsed = datetime.strptime(raw, fmt)
             break
 
-    quarter = re.fullmatch(r"(20\\d{2})-T([1-4])", raw, re.IGNORECASE)
+    quarter = re.fullmatch(r"(20\d{2})-T([1-4])", raw, re.IGNORECASE)
     if quarter:
         parsed = datetime(int(quarter.group(1)), (int(quarter.group(2)) - 1) * 3 + 1, 1)
     else:
-        quarter = re.fullmatch(r"T([1-4])[-/](20\\d{2})", raw, re.IGNORECASE)
+        quarter = re.fullmatch(r"T([1-4])[-/](20\d{2})", raw, re.IGNORECASE)
         if quarter:
             parsed = datetime(int(quarter.group(2)), (int(quarter.group(1)) - 1) * 3 + 1, 1)
 

@@ -34,10 +34,13 @@ class TestOpenAlexPagination(unittest.TestCase):
             "lang_hint": "en",
         }
 
-        with patch(
-            "pipeline.collectors._fetch_text",
-            side_effect=[json.dumps(page) for page in pages],
-        ) as fetch:
+        with (
+            patch.dict("os.environ", {"OPENALEX_API_KEY": "test-openalex-key"}),
+            patch(
+                "pipeline.collectors._fetch_text",
+                side_effect=[json.dumps(page) for page in pages],
+            ) as fetch,
+        ):
             items = collect_openalex(source)
 
         self.assertEqual(len(items), 2)
@@ -48,6 +51,10 @@ class TestOpenAlexPagination(unittest.TestCase):
         self.assertEqual(first_query["per-page"], ["1"])
         self.assertEqual(second_query["cursor"], ["cursor-page-2"])
         self.assertEqual(second_query["filter"], ["type:article"])
+        self.assertEqual(
+            fetch.call_args_list[0].kwargs["extra_headers"],
+            {"Authorization": "Bearer test-openalex-key"},
+        )
 
     def test_source_limit_stops_pagination_without_losing_existing_cap(self):
         page = {
@@ -83,3 +90,23 @@ class TestOpenAlexPagination(unittest.TestCase):
 
         self.assertEqual(len(items), 2)
         self.assertEqual(fetch.call_count, 2)
+
+    def test_without_api_key_keeps_keyless_first_page_working(self):
+        page = {
+            "meta": {"next_cursor": "cursor-page-2"},
+            "results": [_work("Résultat accessible sans clé")],
+        }
+        source = {
+            "url": "https://api.openalex.org/works?search=Morocco&per-page=1",
+            "max_items": 3,
+        }
+
+        with (
+            patch.dict("os.environ", {}, clear=True),
+            patch("pipeline.collectors._fetch_text", return_value=json.dumps(page)) as fetch,
+        ):
+            items = collect_openalex(source)
+
+        self.assertEqual(len(items), 1)
+        fetch.assert_called_once()
+        self.assertIsNone(fetch.call_args.kwargs["extra_headers"])

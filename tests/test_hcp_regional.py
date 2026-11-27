@@ -103,6 +103,26 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
         self.assertEqual(laayoune["history"][0]["quality_flag"], "not_available")
         self.assertEqual(laayoune["latest"]["value"], None)
 
+    def test_parses_all_regional_tables_from_official_t3_2026_pdf_text_fixture(self):
+        from pathlib import Path
+
+        fixture_path = Path(__file__).parent / "fixtures" / "hcp_emo_t3_2026_regional_tables.txt"
+        extracted = fixture_path.read_text(encoding="utf-8")
+        series = parse_hcp_emo_regional_tables(
+            extracted,
+            source_url="https://www.hcp.ma/attachment/2928207/",
+            published_date="2026-11-03",
+        )
+
+        self.assertEqual(len(series), 234)
+        self.assertEqual({item["residence_scope"] for item in series}, {"all", "urban", "rural"})
+        self.assertEqual(len({item["indicator_code"] for item in series}), 6)
+        self.assertEqual(len({item["geography_code"] for item in series}), 13)
+        self.assertTrue(any(point["quality_flag"] == "insufficient_significance"
+                            for item in series for point in item["history"]))
+        self.assertTrue(any(point["quality_flag"] == "medium_significance"
+                            for item in series for point in item["history"]))
+
     def test_pipeline_merge_keeps_earlier_quarters_and_replaces_revised_periods(self):
         existing = {
             "id": "HCP_EMO_REGIONAL_TEST:all:MAR",

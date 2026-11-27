@@ -1053,9 +1053,10 @@
     "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
-    "max_pages": 1,
+    "max_pages": 2,
     "listing_urls": [
-      "/Actualite-marche-du-travail_r424.html"
+      "https://m.hcp.ma/Actualite-marche-du-travail_r424.html",
+      "https://www.hcp.ma/Actualite-marche-du-travail_r424.html"
     ]
   },
   {

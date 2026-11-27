@@ -71,6 +71,8 @@ Dans `pipeline/run_pipeline.py`, les sources actives sont parcourues dans une bo
 
 Ne pas désactiver ou supprimer les six sources avant d'avoir testé ce mécanisme sur une branche isolée.
 
+Une première mesure a été ajoutée sur la branche de revue : espacement minimal de trois secondes entre les appels OpenAlex, quatre tentatives au maximum, prise en compte de `Retry-After` en secondes ou en date HTTP, délai exponentiel avec variation aléatoire et arrêt propre si le fournisseur demande une attente supérieure à deux minutes. Des tests simulent les réponses 429/503. Cela améliore la robustesse, mais ne prouve pas encore que le quota OpenAlex est rétabli : il faudra vérifier une collecte réelle lorsque l'exécution complète du pipeline sera autorisée.
+
 ### 3.2 HCP EMO — collecteur spécialisé trop dépendant de la forme de la page
 
 La source `hcp_labour_statistics` est configurée sur les pages de l'actualité du marché du travail, en version mobile et classique. Le dernier état de santé indique qu'aucun document exploitable n'a été détecté.
@@ -189,7 +191,7 @@ Les corrections suivantes ont été développées sur `audit/kitn-quality-review
 - Chaque série collectée reçoit `last_successful_collection_at` et `collection_status=collected`. Une série conservée faute de nouvelle collecte reçoit `collection_status=carried_forward` et garde sa date de collecte connue.
 - L'interface distingue la date de génération du fichier statistique de la date de collecte individuelle lorsqu'elle est disponible.
 
-Ces changements sont couverts par six tests JavaScript et cinq tests Python supplémentaires. Les workflows GitHub Actions ont validé le commit `9ced90c` : tests Python, tests statistiques JavaScript et build Vite réussis. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+Ces changements sont couverts par six tests JavaScript et neuf tests Python supplémentaires (dont quatre tests de reprise HTTP). Les workflows GitHub Actions ont validé le commit `0762c55` : 55 tests Python, 6 tests JavaScript et build Vite réussis. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
 
 ## 4. État de la couverture de tests
 

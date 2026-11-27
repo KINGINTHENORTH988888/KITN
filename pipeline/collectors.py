@@ -1744,23 +1744,32 @@ def collect_bank_al_maghrib_api(source: dict) -> list[dict]:
 
 
 def collect_world_bank_api(source: dict) -> list[dict]:
-    """Fetch Morocco time series from the World Bank Indicators API."""
+    """Fetch Morocco time series and retain per-indicator collection diagnostics."""
     base_url = str(source.get("url") or "https://api.worldbank.org/v2/country/MAR/indicator/").rstrip("/") + "/"
     specs = source.get("indicators") or []
     max_items = int(source.get("max_items", len(specs) or 10))
     history_points = max(1, min(int(source.get("history_points", 12)), 100))
     items: list[dict] = []
+    warnings: list[str] = []
+
     for spec in specs[:max_items]:
         code = str(spec.get("code") or "").strip()
         if not code:
+            warnings.append("Indicateur Banque mondiale ignoré : code absent dans la configuration.")
             continue
+
         endpoint = f"{base_url}{code}?format=json&per_page={history_points}"
         try:
             payload = json.loads(_fetch_text(endpoint))
-        except Exception:
+        except Exception as exc:
+            warnings.append(f"{code} : erreur de requête ({type(exc).__name__}: {clean_text(str(exc))[:180]}).")
             continue
+
         if not isinstance(payload, list) or len(payload) < 2 or not isinstance(payload[1], list):
+            message = payload[0].get("message") if isinstance(payload, list) and payload and isinstance(payload[0], dict) else None
+            warnings.append(f"{code} : réponse API vide ou non conforme{(': ' + clean_text(message)[:160]) if message else '.'}")
             continue
+
         history = []
         for row in payload[1]:
             if not isinstance(row, dict) or row.get("value") is None:
@@ -1773,7 +1782,9 @@ def collect_world_bank_api(source: dict) -> list[dict]:
             history.append({"year": year, "value": value})
         history.sort(key=lambda point: point["year"])
         if not history:
+            warnings.append(f"{code} : aucune observation numérique disponible pour le Maroc sur la période demandée.")
             continue
+
         latest = history[-1]
         previous = history[-2] if len(history) > 1 else None
         label = clean_text(spec.get("label_fr") or code)
@@ -1814,8 +1825,15 @@ def collect_world_bank_api(source: dict) -> list[dict]:
             "statistics_series": series,
             "source_lang_hint": "fr",
         })
-    return items
 
+    if warnings:
+        # The pipeline consumes these diagnostics even when no indicator could
+        # be collected; this makes missing series visible in source health data.
+        items.append({
+            "statistics_collection_warnings": warnings,
+            "source_lang_hint": "fr",
+        })
+    return items
 
 
 def _mef_number(raw: str) -> float | None:

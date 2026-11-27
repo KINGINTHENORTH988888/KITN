@@ -46,14 +46,14 @@ test("five-year range filters by calendar period, not by number of observations"
 });
 
 test("daily series retain five calendar years rather than only five daily observations", () => {
-  const history = Array.from({ length: 2200 }, (_, index) => {
+  const history = Array.from({ length: 2600 }, (_, index) => {
     const date = new Date(Date.UTC(2020, 0, 1 + index));
     return { year: date.toISOString().slice(0, 10), value: index };
   });
   const filtered = filterStatisticsHistory(history, "5", "2026-11-27T04:00:00Z");
   assert.ok(filtered.length > 1800);
-  assert.ok(filtered.length < history.length);
-  assert.equal(filtered.at(-1).year, history.at(-1).year);
+  assert.ok(filtered.length < 1900);
+  assert.equal(filtered.at(-1).year, "2026-11-26");
 });
 
 test("legacy histories with no parseable periods remain visible", () => {

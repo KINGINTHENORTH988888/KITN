@@ -270,12 +270,24 @@ def classify_document(
     }
 
 
+def normalize_doi(raw_doi: str | None) -> str | None:
+    """Return a canonical DOI only when the identifier passes a conservative syntax check."""
+    if not raw_doi or not isinstance(raw_doi, str):
+        return None
+    value = clean_text(raw_doi).strip()
+    value = re.sub(r"^(?:doi:\\s*)", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"^https?://(?:dx\\.)?doi\\.org/", "", value, flags=re.IGNORECASE)
+    value = value.strip().rstrip(".,;)")
+    if not re.fullmatch(r"10\\.\\d{4,9}/\\S+", value, flags=re.IGNORECASE):
+        return None
+    return value.lower()
+
+
 def build_stable_id(doi: str | None, url: str | None, title: str, pub_date: str | None = None) -> str:
-    if doi:
-        clean_doi = re.sub(r"^https?://(dx\.)?doi\.org/", "", str(doi).strip(), flags=re.IGNORECASE).lower()
-        if clean_doi:
-            digest = hashlib.sha256(f"doi:{clean_doi}".encode("utf-8")).hexdigest()[:16]
-            return f"kitn_{digest}"
+    normalized_doi = normalize_doi(doi)
+    if normalized_doi:
+        digest = hashlib.sha256(f"doi:{normalized_doi}".encode("utf-8")).hexdigest()[:16]
+        return f"kitn_{digest}"
 
     norm_title = re.sub(r"\s+", " ", clean_text(title).lower()).strip()
     norm_date = str(pub_date or "").strip()[:10]
@@ -304,6 +316,8 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
     url_pub = sanitize_url(raw.get("url"))
     pdf_url = sanitize_url(raw.get("pdf_url"))
     doi_raw = clean_text(raw.get("doi")) or None
+    normalized_doi = normalize_doi(doi_raw)
+    doi_status = "absent" if not doi_raw else ("valide" if normalized_doi else "invalide")
     pub_date_raw = clean_text(raw.get("published_date")) or None
     date_info = validate_publication_date(pub_date_raw)
 
@@ -346,7 +360,7 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
     explicit_status = raw.get("statut_validation")
     statut_validation = explicit_status if explicit_status in ("valide", "a_verifier", "archive") else ("a_verifier" if has_anomaly else "valide")
 
-    item_id = clean_text(raw.get("id")) or build_stable_id(doi_raw, url_pub, title, pub_date_raw)
+    item_id = clean_text(raw.get("id")) or build_stable_id(normalized_doi, url_pub, title, pub_date_raw)
     stamp = now_iso or ""
 
     return {
@@ -372,7 +386,8 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
         "lien_maroc": "direct" if bypass_relevance else relevance["lien_maroc"],
         "score_pertinence": int(raw["score_pertinence"]) if isinstance(raw.get("score_pertinence"), (int, float)) else (90 if bypass_relevance else relevance["score"]),
         "url_publication": url_pub,
-        "doi": doi_raw,
+        "doi": normalized_doi or doi_raw,
+        "doi_statut": doi_status,
         "pdf_direct": pdf_url,
         "texte_integral_disponible": bool(pdf_url or raw.get("texte_integral_disponible")),
         "resume": abstract,

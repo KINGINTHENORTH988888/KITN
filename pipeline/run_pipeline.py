@@ -286,7 +286,10 @@ def _statistics_period_sort_key(period: str, collected_at: str) -> tuple:
         (r"(?:19|20)\d{2}", "%Y"),
     ):
         if re.fullmatch(pattern, raw):
-            parsed = datetime.strptime(raw, fmt)
+            try:
+                parsed = datetime.strptime(raw, fmt)
+            except ValueError:
+                parsed = None
             break
 
     quarter = re.fullmatch(r"((?:19|20)\d{2})-T([1-4])", raw, re.IGNORECASE)

@@ -125,6 +125,16 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
         self.assertEqual({item["residence_scope"] for item in series}, {"all", "urban", "rural"})
         self.assertEqual(len({item["indicator_code"] for item in series}), 6)
         self.assertEqual(len({item["geography_code"] for item in series}), 13)
+        national_employment = next(
+            item for item in series
+            if item["indicator_code"] == "HCP_EMO_REGIONAL_EMPLOYMENT_RATE"
+            and item["geography_code"] == "MAR"
+            and item["residence_scope"] == "all"
+        )
+        self.assertEqual(
+            [(point["year"], point["value"]) for point in national_employment["history"]],
+            [("T1/2026", 37.3), ("T2/2026", 38.2), ("T3/2026", 37.4)],
+        )
         self.assertTrue(any(point["quality_flag"] == "insufficient_significance"
                             for item in series for point in item["history"]))
         self.assertTrue(any(point["quality_flag"] == "medium_significance"

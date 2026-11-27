@@ -340,10 +340,11 @@ const COPY = {
     hubTitle: "Accès direct par espace",
     hubSub: "Chaque rubrique dispose de son périmètre, de ses repères et de son filtrage dédié.",
     openSpaceBtn: "Ouvrir l'espace →",
-    statTotal: "Notices indexées",
+    statTotal: "Notices visibles",
     statScience: "Articles scientifiques",
     statStats: "Chiffres & données",
     statLibrary: "Bibliothèque & rapports",
+    statWatch: "Actualité & veille",
     themesEyebrow: "Les grands enjeux",
     themesTitle: "Explorer par thématique",
     themesSub: "Des sujets essentiels, organisés pour aller au-delà de l'actualité et comprendre les dynamiques de fond.",
@@ -455,10 +456,11 @@ const COPY = {
     hubTitle: "وصول مباشر حسب الفضاء",
     hubSub: "لكل فضاء اختصاصه ومعالمه وآليات التصفية الخاصة به.",
     openSpaceBtn: "فتح الفضاء ←",
-    statTotal: "المواد المفهرسة",
+    statTotal: "المواد المتاحة",
     statScience: "المقالات العلمية",
     statStats: "الأرقام والبيانات",
     statLibrary: "المكتبة والتقارير",
+    statWatch: "الأخبار والرصد",
     themesEyebrow: "القضايا الكبرى",
     themesTitle: "الاستكشاف حسب المحور",
     themesSub: "مواضيع أساسية منظمة لتجاوز الأخبار اليومية وفهم الديناميات العميقة.",
@@ -1243,11 +1245,14 @@ function render() {
   const scienceWithAbstract = scienceItems.filter((it) => String(it.resume || "").trim()).length;
   const scienceWithDoi = scienceItems.filter((it) => getDoiUrl(it.doi)).length;
   const scienceNeedsReview = scienceItems.filter((it) => isFutureDate(it) || it.statut_validation === "a_verifier").length;
+  const scienceFutureDateCount = scienceItems.filter((it) => isFutureDate(it)).length;
 
   const visibleItems = indexItems.filter((it) => !isFutureDate(it));
-  const scienceCount = visibleItems.filter((it) => resolveItemSpace(it) === "science").length;
+  const scienceVisibleCount = visibleItems.filter((it) => resolveItemSpace(it) === "science").length;
+  const scienceCount = scienceVisibleCount;
   const statsCount = visibleItems.filter((it) => resolveItemSpace(it) === "chiffres").length;
   const libraryCount = visibleItems.filter((it) => resolveItemSpace(it) === "bibliotheque").length;
+  const watchCount = visibleItems.filter((it) => resolveItemSpace(it) === "veille").length;
   const hubCards = spaces.filter((s) => s.id !== "all");
 
   document.documentElement.lang = lang;
@@ -1349,6 +1354,10 @@ function render() {
           <div class="principle-card">
             <span>${libraryCount}</span>
             <h3>${escapeHtml(c.statLibrary)}</h3>
+          </div>
+          <div class="principle-card">
+            <span>${watchCount}</span>
+            <h3>${escapeHtml(c.statWatch)}</h3>
           </div>
         </div>
 
@@ -1562,14 +1571,14 @@ function render() {
       ${activeSpace === "science" ? `
         <div class="science-search-panel">
           <div class="science-metrics">
-            <div><strong>${scienceItems.length}</strong><span>${lang === "ar" ? "منشور مفهرس" : "publications indexées"}</span></div>
+            <div><strong>${scienceVisibleCount}</strong><span>${lang === "ar" ? "منشور متاح" : "publications visibles"}</span></div>
             <div><strong>${scienceWithAbstract}</strong><span>${lang === "ar" ? "ملخص متاح" : "résumés disponibles"}</span></div>
             <div><strong>${scienceWithDoi}</strong><span>DOI</span></div>
             <div><strong>${scienceNeedsReview}</strong><span>${lang === "ar" ? "تحتاج إلى التحقق" : "à vérifier"}</span></div>
           </div>
           <p class="science-quality-note">${lang === "ar"
-            ? `${scienceItems.length - scienceWithAbstract} منشور دون ملخص · ${scienceItems.filter((it) => !Array.isArray(it.auteurs) || !it.auteurs.length).length} دون مؤلف محدد`
-            : `${scienceItems.length - scienceWithAbstract} publications sans résumé · ${scienceItems.filter((it) => !Array.isArray(it.auteurs) || !it.auteurs.length).length} sans auteur renseigné`}</p>
+            ? `${scienceItems.length} منشور مفهرس إجمالاً · ${scienceFutureDateCount} بتاريخ مستقبلي مستبعد مؤقتاً · ${scienceItems.length - scienceWithAbstract} دون ملخص · ${scienceItems.filter((it) => !Array.isArray(it.auteurs) || !it.auteurs.length).length} دون مؤلف محدد`
+            : `${scienceItems.length} publications indexées au total · ${scienceFutureDateCount} avec une date future temporairement exclues · ${scienceItems.length - scienceWithAbstract} sans résumé · ${scienceItems.filter((it) => !Array.isArray(it.auteurs) || !it.auteurs.length).length} sans auteur renseigné`}</p>
           <div class="science-specific-filters">
             <label>
               <span>${lang === "ar" ? "الباحث / المؤلف" : "Auteur / chercheur"}</span>

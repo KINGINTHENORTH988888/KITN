@@ -632,6 +632,25 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertIn("troisième trimestre", merged["titre_original"])
         self.assertEqual(merged["resume"], incoming["resume"])
 
+    def test_merge_does_not_transfer_future_date_anomaly_to_trusted_date(self):
+        existing = {
+            "id": "kitn_date_guard",
+            "date_publication": "2025-05-10",
+            "date_statut": "date_confirmee",
+            "date_anomalie": False,
+        }
+        incoming = {
+            "id": "kitn_date_guard",
+            "date_publication": "2027-03-15",
+            "date_statut": "date_future_a_verifier",
+            "date_anomalie": True,
+        }
+        merged, changed = _merge_preserving_rich_fields(existing, incoming, "2026-11-27T12:00:00Z")
+        self.assertFalse(changed)
+        self.assertEqual(merged["date_publication"], "2025-05-10")
+        self.assertFalse(merged["date_anomalie"])
+        self.assertEqual(merged["date_statut"], "date_confirmee")
+
     def test_run_pipeline_preserves_existing_and_merges_manual(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -742,6 +761,7 @@ class TestPipelineProcessors(unittest.TestCase):
             self.assertIn("Résumé complet de la recherche", enriched_item["resume"])
             self.assertIn("Auteur complémentaire", enriched_item["auteurs"])
             self.assertEqual(enriched_item["metadata_source_enrichissement"], "Crossref")
+            self.assertTrue(enriched_item["metadata_enrichissement_tente_le"])
             self.assertEqual(payload["doi_enrichment_attempted"], 1)
             self.assertEqual(payload["doi_enrichment_updated"], 1)
             self.assertTrue(pub_idx.exists())

@@ -226,3 +226,31 @@ Le code applicatif et les validations HCP ont réussi sur le commit parent `1ba5
 ### Accès Cloudflare nécessaire
 
 Le journal Workers Build reste inaccessible sans session Cloudflare authentifiée. Une demande de connexion sécurisée Cloudflare a été ouverte dans cette conversation. Après connexion, il sera possible d'examiner le build en échec et de déterminer si le projet Worker est mal configuré ou si une dépendance externe manque. Aucun secret ni mot de passe ne doit être partagé dans le chat.
+
+
+## 14. Corrections de navigation, tests et publication HCP
+
+### Défaut de test corrigé
+
+Le test `navigation.test.js` recherchait la déclaration de `normalizeSearchText` dans `src/main.js`, alors que la fonction a été extraite dans `src/search.js`. Le test vérifie maintenant l'import dans `main.js`, l'export et la normalisation NFD dans `search.js`, ainsi que les deux usages de recherche. Le code de normalisation lui-même n'avait pas besoin d'être modifié.
+
+### Défaut responsive corrigé par inspection CSS
+
+Le bloc `@media (max-width: 820px)` positionnait le menu mobile en absolu avec `top: 100%`. Comme l'en-tête est flexible et que le menu est rendu dans le flux du header, cette position pouvait placer le menu au mauvais endroit sur les écrans étroits. Le menu est désormais replacé dans le flux normal (`position: static`), en troisième ligne de l'en-tête, avec une largeur complète. Un test CSS de non-régression a été ajouté.
+
+**Limite de validation :** l'automatisation du navigateur n'a pas pu émuler réellement 390 × 844. La présence du bouton et le changement de langue ont été observés, et le RTL a été confirmé, mais le comportement visuel mobile à 390 px et l'absence de débordement horizontal ne sont pas certifiés.
+
+### Nettoyage du dépôt
+
+Cinq fichiers Python compilés (`__pycache__/*.pyc`) suivis par Git ont été supprimés. Les règles `.gitignore` existantes les excluent déjà ; ils n'ont pas leur place dans le dépôt source.
+
+### Validation frontend confirmée sur un commit précédent
+
+Sur le commit de revue `1c7a628`, le job HCP a exécuté avec succès :
+- les 52 tests frontend ;
+- le build Vite de production ;
+- les validations des deux publications HCP et la préparation des données d'aperçu.
+
+La publication finale des données a échoué à cause d'une mise à jour concurrente de la branche (rejet Git « expected SHA »). Le workflow HCP a été modifié pour récupérer la dernière branche, rebaser son commit de données et réessayer jusqu'à trois fois, sans écraser les changements de code. Ce nouveau mécanisme doit encore être confirmé par une exécution complète.
+
+Les exécutions suivantes affichées par GitHub avec l'état `action_required` n'ont pas démarré de jobs ; elles ne constituent ni un succès ni un échec de tests. Le dernier CSS et le dernier test responsive attendent donc une validation CI complète.

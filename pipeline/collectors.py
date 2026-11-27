@@ -2,6 +2,9 @@ import json
 import os
 import re
 import time
+import io
+import posixpath
+import zipfile
 from email.utils import parsedate_to_datetime
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
@@ -1691,6 +1694,290 @@ def collect_mef_tand_statistics(source: dict) -> list[dict]:
     return items
 
 
+def _fetch_bytes(url: str, timeout: int = 30, max_bytes: int = 8_000_000) -> bytes:
+    """Fetch a bounded binary resource (used for official XLSX downloads)."""
+    request = Request(url, headers={
+        "User-Agent": _USER_AGENT,
+        "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/octet-stream,*/*",
+        "Accept-Language": "fr-FR,fr;q=0.9,ar-MA;q=0.8,en;q=0.6",
+        "Referer": "https://data.gov.ma/data/",
+    })
+    with urlopen(request, timeout=timeout) as response:
+        payload = response.read(max_bytes + 1)
+    if len(payload) > max_bytes:
+        raise ValueError(f"Fichier trop volumineux (>{max_bytes} octets)")
+    if not payload.startswith(b"PK"):
+        raise ValueError("La ressource téléchargée n'est pas un classeur XLSX valide")
+    return payload
+
+
+def _xlsx_cell_column(reference: str) -> int:
+    letters = re.match(r"[A-Z]+", str(reference or "").upper())
+    if not letters:
+        return 0
+    value = 0
+    for char in letters.group(0):
+        value = value * 26 + ord(char) - 64
+    return value - 1
+
+
+def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
+    """Read XLSX worksheet values using only the Python standard library."""
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        names = set(archive.namelist())
+        shared = []
+        if "xl/sharedStrings.xml" in names:
+            root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
+            ns = {"x": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+            for item in root.findall("x:si", ns):
+                shared.append("".join(node.text or "" for node in item.findall(".//x:t", ns)))
+
+        sheet_paths = []
+        if "xl/workbook.xml" in names and "xl/_rels/workbook.xml.rels" in names:
+            workbook = ET.fromstring(archive.read("xl/workbook.xml"))
+            rels_root = ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
+            rel_ns = {"r": "http://schemas.openxmlformats.org/package/2006/relationships"}
+            relationships = {
+                rel.attrib.get("Id"): rel.attrib.get("Target", "")
+                for rel in rels_root.findall("r:Relationship", rel_ns)
+            }
+            main_ns = {"x": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+            for sheet in workbook.findall("x:sheets/x:sheet", main_ns):
+                rel_id = sheet.attrib.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")
+                target = relationships.get(rel_id, "")
+                if target:
+                    path = target.lstrip("/") if target.startswith("/") else posixpath.normpath(posixpath.join("xl", target))
+                    if path in names:
+                        sheet_paths.append(path)
+        if not sheet_paths:
+            sheet_paths = sorted(name for name in names if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", name))
+
+        all_rows = []
+        ns = {"x": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+        for sheet_path in sheet_paths[:8]:
+            root = ET.fromstring(archive.read(sheet_path))
+            for row_node in root.findall(".//x:sheetData/x:row", ns):
+                cells = {}
+                for cell in row_node.findall("x:c", ns):
+                    col = _xlsx_cell_column(cell.attrib.get("r", ""))
+                    cell_type = cell.attrib.get("t", "")
+                    value_node = cell.find("x:v", ns)
+                    value = value_node.text if value_node is not None else ""
+                    if cell_type == "s" and value != "":
+                        try:
+                            value = shared[int(value)]
+                        except (ValueError, IndexError):
+                            value = ""
+                    elif cell_type == "inlineStr":
+                        value = "".join(node.text or "" for node in cell.findall(".//x:t", ns))
+                    cells[col] = str(value or "").strip()
+                if cells:
+                    row = [""] * (max(cells) + 1)
+                    for col, value in cells.items():
+                        row[col] = value
+                    all_rows.append(row)
+            if all_rows:
+                all_rows.append([])
+        return all_rows
+
+
+_BAM_MONTHS = {
+    "janvier": "01", "janv": "01", "january": "01",
+    "février": "02", "fevrier": "02", "févr": "02", "fevr": "02", "february": "02",
+    "mars": "03", "march": "03",
+    "avril": "04", "avr": "04", "april": "04",
+    "mai": "05", "may": "05",
+    "juin": "06", "june": "06",
+    "juillet": "07", "juil": "07", "july": "07",
+    "août": "08", "aout": "08", "august": "08",
+    "septembre": "09", "sept": "09", "september": "09",
+    "octobre": "10", "oct": "10", "october": "10",
+    "novembre": "11", "nov": "11", "november": "11",
+    "décembre": "12", "decembre": "12", "déc": "12", "dec": "12", "december": "12",
+}
+
+
+def _bam_ckan_period(value: str) -> str | None:
+    text = clean_text(str(value or "")).casefold().replace("_", " ").strip()
+    if not text:
+        return None
+    quarter = re.search(r"(20\d{2})\s*[-/]?\s*(?:t|trimestre|q)\s*([1-4])", text)
+    if quarter:
+        return f"{quarter.group(1)}-T{quarter.group(2)}"
+    numeric = re.search(r"\b(20\d{2})[-/.](0?[1-9]|1[0-2])(?:[-/.](?:0?[1-9]|[12]\d|3[01]))?\b", text)
+    if numeric:
+        return f"{numeric.group(1)}-{int(numeric.group(2)):02d}"
+    month_year = re.search(r"(janvier|janv|january|février|fevrier|févr|fevr|february|mars|march|avril|avr|april|mai|may|juin|june|juillet|juil|july|août|aout|august|septembre|sept|september|octobre|oct|october|novembre|nov|november|décembre|decembre|déc|dec|december)\.?\s+(20\d{2})", text)
+    if month_year:
+        month = _BAM_MONTHS.get(month_year.group(1))
+        if month:
+            return f"{month_year.group(2)}-{month}"
+    year = re.search(r"\b(20\d{2})\b", text)
+    return year.group(1) if year else None
+
+
+def _bam_ckan_number(value: str) -> float | None:
+    text = str(value or "").strip().replace("\u00a0", "").replace(" ", "")
+    if not text or text.casefold() in {"-", "—", "n.d.", "nd", "na", "n/a", "…"}:
+        return None
+    negative = text.startswith("(") and text.endswith(")")
+    text = text.strip("()").replace("%", "").replace("٬", "").replace("٫", ".")
+    if "," in text and "." not in text:
+        text = text.replace(",", ".")
+    else:
+        text = text.replace(",", "")
+    text = re.sub(r"[^0-9.+-]", "", text)
+    if text in {"", ".", "+", "-"}:
+        return None
+    try:
+        number = float(text)
+        return -number if negative else number
+    except ValueError:
+        return None
+
+
+def _bam_ckan_slug(value: str) -> str:
+    text = clean_text(str(value or "")).upper()
+    text = re.sub(r"[^A-Z0-9]+", "_", text).strip("_")
+    return (text[:70] or "SERIE")
+
+
+def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: dict) -> list[dict]:
+    """Recognize common official workbook layouts: periods across columns or down rows."""
+    if not rows:
+        return []
+    title = clean_text(dataset.get("title") or dataset.get("name") or "Statistiques monétaires")
+    notes = clean_text(dataset.get("notes") or "")
+    resource_url = str(resource.get("url") or "")
+    resource_name = clean_text(resource.get("name") or "")
+    candidates = []
+
+    # Layout A: period headings in a row, one indicator per following row.
+    for row_index, row in enumerate(rows[:40]):
+        period_columns = [(col, _bam_ckan_period(cell)) for col, cell in enumerate(row)]
+        period_columns = [(col, period) for col, period in period_columns if period]
+        if len(period_columns) >= 3:
+            candidates.append((len(period_columns), "horizontal", row_index, period_columns))
+    if candidates:
+        _, _, header_index, period_columns = max(candidates, key=lambda item: item[0])
+        for row in rows[header_index + 1:]:
+            if not row:
+                continue
+            first_period_col = period_columns[0][0]
+            labels = [clean_text(cell) for cell in row[:first_period_col] if clean_text(cell)]
+            if not labels:
+                continue
+            label = labels[-1]
+            if _bam_ckan_number(label) is not None or len(label) < 3:
+                continue
+            points = []
+            for col, period in period_columns:
+                value = _bam_ckan_number(row[col] if col < len(row) else "")
+                if value is not None:
+                    points.append({"year": period, "value": value})
+            if len(points) >= 2:
+                _append_bam_ckan_series(candidates, label, points, title, notes, resource_url, resource_name)
+
+    # Layout B: dates down the first column and indicator names across the first row.
+    if not any(isinstance(item, dict) and item.get("statistics_series") for item in candidates):
+        for col in range(1, min(max((len(row) for row in rows), default=0), 80)):
+            header = clean_text(rows[0][col] if col < len(rows[0]) else "")
+            if len(header) < 3 or _bam_ckan_number(header) is not None:
+                continue
+            points = []
+            for row in rows[1:]:
+                period = _bam_ckan_period(row[0] if row else "")
+                if not period or col >= len(row):
+                    continue
+                value = _bam_ckan_number(row[col])
+                if value is not None:
+                    points.append({"year": period, "value": value})
+            if len(points) >= 2:
+                _append_bam_ckan_series(candidates, header, points, title, notes, resource_url, resource_name)
+    return [item for item in candidates if isinstance(item, dict) and item.get("statistics_series")]
+
+
+def _append_bam_ckan_series(output: list, label: str, points: list[dict], dataset_title: str, notes: str, resource_url: str, resource_name: str) -> None:
+    unique = {str(point["year"]): point for point in points}
+    history = sorted(unique.values(), key=lambda point: str(point["year"]))
+    if len(history) < 2:
+        return
+    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
+    unit_match = re.search(r"(?:\(|\[)([^()\[\]]{1,24})(?:\)|\])", label)
+    unit = clean_text(unit_match.group(1)) if unit_match else "Unité publiée par BAM"
+    label_clean = clean_text(re.sub(r"\s*[\[(][^()\[\]]{1,24}[\])]\s*", " ", label))
+    series = {
+        "id": code, "indicator_code": code,
+        "label_fr": label_clean, "label_ar": label_clean,
+        "description_fr": f"{label_clean} — {dataset_title}. {notes}".strip(),
+        "description_ar": f"{label_clean} — {dataset_title}",
+        "unit_fr": unit, "unit_ar": unit,
+        "scale_divisor": 1, "precision": 3,
+        "category": "economie_finances_publiques",
+        "pole": "economie_finances_publiques",
+        "latest": history[-1], "previous": history[-2],
+        "history": history[-120:],
+        "source_name": "Bank Al-Maghrib — Données ouvertes",
+        "source_url": resource_url,
+        "dataset_name": dataset_title,
+        "resource_name": resource_name,
+        "reference_period": history[-1]["year"],
+        "last_updated": None,
+    }
+    output.append({
+        "title": f"{label_clean} — {history[-1]['year']}",
+        "abstract": series["description_fr"],
+        "authors": ["Bank Al-Maghrib"],
+        "venue": "Bank Al-Maghrib — Données ouvertes",
+        "keywords": ["Maroc", "Bank Al-Maghrib", "statistiques monétaires", "crédit", dataset_title],
+        "published_date": None, "url": resource_url, "doi": None,
+        "espace": "chiffres", "pole": "economie_finances_publiques",
+        "default_doc_type": "statistique", "statistics_series": series,
+        "source_lang_hint": "fr",
+    })
+
+
+def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
+    """Discover BAM open datasets in CKAN, download the latest XLSX per dataset and extract series."""
+    api_base = str(source.get("api_base") or "https://data.gov.ma/data/api/3/action").rstrip("/")
+    organization = str(source.get("organization") or "bank-al-maghrib")
+    endpoint = f"{api_base}/package_search?{urlencode({'q': f'organization:{organization}', 'rows': int(source.get('max_datasets') or 43)})}"
+    payload = json.loads(_fetch_text(endpoint, timeout=30))
+    if not payload.get("success"):
+        raise RuntimeError("L'API CKAN de data.gov.ma a retourné une réponse invalide")
+    datasets = payload.get("result", {}).get("results", [])
+    max_datasets = max(1, min(int(source.get("max_datasets") or 43), 100))
+    max_bytes = max(100_000, min(int(source.get("max_resource_bytes") or 8_000_000), 20_000_000))
+    output = []
+    for dataset in datasets[:max_datasets]:
+        resources = [
+            resource for resource in (dataset.get("resources") or [])
+            if str(resource.get("format") or "").upper() == "XLSX"
+            and resource.get("state", "active") == "active"
+            and resource.get("url")
+        ]
+        if not resources:
+            continue
+        resources.sort(key=lambda item: str(item.get("last_modified") or item.get("created") or ""), reverse=True)
+        resource = resources[0]
+        try:
+            workbook = _fetch_bytes(str(resource["url"]), timeout=int(source.get("download_timeout") or 30), max_bytes=max_bytes)
+            rows = _xlsx_read_rows(workbook)
+            extracted = _bam_ckan_series_from_rows(rows, dataset, resource)
+            output.extend(extracted)
+        except Exception as exc:
+            # One unavailable or malformed workbook must not suppress other BAM datasets.
+            output.append({
+                "title": f"Échec de lecture — {clean_text(dataset.get('title') or dataset.get('name') or 'Jeu BAM')}",
+                "abstract": f"Le catalogue CKAN a référencé une ressource XLSX, mais son extraction a échoué : {str(exc)[:300]}",
+                "url": str(resource.get("url") or ""), "published_date": None,
+                "default_doc_type": "statistique", "espace": "chiffres",
+                "statistics_collection_error": True,
+                "source_lang_hint": "fr",
+            })
+    return output
+
+
 def collect_from_source(source: dict) -> list[dict]:
     stype = (source.get("type") or "").lower()
     if stype == "openalex":
@@ -1701,6 +1988,8 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_world_bank_api(source)
     if stype == "mef_tand_statistics":
         return collect_mef_tand_statistics(source)
+    if stype == "bank_al_maghrib_ckan":
+        return collect_bank_al_maghrib_ckan(source)
     if stype == "hcp_labour_statistics":
         return collect_hcp_labour_statistics(source)
     if stype == "bank_al_maghrib":

@@ -109,7 +109,6 @@ def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) 
         "langue_originale",
         "lien_maroc",
         "url_publication",
-        "doi",
         "pdf_direct",
         "resume",
         "analyse_strategique",
@@ -123,6 +122,22 @@ def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) 
             if cur != val:
                 merged[sf] = val
                 changed = True
+
+    incoming_doi = incoming.get("doi")
+    incoming_doi_status = incoming.get("doi_statut")
+    current_doi_status = merged.get("doi_statut")
+    if incoming_doi_status in ("valide", "invalide", "absent"):
+        if incoming_doi_status == "valide" and incoming_doi:
+            if merged.get("doi") != incoming_doi or current_doi_status != "valide":
+                merged["doi"] = incoming_doi
+                merged["doi_statut"] = "valide"
+                changed = True
+        elif not merged.get("doi") and current_doi_status != incoming_doi_status:
+            merged["doi_statut"] = incoming_doi_status
+            changed = True
+    elif merged.get("doi") and not current_doi_status:
+        merged["doi_statut"] = "valide"
+        changed = True
 
     # Prefer richer metadata from a fresh extraction of the same record.
     old_title = str(merged.get("titre_original") or "")

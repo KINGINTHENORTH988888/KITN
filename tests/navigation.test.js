@@ -233,3 +233,9 @@ test("mobile submenus stay collapsed until their parent is opened", () => {
   assert.ok(styles.includes(".nav-group:not(.is-open) .nav-dropdown { display: none; }"));
   assert.ok(styles.includes(".nav-group.is-open .nav-dropdown { display: grid; }"));
 });
+
+
+test("content grids cannot force horizontal overflow on narrow phones", () => {
+  assert.match(styles, /\.results-grid\s*\{[^}]*minmax\(min\(100%, 290px\), 1fr\)/s);
+  assert.match(styles, /\.theme-detail,[\s\S]*?grid-template-columns: repeat\(auto-fit, minmax\(min\(100%, 260px\), 1fr\)\)/);
+});

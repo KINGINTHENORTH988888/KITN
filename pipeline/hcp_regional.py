@@ -28,7 +28,7 @@ HCP_EMO_REGIONAL_INDICATORS = (
     (
         "LABOUR_FORCE_PARTICIPATION",
         "Taux de participation à la main-d’œuvre",
-        "Taux de participation à la main-?d’œuvre",
+        "Taux de participation à la main[-\\s]?d’œuvre",
     ),
     (
         "EMPLOYMENT_RATE",
@@ -38,7 +38,7 @@ HCP_EMO_REGIONAL_INDICATORS = (
     (
         "UNDERUTILIZATION",
         "Taux composite de la sous-utilisation de la main-d’œuvre",
-        "Taux composite de la sous-utilisation de la main-?d’œuvre",
+        "Taux composite de la sous-utilisation de la main[-\\s]?d’œuvre",
     ),
     (
         "STRICT_UNEMPLOYMENT",
@@ -48,7 +48,7 @@ HCP_EMO_REGIONAL_INDICATORS = (
     (
         "COMBINED_UNEMPLOYMENT_POTENTIAL",
         "Taux combiné du chômage strict et de la main-d’œuvre potentielle",
-        "Taux combiné du chômage strict et de la main-?d’œuvre potentielle",
+        "Taux combiné du chômage strict et de la main[-\\s]?d’œuvre potentielle",
     ),
     (
         "COMBINED_UNEMPLOYMENT_UNDEREMPLOYMENT",
@@ -106,7 +106,13 @@ def parse_hcp_emo_regional_tables(
     seen_keys: set[str] = set()
 
     for page_index, raw_page in enumerate(pages, start=1):
-        page = re.sub(r"\s+", " ", raw_page).strip()
+        normalized_page = (
+            raw_page.replace("\u00a0", " ")
+            .replace("\u202f", " ")
+            .replace("‑", "-")
+            .replace("–", "-")
+        )
+        page = re.sub(r"\s+", " ", normalized_page).strip()
         if not page:
             continue
         periods = _page_periods(page)

@@ -183,6 +183,13 @@ test("global search includes national statistical indicators and opens their ded
   assert.match(styles, /\.global-stat-result/);
 });
 
+test("mobile navigation stays in the header document flow", () => {
+  const mobile = styles.match(/@media \(max-width: 820px\) \{([\s\S]*?)\n\}/)?.[1] || "";
+  assert.match(mobile, /\.nav\s*\{[\s\S]*?position:\s*static/);
+  assert.match(mobile, /\.nav\s*\{[\s\S]*?order:\s*3/);
+  assert.match(mobile, /\.nav\.is-open\s*\{\s*display:\s*flex/);
+});
+
 test("search normalization ignores accents and combining diacritics", () => {
   assert.match(source, /import \{ normalizeSearchText \} from "\.\/search\.js"/);
   assert.match(searchSource, /export function normalizeSearchText\(value\)/);

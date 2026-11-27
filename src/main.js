@@ -570,6 +570,16 @@ function saveJsonStorage(key, value) {
   }
 }
 
+function normalizeSearchText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replaceAll(/\p{M}+/gu, "")
+    .toLocaleLowerCase()
+    .replaceAll(/[^\p{L}\p{N}\s]+/gu, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+}
+
 function normalizeTitleKey(title) {
   return String(title || "")
     .toLowerCase()
@@ -934,12 +944,12 @@ function renderStatisticsDashboard() {
     return `${viewTabs}${renderRegionalStatisticsDashboard()}`;
   }
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
-  const normalizedSearch = statisticsSearch.trim().toLocaleLowerCase(isAr ? "ar" : "fr");
+  const normalizedSearch = normalizeSearchText(statisticsSearch);
   const filteredIndicators = allIndicators.filter((indicator) => {
     const category = getStatisticsCategory(indicator);
     if (statisticsCategory === "unclassified" ? Boolean(category) : statisticsCategory !== "all" && category !== statisticsCategory) return false;
     if (!normalizedSearch) return true;
-    const searchable = [indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code].filter(Boolean).join(" ").toLocaleLowerCase(isAr ? "ar" : "fr");
+    const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code].filter(Boolean).join(" "));
     return searchable.includes(normalizedSearch);
   });
   const categoryControls = [
@@ -1407,11 +1417,10 @@ function renderResults() {
   if (!container || !countBadge) return;
 
   const filtered = getFilteredItems();
-  const globalQuery = searchQuery.trim().toLocaleLowerCase(lang === "ar" ? "ar" : "fr");
+  const globalQuery = normalizeSearchText(searchQuery);
   const globalStatisticMatches = activeSpace === "all" && globalQuery
     ? (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).filter((indicator) => {
-        const searchable = [indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code]
-          .filter(Boolean).join(" ").toLocaleLowerCase(lang === "ar" ? "ar" : "fr");
+        const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code].filter(Boolean).join(" "));
         return searchable.includes(globalQuery);
       }).slice(0, 12)
     : [];

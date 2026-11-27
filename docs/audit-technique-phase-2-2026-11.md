@@ -179,6 +179,18 @@ Deux comportements ressortent du rapprochement entre `src/main.js` et les collec
 4. nommer les contrôles « 5 dernières observations / 10 dernières observations » si la logique reste fondée sur le nombre de points ;
 5. ajouter des tests spécifiques pour séries annuelles, trimestrielles, mensuelles et quotidiennes.
 
+### 3.9 Premières corrections réalisées sur la branche de revue
+
+Les corrections suivantes ont été développées sur `audit/kitn-quality-review-2026-11`, sans fusion dans `main` :
+
+- Le filtre des grands domaines utilise désormais le code stable `pole` (avec compatibilité pour les anciennes catégories codées), au lieu de comparer un libellé descriptif tel que « Monétaire et financier ».
+- Les fenêtres « 5 ans » et « 10 ans » sont calculées à partir des périodes calendaires réelles. Les formats annuels, mensuels, trimestriels, quotidiens, ainsi que « Aujourd'hui » et « Veille », sont pris en charge. Les observations futures sont exclues.
+- Le pipeline fusionne maintenant l'historique déjà publié avec les nouvelles observations : les périodes anciennes sont conservées et une valeur entrante remplace la valeur existante si la source révise la même période.
+- Chaque série collectée reçoit `last_successful_collection_at` et `collection_status=collected`. Une série conservée faute de nouvelle collecte reçoit `collection_status=carried_forward` et garde sa date de collecte connue.
+- L'interface distingue la date de génération du fichier statistique de la date de collecte individuelle lorsqu'elle est disponible.
+
+Ces changements sont couverts par six tests JavaScript et cinq tests Python supplémentaires. Les workflows GitHub Actions ont validé le commit `9ced90c` : tests Python, tests statistiques JavaScript et build Vite réussis. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+
 ## 4. État de la couverture de tests
 
 Le workflow exécute `python -m unittest discover -s tests -v`. Le fichier `tests/test_pipeline.py` couvre déjà de nombreux scénarios : pertinence Maroc, DOI, dates, HCP, MEF, MONIA, Banque mondiale, HAL, Crossref, concours, fusion de notices et CKAN.
@@ -198,7 +210,7 @@ Cela constitue une base utile, mais le niveau de couverture ne doit pas être co
 | Frontend | absence de données, JSON invalide, liens externes sûrs, mobile, RTL |
 | Contributions | import invalide, doublon, export, séparation des données locales et données publiées |
 
-Le présent audit est une lecture du code. Les tests n'ont pas été exécutés dans un environnement local reconstruit à partir du dépôt ; aucun résultat d'exécution ne doit être supposé.
+L'audit initial était une lecture du code. Depuis, les tests Python et JavaScript ont été exécutés par GitHub Actions sur la branche de revue ; les résultats sont précisés dans la section 3.9. Les tests en direct des sources externes restent distincts des tests unitaires.
 
 ## 5. Décisions d'architecture recommandées
 
@@ -253,4 +265,4 @@ Une évolution ne sera considérée prête que si :
 
 KITN n'a pas besoin d'une réécriture totale. Il a besoin d'une séparation plus nette entre collecte, validation, publication et présentation. Le meilleur chemin est une modernisation progressive, guidée par la qualité des données et protégée par des tests de non-régression.
 
-**Aucun changement de code applicatif ou de données de production n'a été réalisé dans le cadre de cet audit.**
+**Des corrections applicatives ciblées ont été réalisées uniquement sur la branche de revue. Aucun fichier de données de production n'a été remplacé, aucune modification n'a été fusionnée dans `main` et aucun déploiement en production n'a été effectué.**

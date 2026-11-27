@@ -23,6 +23,8 @@ const payload = {
       ],
       source_name: "HCP — EMO",
       source_url: "https://www.hcp.ma/attachment/2928207/",
+      last_successful_collection_at: "2026-11-26T14:00:00Z",
+      collection_status: "carried_forward",
       methodology_break: true,
       methodology_note_fr: "Rupture méthodologique EMO 2026.",
       methodology_note_ar: "انقطاع منهجي في بحث EMO 2026.",
@@ -73,6 +75,8 @@ test("builds a regional comparison table with chronological periods and national
   assert.equal(model.rows[1].points[2].quality_flag, "medium_significance");
   assert.equal(model.rows[1].nameAr, "الداخلة-وادي الذهب");
   assert.equal(model.methodologyBreak, true);
+  assert.equal(model.lastSuccessfulCollectionAt, "2026-11-26T14:00:00Z");
+  assert.equal(model.collectionStatus, "carried_forward");
 });
 
 test("falls back to an available residence scope when the selected scope is missing", () => {

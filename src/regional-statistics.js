@@ -60,10 +60,10 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
 
   const selectedIndicator = indicatorOptions.find((item) => item.code === activeIndicatorCode) || null;
   const firstSeries = selectedSeries[0] || indicatorSeries[0] || null;
-  const sourceSeries = selectedSeries.find((item) =>
-    item.source_name || item.source_name_ar || item.source_url ||
-    item.methodology_note_fr || item.methodology_note_ar
-  ) || firstSeries;
+  const sourceSeries = selectedSeries.find((item) => item.source_name_ar) ||
+    selectedSeries.find((item) =>
+      item.source_name || item.source_url || item.methodology_note_fr || item.methodology_note_ar
+    ) || firstSeries;
   const collectionDates = selectedSeries
     .map((item) => item.last_successful_collection_at || "")
     .filter(Boolean)

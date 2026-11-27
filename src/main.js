@@ -1232,7 +1232,7 @@ function renderLibraryDirectory() {
     {name:"CESE",desc:isAr ? "آراء ودراسات وتقارير اقتصادية واجتماعية وبيئية." : "Avis, études et rapports économiques, sociaux et environnementaux.",url:"https://www.cese.ma/",id:"cese_maroc"},
     {name:"IRES",desc:isAr ? "دراسات استراتيجية وتقارير موضوعاتية واستشرافية." : "Études stratégiques, rapports thématiques et prospectifs.",url:"https://www.ires.ma/fr/publications",id:"ires_maroc"},
     {name:"HCP",desc:isAr ? "دراسات وتقارير ومنشورات إحصائية رسمية." : "Études, rapports et publications statistiques officielles.",url:"https://www.hcp.ma/",id:"hcp_maroc"},
-    {name:isAr ? "البنك الدولي" : "Banque mondiale",desc:isAr ? "تقارير قطرية وبيانات اقتصادية واجتماعية." : "Rapports pays, données économiques et sociales.",url:"https://data.worldbank.org/country/morocco",id:"world_bank_maroc"}
+    {name:isAr ? "مساهمة KITN" : "Contribution KITN",desc:isAr ? "وثائق ومساهمات أضيفت يدوياً إلى الفهرس." : "Documents et contributions ajoutés manuellement à l’index.",url:"",id:"manual_studio"}
   ];
   const docs = indexItems.filter((item) => matchesSpace(item, "bibliotheque") && !isFutureDate(item));
   const sourceCount = new Set(docs.map((item) => item.source_id).filter(Boolean)).size;
@@ -1250,7 +1250,7 @@ function renderLibraryDirectory() {
   ).join("");
   const sourceCards = sourceDefinitions.map((item) => {
     const count = countFor(item.id);
-    return '<article class="library-source-card"><div class="library-source-meta"><span>' + escapeHtml(item.name) + '</span><span>' + count + ' ' + (isAr ? "مفهرس" : "indexé(s)") + '</span></div><p>' + escapeHtml(item.desc) + '</p><a href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">' + (isAr ? "فتح المصدر الرسمي" : "Ouvrir le portail officiel") + ' ↗</a></article>';
+    return '<article class="library-source-card"><div class="library-source-meta"><span>' + escapeHtml(item.name) + '</span><span>' + count + ' ' + (isAr ? "مفهرس" : "indexé(s)") + '</span></div><p>' + escapeHtml(item.desc) + '</p>' + (item.url ? '<a href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">' + (isAr ? "فتح المصدر الرسمي" : "Ouvrir le portail officiel") + ' ↗</a>' : '<span class="library-internal-source">' + (isAr ? "مصدر داخلي" : "Source interne KITN") + '</span>') + '</article>';
   }).join("");
   const recentMarkup = latest.length ? latest.map((item) =>
     '<button type="button" class="library-recent-item" data-open-home-item="' + escapeHtml(getItemKey(item)) + '">' +

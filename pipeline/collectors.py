@@ -19,7 +19,7 @@ from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, normalize_doi, sanitize_url
 from pipeline.hcp_regional import HCP_EMO_REGIONS, HCP_EMO_REGIONAL_INDICATORS, parse_hcp_emo_regional_tables
-from pipeline.hcp_social import parse_hcp_social_indicators
+from pipeline.hcp_social import parse_hcp_social_indicators, parse_hcp_social_regional_indicators
 from pypdf import PdfReader
 
 _USER_AGENT = (
@@ -670,7 +670,7 @@ def _extract_hcp_emo_regional_statistics(
                     page_diagnostics.append(
                         f"p{len(pages)} ({len(page_text)} caractères): {compact_page[:220]}"
                     )
-            extracted_text = "\f".join(pages)
+            extracted_text = "\\f".join(pages)
             if "taux de participation" not in extracted_text.casefold():
                 continue
             parsed = parse_hcp_emo_regional_tables(
@@ -2436,6 +2436,8 @@ def collect_hcp_social_indicators(source: dict) -> list[dict]:
             pages.append(page_text)
         extracted_text = "\\n".join(pages)
         series, warnings = parse_hcp_social_indicators(extracted_text, source_url=pdf_url)
+        regional_series, regional_warnings = parse_hcp_social_regional_indicators(extracted_text, source_url=pdf_url)
+        warnings.extend(regional_warnings)
     except Exception as exc:
         return [{
             "statistics_collection_warnings": [
@@ -2459,6 +2461,10 @@ def collect_hcp_social_indicators(source: dict) -> list[dict]:
         "statistics_series": item,
         "source_lang_hint": "fr",
     } for item in series]
+
+    if items and regional_series:
+        # Regional social series are kept separate from the national dashboard.
+        items[0]["regional_statistics"] = regional_series
 
     if warnings:
         items.append({

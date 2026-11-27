@@ -22,3 +22,26 @@ test("administration and local contribution tools are not public navigation spac
 test("legacy contribution-space sessions fall back to the public portal", () => {
   assert.match(source, /if \(activeSpace === "contribuer"\) activeSpace = "all";/);
 });
+
+
+test("header exposes the six dedicated spaces and useful dropdown shortcuts", () => {
+  assert.match(source, /data-space-id="chiffres"/);
+  assert.match(source, /data-space-id="veille"/);
+  assert.match(source, /data-space-id="science"/);
+  assert.match(source, /data-space-id="bibliotheque"/);
+  assert.match(source, /data-space-id="academy"/);
+  assert.match(source, /data-stat-view-shortcut="regional"/);
+  assert.match(source, /data-pole-shortcut="institutions_gouvernance"/);
+});
+
+test("homepage keeps Academy and the full research index out of the landing view", () => {
+  assert.match(source, /activeSpace === "academy" ? `/);
+  assert.match(source, /isDedicatedSpace ? `\s*<section class="section" id="research">/);
+  assert.match(source, /home-featured-grid/);
+});
+
+test("dedicated spaces are addressable with hash routes and browser history", () => {
+  assert.match(source, /window\.location\.hash\.match\(\/\^#\\\//);
+  assert.match(source, /window\.history\.pushState/);
+  assert.match(source, /window\.addEventListener\("popstate"/);
+});

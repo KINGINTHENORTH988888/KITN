@@ -1,0 +1,97 @@
+import unittest
+
+from pipeline.hcp_regional import parse_hcp_emo_regional_tables
+
+
+class HcpEmoRegionalParserTests(unittest.TestCase):
+    def test_parses_all_regions_and_national_total_for_a_regional_table(self):
+        extracted = """
+        Indicateurs T1/2026 T2/2026 T3/2026
+        Ensemble
+        Taux de participation à la main-d’œuvre (%)
+        Tanger-Tétouan-Al Hoceima 46,4 46,8 45,5
+        Oriental 37,0 36,6 35,7
+        Fès-Meknès 38,5 40,0 39,3
+        Rabat-Salé-Kénitra 42,6 42,2 40,9
+        Béni Mellal-Khénifra 39,3 40,2 40,7
+        Casablanca-Settat 45,6 46,7 47,0
+        Marrakech-Safi 42,2 43,1 42,4
+        Drâa-Tafilalet 31,1 30,5 30,2
+        Souss-Massa 38,8 37,6 37,5
+        Guelmim-Oued Noun 37,2 40,8 38,6
+        Laâyoune-Sakia El Hamra 43,1 39,7 41,7
+        Dakhla-Oued Ed-Dahab 63,9 59,2 64,7
+        Ensemble 41,8 42,2 41,8
+        """
+
+        series = parse_hcp_emo_regional_tables(
+            extracted,
+            source_url="https://www.hcp.ma/attachment/2928207/",
+            published_date="2026-11-03",
+        )
+
+        self.assertEqual(len(series), 13)
+        dakhla = next(item for item in series if item["geography_code"] == "DAKHLA_OUED_ED_DAHAB")
+        self.assertEqual(dakhla["residence_scope"], "all")
+        self.assertEqual(dakhla["history"][-1]["year"], "T3/2026")
+        self.assertEqual(dakhla["latest"]["value"], 64.7)
+        self.assertEqual(dakhla["source_page"], 1)
+        national = next(item for item in series if item["geography_code"] == "MAR")
+        self.assertEqual(national["history"][-1]["value"], 41.8)
+
+    def test_preserves_medium_and_insufficient_significance_flags(self):
+        extracted = """
+        Indicateurs T1/2026 T2/2026 T3/2026
+        Rural
+        Taux de chômage strict (%)
+        Tanger-Tétouan-Al Hoceima 3,6ᵐˢ 1,8ᵐˢ 2,7ᵐˢ
+        Oriental 9,4 9,7 11,1
+        Fès-Meknès 8,2 4,0 10,8
+        Rabat-Salé-Kénitra 5,2ᵐˢ ps 3,6ᵐˢ
+        Ensemble 6,1 5,4 6,9
+        """
+
+        series = parse_hcp_emo_regional_tables(
+            extracted,
+            source_url="https://www.hcp.ma/attachment/2928207/",
+        )
+        tanger = next(item for item in series if item["geography_code"] == "TANGER_TETOUAN_AL_HOCEIMA")
+        rabat = next(item for item in series if item["geography_code"] == "RABAT_SALE_KENITRA")
+
+        self.assertEqual(tanger["residence_scope"], "rural")
+        self.assertEqual(tanger["history"][0]["quality_flag"], "medium_significance")
+        self.assertEqual(rabat["history"][1]["value"], None)
+        self.assertEqual(rabat["history"][1]["quality_flag"], "insufficient_significance")
+
+    def test_preserves_unavailable_values_instead_of_turning_them_into_zero(self):
+        extracted = """
+        Indicateurs T1/2026 T2/2026 T3/2026
+        Urbain
+        Taux d’emploi contre revenu (%)
+        Laâyoune-Sakia El Hamra . . .
+        Dakhla-Oued Ed-Dahab . . .
+        Ensemble 35,5 36,3 36,0
+        """
+
+        series = parse_hcp_emo_regional_tables(
+            extracted,
+            source_url="https://www.hcp.ma/attachment/2928207/",
+        )
+        laayoune = next(item for item in series if item["geography_code"] == "LAAYOUNE_SAKIA_EL_HAMRA")
+
+        self.assertEqual(laayoune["history"][0]["value"], None)
+        self.assertEqual(laayoune["history"][0]["quality_flag"], "not_available")
+        self.assertEqual(laayoune["latest"]["value"], None)
+
+    def test_ignores_pages_without_a_supported_period_header_or_indicator(self):
+        self.assertEqual(
+            parse_hcp_emo_regional_tables(
+                "Taux de chômage strict 10,5%",
+                source_url="https://www.hcp.ma/attachment/2928207/",
+            ),
+            [],
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

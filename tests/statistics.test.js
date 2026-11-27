@@ -60,3 +60,28 @@ test("legacy histories with no parseable periods remain visible", () => {
   const history = [{ year: "Période inconnue", value: 1 }];
   assert.deepEqual(filterStatisticsHistory(history, "5", "2026-11-27"), history);
 });
+
+test("all-history view excludes future observations but preserves unknown legacy labels", () => {
+  const history = [
+    { year: "2024", value: 1 },
+    { year: "2026-11-27", value: 2 },
+    { year: "2027-01", value: 3 },
+    { year: "Période non normalisée", value: 4 },
+  ];
+  assert.deepEqual(
+    filterStatisticsHistory(history, "all", "2026-11-27T04:00:00Z"),
+    [history[0], history[1], history[3]],
+  );
+});
+
+test("five-year view excludes future observations even when they are last in the source array", () => {
+  const history = [
+    { year: "2022", value: 10 },
+    { year: "2026", value: 20 },
+    { year: "2027", value: 30 },
+  ];
+  assert.deepEqual(
+    filterStatisticsHistory(history, "5", "2026-11-27T04:00:00Z"),
+    history.slice(0, 2),
+  );
+});

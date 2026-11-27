@@ -88,3 +88,22 @@ test("each dedicated space updates the browser document title", () => {
 test("returning to the home space also restores the root URL", () => {
   assert.ok(source.includes('window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all)'));
 });
+
+
+test("homepage publication links open internal reading pages", () => {
+  assert.ok(source.includes('"/publication/" + encodeURIComponent(key)'));
+  assert.ok(source.includes("function renderArticlePage(item)"));
+  assert.ok(source.includes('class="article-reading section"'));
+});
+
+test("publication pages preserve source references and respect reproduction rights", () => {
+  assert.ok(source.includes("Le texte intégral ne sera reproduit que si les droits ou la licence de la source l'autorisent."));
+  assert.ok(source.includes('Publication originale'));
+  assert.ok(source.includes('Source et références'));
+});
+
+test("direct publication URLs are restored after the index loads and browser navigation", () => {
+  assert.ok(source.includes("function getArticleIdFromLocation()"));
+  assert.ok(source.includes('activeArticleId = getArticleIdFromLocation()'));
+  assert.ok(source.includes('document.body.classList.toggle("is-article-view", Boolean(activeArticleItem))'));
+});

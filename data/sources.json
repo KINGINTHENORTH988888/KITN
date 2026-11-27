@@ -9,7 +9,7 @@
     "enabled": true,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
-    "max_items": 25
+    "max_items": 50
   },
   {
     "id": "banque_mondiale_maroc",
@@ -1138,7 +1138,7 @@
     "enabled": true,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 30
   },
   {
     "id": "openalex_morocco_economy",
@@ -1150,7 +1150,7 @@
     "enabled": true,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 30
   },
   {
     "id": "openalex_morocco_security",
@@ -1162,7 +1162,7 @@
     "enabled": true,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 30
   },
   {
     "id": "openalex_morocco_social",
@@ -1174,7 +1174,7 @@
     "enabled": true,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 30
   },
   {
     "id": "openalex_morocco_geopolitics",
@@ -1186,7 +1186,7 @@
     "enabled": true,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 30
   },
   {
     "id": "bank_al_maghrib_monia",

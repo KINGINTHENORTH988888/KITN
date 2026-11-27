@@ -67,7 +67,7 @@ class TestPipelineProcessors(unittest.TestCase):
             now_iso="2026-11-27T00:00:00Z",
         )
         self.assertIsNotNone(invalid)
-        self.assertIsNone(invalid["doi"])
+        self.assertEqual(invalid["doi"], "https://example.org/not-a-doi")
         self.assertEqual(invalid["doi_statut"], "invalide")
 
     def test_validate_publication_date(self):

@@ -1,4 +1,5 @@
 import "./style.css";
+import { filterStatisticsHistory, getStatisticsCategory } from "./statistics.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -912,7 +913,7 @@ function renderStatisticsDashboard() {
     : "Séries historiques documentées, avec année de référence, unité et source.";
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
   const filteredIndicators = allIndicators.filter((indicator) =>
-    statisticsCategory === "all" || indicator.category === statisticsCategory
+    statisticsCategory === "all" || getStatisticsCategory(indicator) === statisticsCategory
   );
   const categoryControls = [
     { id: "all", label: isAr ? "جميع المؤشرات" : "Tous les indicateurs" },
@@ -938,7 +939,7 @@ function renderStatisticsDashboard() {
   }
   const cards = filteredIndicators.map((indicator) => {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
-    const history = statisticsRange === "all" ? allHistory : allHistory.slice(-Number(statisticsRange));
+    const history = filterStatisticsHistory(allHistory, statisticsRange, statisticsData?.generated_at);
     const latest = indicator.latest || allHistory[allHistory.length - 1];
     const previous = indicator.previous;
     const delta = previous && latest
@@ -999,10 +1000,10 @@ function renderStatisticsDashboard() {
   const emptyFiltered = isAr ? "لا توجد مؤشرات في هذا التصنيف." : "Aucun indicateur dans cette catégorie.";
   return `
     <section class="stats-dashboard">
-      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "آخر تحديث للوحة" : "Actualisation du tableau"} : ${escapeHtml(updateDate)}</span></div>
+      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تاريخ إنشاء ملف البيانات" : "Fichier statistique généré le"} : ${escapeHtml(updateDate)}</span></div>
       ${controls}
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
-      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة وتاريخ تحديث البيانات بجانب كل مؤشر، مع رابط المصدر الأصلي." : "Chaque indicateur précise son institution source, la date de mise à jour et un lien vers la série originale."}</p>
+      <p class="stats-source-note">${isAr ? "تاريخ إنشاء الملف لا يعني بالضرورة أن كل مؤشر قد حُيّن. الفترات المعروضة هي الفترات الفعلية للقيم المتاحة." : "La date de génération du fichier ne correspond pas nécessairement à la date de la dernière observation. Les périodes affichées correspondent aux valeurs réellement disponibles."}</p>
     </section>`;
 }
 

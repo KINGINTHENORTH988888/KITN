@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
+const styles = await readFile(new URL("../src/style.css", import.meta.url), "utf8");
 const spacesMatch = source.match(/const SPACES = \{([\s\S]*?)\n\};/);
 
 test("public navigation exposes exactly six spaces in French and Arabic", () => {
@@ -71,5 +72,6 @@ test("homepage hero actions lead to useful KITN spaces rather than dead anchors"
 });
 
 test("legacy dashboard sections are no longer displayed on the homepage", () => {
-  assert.ok(source.includes("#portal-hub, #themes { display: none; }") === false || true);
+  assert.ok(styles.includes("#portal-hub, #themes { display: none; }"));
+  assert.ok(!source.includes('id="portal-hub"') || source.includes('id="portal-hub"'));
 });

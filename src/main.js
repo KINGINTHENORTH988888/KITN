@@ -1407,8 +1407,17 @@ function renderResults() {
   if (!container || !countBadge) return;
 
   const filtered = getFilteredItems();
-  const suffix = lang === "ar" ? " مادة" : filtered.length > 1 ? " notices" : " notice";
-  countBadge.textContent = `${filtered.length}${suffix}`;
+  const globalQuery = searchQuery.trim().toLocaleLowerCase(lang === "ar" ? "ar" : "fr");
+  const globalStatisticMatches = activeSpace === "all" && globalQuery
+    ? (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).filter((indicator) => {
+        const searchable = [indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code]
+          .filter(Boolean).join(" ").toLocaleLowerCase(lang === "ar" ? "ar" : "fr");
+        return searchable.includes(globalQuery);
+      }).slice(0, 12)
+    : [];
+  const combinedCount = filtered.length + globalStatisticMatches.length;
+  const suffix = lang === "ar" ? " نتيجة" : combinedCount > 1 ? " résultats" : " résultat";
+  countBadge.textContent = `${combinedCount}${suffix}`;
 
   if (poleBanner) {
     if (selectedPolesFilter && activePoleLabel) {
@@ -1428,12 +1437,12 @@ function renderResults() {
     }
   }
 
-  if (!filtered.length) {
+  if (!filtered.length && !globalStatisticMatches.length) {
     container.innerHTML = `<p class="empty-results">${escapeHtml(COPY[lang].noResults)}</p>`;
     return;
   }
 
-  container.innerHTML = filtered
+  const documentResultsHtml = filtered
     .map((item, idx) => {
       const isSaved = favorites.includes(getItemKey(item));
       const st = getEffectiveStatus(item);
@@ -1489,6 +1498,33 @@ function renderResults() {
       `;
     })
     .join("");
+  const statisticResultsHtml = globalStatisticMatches.length
+    ? `<section class="global-stat-results"><div class="global-stat-results-heading"><span class="mini-label">${lang === "ar" ? "نتائج إحصائية" : "INDICATEURS STATISTIQUES"}</span><strong>${lang === "ar" ? "بيانات المغرب" : "Les données du Maroc"}</strong></div>${globalStatisticMatches.map((indicator) => {
+        const label = lang === "ar" ? (indicator.label_ar || indicator.label_fr || indicator.indicator_code) : (indicator.label_fr || indicator.label_ar || indicator.indicator_code);
+        const description = lang === "ar" ? (indicator.description_ar || indicator.description_fr || "") : (indicator.description_fr || indicator.description_ar || "");
+        const unit = lang === "ar" ? (indicator.unit_ar || indicator.unit_fr || "") : (indicator.unit_fr || indicator.unit_ar || "");
+        const latest = indicator.latest && indicator.latest.value !== null && indicator.latest.value !== undefined
+          ? formatStatisticValue(indicator, indicator.latest.value) + (unit ? " " + unit : "")
+          : "";
+        return `<button type="button" class="global-stat-result" data-global-stat="${escapeHtml(indicator.indicator_code || "")}"><span class="global-stat-result-type">${lang === "ar" ? "مؤشر إحصائي" : "Indicateur statistique"} · ${escapeHtml(indicator.indicator_code || "")}</span><strong>${escapeHtml(label)}</strong>${description ? `<span>${escapeHtml(description)}</span>` : ""}<small>${escapeHtml(indicator.source_name || "")}${latest ? " · " + escapeHtml(latest) : ""}</small></button>`;
+      }).join("")}</section>`
+    : "";
+  container.innerHTML = documentResultsHtml + statisticResultsHtml;
+
+  container.querySelectorAll("[data-global-stat]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const code = btn.getAttribute("data-global-stat") || "";
+      const indicator = (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).find((item) => item.indicator_code === code);
+      if (!indicator) return;
+      activeSpace = "chiffres";
+      statisticsView = "national";
+      statisticsCategory = "all";
+      statisticsSearch = code;
+      window.history.pushState({ kitnSpace: "chiffres" }, "", SPACE_PATHS.chiffres);
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
 
   container.querySelectorAll("[data-open-index]").forEach((btn) => {
     btn.addEventListener("click", () => {

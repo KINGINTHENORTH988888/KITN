@@ -10,6 +10,6 @@
     "test:frontend": "node --test tests/*.test.js"
   },
   "devDependencies": {
-    "vite": "^5.4.11"
+    "vite": "^6.4.6"
   }
 }

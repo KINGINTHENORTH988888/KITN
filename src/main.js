@@ -1,4 +1,5 @@
 import "./style.css";
+import { filterStatisticsHistory, getStatisticsCategory, getStatisticsHistory } from "./statistics.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -912,7 +913,7 @@ function renderStatisticsDashboard() {
     : "Séries historiques documentées, avec année de référence, unité et source.";
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
   const filteredIndicators = allIndicators.filter((indicator) =>
-    statisticsCategory === "all" || indicator.category === statisticsCategory
+    statisticsCategory === "all" || getStatisticsCategory(indicator) === statisticsCategory
   );
   const categoryControls = [
     { id: "all", label: isAr ? "جميع المؤشرات" : "Tous les indicateurs" },
@@ -937,10 +938,12 @@ function renderStatisticsDashboard() {
     return `<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>`;
   }
   const cards = filteredIndicators.map((indicator) => {
-    const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
-    const history = statisticsRange === "all" ? allHistory : allHistory.slice(-Number(statisticsRange));
-    const latest = indicator.latest || allHistory[allHistory.length - 1];
-    const previous = indicator.previous;
+    const allHistory = getStatisticsHistory(indicator);
+    const referenceDate = statisticsData?.generated_at;
+    const validHistory = filterStatisticsHistory(allHistory, "all", referenceDate);
+    const history = filterStatisticsHistory(validHistory, statisticsRange, referenceDate);
+    const latest = validHistory[validHistory.length - 1] || null;
+    const previous = validHistory.length > 1 ? validHistory[validHistory.length - 2] : null;
     const delta = previous && latest
       ? (indicator.change_mode === "absolute"
           ? Number(latest.value) - Number(previous.value)
@@ -978,7 +981,7 @@ function renderStatisticsDashboard() {
     return `
       <article class="stat-card">
         <div class="stat-card-top"><span>${escapeHtml(label)}</span><span class="stat-year">${escapeHtml(String(latest?.year || "—"))}</span></div>
-        <div class="stat-value">${escapeHtml(formatStatisticValue(indicator, latest?.value ?? 0))}<small>${escapeHtml(unit || "")}</small></div>
+        <div class="stat-value">${escapeHtml(latest ? formatStatisticValue(indicator, latest.value) : "—")}<small>${escapeHtml(unit || "")}</small></div>
         <p class="stat-description">${escapeHtml(description || "")}</p>
         <div class="stat-trend"><span>${escapeHtml(changeText)}</span></div>
         <svg class="stat-sparkline" viewBox="0 0 100 64" role="img" aria-label="${escapeHtml(chartTitle)}">
@@ -999,10 +1002,10 @@ function renderStatisticsDashboard() {
   const emptyFiltered = isAr ? "لا توجد مؤشرات في هذا التصنيف." : "Aucun indicateur dans cette catégorie.";
   return `
     <section class="stats-dashboard">
-      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "آخر تحديث للوحة" : "Actualisation du tableau"} : ${escapeHtml(updateDate)}</span></div>
+      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تاريخ إنشاء ملف البيانات" : "Fichier de données généré le"} : ${escapeHtml(updateDate)}</span></div>
       ${controls}
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
-      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة وتاريخ تحديث البيانات بجانب كل مؤشر، مع رابط المصدر الأصلي." : "Chaque indicateur précise son institution source, la date de mise à jour et un lien vers la série originale."}</p>
+      <p class="stats-source-note">${isAr ? "تاريخ إنشاء الملف لا يعني بالضرورة أن كل مؤشر قد حُيّن. يتم استبعاد الفترات المستقبلية من القيم المعروضة." : "La date de génération du fichier ne signifie pas que chaque indicateur a été actualisé. Les observations futures sont écartées et la période réelle de chaque valeur reste affichée."}</p>
     </section>`;
 }
 

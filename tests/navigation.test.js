@@ -107,3 +107,16 @@ test("direct publication URLs are restored after the index loads and browser nav
   assert.ok(source.includes('activeArticleId = getArticleIdFromLocation()'));
   assert.ok(source.includes('document.body.classList.toggle("is-article-view", Boolean(activeArticleItem))'));
 });
+
+
+test("national statistics make unclassified indicators discoverable instead of hiding them", () => {
+  assert.ok(source.includes('id: "unclassified"'));
+  assert.ok(source.includes('statisticsCategory === "unclassified"'));
+  assert.ok(source.includes('isAr ? "غير مصنفة" : "À classer"'));
+});
+
+test("national statistics provide searchable indicators and visible result counts", () => {
+  assert.ok(source.includes('data-stat-search'));
+  assert.ok(source.includes('stats-results-meta'));
+  assert.ok(source.includes('indicator.indicator_code'));
+});

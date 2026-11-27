@@ -75,6 +75,7 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
     unitFr: firstSeries?.unit_fr || selectedIndicator?.unitFr || "%",
     unitAr: firstSeries?.unit_ar || selectedIndicator?.unitAr || "%",
     sourceName: firstSeries?.source_name || "Haut-Commissariat au Plan",
+    sourceNameAr: firstSeries?.source_name_ar || "المندوبية السامية للتخطيط",
     sourceUrl: firstSeries?.source_url || "",
     lastSuccessfulCollectionAt: firstSeries?.last_successful_collection_at || "",
     collectionStatus: firstSeries?.collection_status || "unknown",

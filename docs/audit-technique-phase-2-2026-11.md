@@ -157,7 +157,9 @@ Les cellules `ps` (signification statistique insuffisante) et `.` (valeur non di
 
 Le pipeline enregistre ces séries dans `data/regional-statistics.json` et les synchronise vers `public/data/regional-statistics.json`. Le fichier est distinct de `statistics.json` pour éviter de faire apparaître 234 séries régionales comme autant d'indicateurs nationaux. Les historiques antérieurs sont fusionnés par trimestre et conservés si une collecte ultérieure échoue.
 
-Une validation réseau ponctuelle a été ajoutée pour tester le téléchargement réel du PDF par le collecteur Python et son extraction avec pypdf. Cette validation est en lecture seule : elle ne déclenche aucune écriture de données ni aucun déploiement. Le résultat doit être contrôlé avant de considérer la collecte régionale comme opérationnelle.
+Une validation réseau réelle a été exécutée avec succès le 27 novembre 2026 via GitHub Actions. Le collecteur Python a téléchargé le PDF officiel, l'a lu avec pypdf et a extrait exactement 234 séries, sans avertissement : trois milieux (`all`, `urban`, `rural`), six indicateurs, treize géographies (douze régions et total national), trois périodes (T1 à T3 2026). Exemple contrôlé : chômage strict à Dakhla-Oued Ed-Dahab, T3 2026 = 4,6 %, avec le drapeau `medium_significance`.
+
+Le contrôle live est en lecture seule : il ne déclenche aucune écriture de données ni aucun déploiement. Le workflow de validation est désormais manuel (`workflow_dispatch`) pour éviter des appels externes à chaque commit. La collecte intégrée au pipeline reste, elle, exécutée selon le calendrier normal.
 
 ### 3.3 MEF — séries statistiques et notices documentaires sont deux flux différents
 

@@ -138,6 +138,8 @@ Le collecteur CKAN récupère un grand nombre de ressources, notamment des class
 
 Ajouter des tests sur les unités, les dates, les doublons, les valeurs manquantes, les séries mensuelles/trimestrielles/annuelles et les classeurs mal formés. Conserver le fichier source et l'URL de la ressource pour audit.
 
+Une première validation plus stricte a été ajoutée sur la branche de revue : les séries BAM CKAN portant une unité absente ou indéterminée, une valeur non finie (NaN/infini), une période invalide ou future, ou moins de deux périodes distinctes sont écartées du tableau statistique. Les autres sources statistiques ne sont pas concernées par ce filtre. Les tests vérifient ces cas limites ; le volume réel de séries retenues devra être comparé après une collecte complète.
+
 ### 3.5 Fraîcheur statistique — risque de présenter une ancienne valeur comme actuelle
 
 Le pipeline conserve les anciennes séries statistiques lorsqu'une source ne fournit pas de nouvelle série : les séries précédentes sont réintroduites avec `setdefault` si leur code n'a pas été collecté pendant l'exécution courante.
@@ -205,7 +207,7 @@ Les corrections suivantes ont été développées sur `audit/kitn-quality-review
 - Chaque série collectée reçoit `last_successful_collection_at` et `collection_status=collected`. Une série conservée faute de nouvelle collecte reçoit `collection_status=carried_forward` et garde sa date de collecte connue.
 - L'interface distingue la date de génération du fichier statistique de la date de collecte individuelle lorsqu'elle est disponible.
 
-Les changements statistiques, OpenAlex et HCP ont été validés par GitHub Actions sur le commit `68596aa` : 57 tests Python, 6 tests JavaScript et build Vite réussis. Les mises à jour documentaires suivantes ne modifient pas le code applicatif. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+Les changements statistiques, OpenAlex, HCP et le premier filtre qualité BAM CKAN ont été validés par GitHub Actions sur le commit `d538cb3` : 59 tests Python, 6 tests JavaScript et build Vite réussis. Les mises à jour documentaires suivantes ne modifient pas le code applicatif. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
 
 ## 4. État de la couverture de tests
 

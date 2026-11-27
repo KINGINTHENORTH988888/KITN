@@ -626,6 +626,7 @@ function resolveItemSpace(item) {
 let lang = "fr";
 let activeSpace = "all";
 let mobileMenuOpen = false;
+let mobileOpenSubmenu = "";
 let selectedThemeIndex = 0;
 let selectedPolesFilter = null;
 let activePoleLabel = "";
@@ -1655,26 +1656,26 @@ function render() {
       </a>
       <nav class="nav ${mobileMenuOpen ? "is-open" : ""}" id="main-nav" aria-label="${lang === "ar" ? "التنقل الرئيسي" : "Navigation principale"}">
         <button type="button" class="nav-link ${activeSpace === "all" ? "is-active" : ""}" data-space-id="all">${lang === "ar" ? "الرئيسية" : "Accueil"}</button>
-        <div class="nav-group">
-          <button type="button" class="nav-link nav-parent ${activeSpace === "chiffres" ? "is-active" : ""}" data-space-id="chiffres">${lang === "ar" ? "المغرب بالأرقام" : "Maroc en chiffres"} <span aria-hidden="true">⌄</span></button>
-          <div class="nav-dropdown">
+        <div class="nav-group ${mobileOpenSubmenu === "chiffres" ? "is-open" : ""}">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "chiffres" ? "is-active" : ""}" data-space-id="chiffres" data-mobile-submenu="chiffres" aria-expanded="${mobileOpenSubmenu === "chiffres"}" aria-controls="nav-submenu-chiffres">${lang === "ar" ? "المغرب بالأرقام" : "Maroc en chiffres"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown" id="nav-submenu-chiffres">
             <button type="button" data-space-id="chiffres">${lang === "ar" ? "المؤشرات الوطنية" : "Indicateurs nationaux"}</button>
             <button type="button" data-space-id="chiffres" data-stat-view-shortcut="regional">${lang === "ar" ? "المقارنة الجهوية" : "Comparaison régionale"}</button>
             <button type="button" data-space-id="chiffres" data-stat-category-shortcut="economie_finances_publiques">${lang === "ar" ? "الاقتصاد والمالية" : "Économie & finances publiques"}</button>
             <button type="button" data-space-id="chiffres" data-stat-category-shortcut="societe_developpement_humain">${lang === "ar" ? "المجتمع والتنمية" : "Société & développement humain"}</button>
           </div>
         </div>
-        <div class="nav-group">
-          <button type="button" class="nav-link nav-parent ${activeSpace === "veille" ? "is-active" : ""}" data-space-id="veille">${lang === "ar" ? "الرصد" : "Veille"} <span aria-hidden="true">⌄</span></button>
-          <div class="nav-dropdown">
+        <div class="nav-group ${mobileOpenSubmenu === "veille" ? "is-open" : ""}">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "veille" ? "is-active" : ""}" data-space-id="veille" data-mobile-submenu="veille" aria-expanded="${mobileOpenSubmenu === "veille"}" aria-controls="nav-submenu-veille">${lang === "ar" ? "الرصد" : "Veille"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown" id="nav-submenu-veille">
             <button type="button" data-space-id="veille">${lang === "ar" ? "الأخبار والمؤسسات" : "Actualités & institutions"}</button>
             <button type="button" data-space-id="veille" data-pole-shortcut="institutions_gouvernance">${lang === "ar" ? "المؤسسات والحكامة" : "Institutions & gouvernance"}</button>
             <button type="button" data-space-id="veille" data-pole-shortcut="securite_affaires_interieures">${lang === "ar" ? "الأمن والشؤون الداخلية" : "Sécurité & affaires intérieures"}</button>
           </div>
         </div>
-        <div class="nav-group">
-          <button type="button" class="nav-link nav-parent ${activeSpace === "science" ? "is-active" : ""}" data-space-id="science">${lang === "ar" ? "الدراسات والبحث" : "Études & recherche"} <span aria-hidden="true">⌄</span></button>
-          <div class="nav-dropdown">
+        <div class="nav-group ${mobileOpenSubmenu === "science" ? "is-open" : ""}">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "science" ? "is-active" : ""}" data-space-id="science" data-mobile-submenu="science" aria-expanded="${mobileOpenSubmenu === "science"}" aria-controls="nav-submenu-science">${lang === "ar" ? "الدراسات والبحث" : "Études & recherche"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown" id="nav-submenu-science">
             <button type="button" data-space-id="science">${lang === "ar" ? "المنشورات العلمية" : "Publications scientifiques"}</button>
             <button type="button" data-space-id="science" data-pole-shortcut="recherche_scientifique">${lang === "ar" ? "البحث العلمي" : "Recherche scientifique"}</button>
           </div>
@@ -2179,6 +2180,15 @@ function render() {
 
   document.querySelectorAll("[data-space-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const mobileSubmenu = btn.getAttribute("data-mobile-submenu");
+      if (mobileSubmenu && window.matchMedia("(max-width: 820px)").matches) {
+        mobileOpenSubmenu = mobileOpenSubmenu === mobileSubmenu ? "" : mobileSubmenu;
+        render();
+        document.querySelectorAll("[data-mobile-submenu]").forEach((item) => {
+          if (item.getAttribute("data-mobile-submenu") === mobileSubmenu) item.focus();
+        });
+        return;
+      }
       activeSpace = btn.getAttribute("data-space-id") || "all";
       activeArticleId = null;
       if (btn.hasAttribute("data-stat-view-shortcut")) statisticsView = "regional";
@@ -2190,6 +2200,7 @@ function render() {
       }
       window.history.pushState({ kitnSpace: activeSpace }, "", SPACE_PATHS[activeSpace] || "/");
       mobileMenuOpen = false;
+      mobileOpenSubmenu = "";
       render();
       window.scrollTo({ top: 0, behavior: "smooth" });
     });

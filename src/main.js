@@ -1075,8 +1075,8 @@ function renderRegionalStatisticsDashboard() {
     return `<section class="regional-stats-dashboard">
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div></div>
       <p class="regional-empty">${isAr
-        ? "ستظهر المقارنات الجهوية بعد إدراج بيانات HCP الإقليمية في ملف البيانات المنشور."
-        : "Les comparaisons régionales apparaîtront après l’intégration des séries HCP dans le prochain fichier de données publié."}</p>
+        ? "بيانات المندوبية السامية للتخطيط الجهوية غير متوفرة بعد في مجموعة البيانات المنشورة. تم اختبار آلية الاستخراج، لكن الجمع الفعلي والنشر ما زالا بحاجة إلى التحقق."
+        : "Les séries régionales HCP ne sont pas encore présentes dans le jeu de données publié. Leur extraction est couverte par des tests, mais la collecte réelle et la publication restent à valider."}</p>
     </section>`;
   }
 

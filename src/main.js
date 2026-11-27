@@ -968,6 +968,9 @@ function renderStatisticsDashboard() {
     const lastPoint = coords ? coords.split(" ").at(-1).split(",") : ["50","49"];
     const label = isAr ? (indicator.label_ar || indicator.label_fr) : indicator.label_fr;
     const description = isAr ? (indicator.description_ar || indicator.description_fr) : indicator.description_fr;
+    const methodologyNote = isAr
+      ? (indicator.methodology_note_ar || indicator.methodology_note_fr)
+      : indicator.methodology_note_fr;
     const unit = isAr ? (indicator.unit_ar || indicator.unit_fr) : indicator.unit_fr;
     const deltaPrecision = Number.isInteger(indicator.precision) ? indicator.precision : 1;
     const formattedDelta = delta === null ? "" : new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", {maximumFractionDigits:deltaPrecision}).format(delta);
@@ -996,6 +999,7 @@ function renderStatisticsDashboard() {
         <div class="stat-card-top"><span>${escapeHtml(label)}</span><span class="stat-year">${escapeHtml(String(latest?.year || "—"))}</span></div>
         <div class="stat-value">${escapeHtml(latest ? formatStatisticValue(indicator, latest.value) : "—")}<small>${escapeHtml(unit || "")}</small></div>
         <p class="stat-description">${escapeHtml(description || "")}</p>
+        ${methodologyNote ? `<p class="stat-methodology-note">${escapeHtml(methodologyNote)}</p>` : ""}
         <div class="stat-trend"><span>${escapeHtml(changeText)}</span></div>
         <svg class="stat-sparkline" viewBox="0 0 100 64" role="img" aria-label="${escapeHtml(chartTitle)}">
           <line x1="5" y1="11" x2="95" y2="11" class="stat-chart-grid"></line>

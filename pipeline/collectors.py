@@ -170,7 +170,7 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
 
 
 
-def _fetch_bytes(url: str, timeout: int = 30, referer: str | None = None) -> bytes:
+def _fetch_pdf_bytes(url: str, timeout: int = 30, referer: str | None = None) -> bytes:
     """Download a binary source document with the same bounded retry policy as HTML requests."""
     parsed = urlsplit(url)
     origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "https://www.hcp.ma/"
@@ -654,7 +654,7 @@ def _extract_hcp_emo_regional_statistics(
     best_series: list[dict] = []
     for attachment_url in attachment_urls[:4]:
         try:
-            payload = _fetch_bytes(attachment_url, referer=article_url)
+            payload = _fetch_pdf_bytes(attachment_url, referer=article_url)
             reader = PdfReader(io.BytesIO(payload))
             pages: list[str] = []
             for page in reader.pages:

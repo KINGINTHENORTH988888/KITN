@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-11-27T01:48:06Z",
-  "source": "Sources officielles — Banque mondiale — World Development Indicators et Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+  "generated_at": "2026-11-27T01:58:07Z",
+  "source": "Sources officielles — Bank Al-Maghrib — Données ouvertes et Banque mondiale — World Development Indicators et Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
   "sources": [
+    "Bank Al-Maghrib — Données ouvertes",
     "Banque mondiale — World Development Indicators",
     "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB"
   ],
@@ -797,6 +798,2674 @@
       "reference_period": "2024",
       "published_variation": 8.8,
       "published_variation_raw": "8,8"
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIF",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIF",
+      "label_fr": "Actif",
+      "label_ar": "Actif",
+      "description_fr": "Actif — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Actif — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 208892.44573944504
+      },
+      "previous": {
+        "year": "2025",
+        "value": 189201.50118222827
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 101271.27185947244
+        },
+        {
+          "year": "2024",
+          "value": 142358.96431898468
+        },
+        {
+          "year": "2025",
+          "value": 189201.50118222827
+        },
+        {
+          "year": "2026",
+          "value": 208892.44573944504
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIFS_IMMOBILIERS",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIFS_IMMOBILIERS",
+      "label_fr": "Actifs immobiliers",
+      "label_ar": "Actifs immobiliers",
+      "description_fr": "Actifs immobiliers — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Actifs immobiliers — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 193637.79639885
+      },
+      "previous": {
+        "year": "2025",
+        "value": 176418.03926102002
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 93844.6793902235
+        },
+        {
+          "year": "2024",
+          "value": 133115.26941831518
+        },
+        {
+          "year": "2025",
+          "value": 176418.03926102002
+        },
+        {
+          "year": "2026",
+          "value": 193637.79639885
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_IMMEUBLES_EN_COURS_CONSTRUITS_OU_ACQUIS_ET_DROITS_R_ELS",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_IMMEUBLES_EN_COURS_CONSTRUITS_OU_ACQUIS_ET_DROITS_R_ELS",
+      "label_fr": "Immeubles en cours, construits ou acquis et droits réels",
+      "label_ar": "Immeubles en cours, construits ou acquis et droits réels",
+      "description_fr": "Immeubles en cours, construits ou acquis et droits réels — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Immeubles en cours, construits ou acquis et droits réels — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 191760.18560972
+      },
+      "previous": {
+        "year": "2025",
+        "value": 174951.15804409003
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 93753.4390931035
+        },
+        {
+          "year": "2024",
+          "value": 132360.51890980516
+        },
+        {
+          "year": "2025",
+          "value": 174951.15804409003
+        },
+        {
+          "year": "2026",
+          "value": 191760.18560972
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_D_AUTRES_OPCI",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_D_AUTRES_OPCI",
+      "label_fr": "Titres d'autres OPCI",
+      "label_ar": "Titres d'autres OPCI",
+      "description_fr": "Titres d'autres OPCI — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Titres d'autres OPCI — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 1570.60987713
+      },
+      "previous": {
+        "year": "2025",
+        "value": 1466.8812169300004
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 91.24029712
+        },
+        {
+          "year": "2024",
+          "value": 754.75050851
+        },
+        {
+          "year": "2025",
+          "value": 1466.8812169300004
+        },
+        {
+          "year": "2026",
+          "value": 1570.60987713
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_AUTRES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_AUTRES",
+      "label_fr": "Autres",
+      "label_ar": "Autres",
+      "description_fr": "Autres — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Autres — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 6882.833894194235
+      },
+      "previous": {
+        "year": "2025",
+        "value": 2845.405062304335
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 2633.4289349485425
+        },
+        {
+          "year": "2024",
+          "value": 1804.4347309006766
+        },
+        {
+          "year": "2025",
+          "value": 2845.405062304335
+        },
+        {
+          "year": "2026",
+          "value": 6882.833894194235
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIFS_FINANCIERS_NON_IMMOBILIERS",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIFS_FINANCIERS_NON_IMMOBILIERS",
+      "label_fr": "Actifs financiers non immobiliers",
+      "label_ar": "Actifs financiers non immobiliers",
+      "description_fr": "Actifs financiers non immobiliers — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Actifs financiers non immobiliers — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 9086.033883571507
+      },
+      "previous": {
+        "year": "2025",
+        "value": 8202.672655380731
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 6582.8781412544395
+        },
+        {
+          "year": "2024",
+          "value": 7303.636735412566
+        },
+        {
+          "year": "2025",
+          "value": 8202.672655380731
+        },
+        {
+          "year": "2026",
+          "value": 9086.033883571507
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_AUTES_QU_ACTIONS",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_AUTES_QU_ACTIONS",
+      "label_fr": "Titres autes qu'actions",
+      "label_ar": "Titres autes qu'actions",
+      "description_fr": "Titres autes qu'actions — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Titres autes qu'actions — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 0.0
+      },
+      "previous": {
+        "year": "2025",
+        "value": 0.0
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 595.6367519300001
+        },
+        {
+          "year": "2024",
+          "value": 82.89029184
+        },
+        {
+          "year": "2025",
+          "value": 0.0
+        },
+        {
+          "year": "2026",
+          "value": 0.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_ADMINISTRATION_CENTRALE",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_ADMINISTRATION_CENTRALE",
+      "label_fr": "Titres Administration Centrale",
+      "label_ar": "Titres Administration Centrale",
+      "description_fr": "Titres Administration Centrale — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Titres Administration Centrale — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 0.0
+      },
+      "previous": {
+        "year": "2025",
+        "value": 0.0
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 595.6367519300001
+        },
+        {
+          "year": "2024",
+          "value": 82.89029184
+        },
+        {
+          "year": "2025",
+          "value": 0.0
+        },
+        {
+          "year": "2026",
+          "value": 0.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PARTS_ET_ACTIONS_D_OPCVM",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PARTS_ET_ACTIONS_D_OPCVM",
+      "label_fr": "Parts et actions d'OPCVM",
+      "label_ar": "Parts et actions d'OPCVM",
+      "description_fr": "Parts et actions d'OPCVM — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Parts et actions d'OPCVM — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 7545.424212467595
+      },
+      "previous": {
+        "year": "2025",
+        "value": 7709.541550414942
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 4954.4282898765705
+        },
+        {
+          "year": "2024",
+          "value": 6680.628622248192
+        },
+        {
+          "year": "2025",
+          "value": 7709.541550414942
+        },
+        {
+          "year": "2026",
+          "value": 7545.424212467595
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_OPCVM_MON_TAIRES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_OPCVM_MON_TAIRES",
+      "label_fr": "OPCVM Monétaires",
+      "label_ar": "OPCVM Monétaires",
+      "description_fr": "OPCVM Monétaires — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "OPCVM Monétaires — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 5712.470958842987
+      },
+      "previous": {
+        "year": "2025",
+        "value": 5675.400537184907
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 4837.656159296571
+        },
+        {
+          "year": "2024",
+          "value": 5633.693778958192
+        },
+        {
+          "year": "2025",
+          "value": 5675.400537184907
+        },
+        {
+          "year": "2026",
+          "value": 5712.470958842987
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_OPCVM_AUTRE_QUE_MON_TAIRES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_OPCVM_AUTRE_QUE_MON_TAIRES",
+      "label_fr": "OPCVM autre que monétaires",
+      "label_ar": "OPCVM autre que monétaires",
+      "description_fr": "OPCVM autre que monétaires — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "OPCVM autre que monétaires — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 1832.9532536246077
+      },
+      "previous": {
+        "year": "2025",
+        "value": 2034.1410132300357
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 116.77213058
+        },
+        {
+          "year": "2024",
+          "value": 1046.9348432900001
+        },
+        {
+          "year": "2025",
+          "value": 2034.1410132300357
+        },
+        {
+          "year": "2026",
+          "value": 1832.9532536246077
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_AUPR_S_DES_BANQUES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_AUPR_S_DES_BANQUES",
+      "label_fr": "Dépôts auprès des banques",
+      "label_ar": "Dépôts auprès des banques",
+      "description_fr": "Dépôts auprès des banques — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Dépôts auprès des banques — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 1540.6096711039106
+      },
+      "previous": {
+        "year": "2025",
+        "value": 493.13110496578827
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 1032.813099447868
+        },
+        {
+          "year": "2024",
+          "value": 540.1178213243742
+        },
+        {
+          "year": "2025",
+          "value": 493.13110496578827
+        },
+        {
+          "year": "2026",
+          "value": 1540.6096711039106
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_VUE",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_VUE",
+      "label_fr": "Dépôts à vue",
+      "label_ar": "Dépôts à vue",
+      "description_fr": "Dépôts à vue — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Dépôts à vue — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 1540.6096711039106
+      },
+      "previous": {
+        "year": "2025",
+        "value": 493.13110496578827
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 1032.812303447868
+        },
+        {
+          "year": "2024",
+          "value": 540.1178213243742
+        },
+        {
+          "year": "2025",
+          "value": 493.13110496578827
+        },
+        {
+          "year": "2026",
+          "value": 1540.6096711039106
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_TERME",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_TERME",
+      "label_fr": "Dépôts à terme",
+      "label_ar": "Dépôts à terme",
+      "description_fr": "Dépôts à terme — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Dépôts à terme — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 0.0
+      },
+      "previous": {
+        "year": "2025",
+        "value": 0.0
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 0.0
+        },
+        {
+          "year": "2024",
+          "value": 0.0
+        },
+        {
+          "year": "2025",
+          "value": 0.0
+        },
+        {
+          "year": "2026",
+          "value": 0.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PASSIF",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PASSIF",
+      "label_fr": "Passif",
+      "label_ar": "Passif",
+      "description_fr": "Passif — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Passif — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 208892.44573912836
+      },
+      "previous": {
+        "year": "2025",
+        "value": 189201.5011822597
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 101271.27185948292
+        },
+        {
+          "year": "2024",
+          "value": 142358.9643189832
+        },
+        {
+          "year": "2025",
+          "value": 189201.5011822597
+        },
+        {
+          "year": "2026",
+          "value": 208892.44573912836
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIONS_ET_PARTS",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIONS_ET_PARTS",
+      "label_fr": "Actions et parts",
+      "label_ar": "Actions et parts",
+      "description_fr": "Actions et parts — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Actions et parts — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 143688.8012969937
+      },
+      "previous": {
+        "year": "2025",
+        "value": 134428.43305874537
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 85489.04567266883
+        },
+        {
+          "year": "2024",
+          "value": 109261.22616116077
+        },
+        {
+          "year": "2025",
+          "value": 134428.43305874537
+        },
+        {
+          "year": "2026",
+          "value": 143688.8012969937
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ADMINISTRATIONS_DE_S_CURIT_SOCIALE",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ADMINISTRATIONS_DE_S_CURIT_SOCIALE",
+      "label_fr": "Administrations de sécurité sociale",
+      "label_ar": "Administrations de sécurité sociale",
+      "description_fr": "Administrations de sécurité sociale — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Administrations de sécurité sociale — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 33233.82153490121
+      },
+      "previous": {
+        "year": "2025",
+        "value": 35540.13772569535
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 27773.36437345416
+        },
+        {
+          "year": "2024",
+          "value": 30146.98180180754
+        },
+        {
+          "year": "2025",
+          "value": 35540.13772569535
+        },
+        {
+          "year": "2026",
+          "value": 33233.82153490121
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_SOCI_T_S_FINANCI_RES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_SOCI_T_S_FINANCI_RES",
+      "label_fr": "Sociétés financières",
+      "label_ar": "Sociétés financières",
+      "description_fr": "Sociétés financières — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Sociétés financières — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 92810.78679631646
+      },
+      "previous": {
+        "year": "2025",
+        "value": 88770.78411833881
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 48034.35378932426
+        },
+        {
+          "year": "2024",
+          "value": 68304.27850342794
+        },
+        {
+          "year": "2025",
+          "value": 88770.78411833881
+        },
+        {
+          "year": "2026",
+          "value": 92810.78679631646
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_BANQUES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_BANQUES",
+      "label_fr": "Banques",
+      "label_ar": "Banques",
+      "description_fr": "Banques — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Banques — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 55090.61319934288
+      },
+      "previous": {
+        "year": "2025",
+        "value": 50351.44201135402
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 22145.994526796287
+        },
+        {
+          "year": "2024",
+          "value": 35945.69404868003
+        },
+        {
+          "year": "2025",
+          "value": 50351.44201135402
+        },
+        {
+          "year": "2026",
+          "value": 55090.61319934288
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_AUTRES_SOCI_T_S_FINANCI_RES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_AUTRES_SOCI_T_S_FINANCI_RES",
+      "label_fr": "Autres sociétés financières",
+      "label_ar": "Autres sociétés financières",
+      "description_fr": "Autres sociétés financières — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Autres sociétés financières — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 37720.17359697359
+      },
+      "previous": {
+        "year": "2025",
+        "value": 38419.34210698478
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 25888.35926256904
+        },
+        {
+          "year": "2024",
+          "value": 32358.584454747903
+        },
+        {
+          "year": "2025",
+          "value": 38419.34210698478
+        },
+        {
+          "year": "2026",
+          "value": 37720.17359697359
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_SOCI_T_S_NON_FINANCI_RES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_SOCI_T_S_NON_FINANCI_RES",
+      "label_fr": "Sociétés non financières",
+      "label_ar": "Sociétés non financières",
+      "description_fr": "Sociétés non financières — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Sociétés non financières — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 17383.454079235085
+      },
+      "previous": {
+        "year": "2025",
+        "value": 9866.015689871074
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 9400.833601915845
+        },
+        {
+          "year": "2024",
+          "value": 10480.321213462143
+        },
+        {
+          "year": "2025",
+          "value": 9866.015689871074
+        },
+        {
+          "year": "2026",
+          "value": 17383.454079235085
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PUBLIQUES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PUBLIQUES",
+      "label_fr": "Publiques",
+      "label_ar": "Publiques",
+      "description_fr": "Publiques — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Publiques — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 8375.0050750577
+      },
+      "previous": {
+        "year": "2025",
+        "value": 1853.292487229395
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 1470.8436323839162
+        },
+        {
+          "year": "2024",
+          "value": 1831.6351798506407
+        },
+        {
+          "year": "2025",
+          "value": 1853.292487229395
+        },
+        {
+          "year": "2026",
+          "value": 8375.0050750577
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PRIV_ES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PRIV_ES",
+      "label_fr": "Privées",
+      "label_ar": "Privées",
+      "description_fr": "Privées — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Privées — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 9008.449004177384
+      },
+      "previous": {
+        "year": "2025",
+        "value": 8012.7232026416805
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 7929.989969531929
+        },
+        {
+          "year": "2024",
+          "value": 8648.686033611502
+        },
+        {
+          "year": "2025",
+          "value": 8012.7232026416805
+        },
+        {
+          "year": "2026",
+          "value": 9008.449004177384
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PARTICULIERS",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PARTICULIERS",
+      "label_fr": "Particuliers",
+      "label_ar": "Particuliers",
+      "description_fr": "Particuliers — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Particuliers — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 260.73888654098
+      },
+      "previous": {
+        "year": "2025",
+        "value": 251.49552484018685
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 280.49390797452776
+        },
+        {
+          "year": "2024",
+          "value": 329.6446424631244
+        },
+        {
+          "year": "2025",
+          "value": 251.49552484018685
+        },
+        {
+          "year": "2026",
+          "value": 260.73888654098
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_EMPRUNTS_BANCAIRES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_EMPRUNTS_BANCAIRES",
+      "label_fr": "Emprunts bancaires",
+      "label_ar": "Emprunts bancaires",
+      "description_fr": "Emprunts bancaires — Compte de patrimoine des Organismes de Placement Collectif Immobilier. Ce fichier présente le compte de patrimoine des Organismes de Placement Collectif Immobilier (OPCI) pour la période 1er semestre 2023 au 1er semestre 2026",
+      "description_ar": "Emprunts bancaires — Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2026",
+        "value": 58320.81054794039
+      },
+      "previous": {
+        "year": "2025",
+        "value": 51927.66306121
+      },
+      "history": [
+        {
+          "year": "2023",
+          "value": 13148.797251865555
+        },
+        {
+          "year": "2024",
+          "value": 31293.30342692175
+        },
+        {
+          "year": "2025",
+          "value": 51927.66306121
+        },
+        {
+          "year": "2026",
+          "value": 58320.81054794039
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/fr/dataset/4b2fcfba-e6be-4bd7-a9f6-82823ffb7f03/resource/44fa43be-827d-4492-9348-676ee19406da/download/compte-de-patrimoine-des-opci_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Organismes de Placement Collectif Immobilier",
+      "resource_name": "Compte de patrimoine des OPCI_Juin 2026.xlsx",
+      "reference_period": "2026",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_ACTIONS_ET_AUTRES_TITRES_DE_PARTICIPATION",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_ACTIONS_ET_AUTRES_TITRES_DE_PARTICIPATION",
+      "label_fr": "Actions et autres titres de participation",
+      "label_ar": "Actions et autres titres de participation",
+      "description_fr": "Actions et autres titres de participation — Compte de patrimoine des Associations de microcrédit. Ce fichier présente le compte de patrimoine des Associations de microcrédit pour la période de juin 2007 à juin 2026",
+      "description_ar": "Actions et autres titres de participation — Compte de patrimoine des Associations de microcrédit",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2098",
+        "value": 1701.6364345370812
+      },
+      "previous": {
+        "year": "2097",
+        "value": 2778.0960060047887
+      },
+      "history": [
+        {
+          "year": "2002",
+          "value": 2361.432060835
+        },
+        {
+          "year": "2010",
+          "value": 1793.6939507499999
+        },
+        {
+          "year": "2022",
+          "value": 2771.9403596125003
+        },
+        {
+          "year": "2033",
+          "value": 1053.506
+        },
+        {
+          "year": "2036",
+          "value": 2434.4
+        },
+        {
+          "year": "2044",
+          "value": 2233.765
+        },
+        {
+          "year": "2047",
+          "value": 2772.46
+        },
+        {
+          "year": "2097",
+          "value": 2778.0960060047887
+        },
+        {
+          "year": "2098",
+          "value": 1701.6364345370812
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/7a683981-0aca-4dbb-891e-651dfce6932f/resource/6f659373-b742-46a2-b1ed-b41b79b12bbc/download/compte-de-patrimoine-des-amc_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Associations de microcrédit",
+      "resource_name": "Compte de patrimoine des AMC_Juin 2026.xlsx",
+      "reference_period": "2098",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_CONTRIBUTIONS_DES_PROPRI_TAIRES",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_CONTRIBUTIONS_DES_PROPRI_TAIRES",
+      "label_fr": "Contributions des propriétaires",
+      "label_ar": "Contributions des propriétaires",
+      "description_fr": "Contributions des propriétaires — Compte de patrimoine des Associations de microcrédit. Ce fichier présente le compte de patrimoine des Associations de microcrédit pour la période de juin 2007 à juin 2026",
+      "description_ar": "Contributions des propriétaires — Compte de patrimoine des Associations de microcrédit",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2098",
+        "value": 917.37969414
+      },
+      "previous": {
+        "year": "2097",
+        "value": 820.21341899
+      },
+      "history": [
+        {
+          "year": "2002",
+          "value": 725.89921935
+        },
+        {
+          "year": "2010",
+          "value": 758.0189507499999
+        },
+        {
+          "year": "2022",
+          "value": 710.16191351
+        },
+        {
+          "year": "2033",
+          "value": 522.462
+        },
+        {
+          "year": "2036",
+          "value": 718.733
+        },
+        {
+          "year": "2044",
+          "value": 750.491
+        },
+        {
+          "year": "2047",
+          "value": 868.571
+        },
+        {
+          "year": "2097",
+          "value": 820.21341899
+        },
+        {
+          "year": "2098",
+          "value": 917.37969414
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/7a683981-0aca-4dbb-891e-651dfce6932f/resource/6f659373-b742-46a2-b1ed-b41b79b12bbc/download/compte-de-patrimoine-des-amc_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Associations de microcrédit",
+      "resource_name": "Compte de patrimoine des AMC_Juin 2026.xlsx",
+      "reference_period": "2098",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_AUTRES_PASSIFS",
+      "indicator_code": "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_AUTRES_PASSIFS",
+      "label_fr": "Autres passifs",
+      "label_ar": "Autres passifs",
+      "description_fr": "Autres passifs — Compte de patrimoine des Associations de microcrédit. Ce fichier présente le compte de patrimoine des Associations de microcrédit pour la période de juin 2007 à juin 2026",
+      "description_ar": "Autres passifs — Compte de patrimoine des Associations de microcrédit",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2098",
+        "value": 648.355535322847
+      },
+      "previous": {
+        "year": "2097",
+        "value": 1023.036217190909
+      },
+      "history": [
+        {
+          "year": "2002",
+          "value": 990.113241905
+        },
+        {
+          "year": "2010",
+          "value": 686.816
+        },
+        {
+          "year": "2022",
+          "value": 1193.0501747
+        },
+        {
+          "year": "2033",
+          "value": 251.993
+        },
+        {
+          "year": "2036",
+          "value": 1077.785
+        },
+        {
+          "year": "2044",
+          "value": 928.804
+        },
+        {
+          "year": "2047",
+          "value": 1051.558
+        },
+        {
+          "year": "2097",
+          "value": 1023.036217190909
+        },
+        {
+          "year": "2098",
+          "value": 648.355535322847
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/7a683981-0aca-4dbb-891e-651dfce6932f/resource/6f659373-b742-46a2-b1ed-b41b79b12bbc/download/compte-de-patrimoine-des-amc_juin-2026.xlsx",
+      "dataset_name": "Compte de patrimoine des Associations de microcrédit",
+      "resource_name": "Compte de patrimoine des AMC_Juin 2026.xlsx",
+      "reference_period": "2098",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES",
+      "label_fr": "Banques",
+      "label_ar": "Banques",
+      "description_fr": "Banques — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Banques — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 19.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 19.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 19.0
+        },
+        {
+          "year": "2015",
+          "value": 19.0
+        },
+        {
+          "year": "2016",
+          "value": 19.0
+        },
+        {
+          "year": "2017",
+          "value": 19.0
+        },
+        {
+          "year": "2018",
+          "value": 19.0
+        },
+        {
+          "year": "2019",
+          "value": 19.0
+        },
+        {
+          "year": "2020",
+          "value": 19.0
+        },
+        {
+          "year": "2021",
+          "value": 19.0
+        },
+        {
+          "year": "2022",
+          "value": 19.0
+        },
+        {
+          "year": "2023",
+          "value": 19.0
+        },
+        {
+          "year": "2024",
+          "value": 19.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_CAPITAL_MAJORITAIREMENT_TRANGER",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_CAPITAL_MAJORITAIREMENT_TRANGER",
+      "label_fr": "Banques à capital majoritairement étranger",
+      "label_ar": "Banques à capital majoritairement étranger",
+      "description_fr": "Banques à capital majoritairement étranger — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Banques à capital majoritairement étranger — Structure du système bancaire",
+      "unit_fr": "*",
+      "unit_ar": "*",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 5.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 6.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 7.0
+        },
+        {
+          "year": "2015",
+          "value": 7.0
+        },
+        {
+          "year": "2016",
+          "value": 7.0
+        },
+        {
+          "year": "2017",
+          "value": 7.0
+        },
+        {
+          "year": "2018",
+          "value": 7.0
+        },
+        {
+          "year": "2019",
+          "value": 7.0
+        },
+        {
+          "year": "2020",
+          "value": 7.0
+        },
+        {
+          "year": "2021",
+          "value": 7.0
+        },
+        {
+          "year": "2022",
+          "value": 6.0
+        },
+        {
+          "year": "2023",
+          "value": 6.0
+        },
+        {
+          "year": "2024",
+          "value": 5.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_CAPITAL_MAJORITAIREMENT_PUBLIC",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_CAPITAL_MAJORITAIREMENT_PUBLIC",
+      "label_fr": "Banques à capital majoritairement public",
+      "label_ar": "Banques à capital majoritairement public",
+      "description_fr": "Banques à capital majoritairement public — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Banques à capital majoritairement public — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 5.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 5.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 5.0
+        },
+        {
+          "year": "2015",
+          "value": 5.0
+        },
+        {
+          "year": "2016",
+          "value": 5.0
+        },
+        {
+          "year": "2017",
+          "value": 5.0
+        },
+        {
+          "year": "2018",
+          "value": 5.0
+        },
+        {
+          "year": "2019",
+          "value": 5.0
+        },
+        {
+          "year": "2020",
+          "value": 5.0
+        },
+        {
+          "year": "2021",
+          "value": 5.0
+        },
+        {
+          "year": "2022",
+          "value": 5.0
+        },
+        {
+          "year": "2023",
+          "value": 5.0
+        },
+        {
+          "year": "2024",
+          "value": 5.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_PARTICIPATIVES",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_PARTICIPATIVES",
+      "label_fr": "Banques participatives",
+      "label_ar": "Banques participatives",
+      "description_fr": "Banques participatives — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Banques participatives — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 5.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 5.0
+      },
+      "history": [
+        {
+          "year": "2017",
+          "value": 5.0
+        },
+        {
+          "year": "2018",
+          "value": 5.0
+        },
+        {
+          "year": "2019",
+          "value": 5.0
+        },
+        {
+          "year": "2020",
+          "value": 5.0
+        },
+        {
+          "year": "2021",
+          "value": 5.0
+        },
+        {
+          "year": "2022",
+          "value": 5.0
+        },
+        {
+          "year": "2023",
+          "value": 5.0
+        },
+        {
+          "year": "2024",
+          "value": 5.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_FINANCEMENT",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_FINANCEMENT",
+      "label_fr": "Sociétés de financement",
+      "label_ar": "Sociétés de financement",
+      "description_fr": "Sociétés de financement — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés de financement — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 29.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 29.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 34.0
+        },
+        {
+          "year": "2015",
+          "value": 34.0
+        },
+        {
+          "year": "2016",
+          "value": 33.0
+        },
+        {
+          "year": "2017",
+          "value": 32.0
+        },
+        {
+          "year": "2018",
+          "value": 28.0
+        },
+        {
+          "year": "2019",
+          "value": 27.0
+        },
+        {
+          "year": "2020",
+          "value": 27.0
+        },
+        {
+          "year": "2021",
+          "value": 28.0
+        },
+        {
+          "year": "2022",
+          "value": 29.0
+        },
+        {
+          "year": "2023",
+          "value": 29.0
+        },
+        {
+          "year": "2024",
+          "value": 29.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_LA_CONSOMMATION",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_LA_CONSOMMATION",
+      "label_fr": "Sociétés de crédit à la consommation",
+      "label_ar": "Sociétés de crédit à la consommation",
+      "description_fr": "Sociétés de crédit à la consommation — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés de crédit à la consommation — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 12.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 12.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 16.0
+        },
+        {
+          "year": "2015",
+          "value": 16.0
+        },
+        {
+          "year": "2016",
+          "value": 15.0
+        },
+        {
+          "year": "2017",
+          "value": 14.0
+        },
+        {
+          "year": "2018",
+          "value": 12.0
+        },
+        {
+          "year": "2019",
+          "value": 12.0
+        },
+        {
+          "year": "2020",
+          "value": 12.0
+        },
+        {
+          "year": "2021",
+          "value": 12.0
+        },
+        {
+          "year": "2022",
+          "value": 12.0
+        },
+        {
+          "year": "2023",
+          "value": 12.0
+        },
+        {
+          "year": "2024",
+          "value": 12.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_BAIL",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_BAIL",
+      "label_fr": "Sociétés de crédit-bail",
+      "label_ar": "Sociétés de crédit-bail",
+      "description_fr": "Sociétés de crédit-bail — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés de crédit-bail — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 8.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 8.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 6.0
+        },
+        {
+          "year": "2015",
+          "value": 6.0
+        },
+        {
+          "year": "2016",
+          "value": 6.0
+        },
+        {
+          "year": "2017",
+          "value": 6.0
+        },
+        {
+          "year": "2018",
+          "value": 7.0
+        },
+        {
+          "year": "2019",
+          "value": 7.0
+        },
+        {
+          "year": "2020",
+          "value": 7.0
+        },
+        {
+          "year": "2021",
+          "value": 7.0
+        },
+        {
+          "year": "2022",
+          "value": 8.0
+        },
+        {
+          "year": "2023",
+          "value": 8.0
+        },
+        {
+          "year": "2024",
+          "value": 8.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_IMMOBILIER",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_IMMOBILIER",
+      "label_fr": "Sociétés de crédit immobilier",
+      "label_ar": "Sociétés de crédit immobilier",
+      "description_fr": "Sociétés de crédit immobilier — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés de crédit immobilier — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 2.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 2.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 2.0
+        },
+        {
+          "year": "2015",
+          "value": 2.0
+        },
+        {
+          "year": "2016",
+          "value": 2.0
+        },
+        {
+          "year": "2017",
+          "value": 2.0
+        },
+        {
+          "year": "2018",
+          "value": 2.0
+        },
+        {
+          "year": "2019",
+          "value": 2.0
+        },
+        {
+          "year": "2020",
+          "value": 2.0
+        },
+        {
+          "year": "2021",
+          "value": 2.0
+        },
+        {
+          "year": "2022",
+          "value": 2.0
+        },
+        {
+          "year": "2023",
+          "value": 2.0
+        },
+        {
+          "year": "2024",
+          "value": 2.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CAUTIONNEMENT",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CAUTIONNEMENT",
+      "label_fr": "Sociétés de cautionnement",
+      "label_ar": "Sociétés de cautionnement",
+      "description_fr": "Sociétés de cautionnement — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés de cautionnement — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 1.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 1.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 2.0
+        },
+        {
+          "year": "2015",
+          "value": 2.0
+        },
+        {
+          "year": "2016",
+          "value": 2.0
+        },
+        {
+          "year": "2017",
+          "value": 2.0
+        },
+        {
+          "year": "2018",
+          "value": 2.0
+        },
+        {
+          "year": "2019",
+          "value": 1.0
+        },
+        {
+          "year": "2020",
+          "value": 1.0
+        },
+        {
+          "year": "2021",
+          "value": 1.0
+        },
+        {
+          "year": "2022",
+          "value": 1.0
+        },
+        {
+          "year": "2023",
+          "value": 1.0
+        },
+        {
+          "year": "2024",
+          "value": 1.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_D_AFFACTURAGE",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_D_AFFACTURAGE",
+      "label_fr": "Sociétés d'affacturage",
+      "label_ar": "Sociétés d'affacturage",
+      "description_fr": "Sociétés d'affacturage — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés d'affacturage — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 3.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 3.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 2.0
+        },
+        {
+          "year": "2015",
+          "value": 2.0
+        },
+        {
+          "year": "2016",
+          "value": 2.0
+        },
+        {
+          "year": "2017",
+          "value": 2.0
+        },
+        {
+          "year": "2018",
+          "value": 2.0
+        },
+        {
+          "year": "2019",
+          "value": 2.0
+        },
+        {
+          "year": "2020",
+          "value": 2.0
+        },
+        {
+          "year": "2021",
+          "value": 3.0
+        },
+        {
+          "year": "2022",
+          "value": 3.0
+        },
+        {
+          "year": "2023",
+          "value": 3.0
+        },
+        {
+          "year": "2024",
+          "value": 3.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_GESTION_DE_MOYENS_DE_PAIEMENT",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_GESTION_DE_MOYENS_DE_PAIEMENT",
+      "label_fr": "Sociétés de gestion de moyens de paiement",
+      "label_ar": "Sociétés de gestion de moyens de paiement",
+      "description_fr": "Sociétés de gestion de moyens de paiement — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés de gestion de moyens de paiement — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 0.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 0.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 3.0
+        },
+        {
+          "year": "2015",
+          "value": 3.0
+        },
+        {
+          "year": "2016",
+          "value": 3.0
+        },
+        {
+          "year": "2017",
+          "value": 3.0
+        },
+        {
+          "year": "2018",
+          "value": 0.0
+        },
+        {
+          "year": "2019",
+          "value": 0.0
+        },
+        {
+          "year": "2020",
+          "value": 0.0
+        },
+        {
+          "year": "2021",
+          "value": 0.0
+        },
+        {
+          "year": "2022",
+          "value": 0.0
+        },
+        {
+          "year": "2023",
+          "value": 0.0
+        },
+        {
+          "year": "2024",
+          "value": 0.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_AUTRES_SOCI_T_S",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_AUTRES_SOCI_T_S",
+      "label_fr": "Autres sociétés",
+      "label_ar": "Autres sociétés",
+      "description_fr": "Autres sociétés — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Autres sociétés — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 3.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 3.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 3.0
+        },
+        {
+          "year": "2015",
+          "value": 3.0
+        },
+        {
+          "year": "2016",
+          "value": 3.0
+        },
+        {
+          "year": "2017",
+          "value": 3.0
+        },
+        {
+          "year": "2018",
+          "value": 3.0
+        },
+        {
+          "year": "2019",
+          "value": 3.0
+        },
+        {
+          "year": "2020",
+          "value": 3.0
+        },
+        {
+          "year": "2021",
+          "value": 3.0
+        },
+        {
+          "year": "2022",
+          "value": 3.0
+        },
+        {
+          "year": "2023",
+          "value": 3.0
+        },
+        {
+          "year": "2024",
+          "value": 3.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_OFFSHORE",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_OFFSHORE",
+      "label_fr": "Banques offshore",
+      "label_ar": "Banques offshore",
+      "description_fr": "Banques offshore — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Banques offshore — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 6.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 6.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 6.0
+        },
+        {
+          "year": "2015",
+          "value": 6.0
+        },
+        {
+          "year": "2016",
+          "value": 6.0
+        },
+        {
+          "year": "2017",
+          "value": 6.0
+        },
+        {
+          "year": "2018",
+          "value": 6.0
+        },
+        {
+          "year": "2019",
+          "value": 6.0
+        },
+        {
+          "year": "2020",
+          "value": 6.0
+        },
+        {
+          "year": "2021",
+          "value": 6.0
+        },
+        {
+          "year": "2022",
+          "value": 6.0
+        },
+        {
+          "year": "2023",
+          "value": 6.0
+        },
+        {
+          "year": "2024",
+          "value": 6.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_ASSOCIATIONS_DE_MICRO_CR_DIT",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_ASSOCIATIONS_DE_MICRO_CR_DIT",
+      "label_fr": "Associations de micro-crédit",
+      "label_ar": "Associations de micro-crédit",
+      "description_fr": "Associations de micro-crédit — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Associations de micro-crédit — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 11.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 11.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 13.0
+        },
+        {
+          "year": "2015",
+          "value": 13.0
+        },
+        {
+          "year": "2016",
+          "value": 13.0
+        },
+        {
+          "year": "2017",
+          "value": 13.0
+        },
+        {
+          "year": "2018",
+          "value": 13.0
+        },
+        {
+          "year": "2019",
+          "value": 12.0
+        },
+        {
+          "year": "2020",
+          "value": 12.0
+        },
+        {
+          "year": "2021",
+          "value": 11.0
+        },
+        {
+          "year": "2022",
+          "value": 11.0
+        },
+        {
+          "year": "2023",
+          "value": 11.0
+        },
+        {
+          "year": "2024",
+          "value": 11.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_ETABLISSEMENTS_DE_PAIEMENT",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_ETABLISSEMENTS_DE_PAIEMENT",
+      "label_fr": "Etablissements de paiement",
+      "label_ar": "Etablissements de paiement",
+      "description_fr": "Etablissements de paiement — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Etablissements de paiement — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 18.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 16.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 10.0
+        },
+        {
+          "year": "2015",
+          "value": 10.0
+        },
+        {
+          "year": "2016",
+          "value": 10.0
+        },
+        {
+          "year": "2017",
+          "value": 9.0
+        },
+        {
+          "year": "2018",
+          "value": 13.0
+        },
+        {
+          "year": "2019",
+          "value": 19.0
+        },
+        {
+          "year": "2020",
+          "value": 20.0
+        },
+        {
+          "year": "2021",
+          "value": 18.0
+        },
+        {
+          "year": "2022",
+          "value": 18.0
+        },
+        {
+          "year": "2023",
+          "value": 16.0
+        },
+        {
+          "year": "2024",
+          "value": 18.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_FINANCEMENT_COLLABORATIFS",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_FINANCEMENT_COLLABORATIFS",
+      "label_fr": "Sociétés de financement collaboratifs",
+      "label_ar": "Sociétés de financement collaboratifs",
+      "description_fr": "Sociétés de financement collaboratifs — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Sociétés de financement collaboratifs — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 3.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 0.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 0.0
+        },
+        {
+          "year": "2015",
+          "value": 0.0
+        },
+        {
+          "year": "2016",
+          "value": 0.0
+        },
+        {
+          "year": "2017",
+          "value": 0.0
+        },
+        {
+          "year": "2018",
+          "value": 0.0
+        },
+        {
+          "year": "2019",
+          "value": 0.0
+        },
+        {
+          "year": "2020",
+          "value": 0.0
+        },
+        {
+          "year": "2021",
+          "value": 0.0
+        },
+        {
+          "year": "2022",
+          "value": 0.0
+        },
+        {
+          "year": "2023",
+          "value": 0.0
+        },
+        {
+          "year": "2024",
+          "value": 3.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_AUTRES_TABLISSEMENTS",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_AUTRES_TABLISSEMENTS",
+      "label_fr": "Autres établissements",
+      "label_ar": "Autres établissements",
+      "description_fr": "Autres établissements — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Autres établissements — Structure du système bancaire",
+      "unit_fr": "**",
+      "unit_ar": "**",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 2.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 2.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 2.0
+        },
+        {
+          "year": "2015",
+          "value": 2.0
+        },
+        {
+          "year": "2016",
+          "value": 2.0
+        },
+        {
+          "year": "2017",
+          "value": 2.0
+        },
+        {
+          "year": "2018",
+          "value": 2.0
+        },
+        {
+          "year": "2019",
+          "value": 2.0
+        },
+        {
+          "year": "2020",
+          "value": 2.0
+        },
+        {
+          "year": "2021",
+          "value": 2.0
+        },
+        {
+          "year": "2022",
+          "value": 2.0
+        },
+        {
+          "year": "2023",
+          "value": 2.0
+        },
+        {
+          "year": "2024",
+          "value": 2.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
+    },
+    {
+      "id": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_TOTAL",
+      "indicator_code": "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_TOTAL",
+      "label_fr": "Total",
+      "label_ar": "Total",
+      "description_fr": "Total — Structure du système bancaire. Ce fichier présente la structure du système bancaire de 2014 à 2024",
+      "description_ar": "Total — Structure du système bancaire",
+      "unit_fr": "Unité publiée par BAM",
+      "unit_ar": "Unité publiée par BAM",
+      "scale_divisor": 1,
+      "precision": 3,
+      "category": "economie_finances_publiques",
+      "pole": "economie_finances_publiques",
+      "latest": {
+        "year": "2024",
+        "value": 93.0
+      },
+      "previous": {
+        "year": "2023",
+        "value": 88.0
+      },
+      "history": [
+        {
+          "year": "2014",
+          "value": 84.0
+        },
+        {
+          "year": "2015",
+          "value": 84.0
+        },
+        {
+          "year": "2016",
+          "value": 83.0
+        },
+        {
+          "year": "2017",
+          "value": 86.0
+        },
+        {
+          "year": "2018",
+          "value": 86.0
+        },
+        {
+          "year": "2019",
+          "value": 90.0
+        },
+        {
+          "year": "2020",
+          "value": 91.0
+        },
+        {
+          "year": "2021",
+          "value": 89.0
+        },
+        {
+          "year": "2022",
+          "value": 90.0
+        },
+        {
+          "year": "2023",
+          "value": 88.0
+        },
+        {
+          "year": "2024",
+          "value": 93.0
+        }
+      ],
+      "source_name": "Bank Al-Maghrib — Données ouvertes",
+      "source_url": "https://data.gov.ma/data/dataset/61ba254e-5eb4-4b07-8860-5e092e99a9ee/resource/7dc3fa78-79e4-4a61-9da1-52849ee6062a/download/structure-du-systeme-bancaire_2024.xlsx",
+      "dataset_name": "Structure du système bancaire",
+      "resource_name": "Structure du système bancaire_2024.xlsx",
+      "reference_period": "2024",
+      "last_updated": null
     }
   ]
 }

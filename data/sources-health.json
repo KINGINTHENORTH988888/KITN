@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-11-27T01:48:06Z",
-  "active_sources": 19,
-  "total_fetched": 122,
+  "updated_at": "2026-11-27T01:58:07Z",
+  "active_sources": 20,
+  "total_fetched": 170,
   "total_accepted": 87,
   "sources": [
     {
@@ -17,8 +17,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "emploi_public_maroc",
@@ -33,8 +34,9 @@
       "accepted": 18,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "cour_des_comptes_maroc",
@@ -49,8 +51,9 @@
       "accepted": 19,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "hcp_maroc",
@@ -65,8 +68,9 @@
       "accepted": 10,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "cese_maroc",
@@ -81,8 +85,9 @@
       "accepted": 3,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "ires_maroc",
@@ -97,8 +102,9 @@
       "accepted": 3,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "hal_science_morocco",
@@ -113,8 +119,9 @@
       "accepted": 20,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "hespress_ar",
@@ -129,8 +136,9 @@
       "accepted": 2,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "aujourdhui_maroc",
@@ -145,8 +153,9 @@
       "accepted": 1,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "crossref_maroc",
@@ -161,8 +170,9 @@
       "accepted": 5,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "world_bank_maroc",
@@ -184,8 +194,9 @@
         "SL.UEM.TOTL.ZS",
         "SP.POP.TOTL"
       ],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "openalex_morocco_governance",
@@ -200,8 +211,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "openalex_morocco_economy",
@@ -216,8 +228,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "openalex_morocco_security",
@@ -232,8 +245,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "openalex_morocco_social",
@@ -248,8 +262,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "openalex_morocco_geopolitics",
@@ -264,8 +279,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "HTTP Error 429: Too Many Requests",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "bank_al_maghrib_monia",
@@ -280,8 +296,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "HTTP Error 403: Forbidden",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "hcp_labour_statistics",
@@ -296,8 +313,9 @@
       "accepted": 0,
       "statistics_collected": 0,
       "statistics_indicators": [],
+      "statistics_warnings": [],
       "error": "Aucun document exploitable détecté par le collecteur.",
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
     },
     {
       "source_id": "mef_tand_statistics",
@@ -322,8 +340,114 @@
         "MEF_ORDINARY_REVENUES",
         "MEF_TOTAL_CENTRAL_GOV_DEBT"
       ],
+      "statistics_warnings": [],
       "error": null,
-      "checked_at": "2026-11-27T01:48:06Z"
+      "checked_at": "2026-11-27T01:58:07Z"
+    },
+    {
+      "source_id": "bank_al_maghrib_ckan",
+      "source_name": "Bank Al-Maghrib — Données ouvertes (CKAN)",
+      "domain": "data.gov.ma",
+      "target_space": "chiffres",
+      "type": "bank_al_maghrib_ckan",
+      "enabled": true,
+      "status": "warning",
+      "stage": "collecte_statistique_partielle",
+      "fetched": 48,
+      "accepted": 0,
+      "statistics_collected": 48,
+      "statistics_indicators": [
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_ACTIONS_ET_AUTRES_TITRES_DE_PARTICIPATION",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_AUTRES_PASSIFS",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ASSOCIATIONS_DE_MICROCR_DIT_CONTRIBUTIONS_DES_PROPRI_TAIRES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIF",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIFS_FINANCIERS_NON_IMMOBILIERS",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIFS_IMMOBILIERS",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ACTIONS_ET_PARTS",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_ADMINISTRATIONS_DE_S_CURIT_SOCIALE",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_AUTRES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_AUTRES_SOCI_T_S_FINANCI_RES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_BANQUES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_AUPR_S_DES_BANQUES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_TERME",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_D_P_TS_VUE",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_EMPRUNTS_BANCAIRES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_IMMEUBLES_EN_COURS_CONSTRUITS_OU_ACQUIS_ET_DROITS_R_ELS",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_OPCVM_AUTRE_QUE_MON_TAIRES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_OPCVM_MON_TAIRES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PARTICULIERS",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PARTS_ET_ACTIONS_D_OPCVM",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PASSIF",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PRIV_ES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_PUBLIQUES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_SOCI_T_S_FINANCI_RES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_SOCI_T_S_NON_FINANCI_RES",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_ADMINISTRATION_CENTRALE",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_AUTES_QU_ACTIONS",
+        "BAM_CKAN_COMPTE_DE_PATRIMOINE_DES_ORGANISMES_DE_PLACEMENT_COLLECTIF_IMMOBILIER_TITRES_D_AUTRES_OPCI",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_ASSOCIATIONS_DE_MICRO_CR_DIT",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_AUTRES_SOCI_T_S",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_AUTRES_TABLISSEMENTS",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_CAPITAL_MAJORITAIREMENT_PUBLIC",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_CAPITAL_MAJORITAIREMENT_TRANGER",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_OFFSHORE",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_BANQUES_PARTICIPATIVES",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_ETABLISSEMENTS_DE_PAIEMENT",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CAUTIONNEMENT",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_BAIL",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_IMMOBILIER",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_CR_DIT_LA_CONSOMMATION",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_FINANCEMENT",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_FINANCEMENT_COLLABORATIFS",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_DE_GESTION_DE_MOYENS_DE_PAIEMENT",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_SOCI_T_S_D_AFFACTURAGE",
+        "BAM_CKAN_STRUCTURE_DU_SYST_ME_BANCAIRE_TOTAL"
+      ],
+      "statistics_warnings": [
+        "Contreparties de M3: aucune série reconnue dans le classeur ContrepartiesDeM3_Août 2026.xlsx",
+        "Agrégats de placements liquides: aucune série reconnue dans le classeur AgregatsDePL_Août 2026.xlsx",
+        "Agrégats de monnaie: aucune série reconnue dans le classeur AgregatsDeMonnaie_Août 2026.xlsx",
+        "Ventilation du crédit bancaire par secteur institutionnel: aucune série reconnue dans le classeur Ventilation du crédit bancaire par secteur institutionnel_Août 2026.xlsx",
+        "Compte de patrimoine de Bank Al-Maghrib: aucune série reconnue dans le classeur CompteDePatrimoineDeBAM_Août 2026.xlsx",
+        "Compte de patrimoine des autres institutions de dépôts: aucune série reconnue dans le classeur CompteDePatrimoineDesAutresInstitutionsDeDpts_août 2026.xlsx",
+        "Compte de patrimoine des banques: aucune série reconnue dans le classeur CompteDePatrimoineDesbanques_août 2026.xlsx",
+        "Créances nettes des institutions de dépôt (ID) sur les non-résidents 1: aucune série reconnue dans le classeur AvoirsExterieursNets_août 2026.xlsx",
+        "Compte de patrimoine des banques et fenêtres participatives: aucune série reconnue dans le classeur Compte De Patrimoine Des banques et fenétres participatives_août 2026.xlsx",
+        "Compte de patrimoine des OPCVM monétaires: aucune série reconnue dans le classeur Compte De Patrimoine Des OPCVM monétaires_Août 2026.xlsx",
+        "Créances nettes sur l'administration centrale: aucune série reconnue dans le classeur CreancesNettesAC_Août 2026.xlsx",
+        "Créances sur l'économie: aucune série reconnue dans le classeur CreancesSurL'Economie_Août 2026.xlsx",
+        "Ventilation du crédit bancaire par objet économique: aucune série reconnue dans le classeur Ventilation du crédit bancaire par objet économique_Juin 2026.xlsx",
+        "Ventilation trimestrielle des crédits par terme et par branche d'activité: aucune série reconnue dans le classeur Ventilation trimestrielle des crédits par terme et par branche d'activité_Juin 2026.xlsx",
+        "Ventilation des comptes débiteurs et crédits de trésorerie par branche d'activité: aucune série reconnue dans le classeur Ventilation des comptes débiteurs et crédits de trésorerie par branche d'activité_Juin 2026.xlsx",
+        "Ventilation des crédits à l'équipement par branche d'activité: aucune série reconnue dans le classeur Ventilation des crédits à l'équipement par branche d'activité_Juin 2026.xlsx",
+        "Ventilation croisée des crédits bancaires par objet et par terme: aucune série reconnue dans le classeur Ventilation croisée des crédits bancaires par objet et par terme_Juin 2026.xlsx",
+        "Position des institutions de dépôts (ID) vis-à-vis des secteurs institutionnels: aucune série reconnue dans le classeur Position des ID vis-à-vis des secteurs institutionnels_Août 2026.xlsx",
+        "Position des institutions de dépôts (ID) vis-à-vis des autres sociétés financières: aucune série reconnue dans le classeur Position des ID vis-à-vis des autres sociétés financières_Août 2026.xlsx",
+        "Position des institutions de dépôts (ID) vis-à-vis du secteur public hors Administration Centrale: aucune série reconnue dans le classeur Position des ID vis-à-vis du secteur public hors Administration Centrale_Août 2026.xlsx",
+        "Position des institutions de dépôts(ID) vis-à-vis des sociétés non financières privées: aucune série reconnue dans le classeur Position des ASF vis-vis des sociétés non financires_Juin 2026.xlsx",
+        "Créances des institutions de dépôts (ID) sur les autres secteurs résidents: aucune série reconnue dans le classeur CREANCES DES ID SUR LES AUTRES SECTEURS RESIDENTS_Août 2026.xlsx",
+        "Engagements envers les autres secteurs résidents: aucune série reconnue dans le classeur ENGAGEMENTS ENVERS LES AUTRES SECTEURS RESIDENTS_Août 2026.xlsx",
+        "Compte de patrimoine des OPCVM autres que monétaires: aucune série reconnue dans le classeur Compte de patrimoine des OPCVM autres que monétaires_Août 2026.xlsx",
+        "Compte de patrimoine des OPCVM obligations: aucune série reconnue dans le classeur Compte de patrimoine des OPCVM obligations_Août 2026.xlsx",
+        "Compte de patrimoine des OPCVM Actions: aucune série reconnue dans le classeur Compte de patrimoine des OPCVM Actions_Août 2026.xlsx",
+        "Compte de patrimoine des OPCVM diversifiés: aucune série reconnue dans le classeur Compte de patrimoine des OPCVM diversifiés_Août 2026.xlsx",
+        "Compte de patrimoine des entreprises d'assurances et de réassurance: aucune série reconnue dans le classeur Compte de patrimoine des entreprises d'assurances et de réassurance_Mars 2026.xlsx",
+        "Compte de patrimoine des sociétés de financement: aucune série reconnue dans le classeur Compte de patrimoine des sociétés de financement_Juin 2026.xlsx",
+        "Compte de patrimoine des banques offshores: aucune série reconnue dans le classeur Compte-de-patrimoine-des-banques-offshores_Juin 2026.xlsx",
+        "Compte de patrimoine de la Caisse de Dépôt et de Gestion: aucune série reconnue dans le classeur Compte-de-patrimoine-de-la-CDG_Juin 2026.xlsx",
+        "Compte de patrimoine des FPCT: aucune série reconnue dans le classeur Compte de patrimoine des FPCT_Juin 2026.xlsx",
+        "Position des autres sociétés financières vis-à-vis de l'Administration Centrale: aucune série reconnue dans le classeur Position des autres sociétés financire vis-vis de l'Administration Centrale_Juin 2026.xlsx",
+        "Créances des autres sociétés financières sur les agents non financiers par catégorie de créancier: aucune série reconnue dans le classeur Créances des ASF sur les agents non financiers par catgorie de créancier_Juin 2026.xlsx",
+        "Créances des autres sociétés financiéres sur les agents non financiers par objet économique: aucune série reconnue dans le classeur Créances des ASF sur les agents non financiers par objet économique_Juin 2026.xlsx",
+        "Position des autres sociétés financières vis-à-vis des sociétés non financières: aucune série reconnue dans le classeur Position des ASF vis-vis des sociétés non financires_Juin 2026.xlsx",
+        "Position des autres sociétés financières vis-à-vis des ménages: aucune série reconnue dans le classeur Position des ASF vis-vis des ménages_Juin 2026.xlsx",
+        "Détail implantation bancaire: aucune série reconnue dans le classeur Détail_Implantation_Bancaire_2025.xlsx",
+        "Compte de patrimoine des caisses de retraite: aucune série reconnue dans le classeur Compte de patrimoine des caisses de retraite_Déc. 2025.xlsx",
+        "Ventilation croisée du crédit bancaire par objet économique et par secteur institutionnel: aucune série reconnue dans le classeur Ventilation croisée du crédit bancaire par secteur économique et par objet.xlsx"
+      ],
+      "error": "40 ressource(s) BAM non exploitable(s).",
+      "checked_at": "2026-11-27T01:58:07Z"
     }
   ]
 }

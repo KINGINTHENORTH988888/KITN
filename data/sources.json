@@ -1024,5 +1024,38 @@
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
     "max_items": 15
+  },
+  {
+    "id": "bank_al_maghrib_monia",
+    "name": "Bank Al-Maghrib — Indice MONIA",
+    "domain": "www.bkam.ma",
+    "target_space": "chiffres",
+    "type": "bank_al_maghrib",
+    "url": "https://www.bkam.ma/",
+    "enabled": true,
+    "lang_hint": "fr",
+    "default_doc_type": "statistique",
+    "max_items": 2,
+    "statistics_pages": [
+      {
+        "kind": "monia",
+        "url": "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-monetaire/Indice-monia-moroccan-overnight-index-average"
+      }
+    ]
+  },
+  {
+    "id": "hcp_labour_statistics",
+    "name": "HCP — Indicateurs du marché du travail (EMO)",
+    "domain": "www.hcp.ma",
+    "target_space": "chiffres",
+    "type": "hcp_labour_statistics",
+    "url": "https://www.hcp.ma/",
+    "enabled": true,
+    "lang_hint": "fr",
+    "default_doc_type": "statistique",
+    "max_pages": 1,
+    "listing_urls": [
+      "/Actualite-marche-du-travail_r424.html"
+    ]
   }
 ]

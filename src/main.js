@@ -972,6 +972,14 @@ function renderStatisticsDashboard() {
       : `${delta > 0 ? "+" : ""}${formattedDelta}${changeUnit ? ` ${changeUnit}` : ""} ${comparisonLabel}`;
     const sourceUrl = isSafeHttpUrl(indicator.source_url) ? indicator.source_url : "";
     const sourceLabel = indicator.source_name || (isAr ? "مصدر مؤسساتي غير محدد" : "Source institutionnelle non précisée");
+    const collectionDate = indicator.last_successful_collection_at
+      ? String(indicator.last_successful_collection_at).slice(0, 10)
+      : "";
+    const collectionLabel = collectionDate
+      ? (isAr
+          ? (indicator.collection_status === "carried_forward" ? "آخر جمع معروف" : "تاريخ الجمع")
+          : (indicator.collection_status === "carried_forward" ? "dernière collecte connue" : "collectée le"))
+      : "";
     const historyRows = history.map((point) => `
       <tr><th scope="row">${escapeHtml(String(point.year))}</th><td>${escapeHtml(formatStatisticValue(indicator, point.value))} ${escapeHtml(unit || "")}</td></tr>
     `).join("");
@@ -993,7 +1001,7 @@ function renderStatisticsDashboard() {
           <summary>${isAr ? "عرض البيانات التاريخية" : "Voir les valeurs historiques"}</summary>
           <div class="stat-history-table-wrap"><table class="stat-history-table"><tbody>${historyRows}</tbody></table></div>
         </details>
-        <div class="stat-card-foot"><span>${escapeHtml(sourceLabel)}${indicator.last_updated ? ` · ${isAr ? "تحديث" : "mise à jour"} ${escapeHtml(indicator.last_updated)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "السلسلة الأصلية" : "Série originale"} ↗</a>` : ""}</div>
+        <div class="stat-card-foot"><span>${escapeHtml(sourceLabel)}${indicator.last_updated ? ` · ${isAr ? "تحديث المصدر" : "date indiquée par la source"} ${escapeHtml(indicator.last_updated)}` : ""}${collectionDate ? ` · ${collectionLabel} ${escapeHtml(collectionDate)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "السلسلة الأصلية" : "Série originale"} ↗</a>` : ""}</div>
       </article>`;
   }).join("");
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";

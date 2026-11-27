@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 from pipeline.collectors import collect_hcp_labour_statistics
@@ -47,6 +48,35 @@ def main() -> None:
         raise SystemExit(f"Unexpected periods: {sorted(periods)}")
     if warnings:
         raise SystemExit("The HCP collector reported warnings during the live validation")
+
+    collected_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    regional_series = []
+    for item in regional:
+        series = dict(item)
+        series["last_successful_collection_at"] = collected_at
+        series["collection_status"] = "collected"
+        regional_series.append(series)
+    regional_series.sort(key=lambda item: (
+        str(item.get("indicator_code") or ""),
+        str(item.get("residence_scope") or ""),
+        str(item.get("geography_code") or ""),
+    ))
+    payload = {
+        "generated_at": collected_at,
+        "source": "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
+        "series_count": len(regional_series),
+        "series": regional_series,
+    }
+    for output_path in (
+        Path("data/regional-statistics.json"),
+        Path("public/data/regional-statistics.json"),
+    ):
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print("HCP REGIONAL DATASET WRITTEN:", output_path, "| bytes:", output_path.stat().st_size)
 
     sample = next(
         series for series in regional

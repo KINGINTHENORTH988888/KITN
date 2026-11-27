@@ -207,7 +207,7 @@ Les corrections suivantes ont été développées sur `audit/kitn-quality-review
 - Chaque série collectée reçoit `last_successful_collection_at` et `collection_status=collected`. Une série conservée faute de nouvelle collecte reçoit `collection_status=carried_forward` et garde sa date de collecte connue.
 - L'interface distingue la date de génération du fichier statistique de la date de collecte individuelle lorsqu'elle est disponible.
 
-Les changements statistiques, OpenAlex, HCP, BAM CKAN, navigation publique et Vite 6.4.6 ont été validés par GitHub Actions sur le commit `3eb4e69` : 59 tests Python, 9 tests JavaScript, build Vite 6.4.6 réussi et zéro vulnérabilité npm. Les mises à jour documentaires suivantes ne modifient pas le code applicatif. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+Les changements statistiques, OpenAlex, HCP, BAM CKAN, navigation publique, Vite 6.4.6 et la configuration sociale World Bank ont été validés par GitHub Actions sur le commit `d02a89d` : 61 tests Python, 9 tests JavaScript, build Vite 6.4.6 réussi et zéro vulnérabilité npm. Les mises à jour documentaires suivantes ne modifient pas le code applicatif. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
 
 ### 3.10 Navigation publique et dépendances frontend
 
@@ -215,7 +215,7 @@ Les changements statistiques, OpenAlex, HCP, BAM CKAN, navigation publique et Vi
 - La navigation publique comporte maintenant six espaces. Trois tests JavaScript vérifient le nombre d'espaces, l'absence de l'administration et le comportement des anciennes sessions.
 - L'audit npm a identifié deux vulnérabilités dans Vite 5.4.21 et son esbuild associé (une modérée, une élevée). La migration vers Vite 6.4.6 a été testée sur la branche : tests frontend et build réussis, `npm audit` ne signale plus aucune vulnérabilité. Les fichiers `package.json` et `package-lock.json` ont été mis à jour sur cette branche uniquement.
 - Le comptage automatisé du fichier statistique de production donne 845 séries : 842 en économie et finances publiques, 3 en société et développement humain, aucune sans code de domaine. Les trois séries sociales existantes sont : chômage (estimation OIT) et population totale via la Banque mondiale, plus population via le tableau de bord DSBB du MEF. Le problème de couverture sociale est donc confirmé : elle est très faible, mais pas inexistante.
-- L'index documentaire contient 265 notices. En appliquant exactement la règle de l'interface (anomalie signalée, statut futur ou date de publication supérieure à la date UTC du jour), 25 notices sont mises en attente de vérification et 240 restent visibles.
+- L'index documentaire contient 265 notices. Le rapport CI identifie 24 notices avec une date future/anormale, ce qui donne 241 notices attendues après cette exclusion. La prévisualisation navigateur a affiché 240 ; un écart d'une notice reste à réconcilier (filtre d'espace ou notice incomplète).
 
 ### 3.11 Extension contrôlée des indicateurs sociaux — Banque mondiale
 

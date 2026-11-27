@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from pipeline.hcp_social import parse_hcp_social_indicators, parse_hcp_social_regional_indicators
 from pipeline.collectors import collect_hcp_social_indicators
+from scripts.publish_hcp_social_preview import merge_hcp_regional_preview
 
 
 HCP_SOCIAL_FIXTURE = """
@@ -178,6 +179,33 @@ class HcpSocialIndicatorsTests(unittest.TestCase):
             {item["residence_scope"] for item in series if item["indicator_code"] == "HCP_SOCIAL_REGIONAL_FERTILITY"},
             {"urban", "rural", "all"},
         )
+
+
+    def test_preview_merge_preserves_existing_emo_series_and_adds_social_regions(self):
+        existing_series = [
+            {
+                "id": f"HCP_EMO_TEST:{index}",
+                "series_key": f"HCP_EMO_TEST:{index}",
+                "indicator_code": "HCP_EMO_TEST",
+                "geography_code": f"REGION_{index}",
+                "residence_scope": "all",
+                "history": [{"year": "T1/2026", "value": float(index)}],
+            }
+            for index in range(234)
+        ]
+        incoming, warnings = parse_hcp_social_regional_indicators(HCP_SOCIAL_REGIONAL_FIXTURE)
+        self.assertEqual(warnings, [])
+        payload = merge_hcp_regional_preview(
+            {"generated_at": "2026-11-27T00:00:00Z", "series_count": 234, "series": existing_series},
+            incoming,
+            "2026-11-27T17:50:00Z",
+        )
+
+        self.assertEqual(payload["series_count"], 342)
+        self.assertEqual(len(payload["series"]), 342)
+        self.assertEqual(sum(item["indicator_code"] == "HCP_EMO_TEST" for item in payload["series"]), 234)
+        self.assertEqual(sum(item["indicator_code"].startswith("HCP_SOCIAL_REGIONAL_") for item in payload["series"]), 108)
+        self.assertEqual(payload["generated_at"], "2026-11-27T17:50:00Z")
 
     def test_parser_extracts_eight_explicit_national_series(self):
         series, warnings = parse_hcp_social_indicators(HCP_SOCIAL_FIXTURE)

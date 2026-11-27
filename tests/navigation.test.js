@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../src/main.js", import.meta.url), "utf8");
 const styles = await readFile(new URL("../src/style.css", import.meta.url), "utf8");
+const searchSource = await readFile(new URL("../src/search.js", import.meta.url), "utf8");
 const spacesMatch = source.match(/const SPACES = \{([\s\S]*?)\n\};/);
 
 test("public navigation exposes exactly six spaces in French and Arabic", () => {
@@ -183,8 +184,9 @@ test("global search includes national statistical indicators and opens their ded
 });
 
 test("search normalization ignores accents and combining diacritics", () => {
-  assert.match(source, /function normalizeSearchText\(value\)/);
-  assert.match(source, /\.normalize\("NFD"\)/);
+  assert.match(source, /import \{ normalizeSearchText \} from "\.\/search\.js"/);
+  assert.match(searchSource, /export function normalizeSearchText\(value\)/);
+  assert.match(searchSource, /\.normalize\("NFD"\)/);
   assert.match(source, /normalizeSearchText\(searchQuery\)/);
   assert.match(source, /normalizeSearchText\(statisticsSearch\)/);
 });

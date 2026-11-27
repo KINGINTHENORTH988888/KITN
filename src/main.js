@@ -1136,6 +1136,12 @@ function renderRegionalStatisticsDashboard() {
       <label><span>${isAr ? "المؤشر" : "Indicateur"}</span><select data-regional-indicator aria-label="${isAr ? "اختيار المؤشر" : "Choisir un indicateur"}">${indicatorOptions}</select></label>
       <div class="stats-filter-group" role="group" aria-label="${isAr ? "مجال الإقامة" : "Milieu de résidence"}">${scopeButtons}</div>
     </div>
+    <div class="regional-coverage" aria-live="polite">
+      <div><span>${isAr ? "الجهات المغطاة" : "Régions couvertes"}</span><strong>${model.regionalCount}/12</strong></div>
+      <div><span>${isAr ? "قيم الفترة الأخيرة" : "Valeurs disponibles"}</span><strong>${model.latestAvailableCount}/${model.regionalCount}</strong></div>
+      <div><span>${isAr ? "قيم غير متاحة" : "Valeurs manquantes"}</span><strong>${model.latestMissingCount}</strong></div>
+      <p>${isAr ? "الفترة الأخيرة" : "Dernière période"} : <strong>${escapeHtml(model.latestPeriod || "—")}</strong></p>
+    </div>
     <div class="regional-table-wrap"><table class="regional-table">
       <thead><tr><th scope="col">${isAr ? "الجهة" : "Région"}</th>${model.periods.map((period) => `<th scope="col">${escapeHtml(period)}${regionalUnit ? ` (${escapeHtml(regionalUnit)})` : ""}</th>`).join("")}</tr></thead>
       <tbody>${rows || `<tr><td colspan="${model.periods.length + 1}">${isAr ? "لا توجد بيانات متاحة." : "Aucune observation disponible."}</td></tr>`}</tbody>

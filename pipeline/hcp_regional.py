@@ -24,6 +24,30 @@ HCP_EMO_REGIONS = (
     ("Dakhla-Oued Ed-Dahab", "DAKHLA_OUED_ED_DAHAB"),
 )
 
+HCP_EMO_REGION_NAMES_AR = {
+    "TANGER_TETOUAN_AL_HOCEIMA": "طنجة-تطوان-الحسيمة",
+    "ORIENTAL": "الشرق",
+    "FES_MEKNES": "فاس-مكناس",
+    "RABAT_SALE_KENITRA": "الرباط-سلا-القنيطرة",
+    "BENI_MELLAL_KHENIFRA": "بني ملال-خنيفرة",
+    "CASABLANCA_SETTAT": "الدار البيضاء-سطات",
+    "MARRAKECH_SAFI": "مراكش-آسفي",
+    "DRAA_TAFILALET": "درعة-تافيلالت",
+    "SOUSS_MASSA": "سوس-ماسة",
+    "GUELMIM_OUED_NOUN": "كلميم-واد نون",
+    "LAAYOUNE_SAKIA_EL_HAMRA": "العيون-الساقية الحمراء",
+    "DAKHLA_OUED_ED_DAHAB": "الداخلة-وادي الذهب",
+}
+
+HCP_EMO_REGIONAL_INDICATOR_LABELS_AR = {
+    "LABOUR_FORCE_PARTICIPATION": "معدل المشاركة في القوى العاملة",
+    "EMPLOYMENT_RATE": "معدل التشغيل مقابل دخل",
+    "UNDERUTILIZATION": "المعدل المركب للاستخدام غير الكامل للقوى العاملة",
+    "STRICT_UNEMPLOYMENT": "معدل البطالة بالمفهوم الضيق",
+    "COMBINED_UNEMPLOYMENT_POTENTIAL": "المعدل المشترك للبطالة والقوى العاملة المحتملة",
+    "COMBINED_UNEMPLOYMENT_UNDEREMPLOYMENT": "المعدل المشترك للبطالة ونقص التشغيل المرتبط بمدة العمل",
+}
+
 HCP_EMO_REGIONAL_INDICATORS = (
     (
         "LABOUR_FORCE_PARTICIPATION",
@@ -182,11 +206,17 @@ def parse_hcp_emo_regional_tables(
                 "series_key": key,
                 "indicator_code": f"HCP_EMO_REGIONAL_{code}",
                 "label_fr": label,
+                "label_ar": HCP_EMO_REGIONAL_INDICATOR_LABELS_AR.get(code, label),
                 "unit_fr": "%",
+                "unit_ar": "%",
                 "frequency": "quarterly",
                 "geography_level": "country" if region_code == "MAR" else "region",
                 "geography_code": region_code,
                 "geography_name_fr": region_name,
+                "geography_name_ar": (
+                    "المجموع الوطني" if region_code == "MAR"
+                    else HCP_EMO_REGION_NAMES_AR.get(region_code, region_name)
+                ),
                 "residence_scope": residence_scope,
                 "history": history,
                 "latest": latest,
@@ -198,6 +228,10 @@ def parse_hcp_emo_regional_tables(
                 "methodology_note_fr": (
                     "Rupture méthodologique : l’EMO 2026 remplace l’ENE. "
                     "Ne pas raccorder directement cette série aux anciennes séries ENE."
+                ),
+                "methodology_note_ar": (
+                    "انقطاع منهجي: حلّ بحث القوى العاملة (EMO) لسنة 2026 محلّ البحث الوطني حول التشغيل (ENE). "
+                    "لا ينبغي وصل هذه السلسلة مباشرة بالسلاسل القديمة للبحث الوطني حول التشغيل."
                 ),
                 "source_page": page_index,
             })

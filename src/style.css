@@ -1458,3 +1458,36 @@ textarea {
 .stats-results-meta { margin: 0.25rem 0 0.85rem; color: var(--muted); font-size: 0.88rem; }
 .stats-results-meta strong { color: var(--text); }
 @media (max-width: 640px) { .stats-search-wrap { width: 100%; } }
+
+.regional-coverage {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.regional-coverage > div {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+.regional-coverage span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.regional-coverage strong {
+  color: var(--text);
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+.regional-coverage p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+@media (max-width: 600px) {
+  .regional-coverage { grid-template-columns: 1fr; }
+}

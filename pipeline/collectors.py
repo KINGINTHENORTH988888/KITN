@@ -6,10 +6,10 @@ from email.utils import parsedate_to_datetime
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.error import HTTPError
-from urllib.parse import urlencode, urljoin, urlsplit
+from urllib.parse import quote, urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
-from pipeline.processors import clean_text, sanitize_url
+from pipeline.processors import clean_text, normalize_doi, sanitize_url
 
 _USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -156,6 +156,42 @@ def _crossref_date(item: dict) -> str:
             if len(valid) == 1:
                 return f"{valid[0]:04d}"
     return ""
+
+
+def collect_crossref_by_doi(doi: str) -> dict | None:
+    """Fetch one Crossref work by DOI for controlled enrichment of an existing record."""
+    normalized_doi = normalize_doi(doi)
+    if not normalized_doi:
+        return None
+    endpoint = f"https://api.crossref.org/works/doi/{quote(normalized_doi, safe='/')}"
+    payload = json.loads(_fetch_text(endpoint))
+    work = ((payload.get("message") or {}).get("message") or payload.get("message") or {})
+    if not isinstance(work, dict) or not work.get("DOI"):
+        return None
+
+    titles = work.get("title") or []
+    title = clean_text(titles[0] if titles else "")
+    if not title:
+        return None
+    authors = []
+    for author in work.get("author") or []:
+        if isinstance(author, dict):
+            name = clean_text(" ".join(filter(None, [author.get("given"), author.get("family")])))
+            if name:
+                authors.append(name)
+    container = work.get("container-title") or []
+    return {
+        "title": title,
+        "abstract": clean_text(work.get("abstract") or ""),
+        "authors": authors,
+        "venue": clean_text(container[0] if container else work.get("publisher") or ""),
+        "keywords": [clean_text(value) for value in (work.get("subject") or []) if clean_text(value)],
+        "published_date": _crossref_date(work),
+        "url": work.get("URL") or f"https://doi.org/{normalized_doi}",
+        "doi": work.get("DOI"),
+        "source_lang_hint": "en",
+        "default_doc_type": "publication_scientifique",
+    }
 
 
 def collect_crossref(source: dict) -> list[dict]:

@@ -753,7 +753,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
         )
         period = period_key({"title": period_probe})
         if not body or not period[0] or not period[1]:
-            article_errors.append(f"{page_url}: contenu ou période trimestrielle non reconnu")
+            article_errors.append(f"{page_url}: contenu ou période trimestrielle non reconnu (texte={len(body)} caractères, période={period}, titre={title[:100]!r})")
             continue
         period_label = f"T{period[1]}/{period[0]}"
         published = parser.meta.get("article:published_time") or parser.published_time or candidate.get("published_date")

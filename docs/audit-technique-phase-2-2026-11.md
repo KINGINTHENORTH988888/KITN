@@ -96,6 +96,20 @@ Les tests unitaires couvrent un exemple HTML bien déterminé et huit indicateur
 
 Ne jamais déduire un chiffre qui n'est pas explicitement présent dans la publication.
 
+### 3.2 bis HCP EMO — publication officielle retrouvée et rupture méthodologique
+
+La page officielle HCP du troisième trimestre 2026 existe bien et apparaît dans les deux pages de liste (mobile et classique). Elle porte une date de publication du 3 novembre 2026. Le contenu publié contient les valeurs nationales et les taux par catégories que le collecteur cherche à extraire. La nouvelle enquête EMO remplace l'ancienne ENE et introduit des changements conceptuels importants ; le HCP précise que les résultats EMO 2026 ne sont pas directement comparables aux anciennes séries ENE. Cette rupture doit être conservée dans les métadonnées et dans toute future visualisation historique.
+
+Sur la base de la structure HTML observée, un test de régression a été ajouté : lien de liste libellé « Lire la suite », URL réelle du troisième trimestre 2026, titre Open Graph et paragraphes contenant les résultats. Le test confirme que le parseur extrait les huit indicateurs nationaux attendus à partir de cette structure.
+
+Le collecteur a aussi été rendu plus explicite :
+- les erreurs de lecture des pages de liste sont remontées dans l'état de santé ;
+- les erreurs de lecture de la page détaillée sont distinguées d'un échec d'extraction ;
+- les indicateurs manquants sont signalés individuellement ;
+- si la page est détectée mais qu'aucune valeur n'est extraite, le collecteur renvoie une erreur diagnostiquable plutôt qu'une liste vide silencieuse.
+
+Le test de régression confirme le comportement sur une fixture fidèle à la publication officielle. Il ne remplace pas encore une exécution réelle du collecteur avec les requêtes réseau du pipeline GitHub Actions.
+
 ### 3.3 MEF — séries statistiques et notices documentaires sont deux flux différents
 
 Le collecteur MEF renvoie des objets portant `statistics_series`. L'orchestrateur les compte et les place dans le fichier statistique avant le traitement des notices documentaires.
@@ -191,7 +205,7 @@ Les corrections suivantes ont été développées sur `audit/kitn-quality-review
 - Chaque série collectée reçoit `last_successful_collection_at` et `collection_status=collected`. Une série conservée faute de nouvelle collecte reçoit `collection_status=carried_forward` et garde sa date de collecte connue.
 - L'interface distingue la date de génération du fichier statistique de la date de collecte individuelle lorsqu'elle est disponible.
 
-Ces changements sont couverts par six tests JavaScript et neuf tests Python supplémentaires (dont quatre tests de reprise HTTP). Les workflows GitHub Actions ont validé le commit `0762c55` : 55 tests Python, 6 tests JavaScript et build Vite réussis. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
+Les changements statistiques et OpenAlex ont été validés sur le commit `0762c55` : 55 tests Python, 6 tests JavaScript et build Vite réussis. Le correctif de diagnostic HCP et son test de régression ont ensuite été ajoutés ; leur validation CI est en cours sur le dernier commit de la branche. Le déploiement Cloudflare de prévisualisation est distinct du site de production ; aucune fusion ou publication en production n'a été effectuée.
 
 ## 4. État de la couverture de tests
 

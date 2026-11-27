@@ -1,5 +1,6 @@
 import json
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date, timedelta
 import os
 import re
 import time
@@ -1813,18 +1814,52 @@ def _bam_ckan_period(value: str) -> str | None:
     if not text:
         return None
     quarter = re.search(r"(20\d{2})\s*[-/]?\s*(?:t|trimestre|q)\s*([1-4])", text)
+    if not quarter:
+        quarter = re.search(r"(?:t|trimestre|q)\s*([1-4])\s*[-/]?\s*(20\d{2})", text)
+        if quarter:
+            return f"{quarter.group(2)}-T{quarter.group(1)}"
     if quarter:
         return f"{quarter.group(1)}-T{quarter.group(2)}"
+
+    # ISO and day-first dates.
     numeric = re.search(r"\b(20\d{2})[-/.](0?[1-9]|1[0-2])(?:[-/.](?:0?[1-9]|[12]\d|3[01]))?\b", text)
     if numeric:
         return f"{numeric.group(1)}-{int(numeric.group(2)):02d}"
-    month_year = re.search(r"(janvier|janv|january|février|fevrier|févr|fevr|february|mars|march|avril|avr|april|mai|may|juin|june|juillet|juil|july|août|aout|august|septembre|sept|september|octobre|oct|october|novembre|nov|november|décembre|decembre|déc|dec|december)\.?\s+(20\d{2})", text)
+    day_first = re.search(r"\b(?:0?[1-9]|[12]\d|3[01])[-/.](0?[1-9]|1[0-2])[-/.](20\d{2})\b", text)
+    if day_first:
+        return f"{day_first.group(3)}-{int(day_first.group(2)):02d}"
+    compact = re.fullmatch(r"(20\d{2})(0[1-9]|1[0-2])", text)
+    if compact:
+        return f"{compact.group(1)}-{compact.group(2)}"
+
+    month_pattern = r"(janvier|janv|january|février|fevrier|févr|fevr|february|mars|march|avril|avr|april|mai|may|juin|june|juillet|juil|july|août|aout|august|septembre|sept|september|octobre|oct|october|novembre|nov|november|décembre|decembre|déc|dec|december)"
+    month_year = re.search(month_pattern + r"\.?\s+(20\d{2})", text)
+    if not month_year:
+        month_year = re.search(r"(20\d{2})\s+" + month_pattern, text)
+        if month_year:
+            month = _BAM_MONTHS.get(month_year.group(2))
+            return f"{month_year.group(1)}-{month}" if month else None
     if month_year:
         month = _BAM_MONTHS.get(month_year.group(1))
         if month:
             return f"{month_year.group(2)}-{month}"
-    year = re.search(r"\b(20\d{2})\b", text)
-    return year.group(1) if year else None
+
+    # Excel stores some dates as serial numbers; reject arbitrary numeric values
+    # and only accept the plausible historical date range.
+    if re.fullmatch(r"\d{5}", text):
+        serial = int(text)
+        if 35000 <= serial <= 50000:
+            try:
+                excel_date = date(1899, 12, 30) + timedelta(days=serial)
+                if 1995 <= excel_date.year <= 2026:
+                    return f"{excel_date.year}-{excel_date.month:02d}"
+            except (OverflowError, ValueError):
+                pass
+
+    # A year must be a standalone four-digit cell, never a number embedded in a label/value.
+    if re.fullmatch(r"(?:19\d{2}|20(?:0\d|1\d|2[0-6]))", text):
+        return text
+    return None
 
 
 def _bam_ckan_number(value: str) -> float | None:
@@ -1868,6 +1903,20 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
     resource_url = str(resource.get("url") or "")
     resource_name = clean_text(resource.get("name") or "")
     output: list[dict] = []
+    workbook_context = " ".join(clean_text(cell) for row in rows[:80] for cell in row if clean_text(cell))
+    unit_context = f"{notes} {workbook_context}".casefold()
+    if re.search(r"millions?\s+de\s+dirhams|en\s+mdh", unit_context):
+        unit_hint = "MDH"
+    elif re.search(r"milliards?\s+de\s+dirhams|en\s+mmdh", unit_context):
+        unit_hint = "MMDH"
+    elif re.search(r"milliers?\s+de\s+dirhams|en\s+kdh", unit_context):
+        unit_hint = "KDH"
+    elif re.search(r"(?:en\s+)?pourcentage|(?:en\s+)?%", unit_context):
+        unit_hint = "%"
+    elif re.search(r"structure du système bancaire|implantation bancaire|nombre d['’]?(?:agences|établissements)", title.casefold()):
+        unit_hint = "Nombre"
+    else:
+        unit_hint = "Unité non précisée"
 
     # Layout A: period headings in a row, one indicator per following row.
     header_candidates = []
@@ -1894,27 +1943,36 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
                 if value is not None:
                     points.append({"year": period, "value": value})
             if len(points) >= 2:
-                _append_bam_ckan_series(output, label, points, title, notes, resource_url, resource_name)
+                _append_bam_ckan_series(output, label, points, title, f"{notes} {unit_hint}", resource_url, resource_name)
 
     if output:
         return output
 
-    # Layout B: dates down the first column and indicator names across the first row.
-    if len(rows) > 1:
-        for col in range(1, min(max((len(row) for row in rows), default=0), 80)):
-            header = clean_text(rows[0][col] if col < len(rows[0]) else "")
-            if len(header) < 3 or _bam_ckan_is_numeric(header):
-                continue
-            points = []
-            for row in rows[1:]:
-                period = _bam_ckan_period(row[0] if row else "")
-                if not period or col >= len(row):
+    # Layout B: period values down the first (or second) column, with a header row
+    # that can appear below a workbook title or metadata block.
+    max_columns = min(max((len(row) for row in rows), default=0), 80)
+    for header_index, header_row in enumerate(rows[:60]):
+        if not header_row:
+            continue
+        for date_col in range(min(2, len(header_row))):
+            for col in range(date_col + 1, min(max_columns, len(header_row))):
+                header = clean_text(header_row[col])
+                if len(header) < 3 or _bam_ckan_is_numeric(header):
                     continue
-                value = _bam_ckan_number(row[col])
-                if value is not None:
-                    points.append({"year": period, "value": value})
-            if len(points) >= 2:
-                _append_bam_ckan_series(output, header, points, title, notes, resource_url, resource_name)
+                points = []
+                for row in rows[header_index + 1:]:
+                    if date_col >= len(row) or col >= len(row):
+                        continue
+                    period = _bam_ckan_period(row[date_col])
+                    if not period:
+                        continue
+                    value = _bam_ckan_number(row[col])
+                    if value is not None:
+                        points.append({"year": period, "value": value})
+                if len(points) >= 2:
+                    _append_bam_ckan_series(output, header, points, title, f"{notes} {unit_hint}", resource_url, resource_name)
+        if output:
+            break
     return output
 
 
@@ -1925,7 +1983,7 @@ def _append_bam_ckan_series(output: list, label: str, points: list[dict], datase
         return
     code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"(?:\(|\[)([^()\[\]]{1,24})(?:\)|\])", label)
-    unit = clean_text(unit_match.group(1)) if unit_match else "Unité publiée par BAM"
+    unit = clean_text(unit_match.group(1)) if unit_match else (re.search(r"\b(MDH|MMDH|KDH|Nombre|%)\b", notes, re.IGNORECASE).group(1) if re.search(r"\b(MDH|MMDH|KDH|Nombre|%)\b", notes, re.IGNORECASE) else "Unité non précisée")
     label_clean = clean_text(re.sub(r"\s*[\[(][^()\[\]]{1,24}[\])]\s*", " ", label))
     series = {
         "id": code, "indicator_code": code,

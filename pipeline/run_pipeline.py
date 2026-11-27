@@ -235,7 +235,7 @@ def _is_valid_statistics_series(series: dict) -> bool:
     for point in points:
         if not isinstance(point, dict):
             continue
-        match = re.match(r"(\\d{4})", str(point.get("year") or ""))
+        match = re.match(r"(\d{4})", str(point.get("year") or ""))
         if match and int(match.group(1)) > current_year:
             return False
     return True

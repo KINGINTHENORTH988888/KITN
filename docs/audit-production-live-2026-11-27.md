@@ -94,4 +94,27 @@ Le contrôle mobile a relevé que le titre de l'accueil annonçait « Six espace
 6. Résoudre ou documenter précisément le build Cloudflare Worker si ce service est toujours requis.
 7. Faire une revue finale des différences de données et de fonctionnalités, puis préparer une publication avec procédure de retour arrière.
 
+## 8. Vérification du déploiement Pages le plus récent
+
+Le commit `9bfe778` a reçu un déploiement Cloudflare Pages réussi sur l'URL de prévisualisation dédiée :
+
+- URL : https://03e651ac.kitn.pages.dev/
+- La page d'accueil affiche bien « Cinq espaces thématiques pour explorer le Maroc ».
+- Les cinq routes canoniques ont été ouvertes directement et rendent leur contenu : veille (8 notices), études & recherche (157 publications), Maroc en chiffres, bibliothèque (37 documents) et Academy.
+- La vue régionale du taux de chômage strict affiche 12/12 régions couvertes, 12/12 valeurs disponibles et aucune valeur manquante pour T3/2026.
+- Le parcours Academy passe correctement de DGSN à IRAT et remplace le titre ainsi que le contenu du QCM.
+
+Cette URL est une prévisualisation de branche, pas le domaine public `kitn.pages.dev`.
+
+## 9. Contrôles automatisés de données ajoutés
+
+Un nouveau fichier `tests/published-data.test.js` ajoute des contrôles automatisés sur :
+- l'inventaire des 342 séries régionales et l'unicité des identifiants ;
+- la couverture des six indicateurs EMO et des 12 régions ;
+- la présence des sources HTTPS, l'ordre chronologique et la cohérence entre historique et dernière valeur ;
+- la conservation explicite des valeurs manquantes ;
+- les trois parcours Academy bilingues et la validité des index de réponses.
+
+Le commit contenant ce test a été poussé sur la branche. Le déploiement Pages confirme la compilation du site, mais **ne prouve pas à lui seul que les tests Node ont été exécutés**. Le résultat CI de ce nouveau test reste à confirmer.
+
 **Décision :** continuer le travail sur la branche de revue. Ne pas fusionner ni basculer le domaine public tant que les vérifications fonctionnelles et la stratégie de déploiement ne sont pas terminées.

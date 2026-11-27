@@ -56,6 +56,7 @@ jobs:
           python - <<'PY'
           import json
           from collections import Counter
+          from datetime import date
           from pathlib import Path
 
           path = Path("data/statistics.json")
@@ -78,8 +79,18 @@ jobs:
           if index_path.exists():
               index = json.loads(index_path.read_text(encoding="utf-8"))
               items = index.get("items", [])
-              future = [x for x in items if x.get("date_anomalie") or x.get("date_statut") == "date_future_a_verifier"]
-              print("DOCUMENT INDEX:", index.get("total"), "| visible after future-date exclusion:", len(items) - len(future), "| future-dated to verify:", len(future))
+              today = date.today().isoformat()
+              future = [
+                  x for x in items
+                  if x.get("date_anomalie")
+                  or x.get("date_statut") == "date_future_a_verifier"
+                  or (
+                      len(str(x.get("date_publication") or "")[:10]) == 10
+                      and str(x.get("date_publication") or "")[:10][4:5] == "-"
+                      and str(x.get("date_publication") or "")[:10] > today
+                  )
+              ]
+              print("DOCUMENT INDEX:", index.get("total"), "| visible after future-date exclusion:", len(items) - len(future), "| future-dated to verify:", len(future), "| reference date:", today)
           PY
 
       - name: Set up Node.js

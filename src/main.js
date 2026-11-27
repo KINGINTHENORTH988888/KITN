@@ -1,5 +1,5 @@
 import "./style.css";
-import { filterStatisticsHistory, getStatisticsCategory } from "./statistics.js";
+import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
@@ -949,7 +949,7 @@ function renderStatisticsDashboard() {
     const category = getStatisticsCategory(indicator);
     if (statisticsCategory === "unclassified" ? Boolean(category) : statisticsCategory !== "all" && category !== statisticsCategory) return false;
     if (!normalizedSearch) return true;
-    const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code].filter(Boolean).join(" "));
+    const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, getLocalizedStatisticField(indicator, "label", "ar"), indicator.description_fr, indicator.description_ar, getLocalizedStatisticField(indicator, "description", "ar"), indicator.source_name, indicator.unit_fr, indicator.unit_ar, getLocalizedStatisticField(indicator, "unit", "ar"), indicator.indicator_code].filter(Boolean).join(" "));
     return searchable.includes(normalizedSearch);
   });
   const categoryControls = [
@@ -1007,12 +1007,12 @@ function renderStatisticsDashboard() {
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");
     const lastPoint = coords ? coords.split(" ").at(-1).split(",") : ["50","49"];
-    const label = isAr ? (indicator.label_ar || indicator.label_fr) : indicator.label_fr;
-    const description = isAr ? (indicator.description_ar || indicator.description_fr) : indicator.description_fr;
+    const label = isAr ? getLocalizedStatisticField(indicator, "label", "ar") : indicator.label_fr;
+    const description = isAr ? getLocalizedStatisticField(indicator, "description", "ar") : indicator.description_fr;
     const methodologyNote = isAr
       ? (indicator.methodology_note_ar || indicator.methodology_note_fr)
       : indicator.methodology_note_fr;
-    const unit = isAr ? (indicator.unit_ar || indicator.unit_fr) : indicator.unit_fr;
+    const unit = isAr ? getLocalizedStatisticField(indicator, "unit", "ar") : indicator.unit_fr;
     const deltaPrecision = Number.isInteger(indicator.precision) ? indicator.precision : 1;
     const formattedDelta = delta === null ? "" : new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", {maximumFractionDigits:deltaPrecision}).format(delta);
     const comparisonLabel = isAr
@@ -1420,7 +1420,7 @@ function renderResults() {
   const globalQuery = normalizeSearchText(searchQuery);
   const globalStatisticMatches = activeSpace === "all" && globalQuery
     ? (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).filter((indicator) => {
-        const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, indicator.description_fr, indicator.description_ar, indicator.source_name, indicator.unit_fr, indicator.unit_ar, indicator.indicator_code].filter(Boolean).join(" "));
+        const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, getLocalizedStatisticField(indicator, "label", "ar"), indicator.description_fr, indicator.description_ar, getLocalizedStatisticField(indicator, "description", "ar"), indicator.source_name, indicator.unit_fr, indicator.unit_ar, getLocalizedStatisticField(indicator, "unit", "ar"), indicator.indicator_code].filter(Boolean).join(" "));
         return searchable.includes(globalQuery);
       }).slice(0, 12)
     : [];
@@ -1509,9 +1509,9 @@ function renderResults() {
     .join("");
   const statisticResultsHtml = globalStatisticMatches.length
     ? `<section class="global-stat-results"><div class="global-stat-results-heading"><span class="mini-label">${lang === "ar" ? "نتائج إحصائية" : "INDICATEURS STATISTIQUES"}</span><strong>${lang === "ar" ? "بيانات المغرب" : "Les données du Maroc"}</strong></div>${globalStatisticMatches.map((indicator) => {
-        const label = lang === "ar" ? (indicator.label_ar || indicator.label_fr || indicator.indicator_code) : (indicator.label_fr || indicator.label_ar || indicator.indicator_code);
-        const description = lang === "ar" ? (indicator.description_ar || indicator.description_fr || "") : (indicator.description_fr || indicator.description_ar || "");
-        const unit = lang === "ar" ? (indicator.unit_ar || indicator.unit_fr || "") : (indicator.unit_fr || indicator.unit_ar || "");
+        const label = lang === "ar" ? (getLocalizedStatisticField(indicator, "label", "ar") || indicator.indicator_code) : (indicator.label_fr || indicator.label_ar || indicator.indicator_code);
+        const description = lang === "ar" ? getLocalizedStatisticField(indicator, "description", "ar") : (indicator.description_fr || indicator.description_ar || "");
+        const unit = lang === "ar" ? getLocalizedStatisticField(indicator, "unit", "ar") : (indicator.unit_fr || indicator.unit_ar || "");
         const latest = indicator.latest && indicator.latest.value !== null && indicator.latest.value !== undefined
           ? formatStatisticValue(indicator, indicator.latest.value) + (unit ? " " + unit : "")
           : "";

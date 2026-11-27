@@ -46,6 +46,14 @@ Les cinq routes canoniques ont été appelées directement et ont renvoyé leur 
 
 Le contrôle mobile de la prévisualisation a observé un rendu plus propre que la production : navigation et cartes lisibles, pas de débordement horizontal majeur détecté dans le parcours testé, et bascule arabe RTL fonctionnelle. Les menus déroulants sur mobile et les tailles exactes des zones tactiles restent à tester plus finement.
 
+### Données régionales vérifiées dans le dépôt de la branche
+
+- 342 séries régionales : 234 séries EMO (6 indicateurs × 13 géographies × 3 milieux) et 108 séries sociales.
+- 12 régions sont couvertes pour les séries sociales ; les séries EMO comprennent aussi l'agrégat national, soit 13 géographies.
+- Les séries sociales couvrent notamment la pauvreté monétaire sur 2001, 2014 et 2022, ainsi que la fécondité par milieu.
+- Les valeurs non disponibles sont conservées comme manquantes : 25 séries EMO n'ont pas de dernière valeur disponible et 79 valeurs historiques sont nulles. Elles ne sont pas converties artificiellement en zéro.
+- Les 234 séries EMO portent un avertissement de rupture méthodologique entre l'ENE et l'EMO 2026.
+
 ## 4. Différences structurantes
 
 | Sujet | Production | Prévisualisation |

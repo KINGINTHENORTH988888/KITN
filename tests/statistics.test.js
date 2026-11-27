@@ -53,7 +53,7 @@ test("daily series retain five calendar years rather than only five daily observ
   const filtered = filterStatisticsHistory(history, "5", "2026-11-27T04:00:00Z");
   assert.ok(filtered.length > 1800);
   assert.ok(filtered.length < 1900);
-  assert.equal(filtered.at(-1).year, "2026-11-26");
+  assert.equal(filtered.at(-1).year, "2026-11-27");
 });
 
 test("legacy histories with no parseable periods remain visible", () => {

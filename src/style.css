@@ -1555,3 +1555,118 @@ textarea {
     font-size: 0.75rem;
   }
 }
+
+.watch-dashboard {
+  display: grid;
+  gap: 1.1rem;
+  margin: 1.2rem 0 1.5rem;
+}
+.watch-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface-alt);
+}
+.watch-intro h3 {
+  margin: 0.35rem 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+}
+.watch-intro p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--muted);
+}
+.watch-total {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 0.15rem;
+  text-align: end;
+}
+.watch-total strong {
+  font-size: 2rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.watch-total span,
+.watch-quality-row,
+.watch-footnote {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.watch-quality-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+}
+.watch-quality-row > span {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: baseline;
+}
+.watch-quality-row strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.watch-type-chip {
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.watch-topic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.watch-topic-card {
+  display: grid;
+  gap: 0.5rem;
+  min-height: 155px;
+  padding: 1rem;
+  text-align: start;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.watch-topic-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.watch-topic-count {
+  color: var(--accent);
+  font-size: 1.2rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+.watch-topic-card strong {
+  font-size: 0.98rem;
+}
+.watch-topic-card > span:nth-last-child(2) {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.watch-topic-link {
+  align-self: end;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+.watch-footnote {
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .watch-topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .watch-intro { align-items: flex-start; flex-direction: column; }
+  .watch-total { text-align: start; }
+  .watch-topic-grid { grid-template-columns: 1fr; }
+  .watch-topic-card { min-height: 130px; }
+}

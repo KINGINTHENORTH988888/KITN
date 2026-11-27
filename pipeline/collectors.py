@@ -610,10 +610,20 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
             ("HCP_EMO_EMPLOYMENT", "Personnes en emploi contre revenu", "millions",
              number(r"nombre de personnes en emploi contre revenu atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
              "Effectif des personnes en emploi contre revenu, en millions."),
-            ("HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
-             number(r"taux de chômage strict s’élève respectivement à\s*([0-9]+(?:[,.][0-9]+)?)\s*%"),
-             "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO."),
         ]
+        pair = re.search(
+            r"taux de chômage strict.{0,100}?respectivement à\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*et\s*([0-9]+(?:[,.][0-9]+)?)\s*%",
+            body, re.IGNORECASE,
+        )
+        if pair:
+            metrics.extend([
+                ("HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
+                 float(pair.group(1).replace(",", ".")),
+                 "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO."),
+                ("HCP_EMO_WOMEN_UNEMPLOYMENT", "Taux de chômage strict des femmes", "%",
+                 float(pair.group(2).replace(",", ".")),
+                 "Taux de chômage strict des femmes selon l'EMO."),
+            ])
         for code, label, unit, value, description in metrics:
             if value is None:
                 continue

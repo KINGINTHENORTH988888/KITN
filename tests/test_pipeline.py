@@ -1076,7 +1076,7 @@ class TestPipelineProcessors(unittest.TestCase):
         listing = """
         <html><body>
           <a href="https://www.hcp.ma/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">
-            Situation du marché du travail au Maroc au troisième trimestre 2026 selon l'EMO2026
+            Lire la suite
           </a>
         </body></html>
         """

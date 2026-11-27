@@ -829,5 +829,65 @@
         "pole": "economie_finances_publiques"
       }
     ]
+  },
+  {
+    "id": "openalex_morocco_governance",
+    "name": "OpenAlex — Morocco governance public administration",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20governance%20public%20administration&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_economy",
+    "name": "OpenAlex — Morocco public finance economic policy",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20public%20finance%20economic%20policy&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_security",
+    "name": "OpenAlex — Morocco public security policing",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20public%20security%20policing&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_social",
+    "name": "OpenAlex — Morocco human development social policy",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20human%20development%20social%20policy&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_geopolitics",
+    "name": "OpenAlex — Morocco international relations diplomacy",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20international%20relations%20diplomacy&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
   }
 ]

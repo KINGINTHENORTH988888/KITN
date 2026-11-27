@@ -738,6 +738,18 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 "history": [{"year": period_label, "value": value}],
                 "source_name": "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
                 "source_url": page_url, "last_updated": published or period_label,
+                "comparability_group": "HCP_EMO_2026",
+                "methodology_break": True,
+                "methodology_note_fr": (
+                    "Rupture méthodologique : l'EMO 2026 remplace l'ENE et adopte de nouvelles définitions "
+                    "du chômage strict et de l'emploi contre revenu. Ne pas raccorder directement cette série "
+                    "aux anciennes séries ENE sans harmonisation méthodologique."
+                ),
+                "methodology_note_ar": (
+                    "انقطاع منهجي: حلّ مسح اليد العاملة EMO 2026 محلّ المسح الوطني للتشغيل ENE واعتمد "
+                    "تعريفات جديدة للبطالة الصارمة والتشغيل مقابل دخل. لا تُقارن هذه السلسلة مباشرة بالسلاسل "
+                    "القديمة دون مواءمة منهجية."
+                ),
             }
             items.append({
                 "title": f"{label} — {period_label}", "abstract": description,

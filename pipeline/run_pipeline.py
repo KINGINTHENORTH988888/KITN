@@ -314,6 +314,8 @@ def run() -> dict:
         sid = str(src.get("id") or "unknown")
         fetched_count = 0
         accepted_count = 0
+        statistics_count = 0
+        statistics_codes: list[str] = []
         status = "ok"
         stage = "collecte_effectuee"
         error_msg = None
@@ -325,7 +327,10 @@ def run() -> dict:
             for raw in raw_items:
                 series = raw.get("statistics_series") if isinstance(raw, dict) else None
                 if isinstance(series, dict) and series.get("indicator_code"):
-                    statistics_series[str(series["indicator_code"])] = series
+                    code = str(series["indicator_code"])
+                    statistics_series[code] = series
+                    statistics_count += 1
+                    statistics_codes.append(code)
             if not raw_items:
                 status = "warning"
                 stage = "aucun_contenu"
@@ -367,9 +372,16 @@ def run() -> dict:
                     total_added += 1
 
             if fetched_count > 0 and accepted_count == 0:
-                status = "warning"
-                stage = "aucun_document_pertinent"
-                error_msg = "Des éléments ont été collectés, mais aucun n'a passé les contrôles de pertinence."
+                if statistics_count > 0:
+                    # Statistical series are valid data outputs even when they are
+                    # intentionally not indexed as documentary notices.
+                    status = "ok"
+                    stage = "series_statistiques_collectees"
+                    error_msg = None
+                else:
+                    status = "warning"
+                    stage = "aucun_document_pertinent"
+                    error_msg = "Des éléments ont été collectés, mais aucun n'a passé les contrôles de pertinence."
 
         except Exception as exc:
             status = "error"
@@ -387,6 +399,8 @@ def run() -> dict:
             "stage": stage,
             "fetched": fetched_count,
             "accepted": accepted_count,
+            "statistics_collected": statistics_count,
+            "statistics_indicators": sorted(set(statistics_codes)),
             "error": error_msg,
             "checked_at": now_iso,
         })

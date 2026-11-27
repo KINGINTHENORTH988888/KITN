@@ -122,11 +122,11 @@ Une vérification réseau distincte des tests simulés a été effectuée sur le
 
 **Banque mondiale :**
 - Les huit endpoints configurés ont répondu avec succès.
-- Les réponses annoncent `lastupdated = 2026-11-11`, `per_page = 25` et jusqu'à 66 observations disponibles.
+- Les réponses annoncent `lastupdated = 2026-11-11`, jusqu'à 66 observations disponibles par indicateur et des données historiques remontant jusqu'en 1960 selon la série.
 - Les dernières observations non nulles atteignent 2025 pour quatre séries (activité, chômage des jeunes, ratio emploi-population et population urbaine) et 2024 pour quatre autres (espérance de vie, mortalité des moins de cinq ans, scolarisation primaire et secondaire).
-- Chaque endpoint fournit entre 20 et 25 observations non nulles dans la fenêtre demandée.
+- Chaque endpoint fournit entre 20 et 25 observations non nulles dans les 25 premières lignes. La configuration KITN a donc été élargie à `history_points = 100`, afin de récupérer toutes les observations disponibles (jusqu'à 66 dans les réponses vérifiées) plutôt que de limiter les séries aux 25 dernières années.
 
-Cette vérification confirme que les URLs et codes d'indicateurs sont valides et que la profondeur de 25 observations est suffisante pour amorcer les séries. Elle ne signifie pas encore que ces huit séries sont présentes dans le fichier statistique publié : cela nécessite une exécution complète du pipeline sur la branche de revue.
+Cette vérification confirme que les URLs et codes d'indicateurs sont valides et que la configuration demande désormais l'ensemble de l'historique disponible. Elle ne signifie pas encore que ces huit séries sont présentes dans le fichier statistique publié : cela nécessite une exécution complète du pipeline sur la branche de revue.
 
 ### 3.3 MEF — séries statistiques et notices documentaires sont deux flux différents
 

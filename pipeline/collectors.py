@@ -675,8 +675,8 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
 
         def labeled_percentage(label_pattern: str) -> float | None:
             candidates = []
-            for sentence_index, sentence_match in enumerate(re.finditer(r"[^.!?]+[.!?]?", body)):
-                sentence = sentence_match.group(0)
+            for sentence_index, sentence in enumerate(re.split(r"(?<=[.!?])\s+", body)):
+                sentence = sentence.strip()
                 if not re.search(r"ch[oô]mage", sentence, re.IGNORECASE):
                     continue
                 labels = list(re.finditer(label_pattern, sentence, re.IGNORECASE))

@@ -1,8 +1,8 @@
 # KITN — Audit technique approfondi (phase 2)
 
 **Date de l'audit :** 27 novembre 2026  
-**Périmètre :** branche `main`, lecture du code et des fichiers de configuration  
-**Statut :** audit documentaire uniquement — aucun code de production modifié, aucun déploiement effectué.
+**Périmètre :** lecture de `main`, puis vérification et corrections ciblées sur `audit/kitn-quality-review-2026-11`  
+**Statut :** audit et corrections sur une branche isolée — aucune modification fusionnée dans `main`, aucun déploiement en production.
 
 ## 1. Résumé exécutif
 

@@ -1839,8 +1839,8 @@ def _bam_ckan_number(value: str) -> float | None:
 
 def _bam_ckan_is_numeric(value: str) -> bool:
     text = str(value or "").strip()
-    return bool(text and re.fullmatch(r"[()+\\-0-9.,%\\s]+", text) and _bam_ckan_number(text) is not None)
-
+    allowed = set("0123456789 +-.,%()")
+    return bool(text and all(char in allowed for char in text) and _bam_ckan_number(text) is not None)
 
 def _bam_ckan_slug(value: str) -> str:
     text = clean_text(str(value or "")).upper()

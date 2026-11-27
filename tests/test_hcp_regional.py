@@ -1,7 +1,10 @@
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 from pipeline.hcp_regional import parse_hcp_emo_regional_tables
 from pipeline.run_pipeline import _merge_regional_statistics_series
+from pipeline.collectors import _extract_hcp_emo_regional_statistics
 
 
 class HcpEmoRegionalParserTests(unittest.TestCase):
@@ -122,6 +125,34 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
                             for item in series for point in item["history"]))
         self.assertTrue(any(point["quality_flag"] == "medium_significance"
                             for item in series for point in item["history"]))
+
+    def test_pdf_attachment_reader_uses_the_official_attachment_and_parses_its_tables(self):
+        fixture_path = Path(__file__).parent / "fixtures" / "hcp_emo_t3_2026_regional_tables.txt"
+        extracted = fixture_path.read_text(encoding="utf-8")
+
+        class FakePage:
+            def extract_text(self, extraction_mode=None):
+                return extracted
+
+        class FakeReader:
+            def __init__(self, stream):
+                self.pages = [FakePage()]
+
+        article_url = "https://m.hcp.ma/report.html"
+        with patch("pipeline.collectors._fetch_bytes", return_value=b"%PDF") as fetch_bytes:
+            with patch("pipeline.collectors.PdfReader", FakeReader):
+                series, warnings = _extract_hcp_emo_regional_statistics(
+                    ["/attachment/2928207/"],
+                    article_url,
+                    "2026-11-03",
+                )
+
+        self.assertEqual(len(series), 234)
+        self.assertEqual(warnings, [])
+        fetch_bytes.assert_called_once_with(
+            "https://m.hcp.ma/attachment/2928207/",
+            referer=article_url,
+        )
 
     def test_pipeline_merge_keeps_earlier_quarters_and_replaces_revised_periods(self):
         existing = {

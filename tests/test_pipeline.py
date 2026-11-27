@@ -1010,10 +1010,6 @@ class TestPipelineProcessors(unittest.TestCase):
         with zipfile.ZipFile(buffer, "w") as archive:
             archive.writestr("xl/worksheets/sheet1.xml", sheet)
         rows = _xlsx_read_rows(buffer.getvalue())
-        print("BAM XLSX DEBUG rows:", rows)
-        from pipeline.collectors import _bam_ckan_period, _bam_ckan_number
-        print("BAM XLSX DEBUG periods:", [_bam_ckan_period(value) for value in rows[0]])
-        print("BAM XLSX DEBUG numbers:", [_bam_ckan_number(value) for value in rows[1][1:]])
         items = _bam_ckan_series_from_rows(
             rows,
             {"title": "Agrégats de monnaie", "notes": "Séries officielles mensuelles"},

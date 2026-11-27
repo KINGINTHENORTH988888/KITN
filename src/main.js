@@ -1635,7 +1635,7 @@ function render() {
       </nav>
       <div class="topbar-actions">
         ${isDedicatedSpace ? `<button type="button" class="lang" id="back-portal-top">${escapeHtml(c.backPortalBtn)}</button>` : ""}
-        <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="${mobileMenuOpen}">${c.menuBtn}</button>
+        <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="${mobileMenuOpen}" aria-controls="main-nav">${c.menuBtn}</button>
         <button type="button" class="lang" id="lang-toggle">${c.langBtn}</button>
       </div>
     </header>
@@ -2068,6 +2068,8 @@ function render() {
   document.getElementById("menu-toggle")?.addEventListener("click", () => {
     mobileMenuOpen = !mobileMenuOpen;
     render();
+    // render() rebuilds the header; return keyboard focus to the replacement button.
+    document.getElementById("menu-toggle")?.focus();
   });
 
   

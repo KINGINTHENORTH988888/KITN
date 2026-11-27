@@ -204,8 +204,8 @@ test("search normalization ignores accents and combining diacritics", () => {
 });
 
 test("mobile header wraps navigation onto a full-width row", () => {
-  const mobile = styles.match(/@media \\(max-width: 820px\\) \\{([\\s\\S]*?)\\n\\}/)?.[1] || "";
-  assert.match(mobile, /\\.topbar\\s*\\{[\\s\\S]*?flex-wrap:\\s*wrap/);
-  assert.match(mobile, /\\.nav\\s*\\{[\\s\\S]*?flex:\\s*0 0 100%/);
-  assert.match(mobile, /\\.nav\\s*\\{[\\s\\S]*?min-width:\\s*0/);
+  const mobile = styles.match(/@media \(max-width: 820px\) \{([\s\S]*?)\n\}/)?.[1] || "";
+  assert.match(mobile, /\.topbar\s*\{[\s\S]*?flex-wrap:\s*wrap/);
+  assert.match(mobile, /\.nav\s*\{[\s\S]*?flex:\s*0 0 100%/);
+  assert.match(mobile, /\.nav\s*\{[\s\S]*?min-width:\s*0/);
 });

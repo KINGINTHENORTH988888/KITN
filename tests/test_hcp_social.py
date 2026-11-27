@@ -74,6 +74,11 @@ class HcpSocialIndicatorsTests(unittest.TestCase):
         self.assertEqual(by_code["HCP_SOCIAL_UNDER5_MORTALITY"]["latest"]["value"], 22.2)
         self.assertEqual(by_code["HCP_SOCIAL_GINI"]["latest"]["value"], 0.405)
         self.assertTrue(all(item["pole"] == "societe_developpement_humain" for item in series))
+        self.assertTrue(all(item["label_ar"] and item["label_ar"] != item["label_fr"] for item in series))
+        self.assertTrue(all(item["description_ar"] and item["description_ar"] != item["description_fr"] for item in series))
+        self.assertTrue(all(item["unit_ar"] for item in series))
+        self.assertEqual(by_code["HCP_SOCIAL_UNEMPLOYMENT"]["label_ar"], "معدل البطالة الوطني")
+        self.assertEqual(by_code["HCP_SOCIAL_POPULATION"]["unit_ar"], "ألف نسمة")
 
     def test_parser_does_not_publish_a_table_with_mismatched_years_and_values(self):
         text = """

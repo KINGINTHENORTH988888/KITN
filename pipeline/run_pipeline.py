@@ -17,6 +17,8 @@ from pipeline.config import (
     SOURCES_HEALTH_FILE,
     STATISTICS_FILE,
     PUBLIC_STATISTICS_FILE,
+    REGIONAL_STATISTICS_FILE,
+    PUBLIC_REGIONAL_STATISTICS_FILE,
 )
 from pipeline.collectors import collect_crossref_by_doi, collect_from_source
 from pipeline.processors import clean_text, normalize_doi, process_raw_item, resolve_space, sanitize_url
@@ -380,6 +382,49 @@ def _merge_valid_statistics_series(existing: dict | None, incoming: dict, collec
     return merged
 
 
+
+def _merge_regional_statistics_series(
+    existing: dict | None,
+    incoming: dict,
+    collected_at: str,
+) -> dict | None:
+    """Merge one region/scope/indicator while preserving earlier quarterly observations."""
+    key = str(incoming.get("series_key") or incoming.get("id") or "").strip()
+    history = incoming.get("history")
+    if not key or not isinstance(history, list) or not history:
+        return None
+
+    merged = dict(existing or {})
+    for field, value in incoming.items():
+        if field != "history" and value is not None:
+            merged[field] = value
+
+    points_by_period: dict[str, dict] = {}
+    for point in (existing or {}).get("history", []) if isinstance((existing or {}).get("history"), list) else []:
+        if isinstance(point, dict) and point.get("year"):
+            points_by_period[str(point["year"])] = dict(point)
+    for point in history:
+        if isinstance(point, dict) and point.get("year"):
+            value = point.get("value")
+            if value is not None and not isinstance(value, (int, float)):
+                return None
+            if isinstance(value, (int, float)) and not math.isfinite(float(value)):
+                return None
+            points_by_period[str(point["year"])] = dict(point)
+
+    if not points_by_period:
+        return None
+    merged_history = sorted(
+        points_by_period.values(),
+        key=lambda point: _statistics_period_sort_key(point.get("year"), collected_at),
+    )
+    merged["history"] = merged_history
+    merged["latest"] = merged_history[-1]
+    merged["last_successful_collection_at"] = collected_at
+    merged["collection_status"] = "collected"
+    return merged
+
+
 def run() -> dict:
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sources = _load_json_list(SOURCES_FILE)
@@ -471,12 +516,14 @@ def run() -> dict:
     total_updated = 0
     health_records: list[dict] = []
     statistics_series: dict[str, dict] = {}
+    regional_statistics: dict[str, dict] = {}
 
     for src in active_sources:
         sid = str(src.get("id") or "unknown")
         fetched_count = 0
         accepted_count = 0
         statistics_count = 0
+        regional_statistics_count = 0
         statistics_codes: list[str] = []
         statistics_warnings: list[str] = []
         status = "ok"
@@ -492,6 +539,23 @@ def run() -> dict:
                     warnings = raw.get("statistics_collection_warnings")
                     if isinstance(warnings, list):
                         statistics_warnings.extend(str(warning) for warning in warnings if warning)
+                regional_items = raw.get("regional_statistics") if isinstance(raw, dict) else None
+                if isinstance(regional_items, list):
+                    for regional in regional_items:
+                        if not isinstance(regional, dict):
+                            continue
+                        regional_key = str(regional.get("series_key") or regional.get("id") or "").strip()
+                        merged_regional = _merge_regional_statistics_series(
+                            regional_statistics.get(regional_key), regional, now_iso
+                        )
+                        if merged_regional is None:
+                            statistics_warnings.append(
+                                f"Série régionale HCP rejetée : {regional_key or 'identifiant absent'}."
+                            )
+                            continue
+                        regional_statistics[regional_key] = merged_regional
+                        regional_statistics_count += 1
+
                 series = raw.get("statistics_series") if isinstance(raw, dict) else None
                 if isinstance(series, dict) and series.get("indicator_code"):
                     code = str(series["indicator_code"])
@@ -581,6 +645,7 @@ def run() -> dict:
             "fetched": fetched_count,
             "accepted": accepted_count,
             "statistics_collected": statistics_count,
+            "regional_statistics_collected": regional_statistics_count,
             "statistics_indicators": sorted(set(statistics_codes)),
             "statistics_warnings": statistics_warnings,
             "error": error_msg,
@@ -723,6 +788,51 @@ def run() -> dict:
     STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)
     STATISTICS_FILE.write_text(json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     _sync_public_index(STATISTICS_FILE, PUBLIC_STATISTICS_FILE)
+
+    # Regional series are stored separately so they do not flood the national indicator dashboard.
+    previous_regional: list[dict] = []
+    if REGIONAL_STATISTICS_FILE.exists():
+        try:
+            previous_payload = json.loads(REGIONAL_STATISTICS_FILE.read_text(encoding="utf-8"))
+            previous_regional = previous_payload.get("series", []) if isinstance(previous_payload, dict) else []
+        except (OSError, json.JSONDecodeError, AttributeError):
+            previous_regional = []
+
+    for previous in previous_regional:
+        if not isinstance(previous, dict):
+            continue
+        key = str(previous.get("series_key") or previous.get("id") or "").strip()
+        if not key:
+            continue
+        if key in regional_statistics:
+            merged = _merge_regional_statistics_series(previous, regional_statistics[key], now_iso)
+            if merged is not None:
+                regional_statistics[key] = merged
+        else:
+            carried = dict(previous)
+            carried["collection_status"] = "carried_forward"
+            regional_statistics[key] = carried
+
+    regional_series = sorted(
+        regional_statistics.values(),
+        key=lambda item: (
+            str(item.get("indicator_code") or ""),
+            str(item.get("residence_scope") or ""),
+            str(item.get("geography_code") or ""),
+        ),
+    )
+    regional_payload = {
+        "generated_at": now_iso,
+        "source": "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
+        "series_count": len(regional_series),
+        "series": regional_series,
+    }
+    REGIONAL_STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    REGIONAL_STATISTICS_FILE.write_text(
+        json.dumps(regional_payload, ensure_ascii=False, indent=2) + "\\n",
+        encoding="utf-8",
+    )
+    _sync_public_index(REGIONAL_STATISTICS_FILE, PUBLIC_REGIONAL_STATISTICS_FILE)
     return index_payload
 
 

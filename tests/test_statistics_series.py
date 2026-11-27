@@ -72,6 +72,37 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         ordered = sorted(periods, key=lambda value: _statistics_period_sort_key(value, collected_at))
         self.assertEqual(ordered, ["2026-11-25", "Veille", "Aujourd'hui"])
 
+    def test_period_sorting_supports_observations_before_2000(self):
+        collected_at = "2026-11-27T04:00:00Z"
+        periods = ["2000-01", "1998", "1999-T4", "2001-02-03", "2026"]
+        ordered = sorted(periods, key=lambda value: _statistics_period_sort_key(value, collected_at))
+        self.assertEqual(ordered, ["1998", "1999-T4", "2000-01", "2001-02-03", "2026"])
+
+    def test_merge_keeps_pre_2000_history_before_recent_observations(self):
+        existing = {
+            "indicator_code": "LONG_RUNNING_INDICATOR",
+            "history": [
+                {"year": "1998", "value": 18},
+                {"year": "1999", "value": 19},
+                {"year": "2000", "value": 20},
+                {"year": "2024", "value": 24},
+            ],
+            "latest": {"year": "2024", "value": 24},
+        }
+        incoming = {
+            "indicator_code": "LONG_RUNNING_INDICATOR",
+            "history": [{"year": "2025", "value": 25}],
+            "latest": {"year": "2025", "value": 25},
+        }
+
+        merged = _merge_statistics_series(existing, incoming, "2026-11-27T04:00:00Z")
+
+        self.assertEqual(
+            [point["year"] for point in merged["history"]],
+            ["1998", "1999", "2000", "2024", "2025"],
+        )
+        self.assertEqual(merged["latest"], {"year": "2025", "value": 25})
+
     def test_merge_uses_previous_published_history_even_when_current_series_exists(self):
         old = {
             "indicator_code": "BAM_MONIA_RATE",

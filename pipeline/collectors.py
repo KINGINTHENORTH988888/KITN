@@ -624,9 +624,16 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                  float(pair.group(2).replace(",", ".")),
                  "Taux de chômage strict des femmes selon l'EMO."),
             ])
+        underutilization_sentence = next(
+            (sentence for sentence in re.split(r"(?<=[.!?])\\s+", body)
+             if "taux composite" in sentence.casefold()
+             and "jeunes" in sentence.casefold()
+             and "femmes" in sentence.casefold()),
+            "",
+        )
         underutilization_pair = re.search(
-            r"taux composite de la sous[- ]utilisation de la main[- ]d’œuvre atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les jeunes de 15[- ]24 ans et\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les femmes",
-            body, re.IGNORECASE,
+            r"([0-9]+(?:[,.][0-9]+)?)\\s*%.*?jeunes.*?([0-9]+(?:[,.][0-9]+)?)\\s*%.*?femmes",
+            underutilization_sentence, re.IGNORECASE,
         )
         if underutilization_pair:
             metrics.extend([

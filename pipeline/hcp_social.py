@@ -269,7 +269,12 @@ def parse_hcp_social_indicators(text: str, source_url: str = HCP_SOCIAL_REPORT_U
 
 _SOCIAL_REGION_ALIASES = {
     "DRAA_TAFILALET": ("Draa-Tafilalet",),
-    "LAAYOUNE_SAKIA_EL_HAMRA": ("Laayoune-Sakia Al Hamra", "Laâyoune-Sakia Al Hamra"),
+    "LAAYOUNE_SAKIA_EL_HAMRA": (
+        "Laayoune-Sakia Al Hamra",
+        "Laâyoune-Sakia Al Hamra",
+        "Laayoune-Sakia El Hamra",
+        "Laâyoune-Sakia El Hamra",
+    ),
     "DAKHLA_OUED_ED_DAHAB": ("Dakhla-Oued Eddahab",),
 }
 

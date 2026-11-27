@@ -1,15 +1,7 @@
 name: HCP EMO Live Validation
 
 on:
-  push:
-    branches:
-      - audit/kitn-quality-review-2026-11
-    paths:
-      - "scripts/validate_hcp_emo_regional_live.py"
-      - "pipeline/collectors.py"
-      - "pipeline/hcp_regional.py"
-      - "requirements.txt"
-      - ".github/workflows/hcp-live-validation.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read

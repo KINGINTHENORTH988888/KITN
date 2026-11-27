@@ -76,6 +76,8 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
     unitAr: firstSeries?.unit_ar || selectedIndicator?.unitAr || "%",
     sourceName: firstSeries?.source_name || "Haut-Commissariat au Plan",
     sourceUrl: firstSeries?.source_url || "",
+    lastSuccessfulCollectionAt: firstSeries?.last_successful_collection_at || "",
+    collectionStatus: firstSeries?.collection_status || "unknown",
     methodologyNoteFr: firstSeries?.methodology_note_fr || "",
     methodologyNoteAr: firstSeries?.methodology_note_ar || "",
     methodologyBreak: Boolean(firstSeries?.methodology_break),

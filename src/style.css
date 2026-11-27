@@ -915,6 +915,16 @@ textarea {
   color: var(--muted);
 }
 
+.stat-methodology-note {
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.6rem;
+  border-inline-start: 2px solid var(--accent);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
 .stats-controls {
   display: flex;
   align-items: center;

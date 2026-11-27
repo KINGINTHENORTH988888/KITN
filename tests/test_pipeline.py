@@ -52,9 +52,14 @@ class TestPipelineProcessors(unittest.TestCase):
         <meta property="article:published_time" content="2026-11-26T10:30:00+01:00"/>
         <meta name="author" content="Rédaction"/></head><body><h1>Réforme des finances publiques au Maroc</h1></body></html>"""
         source = {"id":"hespress_ar","type":"hespress_news","url":"https://www.hespress.com/","max_items":10,"include_title_tokens":["gouvernement","budget","finances publiques","réforme"],"exclude_title_tokens":["football","sport"]}
-        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+        sport_article = """<html><head>
+        <meta property="og:title" content="Le Maroc gagne un match de football - Hespress"/>
+        <meta property="og:description" content="Le championnat de football et le match de la sélection nationale."/>
+        </head></html>"""
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, sport_article, article]):
             items = collect_from_source(source)
         self.assertEqual(len(items), 1)
+        self.assertIn("gouvernement", items[0]["abstract"].lower())
         self.assertEqual(items[0]["published_date"], "2026-11-26T10:30:00+01:00")
         self.assertEqual(items[0]["authors"], ["Rédaction"])
         self.assertEqual(items[0]["espace"], "veille")

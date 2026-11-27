@@ -759,9 +759,10 @@ def collect_emploi_public(source: dict) -> list[dict]:
 
 
 def collect_hespress_news(source: dict) -> list[dict]:
-    """Collect only Moroccan public-affairs/economy news matching configured topic filters."""
-    listing_urls = source.get("listing_urls") or [source.get("url") or "https://www.hespress.com/"]
+    """Collect Moroccan public-affairs/economy news using title AND article-summary filters."""
+    listing_urls = source.get("listing_urls") or [source.get("url") or "https://www.hespress.com/politique"]
     limit = max(1, int(source.get("max_items", 15)))
+    max_candidates = max(limit, int(source.get("max_candidates", limit * 4)))
     include = [str(t).casefold() for t in source.get("include_title_tokens", []) if str(t).strip()]
     exclude = [str(t).casefold() for t in source.get("exclude_title_tokens", []) if str(t).strip()]
     candidates, seen = [], set()
@@ -776,18 +777,15 @@ def collect_hespress_news(source: dict) -> list[dict]:
             host, path = (urlsplit(url).hostname or "").lower(), urlsplit(url).path.lower()
             if not (host == "hespress.com" or host.endswith(".hespress.com")):
                 continue
-            if path in ("", "/", "/politique", "/economie", "/societe") or any(x in path for x in ("/tag/", "/author/", "/category/", "/page/")):
-                continue
-            probe = title.casefold()
-            if include and not any(t in probe for t in include):
-                continue
-            if any(t in probe for t in exclude):
+            if path in ("", "/", "/politique", "/economie", "/societe", "/regions") or any(
+                x in path for x in ("/tag/", "/author/", "/category/", "/page/", "/public_author/")
+            ):
                 continue
             seen.add(url)
             candidates.append((url, title))
-            if len(candidates) >= limit:
+            if len(candidates) >= max_candidates:
                 break
-        if len(candidates) >= limit:
+        if len(candidates) >= max_candidates:
             break
 
     items = []
@@ -804,6 +802,13 @@ def collect_hespress_news(source: dict) -> list[dict]:
         excerpt = description if len(description) >= 50 else " ".join(paragraphs[:3])
         if len(title) < 12 or len(excerpt) < 45:
             continue
+
+        searchable = f"{title} {excerpt}".casefold()
+        if include and not any(token in searchable for token in include):
+            continue
+        if exclude and any(token in searchable for token in exclude):
+            continue
+
         published = parser.meta.get("article:published_time") or parser.meta.get("article:modified_time") or parser.published_time or _extract_date_hint(excerpt, article_url)
         author = parser.meta.get("author")
         items.append({
@@ -818,6 +823,7 @@ def collect_hespress_news(source: dict) -> list[dict]:
         if len(items) >= limit:
             break
     return items
+
 
 
 def collect_html_links(source: dict) -> list[dict]:

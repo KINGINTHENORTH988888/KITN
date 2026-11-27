@@ -1,5 +1,6 @@
 import hashlib
 import json
+import math
 import re
 import shutil
 import os
@@ -219,6 +220,67 @@ def _sync_public_index(src_file: Path, dst_file: Path) -> None:
 
 
 
+
+def _statistics_period_sort_key(value: object) -> tuple:
+    """Sort annual, quarterly, monthly and daily statistical periods chronologically."""
+    raw = str(value or "").strip()
+    match = re.fullmatch(r"((?:19|20)\d{2})-(\d{2})-(\d{2})", raw)
+    if match:
+        return (0, int(match.group(1)), int(match.group(2)), int(match.group(3)), raw)
+    match = re.fullmatch(r"((?:19|20)\d{2})-(\d{2})", raw)
+    if match:
+        return (0, int(match.group(1)), int(match.group(2)), 1, raw)
+    match = re.fullmatch(r"((?:19|20)\d{2})-T([1-4])", raw, re.IGNORECASE)
+    if match:
+        return (0, int(match.group(1)), (int(match.group(2)) - 1) * 3 + 1, 1, raw)
+    match = re.fullmatch(r"T([1-4])[-/]((?:19|20)\d{2})", raw, re.IGNORECASE)
+    if match:
+        return (0, int(match.group(2)), (int(match.group(1)) - 1) * 3 + 1, 1, raw)
+    match = re.fullmatch(r"((?:19|20)\d{2})", raw)
+    if match:
+        return (0, int(match.group(1)), 1, 1, raw)
+    return (1, 0, 0, 0, raw.casefold())
+
+
+def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at: str) -> dict:
+    """Merge new observations into a series while retaining every prior period."""
+    merged = dict(existing) if isinstance(existing, dict) else {}
+    incoming = dict(incoming) if isinstance(incoming, dict) else {}
+
+    for key, value in incoming.items():
+        if key in ("history", "latest", "previous"):
+            continue
+        if value is not None and value != "":
+            merged[key] = value
+
+    points_by_period: dict[str, dict] = {}
+    for series in (existing or {}, incoming):
+        if not isinstance(series, dict):
+            continue
+        points = list(series.get("history") or [])
+        points.extend(point for point in (series.get("previous"), series.get("latest")) if isinstance(point, dict))
+        for point in points:
+            if not isinstance(point, dict) or point.get("year") is None or point.get("value") is None:
+                continue
+            try:
+                if not math.isfinite(float(point["value"])):
+                    continue
+            except (TypeError, ValueError, OverflowError):
+                continue
+            points_by_period[str(point["year"])] = dict(point)
+
+    if points_by_period:
+        history = sorted(points_by_period.values(), key=lambda point: _statistics_period_sort_key(point.get("year")))
+        merged["history"] = history
+        merged["latest"] = history[-1]
+        merged["previous"] = history[-2] if len(history) > 1 else None
+    else:
+        merged["history"] = []
+
+    merged["last_successful_collection_at"] = collected_at
+    merged["collection_status"] = "collected"
+    return merged
+
 def _is_valid_statistics_series(series: dict) -> bool:
     """Reject legacy BAM XLSX series with impossible years or footnote-only units."""
     code = str(series.get("indicator_code") or "")
@@ -356,7 +418,9 @@ def run() -> dict:
                 series = raw.get("statistics_series") if isinstance(raw, dict) else None
                 if isinstance(series, dict) and series.get("indicator_code"):
                     code = str(series["indicator_code"])
-                    statistics_series[code] = series
+                    statistics_series[code] = _merge_statistics_series(
+                        statistics_series.get(code), series, now_iso
+                    )
                     statistics_count += 1
                     statistics_codes.append(code)
             if not raw_items:
@@ -536,8 +600,17 @@ def run() -> dict:
         try:
             previous_statistics = json.loads(STATISTICS_FILE.read_text(encoding="utf-8"))
             for previous in previous_statistics.get("indicators", []):
-                if isinstance(previous, dict) and previous.get("indicator_code"):
-                    statistics_series.setdefault(str(previous["indicator_code"]), previous)
+                if not isinstance(previous, dict) or not previous.get("indicator_code"):
+                    continue
+                code = str(previous["indicator_code"])
+                if code in statistics_series:
+                    statistics_series[code] = _merge_statistics_series(
+                        previous, statistics_series[code], now_iso
+                    )
+                else:
+                    carried = dict(previous)
+                    carried["collection_status"] = "carried_forward"
+                    statistics_series[code] = carried
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
     statistics_series = {

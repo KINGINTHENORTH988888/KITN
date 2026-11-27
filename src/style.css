@@ -1670,3 +1670,113 @@ textarea {
   .watch-topic-grid { grid-template-columns: 1fr; }
   .watch-topic-card { min-height: 130px; }
 }
+
+.library-directory {
+  display: grid;
+  gap: 1.15rem;
+  margin: 1.2rem 0 1.5rem;
+}
+.library-overview {
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface-alt);
+}
+.library-overview h3 {
+  margin: 0.35rem 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+}
+.library-overview p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+}
+.library-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+.library-metrics > div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--surface);
+}
+.library-metrics strong {
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+}
+.library-metrics span,
+.library-section-heading > span,
+.library-scope-note {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.library-shelf {
+  display: grid;
+  gap: 0.7rem;
+}
+.library-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.library-section-heading h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+.library-type-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.library-type-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.82rem;
+}
+.library-type-chip strong {
+  font-variant-numeric: tabular-nums;
+}
+.library-recent-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.library-recent-item {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem 0.95rem;
+  text-align: start;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  cursor: pointer;
+}
+.library-recent-item:hover {
+  border-color: var(--accent);
+}
+.library-recent-item > span,
+.library-recent-item > small {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.library-recent-item > strong {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.library-scope-note {
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .library-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .library-recent-list { grid-template-columns: 1fr; }
+}

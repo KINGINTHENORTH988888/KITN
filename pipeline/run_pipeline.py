@@ -388,7 +388,7 @@ def _merge_regional_statistics_series(
     incoming: dict,
     collected_at: str,
 ) -> dict | None:
-    """Merge one region/scope/indicator while preserving earlier quarterly observations."""
+    """Merge one regional indicator while preserving earlier annual or quarterly observations."""
     key = str(incoming.get("series_key") or incoming.get("id") or "").strip()
     history = incoming.get("history")
     if not key or not isinstance(history, list) or not history:

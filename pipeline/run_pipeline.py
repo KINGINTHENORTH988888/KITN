@@ -2,6 +2,7 @@ import hashlib
 import json
 import re
 import shutil
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -16,7 +17,7 @@ from pipeline.config import (
     STATISTICS_FILE,
     PUBLIC_STATISTICS_FILE,
 )
-from pipeline.collectors import collect_from_source
+from pipeline.collectors import collect_crossref_by_doi, collect_from_source
 from pipeline.processors import clean_text, normalize_doi, process_raw_item, resolve_space, sanitize_url
 
 
@@ -379,6 +380,61 @@ def run() -> dict:
             "checked_at": now_iso,
         })
 
+    # Enrich a small batch of DOI-backed scientific records without replacing trusted fields.
+    enrichment_limit = max(0, min(30, int(os.environ.get("KITN_DOI_ENRICHMENT_LIMIT", "12"))))
+    enrichment_attempted = 0
+    enrichment_updated = 0
+    for iid in order_ids:
+        if enrichment_attempted >= enrichment_limit:
+            break
+        item = by_id.get(iid)
+        if not item:
+            continue
+        is_science = item.get("espace") == "science" or item.get("type_document") == "publication_scientifique"
+        doi = normalize_doi(item.get("doi"))
+        if not is_science or not doi:
+            continue
+        needs_metadata = (
+            not str(item.get("resume") or "").strip()
+            or not (item.get("auteurs") or [])
+            or not str(item.get("revue_ou_institution") or "").strip()
+            or not str(item.get("date_publication") or "").strip()
+        )
+        if not needs_metadata:
+            continue
+
+        enrichment_attempted += 1
+        try:
+            raw_enrichment = collect_crossref_by_doi(doi)
+            if not raw_enrichment:
+                continue
+            enrichment_source = {
+                "id": "crossref_doi_enrichment",
+                "name": "Crossref — enrichissement par DOI",
+                "target_space": "science",
+                "default_doc_type": "publication_scientifique",
+                "lang_hint": item.get("langue_originale") or "en",
+            }
+            enriched = process_raw_item(
+                raw_enrichment,
+                enrichment_source,
+                now_iso=now_iso,
+                bypass_relevance=True,
+            )
+            if not enriched:
+                continue
+            before_fp = _content_fingerprint(item)
+            merged, changed = _merge_preserving_rich_fields(item, enriched, now_iso)
+            if changed:
+                merged["metadata_enrichie_le"] = now_iso
+                merged["metadata_source_enrichissement"] = "Crossref"
+                by_id[iid] = merged
+                if before_fp != _content_fingerprint(merged):
+                    enrichment_updated += 1
+        except Exception:
+            # One missing DOI record must never stop the full collection pipeline.
+            continue
+
     final_items = [by_id[iid] for iid in order_ids if iid in by_id]
     final_items.sort(key=lambda it: str(it.get("date_publication") or ""), reverse=True)
 
@@ -391,6 +447,8 @@ def run() -> dict:
         "processed_in_run": total_processed,
         "added_in_run": total_added,
         "updated_in_run": total_updated,
+        "doi_enrichment_attempted": enrichment_attempted,
+        "doi_enrichment_updated": enrichment_updated,
         "items": final_items,
     }
     INDEX_FILE.write_text(json.dumps(index_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

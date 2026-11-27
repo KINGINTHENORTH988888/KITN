@@ -698,7 +698,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
             used_percentage_positions.add(position)
             return float(selected.group(1).replace(",", "."))
 
-        youth_unemployment = labeled_percentage(r"\b(?:jeunes|15\s*[-–]\s*24\s*ans)\b", r"ch[oô]mage")
+        youth_unemployment = labeled_percentage(r"\b(?:jeunes(?:\s+de\s+15\s*[-–]\s*24\s*ans)?|15\s*[-–]\s*24\s*ans)\b", r"ch[oô]mage")
         women_unemployment = labeled_percentage(r"\bfemmes\b", r"ch[oô]mage")
         if youth_unemployment is not None:
             metrics.append((
@@ -713,7 +713,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 "Taux de chômage strict des femmes selon l'EMO.",
             ))
         youth_underutilization = labeled_percentage(
-            r"\b(?:jeunes|15\s*[-–]\s*24\s*ans)\b", r"sous[- ]utilisation"
+            r"\b(?:jeunes(?:\s+de\s+15\s*[-–]\s*24\s*ans)?|15\s*[-–]\s*24\s*ans)\b", r"sous[- ]utilisation"
         )
         women_underutilization = labeled_percentage(r"\bfemmes\b", r"sous[- ]utilisation")
         if youth_underutilization is not None:

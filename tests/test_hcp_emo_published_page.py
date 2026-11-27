@@ -60,6 +60,10 @@ class TestHcpEmoPublishedPage(unittest.TestCase):
         self.assertEqual(values["HCP_EMO_WOMEN_UNDERUTILIZATION"], 28.5)
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
         self.assertEqual(items[0]["statistics_series"]["source_url"], article_url)
+        self.assertTrue(items[0]["statistics_series"]["methodology_break"])
+        self.assertEqual(items[0]["statistics_series"]["comparability_group"], "HCP_EMO_2026")
+        self.assertIn("ne pas raccorder directement", items[0]["statistics_series"]["methodology_note_fr"].lower())
+        self.assertIn("انقطاع منهجي", items[0]["statistics_series"]["methodology_note_ar"])
 
 
 if __name__ == "__main__":

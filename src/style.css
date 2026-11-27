@@ -1129,3 +1129,10 @@ textarea {
   .science-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .science-specific-filters { grid-template-columns: 1fr; }
 }
+
+
+.science-quality-note {
+  margin: -0.25rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}

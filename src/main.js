@@ -654,6 +654,7 @@ let remoteItems = [];
 let indexItems = [];
 let statisticsData = null;
 let regionalStatisticsData = null;
+let sourceHealthData = null;
 let regionalIndicatorCode = "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT";
 let regionalResidenceScope = "all";
 let statisticsCategory = "all";
@@ -1219,6 +1220,19 @@ function renderWatchDashboard() {
   });
   const topTypes = [...types.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
   const typeLabels = topTypes.map(([type, count]) => '<span class="watch-type-chip">' + escapeHtml(formatDocType(type) || (isAr ? "غير مصنف" : "Non classé")) + ' <strong>' + count + '</strong></span>').join("");
+  const sourceRows = Array.isArray(sourceHealthData?.sources) ? sourceHealthData.sources : [];
+  const enabledSources = sourceRows.filter((source) => source.enabled !== false);
+  const sourceOk = enabledSources.filter((source) => source.status === "ok").length;
+  const sourceAttention = enabledSources.filter((source) => source.status === "warning" || source.status === "error").length;
+  const sourceDate = sourceHealthData?.updated_at && !Number.isNaN(Date.parse(sourceHealthData.updated_at))
+    ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceHealthData.updated_at))
+    : "";
+  const sourceHealthMarkup = sourceRows.length
+    ? '<section class="watch-source-health" aria-label="' + (isAr ? "حالة مصادر الرصد" : "État des sources de veille") + '">' +
+      '<div class="watch-source-heading"><div><span class="mini-label">' + (isAr ? "شفافية الجمع" : "TRANSPARENCE DE LA COLLECTE") + '</span><h4>' + (isAr ? "حالة مصادر المعلومات" : "État des sources d’information") + '</h4></div><span class="watch-source-updated">' + (isAr ? "آخر تحديث" : "Dernière mise à jour") + (sourceDate ? " · " + escapeHtml(sourceDate) : "") + '</span></div>' +
+      '<div class="watch-source-metrics"><div><strong>' + sourceOk + '/' + enabledSources.length + '</strong><span>' + (isAr ? "مصادر تعمل" : "sources opérationnelles") + '</span></div><div><strong>' + sourceAttention + '</strong><span>' + (isAr ? "مصادر تحتاج إلى متابعة" : "sources à surveiller") + '</span></div><div><strong>' + Number(sourceHealthData.total_fetched || 0).toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "عناصر جرى فحصها" : "éléments examinés") + '</span></div></div>' +
+      '<p>' + (isAr ? "تعكس هذه الحالة آخر تقرير آلي متاح، ولا تعني أن جميع المصادر الخارجية متاحة في الوقت الفعلي." : "Cet état reflète le dernier rapport automatisé disponible ; il ne garantit pas la disponibilité en temps réel de chaque site externe.") + '</p></section>'
+    : '<p class="watch-source-unavailable">' + (isAr ? "تقرير حالة المصادر غير متاح حالياً." : "Le rapport d’état des sources n’est pas disponible pour le moment.") + '</p>';
   return '<section class="watch-dashboard">' +
     '<div class="watch-intro"><div><span class="mini-label">' + (isAr ? "رصد متعدد المجالات" : "VEILLE MULTITHÉMATIQUE") + '</span>' +
     '<h3>' + (isAr ? "متابعة المستجدات وفهمها" : "Suivre les évolutions, comprendre les enjeux") + '</h3>' +
@@ -1226,6 +1240,7 @@ function renderWatchDashboard() {
     '<div class="watch-total"><strong>' + watchItems.length.toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "مادة مفهرسة" : "notices indexées") + '</span></div></div>' +
     '<div class="watch-quality-row"><span>' + (isAr ? "تم التحقق" : "Validées") + ' <strong>' + reviewedItems.length + '</strong></span><span>' + (isAr ? "تحتاج إلى المراجعة" : "À vérifier") + ' <strong>' + reviewItems.length + '</strong></span><span>' + (isAr ? "أنواع الوثائق الأكثر حضوراً" : "Types documentaires les plus présents") + '</span>' + typeLabels + '</div>' +
     '<div class="watch-topic-grid">' + cards + '</div>' +
+    sourceHealthMarkup +
     '<p class="watch-footnote">' + (isAr ? "الأعداد تمثل les notices actuellement indexées dans KITN، وليست قياساً شاملاً لكل الأخبار المنشورة." : "Les volumes correspondent aux notices actuellement indexées dans KITN ; ils ne représentent pas un recensement exhaustif de toute l’actualité.") + '</p>' +
     '</section>';
 }
@@ -2409,6 +2424,18 @@ async function initRegionalStatistics() {
   render();
 }
 
+async function initSourceHealth() {
+  try {
+    const res = await fetch("/data/sources-health.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("Source health report unavailable");
+    const data = await res.json();
+    sourceHealthData = data && Array.isArray(data.sources) ? data : null;
+  } catch {
+    sourceHealthData = null;
+  }
+  if (activeSpace === "veille") render();
+}
+
 async function initIndex() {
   try {
     const res = await fetch("/data/index/search-index.json", { cache: "no-store" });
@@ -2463,6 +2490,7 @@ window.addEventListener("popstate", () => {
   render();
 });
 render();
+initSourceHealth();
 initAcademy();
 initIndex();
 initStatistics();

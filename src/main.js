@@ -2,6 +2,7 @@ import "./style.css";
 import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { normalizeSearchText } from "./search.js";
+import { getPageSlice } from "./pagination.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -645,6 +646,8 @@ let scienceDisciplineFilter = "";
 let scienceYearFilter = "";
 let futureDatesOnly = false;
 let favoritesOnly = false;
+let resultsPage = 1;
+const RESULTS_PAGE_SIZE = 24;
 let favorites = loadJsonStorage(FAVORITES_KEY, []);
 let manualItems = loadJsonStorage(MANUAL_ITEMS_KEY, []);
 let statusOverrides = {};
@@ -1427,6 +1430,9 @@ function renderResults() {
   if (!container || !countBadge) return;
 
   const filtered = getFilteredItems();
+  const pagination = getPageSlice(filtered, resultsPage, RESULTS_PAGE_SIZE);
+  resultsPage = pagination.page;
+  const pageItems = pagination.items;
   const globalQuery = normalizeSearchText(searchQuery);
   const globalStatisticMatches = activeSpace === "all" && globalQuery
     ? (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).filter((indicator) => {
@@ -1461,7 +1467,7 @@ function renderResults() {
     return;
   }
 
-  const documentResultsHtml = filtered
+  const documentResultsHtml = pageItems
     .map((item, idx) => {
       const isSaved = favorites.includes(getItemKey(item));
       const st = getEffectiveStatus(item);
@@ -1528,7 +1534,24 @@ function renderResults() {
         return `<button type="button" class="global-stat-result" data-global-stat="${escapeHtml(indicator.indicator_code || "")}"><span class="global-stat-result-type">${lang === "ar" ? "مؤشر إحصائي" : "Indicateur statistique"} · ${escapeHtml(indicator.indicator_code || "")}</span><strong>${escapeHtml(label)}</strong>${description ? `<span>${escapeHtml(description)}</span>` : ""}<small>${escapeHtml(indicator.source_name || "")}${latest ? " · " + escapeHtml(latest) : ""}</small></button>`;
       }).join("")}</section>`
     : "";
-  container.innerHTML = documentResultsHtml + statisticResultsHtml;
+  const paginationHtml = pagination.pageCount > 1
+    ? `<nav class="results-pagination" aria-label="${lang === "ar" ? "التنقل بين صفحات النتائج" : "Pagination des résultats"}">
+        <button type="button" class="link-btn" data-results-page="${pagination.page - 1}" ${pagination.page <= 1 ? "disabled" : ""}>${lang === "ar" ? "السابق" : "Précédent"}</button>
+        <span aria-live="polite">${lang === "ar" ? "صفحة" : "Page"} <strong>${pagination.page}</strong> / ${pagination.pageCount} <small>· ${pagination.startIndex + 1}–${pagination.endIndex} / ${pagination.total}</small></span>
+        <button type="button" class="link-btn" data-results-page="${pagination.page + 1}" ${pagination.page >= pagination.pageCount ? "disabled" : ""}>${lang === "ar" ? "التالي" : "Suivant"}</button>
+      </nav>`
+    : "";
+  container.innerHTML = documentResultsHtml + statisticResultsHtml + paginationHtml;
+
+  container.querySelectorAll("[data-results-page]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const requestedPage = Number(btn.getAttribute("data-results-page"));
+      if (!Number.isInteger(requestedPage)) return;
+      resultsPage = requestedPage;
+      renderResults();
+      container.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  });
 
   container.querySelectorAll("[data-global-stat]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1548,7 +1571,7 @@ function renderResults() {
   container.querySelectorAll("[data-open-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const i = Number(btn.getAttribute("data-open-index"));
-      activeModalItem = filtered[i] || null;
+      activeModalItem = pageItems[i] || null;
       renderModal();
     });
   });
@@ -1556,7 +1579,7 @@ function renderResults() {
   container.querySelectorAll("[data-fav-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const i = Number(btn.getAttribute("data-fav-index"));
-      if (filtered[i]) toggleFavorite(filtered[i]);
+      if (pageItems[i]) toggleFavorite(pageItems[i]);
     });
   });
 }

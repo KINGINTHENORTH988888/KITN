@@ -193,10 +193,10 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
 
     score = 0
     if strong_matches:
-        score += 35 if title_matches else 20
-        score += min(30, 10 * max(0, len(strong_matches) - 1))
+        score += 35 if title_matches else 25
+        score += min(20, 10 * max(0, len(strong_matches) - 1))
     if pole_hits >= 1:
-        score += min(25, 12 * pole_hits)
+        score += min(30, 15 * pole_hits)
     if is_national_source and (strong_matches or pole_hits >= 1):
         score += 15
 
@@ -204,7 +204,7 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
 
     # Une mention seule dans le titre sans signal thématique (pole_hits == 0) ni source nationale est rejetée
     has_thematic_context = pole_hits >= 1 or is_national_source
-    is_relevant = score >= 45 and len(strong_matches) >= 1 and has_thematic_context
+    is_relevant = score >= 40 and len(strong_matches) >= 1 and has_thematic_context
 
     if title_matches and pole_hits >= 1:
         lien_maroc = "direct"

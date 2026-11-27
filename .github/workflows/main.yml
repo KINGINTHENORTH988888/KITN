@@ -51,6 +51,26 @@ jobs:
       - name: Run unit tests
         run: PYTHONPATH=. python -m unittest discover -s tests -v
 
+      - name: Report statistical dataset distribution
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          path = Path("data/statistics.json")
+          if not path.exists():
+              print("STATISTICS DATASET: missing")
+              raise SystemExit(0)
+          data = json.loads(path.read_text(encoding="utf-8"))
+          indicators = data.get("indicators", [])
+          print("STATISTICS TOTAL:", data.get("indicator_count"), "| actual array length:", len(indicators))
+          print("STATISTICS BY POLE:", json.dumps(Counter(x.get("pole") or "(missing)" for x in indicators), ensure_ascii=False, sort_keys=True))
+          print("STATISTICS BY CATEGORY:", json.dumps(Counter(x.get("category") or "(missing)" for x in indicators), ensure_ascii=False, sort_keys=True))
+          print("STATISTICS BY SOURCE:", json.dumps(Counter(x.get("source_name") or "(missing)" for x in indicators), ensure_ascii=False, sort_keys=True))
+          print("STATISTICS WITHOUT POLE:", sum(not x.get("pole") for x in indicators))
+          PY
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:

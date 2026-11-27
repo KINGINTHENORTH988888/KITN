@@ -209,3 +209,11 @@ test("mobile header wraps navigation onto a full-width row", () => {
   assert.match(mobile, /\.nav\s*\{[\s\S]*?flex:\s*0 0 100%/);
   assert.match(mobile, /\.nav\s*\{[\s\S]*?min-width:\s*0/);
 });
+
+test("veille dashboard exposes source-collection transparency without assuming live availability", () => {
+  assert.match(source, /fetch\("\/data\/sources-health\.json", \{ cache: "no-store" \}\)/);
+  assert.match(source, /sourceHealthData\?\.sources/);
+  assert.match(source, /Dernière mise à jour/);
+  assert.match(source, /ne garantit pas la disponibilité en temps réel/);
+  assert.match(styles, /\.watch-source-health/);
+});

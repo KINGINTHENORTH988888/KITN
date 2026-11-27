@@ -1182,7 +1182,7 @@ function renderRegionalStatisticsDashboard() {
       ? "ms: دلالة إحصائية متوسطة · *: قيمة مقدّرة · ps: غير دال إحصائياً بما يكفي · .: غير متاح."
       : "ms : significativité moyenne · * : valeur estimée · ps : résultat insuffisamment significatif · . : valeur non disponible."}</p>
     <p class="regional-methodology-note">${escapeHtml(methodologyText)}</p>
-    <div class="stat-card-foot"><span>${escapeHtml(isAr ? model.sourceNameAr : model.sourceName)} · ${model.rows.length} ${isAr ? (model.rows.some((row) => row.geographyCode === "MAR") ? "جهة ومجموع وطني" : "جهة") : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"} ↗</a>` : ""}</div>
+    <div class="stat-card-foot"><span>${escapeHtml(isAr ? model.sourceNameAr : model.sourceName)} · ${model.rows.length} ${isAr ? (model.rows.some((row) => row.geographyCode === "MAR") ? "جهة ومجموع وطني" : "جهة") : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"}${model.sourcePage ? (isAr ? " · الصفحة " : " · p. ") + model.sourcePage : ""} ↗</a>` : ""}</div>
   </section>`;
 }
 

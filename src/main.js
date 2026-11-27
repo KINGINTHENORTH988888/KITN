@@ -1103,7 +1103,9 @@ function renderRegionalStatisticsDashboard() {
     : (model.generatedAt ? String(model.generatedAt).slice(0, 10) : "");
   const collectionLabel = model.collectionStatus === "carried_forward"
     ? (isAr ? "بيانات محفوظة منذ آخر جمع ناجح" : "Données conservées depuis la dernière collecte réussie")
-    : (isAr ? "آخر جمع ناجح" : "Dernière collecte réussie");
+    : model.collectionStatus === "partial"
+      ? (isAr ? "تحديث جزئي للسلاسل" : "Mise à jour partielle des séries")
+      : (isAr ? "آخر جمع ناجح" : "Dernière collecte réussie");
   const methodologyNote = isAr ? model.methodologyNoteAr : model.methodologyNoteFr;
   const methodologyText = methodologyNote || (isAr
     ? "تنبيه منهجي: لا ينبغي وصل نتائج EMO 2026 مباشرة بالسلاسل القديمة للبحث الوطني حول التشغيل."

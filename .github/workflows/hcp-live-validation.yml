@@ -86,7 +86,21 @@ jobs:
           git add -- data/regional-statistics.json public/data/regional-statistics.json data/statistics.json public/data/statistics.json
           if ! git diff --staged --quiet; then
             git commit -m "[skip hcp data refresh] chore(data): publish verified HCP regional dataset"
-            git push origin "HEAD:$GITHUB_HEAD_REF"
+            for attempt in 1 2 3; do
+              git fetch origin "$GITHUB_HEAD_REF"
+              if ! git rebase FETCH_HEAD; then
+                git rebase --abort || true
+                echo "La branche a reçu des changements incompatibles ; arrêt sans écraser le code."
+                exit 1
+              fi
+              if git push origin "HEAD:$GITHUB_HEAD_REF"; then
+                exit 0
+              fi
+              echo "Push concurrent détecté (tentative $attempt/3)."
+              sleep $((attempt * 2))
+            done
+            echo "Impossible de publier les données HCP après trois tentatives."
+            exit 1
           else
             echo "HCP regional datasets are already current."
           fi

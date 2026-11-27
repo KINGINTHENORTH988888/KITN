@@ -671,8 +671,8 @@ function isSafeHttpUrl(url) {
 }
 
 function getDoiUrl(doi) {
-  const value = String(doi || "").trim().replace(/^https?:\\/\\/(dx\\.)?doi\\.org\\//i, "");
-  if (!/^10\\.\\d{4,9}\\/\\S+$/i.test(value)) return "";
+  const value = String(doi || "").trim().replace(/^https?:\/\/(dx\.)?doi\.org\//i, "");
+  if (!/^10\.\d{4,9}\/\S+$/i.test(value)) return "";
   return "https://doi.org/" + value.split("/").map(encodeURIComponent).join("/");
 }
 
@@ -1236,7 +1236,7 @@ function render() {
   const scienceItems = indexItems.filter((it) => resolveItemSpace(it) === "science");
   const scienceYears = [...new Set(scienceItems
     .map((it) => String(it.date_publication || "").slice(0, 4))
-    .filter((year) => /^\\d{4}$/.test(year)))]
+    .filter((year) => /^\d{4}$/.test(year)))]
     .sort((a, b) => b.localeCompare(a));
   const scienceWithAbstract = scienceItems.filter((it) => String(it.resume || "").trim()).length;
   const scienceWithDoi = scienceItems.filter((it) => getDoiUrl(it.doi)).length;

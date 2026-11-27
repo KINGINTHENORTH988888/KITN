@@ -18,7 +18,7 @@ from urllib.parse import quote, unquote, urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, normalize_doi, sanitize_url
-from pipeline.hcp_regional import parse_hcp_emo_regional_tables
+from pipeline.hcp_regional import HCP_EMO_REGIONS, HCP_EMO_REGIONAL_INDICATORS, parse_hcp_emo_regional_tables
 from pypdf import PdfReader
 
 _USER_AGENT = (
@@ -679,19 +679,51 @@ def _extract_hcp_emo_regional_statistics(
             )
             if len(parsed) > len(best_series):
                 best_series = parsed
-            if len(best_series) >= 200:
+            expected_geographies = {code for _name, code in HCP_EMO_REGIONS} | {"MAR"}
+            expected_keys = {
+                f"{indicator_code}:{scope}:{geography_code}"
+                for indicator_code, _label, _pattern in HCP_EMO_REGIONAL_INDICATORS
+                for scope in ("all", "urban", "rural")
+                for geography_code in expected_geographies
+            }
+            parsed_keys = {
+                str(item.get("series_key") or item.get("id") or "")
+                for item in parsed if isinstance(item, dict)
+            }
+            if len(parsed) > len(best_series):
+                best_series = parsed
+            if parsed_keys == expected_keys:
                 break
         except Exception as exc:
             errors.append(f"{attachment_url}: {type(exc).__name__}: {exc}")
 
+    expected_geographies = {code for _name, code in HCP_EMO_REGIONS} | {"MAR"}
+    expected_keys = {
+        f"{indicator_code}:{scope}:{geography_code}"
+        for indicator_code, _label, _pattern in HCP_EMO_REGIONAL_INDICATORS
+        for scope in ("all", "urban", "rural")
+        for geography_code in expected_geographies
+    }
     if best_series:
-        if len(best_series) >= 200:
+        parsed_keys = {
+            str(item.get("series_key") or item.get("id") or "")
+            for item in best_series if isinstance(item, dict)
+        }
+        missing_keys = sorted(expected_keys - parsed_keys)
+        unexpected_keys = sorted(parsed_keys - expected_keys)
+        if not missing_keys and not unexpected_keys and len(best_series) == len(expected_keys):
             return best_series, []
         diagnostics = " | ".join(page_diagnostics[-20:])
-        return best_series, [
-            f"Extraction régionale HCP partielle ({len(best_series)} séries sur 234 attendues). "
-            f"Pages reconnues : {diagnostics or 'aucune page de tableau identifiée'}."
-        ]
+        detail = (
+            f"Extraction régionale HCP partielle ({len(best_series)} séries uniques sur "
+            f"{len(expected_keys)} attendues ; {len(missing_keys)} combinaisons manquantes"
+        )
+        if unexpected_keys:
+            detail += f" ; {len(unexpected_keys)} combinaisons inattendues"
+        detail += ")."
+        if missing_keys:
+            detail += " Exemples manquants : " + ", ".join(missing_keys[:8]) + "."
+        return best_series, [f"{detail} Pages reconnues : {diagnostics or 'aucune page de tableau identifiée'}."]
     detail = " | ".join(errors[:2]) if errors else "aucun tableau régional français reconnu"
     diagnostics = " | ".join(page_diagnostics[:8])
     if diagnostics:

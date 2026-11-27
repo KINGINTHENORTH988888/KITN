@@ -138,3 +138,20 @@ Un nouveau fichier `tests/published-data.test.js` ajoute des contrôles automati
 Le commit contenant ce test a été poussé sur la branche. Le déploiement Pages confirme la compilation du site, mais **ne prouve pas à lui seul que les tests Node ont été exécutés**. Le résultat CI de ce nouveau test reste à confirmer : sur la page Checks de la PR #22, au moment du contrôle du commit `f27bf50`, les entrées `Tests`, `HCP EMO Live Validation` et `KITN Veille Automatisée` étaient encore en attente, tandis que `Cloudflare Pages` était réussi.
 
 **Décision :** continuer le travail sur la branche de revue. Ne pas fusionner ni basculer le domaine public tant que les vérifications fonctionnelles et la stratégie de déploiement ne sont pas terminées.
+
+
+## 12. Rectification du statut CI et du périmètre Cloudflare
+
+Une vérification ultérieure des exécutions GitHub Actions associées au commit correctif `40e035c46cfc57186321fb9864d7abb68866a00a` précise le statut :
+
+- Le workflow `Tests` a terminé avec succès ; son job `python-tests` confirme les tests Python.
+- Le workflow `HCP EMO Live Validation` a terminé avec succès, y compris l'extraction régionale, la publication de l'aperçu social et le build frontend avec les données régionales.
+- Le workflow `KITN Veille Automatisée` a été annulé pendant l'étape `Validate HCP 2026 social indicators PDF`. Les étapes de distribution statistique, tests frontend et build Vite de ce run ont donc été ignorées.
+
+**Conclusion CI corrigée :** les tests Python et la validation HCP dédiée sont réussis, mais le workflow principal de validation PR n'a pas terminé. Les tests frontend et le build Vite doivent encore être confirmés sur un run complet après le correctif. La mention antérieure d'une validation complète de la PR ne doit pas être interprétée comme un résultat acquis.
+
+### Clarification Cloudflare
+
+L'arborescence complète de la branche a été inspectée. Elle contient l'application Vite racine et un prototype Astro statique dans `web/`, mais aucun fichier Worker identifiable, aucune configuration Wrangler (`wrangler.toml`, `wrangler.json` ou `wrangler.jsonc`) et aucun workflow GitHub de déploiement Worker. Le code Vite charge les données publiées depuis des fichiers statiques `/data/*.json`.
+
+Cela ne prouve pas que le service Cloudflare Worker externe est inutile : il peut être configuré séparément dans le tableau de bord Cloudflare ou dans un autre dépôt. En revanche, le dépôt KITN actuellement audité ne fournit pas de code ni de configuration permettant d'expliquer ou de réparer son build. Il faut obtenir le journal détaillé du build Worker et identifier le projet Cloudflare concerné avant toute modification. Le déploiement Cloudflare Pages de prévisualisation reste un service distinct.

@@ -316,7 +316,7 @@ class TestPipelineProcessors(unittest.TestCase):
     def test_research_aggregators_do_not_get_national_source_boost(self):
         aggregate = evaluate_morocco_relevance(
             "Research methods in astronomy",
-            "A comparative research paper with no Moroccan policy focus.",
+            "A comparative research paper on astronomy and astrophysics.",
             {"id": "crossref_maroc", "type": "crossref"},
         )
         self.assertFalse(aggregate["is_relevant"])

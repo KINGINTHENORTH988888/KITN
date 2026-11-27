@@ -44,6 +44,9 @@ const payload = {
       ],
       source_name: "HCP — EMO",
       source_url: "https://www.hcp.ma/attachment/2928207/",
+      methodology_break: true,
+      methodology_note_fr: "Rupture méthodologique EMO 2026.",
+      methodology_note_ar: "انقطاع منهجي في بحث EMO 2026.",
     },
     {
       indicator_code: "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT",

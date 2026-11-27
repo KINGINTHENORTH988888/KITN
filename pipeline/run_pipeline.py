@@ -400,9 +400,11 @@ def _merge_regional_statistics_series(
             merged[field] = value
 
     points_by_period: dict[str, dict] = {}
-    for point in (existing or {}).get("history", []) if isinstance((existing or {}).get("history"), list) else []:
-        if isinstance(point, dict) and point.get("year"):
-            points_by_period[str(point["year"])] = dict(point)
+    existing_history = (existing or {}).get("history")
+    if isinstance(existing_history, list):
+        for point in existing_history:
+            if isinstance(point, dict) and point.get("year"):
+                points_by_period[str(point["year"])] = dict(point)
     for point in history:
         if isinstance(point, dict) and point.get("year"):
             value = point.get("value")

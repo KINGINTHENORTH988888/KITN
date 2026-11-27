@@ -799,34 +799,49 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
              number(r"nombre de personnes en emploi contre revenu atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
              "Effectif des personnes en emploi contre revenu, en millions."),
         ]
-        pair = re.search(
-            r"taux de chômage strict.{0,100}?respectivement à\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*et\s*([0-9]+(?:[,.][0-9]+)?)\s*%",
+        population_pair = re.search(
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les\s+(jeunes|femmes)"
+            r"(?:\s+de\s+15\s*[-–]\s*24\s*ans)?\s+et\s+"
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les\s+(jeunes|femmes)",
             body, re.IGNORECASE,
         )
-        if pair:
+        unemployment_pair = re.search(
+            r"taux de chômage strict s['’]élève respectivement à\s*"
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*et\s*"
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*(?:pour ces deux catégories)?",
+            body, re.IGNORECASE,
+        )
+        category_order: list[str] = []
+        if population_pair:
+            first_group = population_pair.group(2).casefold()
+            second_group = population_pair.group(4).casefold()
+            if {first_group, second_group} == {"jeunes", "femmes"}:
+                category_order = [first_group, second_group]
+                underutilization_values = {
+                    first_group: float(population_pair.group(1).replace(",", ".")),
+                    second_group: float(population_pair.group(3).replace(",", ".")),
+                }
+                metrics.extend([
+                    ("HCP_EMO_YOUTH_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les jeunes (15-24 ans)", "%",
+                     underutilization_values["jeunes"],
+                     "Taux composite de sous-utilisation de la main-d’œuvre des jeunes de 15 à 24 ans."),
+                    ("HCP_EMO_WOMEN_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les femmes", "%",
+                     underutilization_values["femmes"],
+                     "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
+                ])
+
+        if population_pair and unemployment_pair and category_order:
+            unemployment_values = {
+                category_order[0]: float(unemployment_pair.group(1).replace(",", ".")),
+                category_order[1]: float(unemployment_pair.group(2).replace(",", ".")),
+            }
             metrics.extend([
                 ("HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
-                 float(pair.group(1).replace(",", ".")),
+                 unemployment_values["jeunes"],
                  "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO."),
                 ("HCP_EMO_WOMEN_UNEMPLOYMENT", "Taux de chômage strict des femmes", "%",
-                 float(pair.group(2).replace(",", ".")),
+                 unemployment_values["femmes"],
                  "Taux de chômage strict des femmes selon l'EMO."),
-            ])
-        underutilization_pairs = list(re.finditer(
-            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les jeunes.{0,100}?([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les femmes",
-            body, re.IGNORECASE,
-        ))
-        # The article mentions the unemployment pair first and the broader
-        # underutilization pair afterwards; use the latter, not the first match.
-        underutilization_pair = underutilization_pairs[-1] if underutilization_pairs else None
-        if underutilization_pair:
-            metrics.extend([
-                ("HCP_EMO_YOUTH_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les jeunes (15-24 ans)", "%",
-                 float(underutilization_pair.group(1).replace(",", ".")),
-                 "Taux composite de sous-utilisation de la main-d’œuvre des jeunes de 15 à 24 ans."),
-                ("HCP_EMO_WOMEN_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les femmes", "%",
-                 float(underutilization_pair.group(2).replace(",", ".")),
-                 "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
             ])
         expected_codes = {
             "HCP_EMO_UNEMPLOYMENT", "HCP_EMO_UNDERUTILIZATION",

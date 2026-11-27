@@ -974,6 +974,17 @@ function renderStatisticsDashboard() {
       : `${delta > 0 ? "+" : ""}${formattedDelta}${changeUnit ? ` ${changeUnit}` : ""} ${comparisonLabel}`;
     const sourceUrl = isSafeHttpUrl(indicator.source_url) ? indicator.source_url : "";
     const sourceLabel = indicator.source_name || (isAr ? "مصدر مؤسساتي غير محدد" : "Source institutionnelle non précisée");
+    const collectionDate = indicator.last_successful_collection_at
+      ? String(indicator.last_successful_collection_at).slice(0, 10)
+      : "";
+    const collectionNote = indicator.collection_status === "carried_forward"
+      ? (isAr ? "سلسلة تاريخية محفوظة" : "historique conservé depuis une collecte antérieure")
+      : collectionDate
+        ? (isAr ? "تاريخ الجمع" : "collectée le")
+        : "";
+    const sourceUpdatedNote = indicator.last_updated
+      ? (isAr ? "تحديث المصدر" : "mise à jour indiquée par la source")
+      : "";
     const historyRows = history.map((point) => `
       <tr><th scope="row">${escapeHtml(String(point.year))}</th><td>${escapeHtml(formatStatisticValue(indicator, point.value))} ${escapeHtml(unit || "")}</td></tr>
     `).join("");
@@ -995,7 +1006,7 @@ function renderStatisticsDashboard() {
           <summary>${isAr ? "عرض البيانات التاريخية" : "Voir les valeurs historiques"}</summary>
           <div class="stat-history-table-wrap"><table class="stat-history-table"><tbody>${historyRows}</tbody></table></div>
         </details>
-        <div class="stat-card-foot"><span>${escapeHtml(sourceLabel)}${indicator.last_updated ? ` · ${isAr ? "تحديث" : "mise à jour"} ${escapeHtml(indicator.last_updated)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "السلسلة الأصلية" : "Série originale"} ↗</a>` : ""}</div>
+        <div class="stat-card-foot"><span>${escapeHtml(sourceLabel)} · ${isAr ? "آخر فترة مرصودة" : "dernière période observée"} ${escapeHtml(String(latest?.year || "—"))}${sourceUpdatedNote ? ` · ${sourceUpdatedNote} ${escapeHtml(indicator.last_updated)}` : ""}${collectionNote ? ` · ${collectionNote}${collectionDate ? ` ${escapeHtml(collectionDate)}` : ""}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "السلسلة الأصلية" : "Série originale"} ↗</a>` : ""}</div>
       </article>`;
   }).join("");
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";

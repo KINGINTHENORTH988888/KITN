@@ -840,7 +840,7 @@ def run() -> dict:
     )
     regional_payload = {
         "generated_at": now_iso,
-        "source": "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
+        "source": "Sources officielles du HCP — EMO et indicateurs sociaux du Maroc, édition 2026",
         "series_count": len(regional_series),
         "series": regional_series,
     }

@@ -910,6 +910,15 @@ function renderStatisticsDashboard() {
     economie_finances_publiques: isAr ? "الاقتصاد والمالية العمومية" : "Économie & finances publiques",
     societe_developpement_humain: isAr ? "المجتمع والتنمية البشرية" : "Société & développement humain"
   };
+  const totalObservations = allIndicators.reduce((sum, indicator) =>
+    sum + (Array.isArray(indicator.history) ? indicator.history.length : 0), 0);
+  const sourceCount = new Set(allIndicators.map((item) => item.source_name).filter(Boolean)).size;
+  const overview = `
+    <div class="stats-overview" aria-label="${isAr ? "ملخص البيانات" : "Aperçu des données"}">
+      <article class="stats-overview-card"><span>${isAr ? "مؤشرات متاحة" : "Indicateurs disponibles"}</span><strong>${allIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong></article>
+      <article class="stats-overview-card"><span>${isAr ? "ملاحظات تاريخية" : "Observations historiques"}</span><strong>${totalObservations.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong></article>
+      <article class="stats-overview-card"><span>${isAr ? "مصادر مسماة" : "Sources identifiées"}</span><strong>${sourceCount.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong></article>
+    </div>`;
   const heading = isAr ? "المؤشرات الاقتصادية والاجتماعية للمغرب" : "Indicateurs économiques et sociaux du Maroc";
   const intro = isAr
     ? "سلاسل تاريخية موثقة، مع سنة القياس والوحدة والمصدر."
@@ -1033,6 +1042,7 @@ function renderStatisticsDashboard() {
   return `
     ${viewTabs}
     <section class="stats-dashboard">
+      ${overview}
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تاريخ إنشاء ملف البيانات" : "Fichier statistique généré le"} : ${escapeHtml(updateDate)}</span></div>
       ${controls}
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>

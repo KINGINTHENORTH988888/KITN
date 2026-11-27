@@ -89,6 +89,8 @@ def _content_fingerprint(item: dict) -> str:
         "poles_secondaires": item.get("poles_secondaires"),
         "confiance_classification": item.get("confiance_classification"),
         "url_publication": item.get("url_publication"),
+        "doi": item.get("doi"),
+        "doi_statut": item.get("doi_statut"),
         "pdf_direct": item.get("pdf_direct"),
         "resume": item.get("resume"),
         "analyse_strategique": item.get("analyse_strategique"),

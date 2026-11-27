@@ -1092,13 +1092,18 @@ function renderRegionalStatisticsDashboard() {
   }).join("");
   const sourceUrl = isSafeHttpUrl(model.sourceUrl) ? model.sourceUrl : "";
   const regionalUnit = isAr ? model.unitAr : model.unitFr;
-  const updateDate = model.generatedAt ? String(model.generatedAt).slice(0, 10) : "";
+  const updateDate = model.lastSuccessfulCollectionAt
+    ? String(model.lastSuccessfulCollectionAt).slice(0, 10)
+    : (model.generatedAt ? String(model.generatedAt).slice(0, 10) : "");
+  const collectionLabel = model.collectionStatus === "carried_forward"
+    ? (isAr ? "بيانات محفوظة منذ آخر جمع ناجح" : "Données conservées depuis la dernière collecte réussie")
+    : (isAr ? "آخر جمع ناجح" : "Dernière collecte réussie");
   const methodologyNote = isAr ? model.methodologyNoteAr : model.methodologyNoteFr;
   const methodologyText = methodologyNote || (isAr
     ? "تنبيه منهجي: لا ينبغي وصل نتائج EMO 2026 مباشرة بالسلاسل القديمة للبحث الوطني حول التشغيل."
     : "Précaution méthodologique : les résultats EMO 2026 ne doivent pas être raccordés directement aux anciennes séries ENE.");
   return `<section class="regional-stats-dashboard">
-    <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تحديث البيانات" : "Données générées le"} : ${escapeHtml(updateDate || "—")}</span></div>
+    <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div><span class="stats-updated">${escapeHtml(collectionLabel)} : ${escapeHtml(updateDate || "—")}</span></div>
     <div class="regional-controls">
       <label><span>${isAr ? "المؤشر" : "Indicateur"}</span><select data-regional-indicator aria-label="${isAr ? "اختيار المؤشر" : "Choisir un indicateur"}">${indicatorOptions}</select></label>
       <div class="stats-filter-group" role="group" aria-label="${isAr ? "مجال الإقامة" : "Milieu de résidence"}">${scopeButtons}</div>

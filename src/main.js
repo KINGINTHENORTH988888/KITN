@@ -656,6 +656,7 @@ let regionalIndicatorCode = "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT";
 let regionalResidenceScope = "all";
 let statisticsCategory = "all";
 let statisticsRange = "all";
+let statisticsView = "national";
 
 function escapeHtml(str = "") {
   return String(str)
@@ -913,6 +914,14 @@ function renderStatisticsDashboard() {
   const intro = isAr
     ? "سلاسل تاريخية موثقة، مع سنة القياس والوحدة والمصدر."
     : "Séries historiques documentées, avec année de référence, unité et source.";
+  const viewTabs = `
+    <div class="stats-view-tabs" role="tablist" aria-label="${isAr ? "نوع البيانات الإحصائية" : "Vue des données statistiques"}">
+      <button type="button" class="stats-view-tab ${statisticsView === "national" ? "is-active" : ""}" data-stat-view="national" aria-pressed="${statisticsView === "national"}">${isAr ? "المؤشرات الوطنية" : "Indicateurs nationaux"}</button>
+      <button type="button" class="stats-view-tab ${statisticsView === "regional" ? "is-active" : ""}" data-stat-view="regional" aria-pressed="${statisticsView === "regional"}">${isAr ? "المقارنة الجهوية" : "Comparaison régionale"}</button>
+    </div>`;
+  if (statisticsView === "regional") {
+    return `${viewTabs}${renderRegionalStatisticsDashboard()}`;
+  }
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
   const filteredIndicators = allIndicators.filter((indicator) =>
     statisticsCategory === "all" || getStatisticsCategory(indicator) === statisticsCategory
@@ -937,7 +946,7 @@ function renderStatisticsDashboard() {
       </div>
     </div>`;
   if (!allIndicators.length) {
-    return `<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>${renderRegionalStatisticsDashboard()}`;
+    return `${viewTabs}<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>`;
   }
   const cards = filteredIndicators.map((indicator) => {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
@@ -1022,13 +1031,13 @@ function renderStatisticsDashboard() {
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";
   const emptyFiltered = isAr ? "لا توجد مؤشرات في هذا التصنيف." : "Aucun indicateur dans cette catégorie.";
   return `
+    ${viewTabs}
     <section class="stats-dashboard">
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تاريخ إنشاء ملف البيانات" : "Fichier statistique généré le"} : ${escapeHtml(updateDate)}</span></div>
       ${controls}
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
       <p class="stats-source-note">${isAr ? "تاريخ إنشاء الملف لا يعني بالضرورة أن كل مؤشر قد حُيّن. الفترات المعروضة هي الفترات الفعلية للقيم المتاحة." : "La date de génération du fichier ne correspond pas nécessairement à la date de la dernière observation. Les périodes affichées correspondent aux valeurs réellement disponibles."}</p>
-    </section>
-    ${renderRegionalStatisticsDashboard()}`;
+    </section>`;
 }
 
 function renderRegionalStatisticsDashboard() {
@@ -1053,9 +1062,6 @@ function renderRegionalStatisticsDashboard() {
 
   regionalIndicatorCode = model.activeIndicatorCode;
   regionalResidenceScope = model.activeScope;
-  const indicatorLabel = model.selectedIndicator
-    ? (isAr ? model.selectedIndicator.labelAr : model.selectedIndicator.labelFr)
-    : "";
   const indicatorOptions = model.indicatorOptions.map((item) =>
     `<option value="${escapeHtml(item.code)}" ${item.code === model.activeIndicatorCode ? "selected" : ""}>${escapeHtml(isAr ? item.labelAr : item.labelFr)}</option>`
   ).join("");
@@ -1858,6 +1864,13 @@ function render() {
       render();
     });
   });
+  document.querySelectorAll("[data-stat-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      statisticsView = btn.getAttribute("data-stat-view") === "regional" ? "regional" : "national";
+      render();
+    });
+  });
+
   document.querySelectorAll("[data-stat-category]").forEach((btn) => {
     btn.addEventListener("click", () => {
       statisticsCategory = btn.getAttribute("data-stat-category") || "all";

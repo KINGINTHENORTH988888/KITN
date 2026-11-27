@@ -64,6 +64,25 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
         self.assertEqual(rabat["history"][1]["value"], None)
         self.assertEqual(rabat["history"][1]["quality_flag"], "insufficient_significance")
 
+    def test_latest_period_is_not_replaced_by_an_older_significant_value(self):
+        extracted = """
+        Indicateurs T1/2026 T2/2026 T3/2026
+        Rural
+        Taux de chômage strict (%)
+        Rabat-Salé-Kénitra 5,2ᵐˢ 5,0 3,6ᵐˢ
+        Drâa-Tafilalet 9,4 8,3 ps
+        """
+
+        series = parse_hcp_emo_regional_tables(
+            extracted,
+            source_url="https://www.hcp.ma/attachment/2928207/",
+        )
+        draa = next(item for item in series if item["geography_code"] == "DRAA_TAFILALET")
+
+        self.assertEqual(draa["history"][-2]["value"], 8.3)
+        self.assertIsNone(draa["latest"]["value"])
+        self.assertEqual(draa["latest"]["quality_flag"], "insufficient_significance")
+
     def test_preserves_unavailable_values_instead_of_turning_them_into_zero(self):
         extracted = """
         Indicateurs T1/2026 T2/2026 T3/2026

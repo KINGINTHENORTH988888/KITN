@@ -844,11 +844,13 @@ function getFilteredItems() {
     const docTypeLabel = formatDocType(item.type_document).toLowerCase();
     const resume = (item.resume || "").toLowerCase();
     const analysis = (item.analyse_strategique || "").toLowerCase();
+    const doi = (item.doi || "").toLowerCase();
 
     return (
       title.includes(q) ||
       authors.includes(q) ||
       venue.includes(q) ||
+      doi.includes(q) ||
       keywords.includes(q) ||
       pole.includes(q) ||
       poleLabel.includes(q) ||

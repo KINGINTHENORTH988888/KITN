@@ -1850,20 +1850,21 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
     notes = clean_text(dataset.get("notes") or "")
     resource_url = str(resource.get("url") or "")
     resource_name = clean_text(resource.get("name") or "")
-    candidates = []
+    output: list[dict] = []
 
     # Layout A: period headings in a row, one indicator per following row.
-    for row_index, row in enumerate(rows[:40]):
+    header_candidates = []
+    for row_index, row in enumerate(rows[:60]):
         period_columns = [(col, _bam_ckan_period(cell)) for col, cell in enumerate(row)]
         period_columns = [(col, period) for col, period in period_columns if period]
-        if len(period_columns) >= 3:
-            candidates.append((len(period_columns), "horizontal", row_index, period_columns))
-    if candidates:
-        _, _, header_index, period_columns = max(candidates, key=lambda item: item[0])
+        if len(period_columns) >= 2:
+            header_candidates.append((len(period_columns), row_index, period_columns))
+    if header_candidates:
+        _, header_index, period_columns = max(header_candidates, key=lambda item: item[0])
+        first_period_col = period_columns[0][0]
         for row in rows[header_index + 1:]:
             if not row:
                 continue
-            first_period_col = period_columns[0][0]
             labels = [clean_text(cell) for cell in row[:first_period_col] if clean_text(cell)]
             if not labels:
                 continue
@@ -1876,10 +1877,13 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
                 if value is not None:
                     points.append({"year": period, "value": value})
             if len(points) >= 2:
-                _append_bam_ckan_series(candidates, label, points, title, notes, resource_url, resource_name)
+                _append_bam_ckan_series(output, label, points, title, notes, resource_url, resource_name)
+
+    if output:
+        return output
 
     # Layout B: dates down the first column and indicator names across the first row.
-    if not any(isinstance(item, dict) and item.get("statistics_series") for item in candidates):
+    if len(rows) > 1:
         for col in range(1, min(max((len(row) for row in rows), default=0), 80)):
             header = clean_text(rows[0][col] if col < len(rows[0]) else "")
             if len(header) < 3 or _bam_ckan_number(header) is not None:
@@ -1893,8 +1897,8 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
                 if value is not None:
                     points.append({"year": period, "value": value})
             if len(points) >= 2:
-                _append_bam_ckan_series(candidates, header, points, title, notes, resource_url, resource_name)
-    return [item for item in candidates if isinstance(item, dict) and item.get("statistics_series")]
+                _append_bam_ckan_series(output, header, points, title, notes, resource_url, resource_name)
+    return output
 
 
 def _append_bam_ckan_series(output: list, label: str, points: list[dict], dataset_title: str, notes: str, resource_url: str, resource_name: str) -> None:

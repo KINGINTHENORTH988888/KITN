@@ -59,3 +59,8 @@ Le connecteur officiel `bank_al_maghrib_api` récupère les cours de virement EU
 ## Enrichissement académique par DOI
 
 Les notices scientifiques incomplètes disposant d'un DOI sont enrichies progressivement à partir de la fiche Crossref correspondante. Le traitement est limité à 12 tentatives par exécution (maximum configurable avec `KITN_DOI_ENRICHMENT_LIMIT`) et une même notice n'est pas retentée pendant 7 jours. Les champs existants sont conservés lorsqu'ils sont déjà renseignés ; les dates futures ou incohérentes restent signalées au lieu d'écraser une date fiable. Les résumés ne sont jamais générés artificiellement.
+
+
+## Couverture des publications scientifiques
+
+La veille académique combine désormais HAL, Crossref et OpenAlex. OpenAlex est interrogé avec des recherches thématiques distinctes : gouvernance et administration, économie et finances publiques, sécurité, développement humain, relations internationales et géopolitique. Les résultats restent soumis au contrôle de pertinence Maroc ; les mots génériques comme « recherche » ou « étude » ne suffisent pas à eux seuls. Les notices sont dédoublonnées par DOI canonique, puis par titre/date et URL lorsque le DOI manque.

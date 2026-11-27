@@ -3,6 +3,8 @@ from pathlib import Path
 
 from pipeline.collectors import collect_hcp_labour_statistics
 
+# One-off, read-only live check after hardening the HCP article-body parser.
+
 
 def main() -> None:
     sources = json.loads(Path("data/sources.json").read_text(encoding="utf-8"))

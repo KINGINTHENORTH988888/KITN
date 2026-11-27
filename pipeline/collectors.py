@@ -1599,12 +1599,13 @@ def collect_world_bank_api(source: dict) -> list[dict]:
     base_url = str(source.get("url") or "https://api.worldbank.org/v2/country/MAR/indicator/").rstrip("/") + "/"
     specs = source.get("indicators") or []
     max_items = int(source.get("max_items", len(specs) or 10))
+    history_points = max(1, min(int(source.get("history_points", 12)), 100))
     items: list[dict] = []
     for spec in specs[:max_items]:
         code = str(spec.get("code") or "").strip()
         if not code:
             continue
-        endpoint = f"{base_url}{code}?format=json&per_page=12"
+        endpoint = f"{base_url}{code}?format=json&per_page={history_points}"
         try:
             payload = json.loads(_fetch_text(endpoint))
         except Exception:

@@ -1071,7 +1071,7 @@ function renderModal() {
         ${item.langue_originale ? `<div><dt>${escapeHtml(c.labelDocLang)}</dt><dd>${escapeHtml(formatDocLang(item.langue_originale))}</dd></div>` : ""}
         ${item.confiance_classification ? `<div><dt>${escapeHtml(c.labelConfidence)}</dt><dd>${escapeHtml(formatConfidence(item.confiance_classification))}</dd></div>` : ""}
         ${typeof item.score_pertinence === "number" ? `<div><dt>${escapeHtml(c.labelScore)}</dt><dd>${escapeHtml(String(item.score_pertinence))}</dd></div>` : ""}
-        ${item.doi ? `<div><dt>${escapeHtml(c.labelDoi)}</dt><dd>${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.doi)}</a>` : escapeHtml(item.doi)}</dd></div>` : ""}
+        ${item.doi ? `<div><dt>${escapeHtml(c.labelDoi)}</dt><dd>${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.doi)}</a>` : escapeHtml(item.doi)} ${item.doi_statut === "invalide" ? `<span class="flag-warn">${lang === "ar" ? "معرّف غير صالح — للتحقق" : "Identifiant invalide — à vérifier"}</span>` : ""}</dd></div>` : ""}
         ${keywordsText ? `<div><dt>${escapeHtml(c.labelKeywords)}</dt><dd>${escapeHtml(keywordsText)}</dd></div>` : ""}
       </dl>
       <div class="modal-resume">
@@ -1565,6 +1565,9 @@ function render() {
             <div><strong>${scienceWithDoi}</strong><span>DOI</span></div>
             <div><strong>${scienceNeedsReview}</strong><span>${lang === "ar" ? "تحتاج إلى التحقق" : "à vérifier"}</span></div>
           </div>
+          <p class="science-quality-note">${lang === "ar"
+            ? `${scienceItems.length - scienceWithAbstract} منشور دون ملخص · ${scienceItems.filter((it) => !Array.isArray(it.auteurs) || !it.auteurs.length).length} دون مؤلف محدد`
+            : `${scienceItems.length - scienceWithAbstract} publications sans résumé · ${scienceItems.filter((it) => !Array.isArray(it.auteurs) || !it.auteurs.length).length} sans auteur renseigné`}</p>
           <div class="science-specific-filters">
             <label>
               <span>${lang === "ar" ? "الباحث / المؤلف" : "Auteur / chercheur"}</span>

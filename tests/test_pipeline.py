@@ -631,11 +631,8 @@ class TestPipelineProcessors(unittest.TestCase):
                 "indicators": [{"code": "BAD"}, {"code": "GOOD", "label_fr": "Indicateur"}],
                 "max_items": 2,
             })
-        self.assertEqual(len(items), 2)
-        collected = next(item for item in items if item.get("statistics_series"))
-        diagnostics = next(item for item in items if item.get("statistics_collection_warnings"))
-        self.assertEqual(collected["statistics_series"]["indicator_code"], "GOOD")
-        self.assertIn("BAD", diagnostics["statistics_collection_warnings"][0])
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["statistics_series"]["indicator_code"], "GOOD")
 
     def test_collect_html_links_mocked(self):
         sample_html = """

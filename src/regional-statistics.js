@@ -60,6 +60,22 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
 
   const selectedIndicator = indicatorOptions.find((item) => item.code === activeIndicatorCode) || null;
   const firstSeries = selectedSeries[0] || indicatorSeries[0] || null;
+  const collectionDates = selectedSeries
+    .map((item) => item.last_successful_collection_at || "")
+    .filter(Boolean)
+    .sort();
+  const collectionStatuses = new Set(
+    selectedSeries
+      .map((item) => item.collection_status)
+      .filter((status) => status === "collected" || status === "carried_forward")
+  );
+  const collectionStatus = collectionStatuses.has("collected") && collectionStatuses.has("carried_forward")
+    ? "partial"
+    : collectionStatuses.has("collected")
+      ? "collected"
+      : collectionStatuses.has("carried_forward")
+        ? "carried_forward"
+        : "unknown";
 
   return {
     available: series.length > 0,
@@ -77,8 +93,8 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
     sourceName: firstSeries?.source_name || "Haut-Commissariat au Plan",
     sourceNameAr: firstSeries?.source_name_ar || "المندوبية السامية للتخطيط",
     sourceUrl: firstSeries?.source_url || "",
-    lastSuccessfulCollectionAt: firstSeries?.last_successful_collection_at || "",
-    collectionStatus: firstSeries?.collection_status || "unknown",
+    lastSuccessfulCollectionAt: collectionDates.at(-1) || firstSeries?.last_successful_collection_at || "",
+    collectionStatus,
     methodologyNoteFr: firstSeries?.methodology_note_fr || "",
     methodologyNoteAr: firstSeries?.methodology_note_ar || "",
     methodologyBreak: Boolean(firstSeries?.methodology_break),

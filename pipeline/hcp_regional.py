@@ -221,6 +221,7 @@ def parse_hcp_emo_regional_tables(
                 "history": history,
                 "latest": latest,
                 "source_name": "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
+                "source_name_ar": "المندوبية السامية للتخطيط — بحث اليد العاملة",
                 "source_url": source_url,
                 "last_updated": published_date or periods[-1],
                 "comparability_group": "HCP_EMO_2026",

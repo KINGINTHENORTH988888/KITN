@@ -1169,5 +1169,36 @@ class TestPipelineProcessors(unittest.TestCase):
 
 
 
+    def test_bam_monia_csv_fallback_parses_official_export_and_history(self):
+        from pipeline.collectors import collect_bank_al_maghrib
+
+        csv_payload = """Indice MONIA;Volume JJ;Date de référence;Date de publication
+2,195;12709;25/11/2026;26/11/2026
+2,139;13888;24/11/2026;25/11/2026
+2,169;13200;23/11/2026;24/11/2026
+"""
+        page_url = "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-monetaire/Indice-monia-moroccan-overnight-index-average"
+        csv_url = "https://www.bkam.ma/export/blockcsv/example"
+        with patch("pipeline.collectors._fetch_text", return_value=csv_payload) as fetch:
+            items = collect_bank_al_maghrib({
+                "id": "bank_al_maghrib_monia",
+                "name": "Bank Al-Maghrib — Indice MONIA",
+                "statistics_pages": [{
+                    "kind": "monia",
+                    "url": page_url,
+                    "csv_url": csv_url,
+                }],
+            })
+        self.assertEqual(len(items), 2)
+        series = {item["statistics_series"]["indicator_code"]: item["statistics_series"] for item in items}
+        self.assertEqual(series["BAM_MONIA_RATE"]["latest"], {"year": "2026-11-25", "value": 2.195})
+        self.assertEqual(series["BAM_MONIA_RATE"]["previous"], {"year": "2026-11-24", "value": 2.139})
+        self.assertEqual(series["BAM_MONIA_VOLUME"]["latest"]["value"], 12709.0)
+        self.assertEqual(series["BAM_MONIA_RATE"]["unit_fr"], "%")
+        self.assertEqual(fetch.call_args.kwargs["referer"], page_url)
+        self.assertEqual(fetch.call_args.args[0], csv_url)
+
+
+
 if __name__ == "__main__":
     unittest.main()

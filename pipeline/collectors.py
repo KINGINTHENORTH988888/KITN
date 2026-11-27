@@ -1,9 +1,11 @@
 import json
 import csv
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 import os
+import random
 import re
+import threading
 import time
 import io
 import posixpath
@@ -83,9 +85,58 @@ _HCP_RELEVANT_TOKENS = (
 )
 
 
+_OPENALEX_MIN_REQUEST_INTERVAL = 3.0
+_OPENALEX_LAST_REQUEST_AT = 0.0
+_OPENALEX_REQUEST_LOCK = threading.Lock()
+
+
+def _wait_for_openalex_slot(host: str) -> None:
+    """Keep OpenAlex requests spaced even when several thematic sources run in one job."""
+    global _OPENALEX_LAST_REQUEST_AT
+    if host.lower() != "api.openalex.org":
+        return
+    with _OPENALEX_REQUEST_LOCK:
+        elapsed = time.monotonic() - _OPENALEX_LAST_REQUEST_AT
+        wait = _OPENALEX_MIN_REQUEST_INTERVAL - elapsed
+        if wait > 0:
+            time.sleep(wait)
+        _OPENALEX_LAST_REQUEST_AT = time.monotonic()
+
+
+def _retry_delay_seconds(retry_after: str | None, attempt: int, now: datetime | None = None) -> float | None:
+    """Parse Retry-After seconds or HTTP-date; return None when the wait is too long."""
+    delay = None
+    if retry_after:
+        try:
+            delay = float(retry_after.strip())
+        except (TypeError, ValueError):
+            try:
+                retry_at = parsedate_to_datetime(retry_after)
+                if retry_at.tzinfo is None:
+                    retry_at = retry_at.replace(tzinfo=timezone.utc)
+                current = now or datetime.now(timezone.utc)
+                if current.tzinfo is None:
+                    current = current.replace(tzinfo=timezone.utc)
+                delay = (retry_at - current).total_seconds()
+            except (TypeError, ValueError, OverflowError):
+                delay = None
+
+    if delay is None:
+        delay = min(60.0, float(2 ** (attempt + 1)))
+
+    delay = max(1.0, delay)
+    # Do not occupy a scheduled collection job for several minutes because a
+    # provider has imposed a long cooldown; report the source as unavailable.
+    if delay > 120:
+        return None
+
+    return delay + random.uniform(0, min(1.0, delay * 0.2))
+
+
 def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
     parsed = urlsplit(url)
     origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "https://www.bkam.ma/"
+    host = parsed.hostname or ""
     headers = {
         "User-Agent": _USER_AGENT,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8",
@@ -99,20 +150,20 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
         "Sec-Fetch-Site": "same-origin" if referer else "none",
     }
     req = Request(url, headers=headers)
-    for attempt in range(3):
+    for attempt in range(4):
+        _wait_for_openalex_slot(host)
         try:
             with urlopen(req, timeout=timeout) as resp:
                 raw = resp.read()
                 charset = resp.headers.get_content_charset() or "utf-8"
                 return raw.decode(charset, errors="replace")
         except HTTPError as exc:
-            if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
                 raise
             retry_after = exc.headers.get("Retry-After") if exc.headers else None
-            try:
-                delay = min(20, max(1, int(retry_after))) if retry_after else 2 ** attempt
-            except (TypeError, ValueError):
-                delay = 2 ** attempt
+            delay = _retry_delay_seconds(retry_after, attempt)
+            if delay is None:
+                raise
             time.sleep(delay)
 
 

@@ -183,6 +183,11 @@ test("global search includes national statistical indicators and opens their ded
   assert.match(styles, /\.global-stat-result/);
 });
 
+test("mobile navigation exposes its controlled region and restores keyboard focus", () => {
+  assert.match(source, /id="menu-toggle" aria-expanded="\$\{mobileMenuOpen\}" aria-controls="main-nav"/);
+  assert.match(source, /document\.getElementById\("menu-toggle"\)\?\.focus\(\)/);
+});
+
 test("mobile navigation stays in the header document flow", () => {
   const mobile = styles.match(/@media \(max-width: 820px\) \{([\s\S]*?)\n\}/)?.[1] || "";
   assert.match(mobile, /\.nav\s*\{[\s\S]*?position:\s*static/);

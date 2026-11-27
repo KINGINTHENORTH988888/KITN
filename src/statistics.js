@@ -61,24 +61,29 @@ export function parseStatisticsPeriod(value, anchor = null) {
 }
 
 export function filterStatisticsHistory(history, range, referenceDate = null) {
-  if (!Array.isArray(history) || range === "all") return Array.isArray(history) ? history : [];
-
-  const years = Number(range);
-  if (![5, 10].includes(years)) return history;
+  if (!Array.isArray(history)) return [];
 
   const anchor = anchorAsDate(referenceDate);
+  const years = Number(range);
+  const useCalendarWindow = range !== "all" && [5, 10].includes(years);
   const cutoff = new Date(anchor);
-  cutoff.setUTCFullYear(cutoff.getUTCFullYear() - years);
+  if (useCalendarWindow) cutoff.setUTCFullYear(cutoff.getUTCFullYear() - years);
 
-  const datedPoints = history
-    .map((point) => ({ point, date: parseStatisticsPeriod(point?.year, anchor) }))
-    .filter((entry) => entry.date);
+  const datedPoints = history.map((point) => ({
+    point,
+    date: parseStatisticsPeriod(point?.year, anchor),
+  }));
+  const hasParseablePeriods = datedPoints.some((entry) => entry.date);
 
-  // If a legacy series has no interpretable periods, preserve its history rather
-  // than silently hiding every observation behind a misleading empty chart.
-  if (!datedPoints.length) return history;
+  // Keep legacy labels when no period can be interpreted. When dates are
+  // available, never expose a future observation as the latest published value.
+  if (!hasParseablePeriods) return history;
 
   return datedPoints
-    .filter((entry) => entry.date >= cutoff && entry.date <= anchor)
+    .filter((entry) => {
+      if (!entry.date) return !useCalendarWindow;
+      if (entry.date > anchor) return false;
+      return !useCalendarWindow || entry.date >= cutoff;
+    })
     .map((entry) => entry.point);
 }

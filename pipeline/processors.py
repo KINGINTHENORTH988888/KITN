@@ -173,7 +173,11 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
     title_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if _contains_phrase(clean_t, sig)]
 
     pole_hits = 0
-    for keywords in POLE_KEYWORDS.values():
+    for pole, keywords in POLE_KEYWORDS.items():
+        # "Research", "study" or "analysis" alone are generic academic words,
+        # not evidence that a paper has a Morocco-related policy topic.
+        if pole == "recherche_scientifique":
+            continue
         if any(_contains_phrase(combined, kw) for kw in keywords):
             pole_hits += 1
 

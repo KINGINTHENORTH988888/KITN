@@ -1,4 +1,5 @@
 import json
+import csv
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, timedelta
 import os
@@ -1269,6 +1270,23 @@ def _bam_series_item(
     }
 
 
+
+def _bam_monia_csv_rows(payload: str) -> list[list[str]]:
+    text = str(payload or "").lstrip("\ufeff").strip()
+    if not text or text.startswith("<!DOCTYPE") or text.startswith("<html"):
+        return []
+    sample = "\n".join(text.splitlines()[:8])
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=";,\t")
+        reader = csv.reader(io.StringIO(text), dialect)
+    except csv.Error:
+        reader = csv.reader(io.StringIO(text), delimiter=";")
+    rows = [row for row in reader if any(str(cell).strip() for cell in row)]
+    if len(rows) < 2 or not any(_bam_number(row[0]) is not None for row in rows[1:] if row):
+        return []
+    return rows
+
+
 def collect_bank_al_maghrib(source: dict) -> list[dict]:
     """Collect official monthly monetary indicators and daily MONIA observations."""
     pages = source.get("statistics_pages") or []
@@ -1278,10 +1296,21 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
         kind = str(page.get("kind") or "").lower()
         if not page_url or kind not in ("monthly_indicators", "monia"):
             continue
-        html_body = _fetch_text(page_url)
         parser = _BAMPageExtractor()
-        parser.feed(html_body)
-        visible_text = clean_text(" ".join(parser.text_parts))
+        csv_rows = []
+        if kind == "monia" and page.get("csv_url"):
+            try:
+                csv_payload = _fetch_text(str(page["csv_url"]), referer=page_url)
+                csv_rows = _bam_monia_csv_rows(csv_payload)
+            except Exception:
+                csv_rows = []
+        if csv_rows:
+            parser.rows = csv_rows
+            visible_text = ""
+        else:
+            html_body = _fetch_text(page_url, referer=page_url)
+            parser.feed(html_body)
+            visible_text = clean_text(" ".join(parser.text_parts))
 
         if kind == "monia":
             observations: list[tuple[str, float, float]] = []
@@ -1825,10 +1854,13 @@ def _bam_ckan_period(value: str) -> str | None:
     numeric = re.search(r"\b(20\d{2})[-/.](0?[1-9]|1[0-2])(?:[-/.](?:0?[1-9]|[12]\d|3[01]))?\b", text)
     if numeric:
         return f"{numeric.group(1)}-{int(numeric.group(2)):02d}"
+    month_year_numeric = re.search(r"\b(0?[1-9]|1[0-2])[-/.](20\d{2})\b", text)
+    if month_year_numeric:
+        return f"{month_year_numeric.group(2)}-{int(month_year_numeric.group(1)):02d}"
     day_first = re.search(r"\b(?:0?[1-9]|[12]\d|3[01])[-/.](0?[1-9]|1[0-2])[-/.](20\d{2})\b", text)
     if day_first:
         return f"{day_first.group(2)}-{int(day_first.group(1)):02d}"
-    compact = re.fullmatch(r"(20\d{2})(0[1-9]|1[0-2])", text)
+    compact = re.fullmatch(r"(20\d{2})(?:m)?(0[1-9]|1[0-2])", text)
     if compact:
         return f"{compact.group(1)}-{compact.group(2)}"
 
@@ -1983,7 +2015,7 @@ def _append_bam_ckan_series(output: list, label: str, points: list[dict], datase
         return
     code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"[(\[]([^()\[\]]{1,40})[)\]]", label)
-    unit_match_global = re.search(r"(MDH|MMDH|KDH|Nombre|%)", notes, re.IGNORECASE)
+    unit_match_global = re.search(r"(MMDH|MDH|KDH|Nombre|%)", notes, re.IGNORECASE)
     label_unit = clean_text(unit_match.group(1)) if unit_match else ""
     if label_unit and re.search(r"(?:MDH|MMDH|KDH|%|nombre|millions? de dirhams|milliards? de dirhams|milliers? de dirhams)", label_unit, re.IGNORECASE):
         unit = label_unit

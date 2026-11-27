@@ -139,7 +139,7 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
                 self.pages = [FakePage()]
 
         article_url = "https://m.hcp.ma/report.html"
-        with patch("pipeline.collectors._fetch_bytes", return_value=b"%PDF") as fetch_bytes:
+        with patch("pipeline.collectors._fetch_pdf_bytes", return_value=b"%PDF") as fetch_bytes:
             with patch("pipeline.collectors.PdfReader", FakeReader):
                 series, warnings = _extract_hcp_emo_regional_statistics(
                     ["/attachment/2928207/"],

@@ -2046,7 +2046,9 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
             extracted = _bam_ckan_series_from_rows(rows, dataset, resource)
             if not extracted:
                 title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
-                return [], f"{title}: aucune série reconnue dans le classeur {clean_text(resource.get('name') or '')}"
+                preview = " || ".join(" | ".join(clean_text(cell) for cell in row[:8] if clean_text(cell)) for row in rows[:12] if row)
+                preview = preview[:500]
+                return [], f"{title}: aucune série reconnue dans le classeur {clean_text(resource.get('name') or '')}. Aperçu: {preview}"
             return extracted, None
         except Exception as exc:
             title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")

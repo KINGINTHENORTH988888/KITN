@@ -9,7 +9,11 @@ on:
       - "scripts/validate_hcp_emo_regional_live.py"
       - "pipeline/collectors.py"
       - "pipeline/hcp_regional.py"
+      - "pipeline/hcp_social.py"
+      - "scripts/publish_hcp_social_preview.py"
       - "tests/test_hcp_regional.py"
+      - "tests/test_hcp_social.py"
+      - "data/sources.json"
       - "requirements.txt"
 
 permissions:
@@ -37,13 +41,17 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Validate live HCP EMO PDF extraction and build preview dataset
         run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py
-      - name: Upload HCP regional dataset preview
+      - name: Extract and publish HCP 2026 social indicators to review preview
+        run: PYTHONPATH=. python scripts/publish_hcp_social_preview.py
+      - name: Upload HCP statistics preview
         uses: actions/upload-artifact@v4
         with:
-          name: hcp-regional-statistics-preview
+          name: hcp-statistics-preview
           path: |
             data/regional-statistics.json
             public/data/regional-statistics.json
+            data/statistics.json
+            public/data/statistics.json
           if-no-files-found: error
           retention-days: 7
       - name: Verify frontend with live regional dataset
@@ -67,11 +75,15 @@ jobs:
           mkdir -p /tmp/kitn-hcp-preview/data /tmp/kitn-hcp-preview/public/data
           cp data/regional-statistics.json /tmp/kitn-hcp-preview/data/regional-statistics.json
           cp public/data/regional-statistics.json /tmp/kitn-hcp-preview/public/data/regional-statistics.json
+          cp data/statistics.json /tmp/kitn-hcp-preview/data/statistics.json
+          cp public/data/statistics.json /tmp/kitn-hcp-preview/public/data/statistics.json
           git fetch origin "$GITHUB_HEAD_REF"
           git checkout --detach FETCH_HEAD
           cp /tmp/kitn-hcp-preview/data/regional-statistics.json data/regional-statistics.json
           cp /tmp/kitn-hcp-preview/public/data/regional-statistics.json public/data/regional-statistics.json
-          git add -- data/regional-statistics.json public/data/regional-statistics.json
+          cp /tmp/kitn-hcp-preview/data/statistics.json data/statistics.json
+          cp /tmp/kitn-hcp-preview/public/data/statistics.json public/data/statistics.json
+          git add -- data/regional-statistics.json public/data/regional-statistics.json data/statistics.json public/data/statistics.json
           if ! git diff --staged --quiet; then
             git commit -m "[skip hcp data refresh] chore(data): publish verified HCP regional dataset"
             git push origin "HEAD:$GITHUB_HEAD_REF"

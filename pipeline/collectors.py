@@ -1,4 +1,5 @@
 import json
+import csv
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, timedelta
 import os
@@ -1269,6 +1270,22 @@ def _bam_series_item(
     }
 
 
+
+def _bam_monia_csv_rows(payload: str) -> list[list[str]]:
+    text = str(payload or "").lstrip("\\ufeff").strip()
+    if not text or text.startswith("<!DOCTYPE") or text.startswith("<html"):
+        return []
+    sample = "\\n".join(text.splitlines()[:8])
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=";,\\t")
+    except csv.Error:
+        dialect = csv.excel
+        dialect.delimiter = ";"
+    rows = [row for row in csv.reader(io.StringIO(text), dialect) if any(str(cell).strip() for cell in row)]
+    return rows
+
+
+
 def collect_bank_al_maghrib(source: dict) -> list[dict]:
     """Collect official monthly monetary indicators and daily MONIA observations."""
     pages = source.get("statistics_pages") or []
@@ -1278,10 +1295,21 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
         kind = str(page.get("kind") or "").lower()
         if not page_url or kind not in ("monthly_indicators", "monia"):
             continue
-        html_body = _fetch_text(page_url)
         parser = _BAMPageExtractor()
-        parser.feed(html_body)
-        visible_text = clean_text(" ".join(parser.text_parts))
+        csv_rows = []
+        if kind == "monia" and page.get("csv_url"):
+            try:
+                csv_payload = _fetch_text(str(page["csv_url"]), referer=page_url)
+                csv_rows = _bam_monia_csv_rows(csv_payload)
+            except Exception:
+                csv_rows = []
+        if csv_rows:
+            parser.rows = csv_rows
+            visible_text = ""
+        else:
+            html_body = _fetch_text(page_url, referer=page_url)
+            parser.feed(html_body)
+            visible_text = clean_text(" ".join(parser.text_parts))
 
         if kind == "monia":
             observations: list[tuple[str, float, float]] = []

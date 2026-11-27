@@ -1,13 +1,14 @@
 {
-  "generated_at": "2026-11-27T02:15:39Z",
-  "source": "Sources officielles — Bank Al-Maghrib et Bank Al-Maghrib — Données ouvertes et Banque mondiale — World Development Indicators et Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+  "generated_at": "2026-11-27T16:57:10Z",
+  "source": "Sources officielles — Bank Al-Maghrib et Bank Al-Maghrib — Données ouvertes et Banque mondiale — World Development Indicators et Ministère de l'Économie et des Finances — Tableau d'affichage DSBB et Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
   "sources": [
     "Bank Al-Maghrib",
     "Bank Al-Maghrib — Données ouvertes",
     "Banque mondiale — World Development Indicators",
-    "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB"
+    "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+    "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026"
   ],
-  "indicator_count": 845,
+  "indicator_count": 853,
   "indicators": [
     {
       "id": "NY.GDP.MKTP.CD",
@@ -345924,6 +345925,430 @@
       "resource_name": "Ventilation croisée du crédit bancaire par secteur économique et par objet.xlsx",
       "reference_period": "2026-08",
       "last_updated": null
+    },
+    {
+      "id": "HCP_SOCIAL_POPULATION",
+      "indicator_code": "HCP_SOCIAL_POPULATION",
+      "label_fr": "Population légale",
+      "label_ar": "Population légale",
+      "description_fr": "Population légale du Maroc, issue des recensements généraux de la population et de l'habitat.",
+      "description_ar": "Population légale du Maroc, issue des recensements généraux de la population et de l'habitat.",
+      "unit_fr": "milliers d'habitants",
+      "unit_ar": "milliers d'habitants",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Démographie",
+      "pole": "societe_developpement_humain",
+      "frequency": "recensement / enquête",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "2004",
+          "value": 29892.0
+        },
+        {
+          "year": "2014",
+          "value": 33848.0
+        },
+        {
+          "year": "2024",
+          "value": 36828.0
+        }
+      ],
+      "latest": {
+        "year": "2024",
+        "value": 36828.0
+      },
+      "previous": {
+        "year": "2014",
+        "value": 33848.0
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
+    },
+    {
+      "id": "HCP_SOCIAL_URBANIZATION",
+      "indicator_code": "HCP_SOCIAL_URBANIZATION",
+      "label_fr": "Taux d’urbanisation",
+      "label_ar": "Taux d’urbanisation",
+      "description_fr": "Part de la population résidant en milieu urbain selon les recensements du HCP.",
+      "description_ar": "Part de la population résidant en milieu urbain selon les recensements du HCP.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Démographie",
+      "pole": "societe_developpement_humain",
+      "frequency": "recensement / enquête",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "1994",
+          "value": 51.4
+        },
+        {
+          "year": "2004",
+          "value": 55.1
+        },
+        {
+          "year": "2014",
+          "value": 60.4
+        },
+        {
+          "year": "2024",
+          "value": 62.8
+        }
+      ],
+      "latest": {
+        "year": "2024",
+        "value": 62.8
+      },
+      "previous": {
+        "year": "2014",
+        "value": 60.4
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
+    },
+    {
+      "id": "HCP_SOCIAL_FERTILITY",
+      "indicator_code": "HCP_SOCIAL_FERTILITY",
+      "label_fr": "Indice synthétique de fécondité",
+      "label_ar": "Indice synthétique de fécondité",
+      "description_fr": "Nombre moyen d'enfants par femme, selon les recensements du HCP.",
+      "description_ar": "Nombre moyen d'enfants par femme, selon les recensements du HCP.",
+      "unit_fr": "enfants par femme",
+      "unit_ar": "enfants par femme",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Démographie",
+      "pole": "societe_developpement_humain",
+      "frequency": "recensement / enquête",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "1994",
+          "value": 3.3
+        },
+        {
+          "year": "2004",
+          "value": 2.5
+        },
+        {
+          "year": "2014",
+          "value": 2.22
+        },
+        {
+          "year": "2024",
+          "value": 1.97
+        }
+      ],
+      "latest": {
+        "year": "2024",
+        "value": 1.97
+      },
+      "previous": {
+        "year": "2014",
+        "value": 2.22
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
+    },
+    {
+      "id": "HCP_SOCIAL_UNEMPLOYMENT",
+      "indicator_code": "HCP_SOCIAL_UNEMPLOYMENT",
+      "label_fr": "Taux de chômage — national",
+      "label_ar": "Taux de chômage — national",
+      "description_fr": "Taux de chômage national issu de l’Enquête nationale sur l’emploi du HCP.",
+      "description_ar": "Taux de chômage national issu de l’Enquête nationale sur l’emploi du HCP.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Emploi et activité",
+      "pole": "societe_developpement_humain",
+      "frequency": "annuelle",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "2015",
+          "value": 9.7
+        },
+        {
+          "year": "2016",
+          "value": 9.4
+        },
+        {
+          "year": "2017",
+          "value": 10.2
+        },
+        {
+          "year": "2018",
+          "value": 9.5
+        },
+        {
+          "year": "2019",
+          "value": 9.2
+        },
+        {
+          "year": "2020",
+          "value": 11.9
+        },
+        {
+          "year": "2021",
+          "value": 12.3
+        },
+        {
+          "year": "2023",
+          "value": 13.0
+        },
+        {
+          "year": "2024",
+          "value": 13.3
+        }
+      ],
+      "latest": {
+        "year": "2024",
+        "value": 13.3
+      },
+      "previous": {
+        "year": "2023",
+        "value": 13.0
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
+    },
+    {
+      "id": "HCP_SOCIAL_PRIMARY_NET_SCHOOLING",
+      "indicator_code": "HCP_SOCIAL_PRIMARY_NET_SCHOOLING",
+      "label_fr": "Taux net de scolarisation au primaire",
+      "label_ar": "Taux net de scolarisation au primaire",
+      "description_fr": "Taux net de scolarisation au primaire, total national, selon le ministère de l’Éducation nationale.",
+      "description_ar": "Taux net de scolarisation au primaire, total national, selon le ministère de l’Éducation nationale.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Éducation",
+      "pole": "societe_developpement_humain",
+      "frequency": "annuelle",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "2009/10",
+          "value": 94.4
+        },
+        {
+          "year": "2014/15",
+          "value": 92.6
+        },
+        {
+          "year": "2017/18",
+          "value": 98.8
+        },
+        {
+          "year": "2018/19",
+          "value": 99.7
+        },
+        {
+          "year": "2019/20",
+          "value": 99.9
+        },
+        {
+          "year": "2023/24",
+          "value": 111.6
+        },
+        {
+          "year": "2024/25",
+          "value": 99.1
+        }
+      ],
+      "latest": {
+        "year": "2024/25",
+        "value": 99.1
+      },
+      "previous": {
+        "year": "2023/24",
+        "value": 111.6
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
+    },
+    {
+      "id": "HCP_SOCIAL_UPPER_SECONDARY_GROSS_SCHOOLING",
+      "indicator_code": "HCP_SOCIAL_UPPER_SECONDARY_GROSS_SCHOOLING",
+      "label_fr": "Taux brut de scolarisation au secondaire qualifiant",
+      "label_ar": "Taux brut de scolarisation au secondaire qualifiant",
+      "description_fr": "Taux brut de scolarisation au secondaire qualifiant, total national, selon le ministère de l’Éducation nationale.",
+      "description_ar": "Taux brut de scolarisation au secondaire qualifiant, total national, selon le ministère de l’Éducation nationale.",
+      "unit_fr": "%",
+      "unit_ar": "%",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Éducation",
+      "pole": "societe_developpement_humain",
+      "frequency": "annuelle",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "2009/10",
+          "value": 44.3
+        },
+        {
+          "year": "2014/15",
+          "value": 54.0
+        },
+        {
+          "year": "2017/18",
+          "value": 55.5
+        },
+        {
+          "year": "2018/19",
+          "value": 55.9
+        },
+        {
+          "year": "2019/20",
+          "value": 57.5
+        },
+        {
+          "year": "2023/24",
+          "value": 68.5
+        },
+        {
+          "year": "2024/25",
+          "value": 73.0
+        }
+      ],
+      "latest": {
+        "year": "2024/25",
+        "value": 73.0
+      },
+      "previous": {
+        "year": "2023/24",
+        "value": 68.5
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
+    },
+    {
+      "id": "HCP_SOCIAL_UNDER5_MORTALITY",
+      "indicator_code": "HCP_SOCIAL_UNDER5_MORTALITY",
+      "label_fr": "Quotient de mortalité infanto-juvénile",
+      "label_ar": "Quotient de mortalité infanto-juvénile",
+      "description_fr": "Quotient de mortalité des enfants de moins de cinq ans, pour mille naissances vivantes.",
+      "description_ar": "Quotient de mortalité des enfants de moins de cinq ans, pour mille naissances vivantes.",
+      "unit_fr": "décès pour 1 000 naissances vivantes",
+      "unit_ar": "décès pour 1 000 naissances vivantes",
+      "scale_divisor": 1,
+      "precision": 1,
+      "category": "Santé",
+      "pole": "societe_developpement_humain",
+      "frequency": "recensement / enquête",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "2004",
+          "value": 47.0
+        },
+        {
+          "year": "2011",
+          "value": 30.5
+        },
+        {
+          "year": "2018",
+          "value": 22.2
+        }
+      ],
+      "latest": {
+        "year": "2018",
+        "value": 22.2
+      },
+      "previous": {
+        "year": "2011",
+        "value": 30.5
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
+    },
+    {
+      "id": "HCP_SOCIAL_GINI",
+      "indicator_code": "HCP_SOCIAL_GINI",
+      "label_fr": "Indice de Gini des dépenses",
+      "label_ar": "Indice de Gini des dépenses",
+      "description_fr": "Indice de Gini mesurant les inégalités de dépenses des ménages.",
+      "description_ar": "Indice de Gini mesurant les inégalités de dépenses des ménages.",
+      "unit_fr": "indice (0 à 1)",
+      "unit_ar": "indice (0 à 1)",
+      "scale_divisor": 1,
+      "precision": 2,
+      "category": "Pauvreté et inégalités",
+      "pole": "societe_developpement_humain",
+      "frequency": "recensement / enquête",
+      "source_name": "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
+      "source_name_ar": "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب، طبعة 2026",
+      "source_url": "https://www.hcp.ma/file/248623/",
+      "last_updated": "2026-07-27",
+      "methodology_note_fr": "Extraction automatisée d'une ligne explicitement identifiée dans le tableau source. Les périodes et définitions suivent la publication HCP 2026 ; elles ne sont pas fusionnées avec les estimations internationales.",
+      "methodology_note_ar": "استخراج آلي لسطر محدد من الجدول الأصلي. الفترات والتعاريف تتبع منشور المندوبية لسنة 2026، ولا يتم دمجها مع التقديرات الدولية.",
+      "history": [
+        {
+          "year": "2001",
+          "value": 0.406
+        },
+        {
+          "year": "2014",
+          "value": 0.395
+        },
+        {
+          "year": "2022",
+          "value": 0.405
+        }
+      ],
+      "latest": {
+        "year": "2022",
+        "value": 0.405
+      },
+      "previous": {
+        "year": "2014",
+        "value": 0.395
+      },
+      "last_successful_collection_at": "2026-11-27T16:57:10Z",
+      "collection_status": "collected"
     }
   ]
 }

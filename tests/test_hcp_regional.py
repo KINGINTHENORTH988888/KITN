@@ -158,6 +158,41 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
             referer=article_url,
         )
 
+    def test_partial_pdf_extraction_is_not_reported_as_complete_at_200_series(self):
+        fixture_path = Path(__file__).parent / "fixtures" / "hcp_emo_t3_2026_regional_tables.txt"
+        extracted = fixture_path.read_text(encoding="utf-8")
+        complete_fixture_series = parse_hcp_emo_regional_tables(
+            extracted,
+            source_url="https://www.hcp.ma/attachment/2928207/",
+            published_date="2026-11-03",
+        )
+
+        class FakePage:
+            def extract_text(self, extraction_mode=None):
+                return extracted
+
+        class FakeReader:
+            def __init__(self, stream):
+                self.pages = [FakePage()]
+
+        with patch("pipeline.collectors._fetch_pdf_bytes", return_value=b"%PDF") as fetch_bytes:
+            with patch("pipeline.collectors.PdfReader", FakeReader):
+                with patch(
+                    "pipeline.collectors.parse_hcp_emo_regional_tables",
+                    return_value=complete_fixture_series[:200],
+                ):
+                    series, warnings = _extract_hcp_emo_regional_statistics(
+                        ["/attachment/2928207/"],
+                        "https://www.hcp.ma/emo-2026.html",
+                        "2026-11-03",
+                    )
+
+        self.assertEqual(len(series), 200)
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("200 séries uniques sur 234 attendues", warnings[0])
+        self.assertIn("34 combinaisons manquantes", warnings[0])
+        fetch_bytes.assert_called_once()
+
     def test_pipeline_merge_keeps_earlier_quarters_and_replaces_revised_periods(self):
         existing = {
             "id": "HCP_EMO_REGIONAL_TEST:all:MAR",

@@ -974,6 +974,7 @@ class TestPipelineProcessors(unittest.TestCase):
             manual_path = data_dir / "manual_contributions.json"
             index_path = index_dir / "search-index.json"
             health_path = data_dir / "sources-health.json"
+            public_health = public_dir / "sources-health.json"
             statistics_path = data_dir / "statistics.json"
             regional_statistics_path = data_dir / "regional-statistics.json"
             public_index = public_dir / "index" / "search-index.json"
@@ -1021,6 +1022,7 @@ class TestPipelineProcessors(unittest.TestCase):
                 patch("pipeline.run_pipeline.INDEX_FILE", index_path),
                 patch("pipeline.run_pipeline.PUBLIC_INDEX_FILE", public_index),
                 patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
+                patch("pipeline.run_pipeline.PUBLIC_SOURCES_HEALTH_FILE", public_health),
                 patch("pipeline.run_pipeline.STATISTICS_FILE", statistics_path),
                 patch("pipeline.run_pipeline.PUBLIC_STATISTICS_FILE", public_statistics),
                 patch("pipeline.run_pipeline.REGIONAL_STATISTICS_FILE", regional_statistics_path),
@@ -1031,6 +1033,8 @@ class TestPipelineProcessors(unittest.TestCase):
                 run()
 
             health = json.loads(health_path.read_text(encoding="utf-8"))
+            public_health_data = json.loads(public_health.read_text(encoding="utf-8"))
+            self.assertEqual(public_health_data, health)
             source_health = health["sources"][0]
             self.assertEqual(source_health["status"], "warning")
             self.assertEqual(source_health["stage"], "collecte_statistique_partielle")

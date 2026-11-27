@@ -22,6 +22,8 @@ permissions:
 
 jobs:
   python-tests:
+    # Les commits HCP générés ne changent pas le code Python ni les tests.
+    if: github.event_name != 'pull_request' || !contains(github.event.pull_request.head.commit.message, '[skip hcp data refresh]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

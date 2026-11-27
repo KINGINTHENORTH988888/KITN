@@ -70,7 +70,7 @@ jobs:
           print("STATISTICS BY SOURCE:", json.dumps(Counter(x.get("source_name") or "(missing)" for x in indicators), ensure_ascii=False, sort_keys=True))
           print("STATISTICS WITHOUT POLE:", sum(not x.get("pole") for x in indicators))
           social = [
-              {key: x.get("indicator_code") or x.get("id"), label: x.get("label_fr"), source: x.get("source_name"), unit: x.get("unit_fr")}
+              {"key": x.get("indicator_code") or x.get("id"), "label": x.get("label_fr"), "source": x.get("source_name"), "unit": x.get("unit_fr")}
               for x in indicators if x.get("pole") == "societe_developpement_humain"
           ]
           print("SOCIAL SERIES DETAILS:", json.dumps(social, ensure_ascii=False))

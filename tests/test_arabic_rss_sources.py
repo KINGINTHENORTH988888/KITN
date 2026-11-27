@@ -22,20 +22,13 @@ class TestArabicPressSources(unittest.TestCase):
         self.assertIn("رياضة", source["exclude_title_tokens"])
 
     def test_alalam_feed_keeps_relevant_arabic_public_affairs_and_excludes_sports(self):
-        source = {
-            "name": "العلم",
-            "url": "https://www.alalam.ma/xml/syndication.rss",
-            "lang_hint": "ar",
-            "target_space": "veille",
-            "default_doc_type": "article_presse",
-            "max_items": 10,
-            "include_title_tokens": ["الأمن", "الحكومة"],
-            "exclude_title_tokens": ["رياضة"],
-        }
+        config_path = Path(__file__).resolve().parents[1] / "data" / "sources.json"
+        sources = json.loads(config_path.read_text(encoding="utf-8"))
+        source = next(item for item in sources if item.get("id") == "alalam_ar")
         feed = """<?xml version="1.0" encoding="UTF-8"?>
         <rss version="2.0"><channel>
           <item>
-            <title>رصاص شرطة فاس يوقف جانحا</title>
+            <title>الشرطة في فاس توقف جانحا</title>
             <link>https://www.alalam.ma/article-security.html</link>
             <description>بلاغ حول تدخل أمني في فاس</description>
             <pubDate>Fri, 27 Nov 2026 10:26:00 +0100</pubDate>
@@ -52,7 +45,7 @@ class TestArabicPressSources(unittest.TestCase):
             items = collect_rss_atom(source)
 
         self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["title"], "رصاص شرطة فاس يوقف جانحا")
+        self.assertEqual(items[0]["title"], "الشرطة في فاس توقف جانحا")
         self.assertEqual(items[0]["source_lang_hint"], "ar")
         self.assertEqual(items[0]["espace"], "veille")
         self.assertEqual(items[0]["default_doc_type"], "article_presse")

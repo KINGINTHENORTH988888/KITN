@@ -144,6 +144,13 @@ class TestPipelineProcessors(unittest.TestCase):
         )
         self.assertFalse(isolated_city["is_relevant"])
 
+        generic_morocco_research = evaluate_morocco_relevance(
+            "Research methods in astronomy",
+            "A comparative research paper with no Moroccan policy focus.",
+            {"id": "crossref_maroc", "type": "crossref"},
+        )
+        self.assertFalse(generic_morocco_research["is_relevant"])
+
     def test_classify_document_poles_and_spaces(self):
         sec = classify_document(
             "Sécurité publique, police et ordre public",

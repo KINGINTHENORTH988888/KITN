@@ -599,6 +599,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
     base_url = str(source.get("url") or "https://www.hcp.ma/").rstrip("/") + "/"
     listing_urls = source.get("listing_urls") or ["/Actualite-marche-du-travail_r424.html"]
     candidates: list[dict] = []
+    listing_errors: list[str] = []
     seen: set[str] = set()
     for listing in listing_urls:
         listing_url = urljoin(base_url, str(listing))
@@ -623,9 +624,12 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                         candidate["title"] = clean_text(url_slug.replace("-", " ").replace("_", " "))
                     seen.add(url)
                     candidates.append(candidate)
-        except Exception:
+        except Exception as exc:
+            listing_errors.append(f"{listing_url}: {type(exc).__name__}: {exc}")
             continue
     if not candidates:
+        if listing_errors:
+            raise RuntimeError("Impossible de lire les pages de veille HCP EMO : " + " | ".join(listing_errors[:2]))
         return []
 
     def period_key(candidate: dict) -> tuple[int, int]:
@@ -640,17 +644,20 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
     candidates.sort(key=period_key, reverse=True)
     max_pages = max(1, min(3, int(source.get("max_pages", 1))))
     items: list[dict] = []
+    article_errors: list[str] = []
     for candidate in candidates[:max_pages]:
         page_url = str(candidate.get("url") or "")
         try:
             parser = _HCPDetailExtractor()
             parser.feed(_fetch_text(page_url))
-        except Exception:
+        except Exception as exc:
+            article_errors.append(f"{page_url}: {type(exc).__name__}: {exc}")
             continue
         title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title or candidate.get("title"))
         body = clean_text(" ".join(parser.paragraphs))
         period = period_key({"title": title})
         if not body or not period[0] or not period[1]:
+            article_errors.append(f"{page_url}: contenu ou période trimestrielle non reconnu")
             continue
         period_label = f"T{period[1]}/{period[0]}"
         published = parser.meta.get("article:published_time") or parser.published_time or candidate.get("published_date")
@@ -704,6 +711,20 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                  float(underutilization_pair.group(2).replace(",", ".")),
                  "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
             ])
+        expected_codes = {
+            "HCP_EMO_UNEMPLOYMENT", "HCP_EMO_UNDERUTILIZATION",
+            "HCP_EMO_LABOUR_FORCE", "HCP_EMO_EMPLOYMENT",
+            "HCP_EMO_YOUTH_UNEMPLOYMENT", "HCP_EMO_WOMEN_UNEMPLOYMENT",
+            "HCP_EMO_YOUTH_UNDERUTILIZATION", "HCP_EMO_WOMEN_UNDERUTILIZATION",
+        }
+        detected_codes = {code for code, _label, _unit, value, _description in metrics if value is not None}
+        statistics_warnings = [
+            f"Indicateur HCP EMO absent ou non reconnu : {code}"
+            for code in sorted(expected_codes - detected_codes)
+        ]
+        if listing_errors:
+            statistics_warnings.extend(f"Page de liste indisponible : {error}" for error in listing_errors[:2])
+
         for code, label, unit, value, description in metrics:
             if value is None:
                 continue
@@ -726,10 +747,14 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 "url": page_url, "doi": None, "espace": "chiffres",
                 "pole": "societe_developpement_humain", "default_doc_type": "statistique",
                 "statistics_series": series, "source_lang_hint": "fr",
+                "statistics_collection_warnings": statistics_warnings,
             })
         # Avoid mixing multiple quarters into one run; only the latest release is authoritative.
         if items:
             break
+    if not items:
+        details = " | ".join(article_errors[:2]) if article_errors else "aucun des huit indicateurs attendus n'a été extrait"
+        raise RuntimeError("Publication HCP EMO détectée, mais extraction statistique impossible : " + details)
     return items
 
 

@@ -671,26 +671,31 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
              number(r"nombre de personnes en emploi contre revenu atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
              "Effectif des personnes en emploi contre revenu, en millions."),
         ]
-        used_percentage_positions: set[int] = set()
+        used_percentage_positions: set[tuple[int, int]] = set()
 
         def labeled_percentage(label_pattern: str) -> float | None:
-            labels = list(re.finditer(label_pattern, body, re.IGNORECASE))
-            percentages = list(re.finditer(r"([0-9]+(?:[,.][0-9]+)?)\s*%", body))
             candidates = []
-            for label_match in labels:
-                for percentage in percentages:
-                    if percentage.start() in used_percentage_positions:
-                        continue
-                    distance = min(
-                        abs(percentage.start() - label_match.end()),
-                        abs(label_match.start() - percentage.end()),
-                    )
-                    if distance <= 100:
-                        candidates.append((distance, percentage))
+            for sentence_index, sentence_match in enumerate(re.finditer(r"[^.!?]+[.!?]?", body)):
+                sentence = sentence_match.group(0)
+                if not re.search(r"ch[oô]mage", sentence, re.IGNORECASE):
+                    continue
+                labels = list(re.finditer(label_pattern, sentence, re.IGNORECASE))
+                percentages = list(re.finditer(r"([0-9]+(?:[,.][0-9]+)?)\s*%", sentence))
+                for label_match in labels:
+                    for percentage in percentages:
+                        position = (sentence_index, percentage.start())
+                        if position in used_percentage_positions:
+                            continue
+                        distance = min(
+                            abs(percentage.start() - label_match.end()),
+                            abs(label_match.start() - percentage.end()),
+                        )
+                        if distance <= 100:
+                            candidates.append((distance, position, percentage))
             if not candidates:
                 return None
-            _, selected = min(candidates, key=lambda item: item[0])
-            used_percentage_positions.add(selected.start())
+            _, position, selected = min(candidates, key=lambda item: item[0])
+            used_percentage_positions.add(position)
             return float(selected.group(1).replace(",", "."))
 
         youth_unemployment = labeled_percentage(r"\b(?:jeunes|15\s*[-–]\s*24\s*ans)\b")

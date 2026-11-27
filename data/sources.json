@@ -1060,7 +1060,7 @@
         "description_fr": "Effectifs inscrits dans l’enseignement secondaire, quel que soit leur âge, rapportés à la population d’âge officiel du secondaire."
       }
     ],
-    "history_points": 25
+    "history_points": 100
   },
   {
     "id": "openalex_morocco_governance",

@@ -217,3 +217,19 @@ test("veille dashboard exposes source-collection transparency without assuming l
   assert.match(source, /ne garantit pas la disponibilité en temps réel/);
   assert.match(styles, /\.watch-source-health/);
 });
+
+
+test("mobile navigation parents expand submenus without navigating away", () => {
+  for (const id of ["chiffres", "veille", "science"]) {
+    assert.ok(source.includes(`data-mobile-submenu="${id}"`));
+    assert.ok(source.includes(`aria-controls="nav-submenu-${id}"`));
+    assert.ok(source.includes(`aria-expanded="${"${"}mobileOpenSubmenu === "${id}"}"`));
+  }
+  assert.ok(source.includes('window.matchMedia("(max-width: 820px)").matches'));
+  assert.ok(source.includes('mobileOpenSubmenu = mobileOpenSubmenu === mobileSubmenu ? "" : mobileSubmenu'));
+});
+
+test("mobile submenus stay collapsed until their parent is opened", () => {
+  assert.ok(styles.includes(".nav-group:not(.is-open) .nav-dropdown { display: none; }"));
+  assert.ok(styles.includes(".nav-group.is-open .nav-dropdown { display: grid; }"));
+});

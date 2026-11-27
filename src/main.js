@@ -1,6 +1,7 @@
 import "./style.css";
 import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
+import { normalizeSearchText } from "./search.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -568,16 +569,6 @@ function saveJsonStorage(key, value) {
   } catch {
     // ignore storage quota errors
   }
-}
-
-function normalizeSearchText(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replaceAll(/\p{M}+/gu, "")
-    .toLocaleLowerCase()
-    .replaceAll(/[^\p{L}\p{N}\s]+/gu, " ")
-    .replaceAll(/\s+/g, " ")
-    .trim();
 }
 
 function normalizeTitleKey(title) {

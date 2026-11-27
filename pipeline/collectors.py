@@ -1422,6 +1422,10 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_bank_al_maghrib_api(source)
     if stype == "hal_api":
         return collect_hal_api(source)
+    if stype == "emploi_public" or str(source.get("id") or "").lower() == "emploi_public_maroc":
+        return collect_emploi_public(source)
+    if stype == "hespress_news" or str(source.get("id") or "").lower().startswith("hespress"):
+        return collect_hespress_news(source)
     if stype == "html_links":
         return collect_html_links(source)
     if stype == "rss_atom":

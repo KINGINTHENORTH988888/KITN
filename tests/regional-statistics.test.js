@@ -81,6 +81,27 @@ test("builds a regional comparison table with chronological periods and national
   assert.equal(model.sourceNameAr, "المندوبية السامية للتخطيط — بحث اليد العاملة");
 });
 
+test("reports partial freshness when regional series have mixed collection statuses", () => {
+  const mixedPayload = JSON.parse(JSON.stringify(payload));
+  mixedPayload.series.push({
+    ...mixedPayload.series[0],
+    geography_code: "FES_MEKNES",
+    geography_name_fr: "Fès-Meknès",
+    geography_name_ar: "فاس-مكناس",
+    last_successful_collection_at: "2026-11-27T13:00:00Z",
+    collection_status: "collected",
+  });
+
+  const model = buildRegionalStatisticsModel(
+    mixedPayload,
+    "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT",
+    "all",
+  );
+
+  assert.equal(model.collectionStatus, "partial");
+  assert.equal(model.lastSuccessfulCollectionAt, "2026-11-27T13:00:00Z");
+});
+
 test("falls back to an available residence scope when the selected scope is missing", () => {
   const model = buildRegionalStatisticsModel(payload, "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT", "rural");
 

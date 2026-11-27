@@ -161,6 +161,7 @@ jobs:
       - name: Run KITN pipeline
         env:
           BKAM_API_KEY: ${{ secrets.BKAM_API_KEY }}
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}
         run: PYTHONPATH=. python -m pipeline.run_pipeline
 
       - name: Sync Academy content to public for Vite production build

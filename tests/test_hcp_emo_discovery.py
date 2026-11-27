@@ -44,7 +44,7 @@ class TestHcpEmoDiscovery(unittest.TestCase):
 
         self.assertEqual(len(items), 8)
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
-        self.assertEqual(items[0]["statistics_series"]["source_url"], "https://www.hcp.ma/actualites/situation-marche-du-travail-t3-2026")
+        self.assertEqual(items[0]["statistics_series"]["source_url"], "https://m.hcp.ma/actualites/situation-marche-du-travail-t3-2026")
 
     def test_ignores_non_hcp_and_non_labour_links(self):
         listing = """

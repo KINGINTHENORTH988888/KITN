@@ -648,6 +648,7 @@ let favorites = loadJsonStorage(FAVORITES_KEY, []);
 let manualItems = loadJsonStorage(MANUAL_ITEMS_KEY, []);
 let statusOverrides = {};
 let activeModalItem = null;
+let activeArticleId = null;
 let remoteItems = [];
 let indexItems = [];
 let statisticsData = null;
@@ -1159,6 +1160,50 @@ function renderLibraryDirectory() {
     </section>`;
 }
 
+function renderArticlePage(item) {
+  const isAr = lang === "ar";
+  const title = item.titre_original || (isAr ? "منشور" : "Publication");
+  const abstract = String(item.resume || "").trim();
+  const analysis = String(item.analyse_strategique || "").trim();
+  const sourceUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
+  const pdfUrl = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
+  const doiUrl = getDoiUrl(item.doi);
+  const authors = Array.isArray(item.auteurs) && item.auteurs.length
+    ? item.auteurs.join(", ")
+    : (isAr ? "المؤلف غير محدد" : "Auteur non renseigné");
+  return `
+    <article class="article-reading section">
+      <button type="button" class="article-back link-btn" data-space-id="all">← ${isAr ? "العودة إلى KITN" : "Retour à KITN"}</button>
+      <div class="article-reading-header">
+        <span class="mini-label">${escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || (isAr ? "منشور" : "Publication"))}</span>
+        <h1>${escapeHtml(title)}</h1>
+        <p class="article-reading-lead">${escapeHtml(authors)} · ${escapeHtml(item.date_publication || "—")}</p>
+        <p class="article-reading-source">${escapeHtml(item.revue_ou_institution || item.source_nom || (isAr ? "المصدر غير محدد" : "Source non précisée"))}</p>
+      </div>
+      <div class="article-reading-body">
+        <section>
+          <h2>${isAr ? "الملخص المتاح" : "Résumé disponible"}</h2>
+          <p>${escapeHtml(abstract || (isAr ? "لم تقدم قاعدة البيانات ملخصاً لهذا المنشور بعد." : "Aucun résumé n'est actuellement disponible dans les données de KITN pour cette publication."))}</p>
+        </section>
+        ${analysis ? `<section><h2>${isAr ? "قراءة تحليلية" : "Éclairage analytique"}</h2><p>${escapeHtml(analysis)}</p></section>` : ""}
+        <aside class="article-rights-note">
+          ${isAr
+            ? "تعرض KITN هنا البيانات الوصفية والملخص المتاح. لا يُنشر النص الكامل إلا إذا كانت حقوق إعادة النشر أو رخصة المصدر تسمح بذلك."
+            : "KITN présente ici les métadonnées et le résumé disponible. Le texte intégral ne sera reproduit que si les droits ou la licence de la source l'autorisent."}
+        </aside>
+        <section class="article-citation">
+          <h2>${isAr ? "المصدر والمراجع" : "Source et références"}</h2>
+          <p><strong>${escapeHtml(authors)}</strong>. ${escapeHtml(title)}. ${escapeHtml(item.revue_ou_institution || item.source_nom || "")}. ${escapeHtml(item.date_publication || "")}.</p>
+          ${item.doi ? `<p>DOI : ${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.doi)}</a>` : escapeHtml(item.doi)}</p>` : ""}
+          <div class="result-actions">
+            ${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المنشور الأصلي" : "Publication originale"} ↗</a>` : ""}
+            ${pdfUrl ? `<a href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "وثيقة PDF" : "Document PDF"} ↗</a>` : ""}
+          </div>
+        </section>
+      </div>
+    </article>`;
+}
+
 function renderModal() {
   const existing = document.getElementById("notice-modal");
   if (existing) existing.remove();
@@ -1366,6 +1411,7 @@ function render() {
     : [{ question: activeTrack.question, options: activeTrack.options, answer: activeTrack.answer, correction: activeTrack.correction }];
   const activeQuizQuestion = quizQuestions[Math.min(selectedQuizQuestionIndex, quizQuestions.length - 1)];
   const activeSpaceObj = spaces.find((s) => s.id === activeSpace) || spaces[0];
+  const activeArticleItem = activeArticleId ? indexItems.find((item) => getItemKey(item) === activeArticleId) || null : null;
   document.title = activeSpace === "all"
     ? "KITN — De l'information à la maîtrise"
     : `${activeSpaceObj.label} | KITN`;
@@ -1442,6 +1488,7 @@ function render() {
       </div>
     </header>
 
+    ${activeArticleItem ? renderArticlePage(activeArticleItem) : ""}
     ${!isDedicatedSpace ? `
       <section class="hero">
         <div class="hero-orb orb-one"></div>
@@ -1841,6 +1888,7 @@ function render() {
       <span>${escapeHtml(c.footerCopy)}</span>
     </footer>
   `;
+  document.body.classList.toggle("is-article-view", Boolean(activeArticleItem));
 
   document.getElementById("brand-home")?.addEventListener("click", (e) => {
     e.preventDefault();
@@ -1925,6 +1973,7 @@ function render() {
   document.querySelectorAll("[data-space-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
       activeSpace = btn.getAttribute("data-space-id") || "all";
+      activeArticleId = null;
       if (btn.hasAttribute("data-stat-view-shortcut")) statisticsView = "regional";
       if (btn.hasAttribute("data-stat-category-shortcut")) statisticsCategory = btn.getAttribute("data-stat-category-shortcut");
       if (btn.hasAttribute("data-pole-shortcut")) {
@@ -1941,8 +1990,11 @@ function render() {
   document.querySelectorAll("[data-open-home-item]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const key = btn.getAttribute("data-open-home-item");
-      activeModalItem = indexItems.find((item) => getItemKey(item) === key) || null;
-      renderModal();
+      activeArticleId = key;
+      activeSpace = "all";
+      window.history.pushState({ kitnArticle: key }, "", "/publication/" + encodeURIComponent(key));
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
   document.querySelectorAll("[data-stat-view]").forEach((btn) => {
@@ -2218,6 +2270,14 @@ const SPACE_PATHS = {
   bibliotheque: "/bibliotheque",
   academy: "/academy"
 };
+function getArticleIdFromLocation() {
+  const prefix = "/publication/";
+  const pathname = window.location.pathname;
+  if (!pathname.startsWith(prefix)) return null;
+  try { return decodeURIComponent(pathname.slice(prefix.length)) || null; }
+  catch { return null; }
+}
+
 function getSpaceFromLocation() {
   const currentPath = window.location.pathname;
   const pathname = currentPath.length > 1 && currentPath.endsWith("/")
@@ -2233,8 +2293,10 @@ function getSpaceFromLocation() {
     : "all";
 }
 activeSpace = getSpaceFromLocation();
+activeArticleId = getArticleIdFromLocation();
 window.addEventListener("popstate", () => {
   activeSpace = getSpaceFromLocation();
+  activeArticleId = getArticleIdFromLocation();
   render();
 });
 render();

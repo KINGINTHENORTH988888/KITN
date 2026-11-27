@@ -36,3 +36,31 @@ PYTHONPATH=. python -m pipeline.run_pipeline
 
 # Lancer les tests unitaires
 python -m unittest discover -s tests -v
+
+
+## Données statistiques et bibliothèque documentaire
+
+Le pipeline alimente également :
+
+- `data/statistics.json` : six séries historiques marocaines issues de l'API World Development Indicators de la Banque mondiale (PIB nominal, croissance, inflation, chômage estimé OIT, population et IDE).
+- `data/index/search-index.json` : notices institutionnelles et documentaires provenant notamment du HCP, de la Cour des comptes, du CESE et de l'IRES.
+- `public/data/` : copies publiées consommées par l'application Vite.
+
+Les séries statistiques conservent leur code d'indicateur, leur unité, leurs valeurs historiques, leur année de référence et leur URL source. Les valeurs sont actualisées par le pipeline automatisé ; l'indisponibilité d'une série isolée ne bloque pas les autres indicateurs.
+
+Les collecteurs institutionnels visitent les pages de détail lorsqu'elles sont accessibles afin de récupérer les titres normalisés, dates de publication et résumés éditoriaux. Les notices sont dédoublonnées à partir de leur URL canonique pour éviter de conserver une version générique et une version enrichie du même rapport.
+
+
+### Bank Al-Maghrib API
+
+Le connecteur officiel `bank_al_maghrib_api` récupère les cours de virement EUR, USD et CAD via l'API de Bank Al-Maghrib. Il attend la clé dans la variable d'environnement `BKAM_API_KEY`, transmise uniquement via le secret GitHub Actions du même nom. La source reste désactivée tant que la clé n'a pas été configurée. Ne jamais placer cette clé dans un fichier du dépôt.
+
+
+## Enrichissement académique par DOI
+
+Les notices scientifiques incomplètes disposant d'un DOI sont enrichies progressivement à partir de la fiche Crossref correspondante. Le traitement est limité à 12 tentatives par exécution (maximum configurable avec `KITN_DOI_ENRICHMENT_LIMIT`) et une même notice n'est pas retentée pendant 7 jours. Les champs existants sont conservés lorsqu'ils sont déjà renseignés ; les dates futures ou incohérentes restent signalées au lieu d'écraser une date fiable. Les résumés ne sont jamais générés artificiellement.
+
+
+## Couverture des publications scientifiques
+
+La veille académique combine désormais HAL, Crossref et OpenAlex. OpenAlex est interrogé avec des recherches thématiques distinctes : gouvernance et administration, économie et finances publiques, sécurité, développement humain, relations internationales et géopolitique. Les résultats restent soumis au contrôle de pertinence Maroc ; les mots génériques comme « recherche » ou « étude » ne suffisent pas à eux seuls. Les notices sont dédoublonnées par DOI canonique, puis par titre/date et URL lorsque le DOI manque.

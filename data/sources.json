@@ -5,11 +5,11 @@
     "domain": "api.openalex.org",
     "target_space": "science",
     "type": "openalex",
-    "url": "https://api.openalex.org/works?search=morocco&per-page=15",
+    "url": "https://api.openalex.org/works?search=Morocco&filter=type:article,from_publication_date:2000-01-01&per-page=25&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
     "enabled": true,
     "lang_hint": "en",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 25
   },
   {
     "id": "banque_mondiale_maroc",
@@ -41,11 +41,27 @@
     "domain": "www.courdescomptes.ma",
     "target_space": "bibliotheque",
     "type": "html_links",
-    "url": "https://www.courdescomptes.ma/fr/publications",
-    "enabled": false,
+    "url": "https://www.courdescomptes.ma/publications/",
+    "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "rapport",
-    "max_items": 15
+    "max_items": 20,
+    "min_anchor_length": 8,
+    "include_title_tokens": [
+      "rapport",
+      "audit",
+      "évaluation",
+      "evaluation",
+      "budget",
+      "gestion",
+      "finances",
+      "programme",
+      "service public"
+    ],
+    "listing_urls": [
+      "https://www.courdescomptes.ma/publications/"
+    ],
+    "fetch_details": true
   },
   {
     "id": "hcp_maroc",
@@ -57,31 +73,63 @@
     "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
-    "max_items": 15
+    "max_items": 15,
+    "listing_urls": [
+      "/Marche-du-travail_r423.html",
+      "/Actualite-marche-du-travail_r424.html",
+      "/Publications-Marche-du-travail_r425.html",
+      "/Economie_r327.html",
+      "/Population-demographie_r513.html",
+      "/Communiques-de-presse_r7.html",
+      "/downloads/?tag=Derni%C3%A8res+parutions"
+    ]
   },
   {
     "id": "bank_al_maghrib",
     "name": "Bank Al-Maghrib (BAM)",
     "domain": "www.bkam.ma",
     "target_space": "chiffres",
-    "type": "html_links",
-    "url": "https://www.bkam.ma/",
-    "enabled": true,
+    "type": "bank_al_maghrib_api",
+    "url": "https://api.centralbankofmorocco.ma/cours/Version1/api",
+    "enabled": false,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
-    "max_items": 15
+    "max_items": 20,
+    "api_base": "https://api.centralbankofmorocco.ma/cours/Version1/api",
+    "api_key_env": "BKAM_API_KEY",
+    "currencies": [
+      "EUR",
+      "USD",
+      "CAD"
+    ]
   },
   {
     "id": "cese_maroc",
     "name": "Conseil économique, social et environnemental (CESE)",
     "domain": "www.cese.ma",
     "target_space": "bibliotheque",
-    "type": "html_links",
-    "url": "https://www.cese.ma/",
-    "enabled": false,
+    "type": "rss_atom",
+    "url": "https://www.cese.ma/feed/",
+    "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "rapport_institutionnel",
-    "max_items": 15
+    "max_items": 20,
+    "min_anchor_length": 12,
+    "include_title_tokens": [
+      "rapport",
+      "étude",
+      "etude",
+      "avis",
+      "enquête",
+      "enquete",
+      "intercommunalité",
+      "développement régional",
+      "cybersécurité",
+      "emploi dans le tiers secteur"
+    ],
+    "listing_urls": [
+      "https://www.cese.ma/"
+    ]
   },
   {
     "id": "sgg_maroc",
@@ -149,11 +197,30 @@
     "domain": "www.ires.ma",
     "target_space": "bibliotheque",
     "type": "html_links",
-    "url": "https://www.ires.ma/",
-    "enabled": false,
+    "url": "https://www.ires.ma/fr/publications",
+    "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "rapport_institutionnel",
-    "max_items": 15
+    "max_items": 20,
+    "min_anchor_length": 12,
+    "include_title_tokens": [
+      "rapport",
+      "étude",
+      "etude",
+      "analyse",
+      "perspectives",
+      "stratégique",
+      "strategique",
+      "régionalisation",
+      "sécurité",
+      "sécuritaire",
+      "développement"
+    ],
+    "listing_urls": [
+      "https://www.ires.ma/fr/publications/rapports-generaux",
+      "https://www.ires.ma/fr/publications/rapports-thematiques"
+    ],
+    "fetch_details": true
   },
   {
     "id": "ircam_maroc",
@@ -292,12 +359,12 @@
     "name": "HAL Archives Ouvertes — Maroc",
     "domain": "api.archives-ouvertes.fr",
     "target_space": "science",
-    "type": "rss_atom",
-    "url": "https://api.archives-ouvertes.fr/search/rss/?q=morocco+OR+maroc",
-    "enabled": false,
+    "type": "hal_api",
+    "url": "https://api.archives-ouvertes.fr/search/?q=((title_t%3Amorocco%20OR%20title_t%3Amaroc)%20AND%20(title_t%3Agouvernance%20OR%20title_t%3A%C3%A9conomie%20OR%20title_t%3Apolitique%20OR%20title_t%3Aadministration%20OR%20title_t%3As%C3%A9curit%C3%A9%20OR%20title_t%3Aterritoire%20OR%20title_t%3Aemploi%20OR%20title_t%3Afinance))&wt=json&rows=20&fl=docid,title_s,authFullName_s,producedDateY_i,abstract_s,uri_s",
+    "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "publication_scientifique",
-    "max_items": 15
+    "max_items": 20
   },
   {
     "id": "arxiv_morocco",
@@ -334,6 +401,66 @@
     "lang_hint": "ar",
     "default_doc_type": "article_presse",
     "max_items": 15
+  },
+  {
+    "id": "aujourdhui_maroc",
+    "name": "Aujourd'hui le Maroc — Actualité stratégique",
+    "domain": "aujourdhui.ma",
+    "target_space": "veille",
+    "type": "rss_atom",
+    "url": "https://aujourdhui.ma/feed",
+    "enabled": true,
+    "lang_hint": "fr",
+    "default_doc_type": "article_presse",
+    "max_items": 25,
+    "include_title_tokens": [
+      "gouvernement",
+      "ministère",
+      "budget",
+      "finances",
+      "économ",
+      "investissement",
+      "industrie",
+      "défense",
+      "sécurité",
+      "gouvernance",
+      "réforme",
+      "administration",
+      "emploi",
+      "chômage",
+      "politique publique",
+      "infrastructure",
+      "énergie",
+      "eau",
+      "agriculture",
+      "tourisme",
+      "commerce",
+      "exportation",
+      "parlement",
+      "diplomatie",
+      "coopération",
+      "souveraineté",
+      "régionalisation",
+      "santé",
+      "éducation",
+      "recherche",
+      "technologie",
+      "intelligence artificielle",
+      "numérique",
+      "cybersécurité"
+    ],
+    "exclude_title_tokens": [
+      "football",
+      "sport",
+      "match",
+      "coupe",
+      "concert",
+      "cinéma",
+      "exposition",
+      "festival",
+      "people",
+      "horoscope"
+    ]
   },
   {
     "id": "medias24_maroc",
@@ -597,6 +724,170 @@
     "enabled": false,
     "lang_hint": "en",
     "default_doc_type": "rapport_institutionnel",
+    "max_items": 15
+  },
+  {
+    "id": "crossref_maroc",
+    "name": "Crossref — Publications scientifiques sur le Maroc",
+    "domain": "api.crossref.org",
+    "target_space": "science",
+    "type": "crossref",
+    "url": "https://api.crossref.org/works?query.bibliographic=Morocco%20governance%20public%20administration%20public%20policy&rows=20&select=DOI,title,author,published-online,published-print,published,issued,abstract,URL,type,publisher,container-title,subject",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 25
+  },
+  {
+    "id": "world_bank_maroc",
+    "name": "Banque mondiale — Indicateurs du Maroc",
+    "domain": "api.worldbank.org",
+    "target_space": "chiffres",
+    "type": "world_bank_api",
+    "url": "https://api.worldbank.org/v2/country/MAR/indicator/",
+    "enabled": true,
+    "lang_hint": "fr",
+    "default_doc_type": "statistique",
+    "max_items": 6,
+    "indicators": [
+      {
+        "code": "NY.GDP.MKTP.CD",
+        "label_fr": "PIB nominal",
+        "label_ar": "الناتج الداخلي الإجمالي الاسمي",
+        "description_fr": "Produit intérieur brut aux prix courants, en milliards de dollars US.",
+        "description_ar": "الناتج الداخلي الإجمالي بالأسعار الجارية، بمليارات الدولارات الأمريكية.",
+        "unit_fr": "Md USD",
+        "unit_ar": "مليار دولار",
+        "scale_divisor": 1000000000,
+        "precision": 1,
+        "category": "economie_finances_publiques",
+        "pole": "economie_finances_publiques"
+      },
+      {
+        "code": "NY.GDP.MKTP.KD.ZG",
+        "label_fr": "Croissance du PIB",
+        "label_ar": "نمو الناتج الداخلي الإجمالي",
+        "description_fr": "Variation annuelle du PIB réel, en pourcentage.",
+        "description_ar": "التغير السنوي للناتج الداخلي الإجمالي الحقيقي، بالنسبة المئوية.",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "category": "economie_finances_publiques",
+        "pole": "economie_finances_publiques"
+      },
+      {
+        "code": "FP.CPI.TOTL.ZG",
+        "label_fr": "Inflation",
+        "label_ar": "التضخم",
+        "description_fr": "Variation annuelle de l'indice des prix à la consommation, en pourcentage.",
+        "description_ar": "التغير السنوي لمؤشر أسعار الاستهلاك، بالنسبة المئوية.",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "category": "economie_finances_publiques",
+        "pole": "economie_finances_publiques"
+      },
+      {
+        "code": "SL.UEM.TOTL.ZS",
+        "label_fr": "Chômage (estimation OIT)",
+        "label_ar": "البطالة (تقديرات منظمة العمل الدولية)",
+        "description_fr": "Part de la population active au chômage, estimation modélisée de l'OIT.",
+        "description_ar": "نسبة العاطلين من مجموع السكان النشيطين، وفق تقديرات منظمة العمل الدولية.",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "category": "societe_developpement_humain",
+        "pole": "societe_developpement_humain"
+      },
+      {
+        "code": "SP.POP.TOTL",
+        "label_fr": "Population totale",
+        "label_ar": "مجموع السكان",
+        "description_fr": "Estimation de la population totale, en millions d'habitants.",
+        "description_ar": "تقدير مجموع السكان، بملايين السكان.",
+        "unit_fr": "millions",
+        "unit_ar": "مليون نسمة",
+        "scale_divisor": 1000000,
+        "precision": 2,
+        "category": "societe_developpement_humain",
+        "pole": "societe_developpement_humain"
+      },
+      {
+        "code": "BX.KLT.DINV.CD.WD",
+        "label_fr": "Investissements directs étrangers",
+        "label_ar": "الاستثمارات الأجنبية المباشرة",
+        "description_fr": "Entrées nettes d'investissements directs étrangers, en milliards de dollars US.",
+        "description_ar": "صافي تدفقات الاستثمارات الأجنبية المباشرة، بمليارات الدولارات الأمريكية.",
+        "unit_fr": "Md USD",
+        "unit_ar": "مليار دولار",
+        "scale_divisor": 1000000000,
+        "precision": 2,
+        "category": "economie_finances_publiques",
+        "pole": "economie_finances_publiques"
+      }
+    ]
+  },
+  {
+    "id": "openalex_morocco_governance",
+    "name": "OpenAlex — Morocco governance public administration",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20governance%20public%20administration&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_economy",
+    "name": "OpenAlex — Morocco public finance economic policy",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20public%20finance%20economic%20policy&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_security",
+    "name": "OpenAlex — Morocco public security policing",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20public%20security%20policing&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_social",
+    "name": "OpenAlex — Morocco human development social policy",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20human%20development%20social%20policy&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
+    "max_items": 15
+  },
+  {
+    "id": "openalex_morocco_geopolitics",
+    "name": "OpenAlex — Morocco international relations diplomacy",
+    "domain": "api.openalex.org",
+    "target_space": "science",
+    "type": "openalex",
+    "url": "https://api.openalex.org/works?search=Morocco%20international%20relations%20diplomacy&filter=type:article,from_publication_date:2000-01-01&per-page=15&select=id,doi,display_name,publication_year,publication_date,authorships,abstract_inverted_index,primary_location,best_oa_location,open_access,language,keywords,topics",
+    "enabled": true,
+    "lang_hint": "en",
+    "default_doc_type": "publication_scientifique",
     "max_items": 15
   }
 ]

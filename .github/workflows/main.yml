@@ -5,15 +5,27 @@ on:
     - cron: "30 3 * * *"
     - cron: "30 15 * * *"
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - "chatgpt/kitn-stabilisation-2026-11"
 
+# Les vérifications de pull request sont strictement en lecture seule.
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: kitn-veille-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  collect-and-update:
+  validate-pull-request:
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout pull request
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -24,41 +36,92 @@ jobs:
       - name: Install Python dependencies if present
         run: |
           if [ -f requirements.txt ]; then
-            pip install --upgrade pip
-            pip install -r requirements.txt
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
+          fi
+
+      - name: Run unit tests
+        run: PYTHONPATH=. python -m unittest discover -s tests -v
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Verify root Vite build
+        run: |
+          npm ci
+          npm run build
+
+  collect-and-update:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies if present
+        run: |
+          if [ -f requirements.txt ]; then
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
           fi
 
       - name: Run unit tests
         run: PYTHONPATH=. python -m unittest discover -s tests -v
 
       - name: Run KITN pipeline
+        env:
+          BKAM_API_KEY: ${{ secrets.BKAM_API_KEY }}
         run: PYTHONPATH=. python -m pipeline.run_pipeline
 
-      - name: Sync search index to public for Vite production build
+      - name: Sync Academy content to public for Vite production build
         run: |
-          if [ -f data/index/search-index.json ]; then
-            mkdir -p public/data/index
-            cp data/index/search-index.json public/data/index/search-index.json
+          if [ -f data/academy/academy.json ]; then
+            mkdir -p public/data/academy
+            cp data/academy/academy.json public/data/academy/academy.json
           fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
 
       - name: Verify root Vite build
         run: |
-          npm install
+          npm ci
           npm run build
 
-      - name: Commit and push updated data
+      - name: Commit and push generated data only
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add -- data/index/search-index.json data/sources-health.json data/statistics.json public/data/index/search-index.json public/data/statistics.json public/data/academy/academy.json
           if ! git diff --staged --quiet; then
             git commit -m "chore(data): mise à jour automatique de la veille KITN"
-            git push
+            branch="$GITHUB_REF_NAME"
+            for attempt in 1 2 3; do
+              git fetch origin "$branch"
+              git pull --rebase --autostash origin "$branch"
+              if git push origin "HEAD:$branch"; then
+                exit 0
+              fi
+              echo "Push concurrent détecté (tentative $attempt/3)."
+              sleep $((attempt * 2))
+            done
+            echo "Impossible de pousser les données après trois tentatives."
+            exit 1
           else
             echo "Aucun changement détecté à pousser."
           fi

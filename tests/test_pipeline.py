@@ -5,19 +5,20 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from pipeline.collectors import collect_from_source
+from pipeline.collectors import collect_bank_al_maghrib, collect_bank_al_maghrib_api, collect_crossref_by_doi, collect_from_source, collect_world_bank_api
 from pipeline.processors import (
     build_stable_id,
     classify_document,
     clean_text,
     detect_real_language,
     evaluate_morocco_relevance,
+    normalize_doi,
     process_raw_item,
     resolve_space,
     sanitize_url,
     validate_publication_date,
 )
-from pipeline.run_pipeline import _content_fingerprint, _merge_preserving_rich_fields, run
+from pipeline.run_pipeline import _content_fingerprint, _doi_key, _merge_preserving_rich_fields, run
 
 
 class TestPipelineProcessors(unittest.TestCase):
@@ -25,6 +26,49 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(detect_real_language("Politique publique et gouvernance au Maroc"), "fr")
         self.assertEqual(detect_real_language("Public policy and economic growth in Morocco"), "en")
         self.assertEqual(detect_real_language("تقرير حول الحكامة والسياسات العمومية في المغرب"), "ar")
+
+    def test_normalize_doi(self):
+        self.assertEqual(normalize_doi("https://doi.org/10.1000/ABC.123"), "10.1000/abc.123")
+        self.assertEqual(normalize_doi("doi: 10.1234/Some.Path"), "10.1234/some.path")
+        self.assertIsNone(normalize_doi("not-a-doi"))
+        self.assertIsNone(normalize_doi("10.12/too-short-prefix"))
+        self.assertIsNone(normalize_doi("javascript:alert(1)"))
+
+    def test_process_raw_item_marks_doi_quality(self):
+        source = {
+            "id": "crossref_test",
+            "name": "Crossref",
+            "default_doc_type": "publication_scientifique",
+        }
+        valid = process_raw_item(
+            {
+                "title": "Étude sur la gouvernance publique au Maroc",
+                "abstract": "Analyse de la gouvernance et des politiques publiques au Maroc.",
+                "doi": "https://doi.org/10.1000/ABC.123",
+                "published_date": "2025",
+                "url": "https://example.org/article",
+            },
+            source,
+            now_iso="2026-11-27T00:00:00Z",
+        )
+        self.assertIsNotNone(valid)
+        self.assertEqual(valid["doi"], "10.1000/abc.123")
+        self.assertEqual(valid["doi_statut"], "valide")
+
+        invalid = process_raw_item(
+            {
+                "title": "Étude sur la gouvernance publique au Maroc",
+                "abstract": "Analyse de la gouvernance et des politiques publiques au Maroc.",
+                "doi": "https://example.org/not-a-doi",
+                "published_date": "2025",
+                "url": "https://example.org/article",
+            },
+            source,
+            now_iso="2026-11-27T00:00:00Z",
+        )
+        self.assertIsNotNone(invalid)
+        self.assertEqual(invalid["doi"], "https://example.org/not-a-doi")
+        self.assertEqual(invalid["doi_statut"], "invalide")
 
     def test_validate_publication_date(self):
         ref = date(2026, 11, 26)
@@ -80,6 +124,33 @@ class TestPipelineProcessors(unittest.TestCase):
         )
         self.assertFalse(irrelevant["is_relevant"])
 
+    def test_relevance_uses_word_boundaries_and_english_topics(self):
+        false_positive = evaluate_morocco_relevance(
+            "Made-up experimental notes",
+            "Laboratory analysis of generic samples.",
+        )
+        self.assertFalse(false_positive["is_relevant"])
+
+        english = evaluate_morocco_relevance(
+            "Moroccan public finance and fiscal policy reform",
+            "An empirical study of governance and public administration in Morocco.",
+        )
+        self.assertTrue(english["is_relevant"])
+        self.assertEqual(english["lien_maroc"], "direct")
+
+        isolated_city = evaluate_morocco_relevance(
+            "Rabat astronomy observations",
+            "A study of distant galaxies and stellar evolution.",
+        )
+        self.assertFalse(isolated_city["is_relevant"])
+
+        generic_morocco_research = evaluate_morocco_relevance(
+            "Research methods in astronomy",
+            "A comparative research paper on astronomy and astrophysics.",
+            {"id": "crossref_maroc", "type": "crossref"},
+        )
+        self.assertFalse(generic_morocco_research["is_relevant"])
+
     def test_classify_document_poles_and_spaces(self):
         sec = classify_document(
             "Sécurité publique, police et ordre public",
@@ -129,6 +200,26 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(merged["resume"], existing["resume"])
         self.assertEqual(merged["auteurs"], existing["auteurs"])
 
+
+    def test_merge_prefers_clean_institutional_title_over_listing_label(self):
+        existing = {
+            "id": "kitn_listing",
+            "source_id": "cour_des_comptes_maroc",
+            "url_publication": "https://www.courdescomptes.ma/publication/report/",
+            "titre_original": "08 Juil. 2026 - Rapport annuel Rapport sur l'exécution de la loi de finances",
+        }
+        incoming = {
+            "id": "kitn_detail",
+            "source_id": "cour_des_comptes_maroc",
+            "url_publication": "https://www.courdescomptes.ma/publication/report/",
+            "titre_original": "Rapport sur l'exécution de la loi de finances pour l'année 2024",
+            "resume": "Résumé détaillé du rapport sur l'exécution de la loi de finances.",
+        }
+        merged, changed = _merge_preserving_rich_fields(existing, incoming, "2026-11-26T22:00:00Z")
+        self.assertTrue(changed)
+        self.assertEqual(merged["titre_original"], incoming["titre_original"])
+        self.assertEqual(merged["resume"], incoming["resume"])
+
     def test_stable_id_and_fingerprint(self):
         id1 = build_stable_id("10.1000/xyz", "https://example.org/a", "Titre A", "2025-01-01")
         id2 = build_stable_id("https://doi.org/10.1000/XYZ", "https://example.org/b", "Titre A", "2025-01-01")
@@ -137,6 +228,99 @@ class TestPipelineProcessors(unittest.TestCase):
         rec_a = {"id": id1, "titre_original": "Titre A", "resume": "Résumé 1", "collecte_le": "2026-01-01T00:00:00Z"}
         rec_b = {"id": id1, "titre_original": "Titre A", "resume": "Résumé 1", "collecte_le": "2026-11-26T12:00:00Z"}
         self.assertEqual(_content_fingerprint(rec_a), _content_fingerprint(rec_b))
+
+
+
+    def test_crossref_date_handles_null_month_and_day(self):
+        from pipeline.collectors import _crossref_date
+        self.assertEqual(_crossref_date({"published": {"date-parts": [[2025, None, None]]}}), "2025")
+        self.assertEqual(_crossref_date({"published": {"date-parts": [[2025, 6, None]]}}), "2025-06")
+        self.assertEqual(_crossref_date({"published": {"date-parts": [[None, None, None]]}}), "")
+
+    def test_collect_crossref_by_doi_mocked(self):
+        payload = {
+            "status": "ok",
+            "message": {
+                "DOI": "10.1000/example.2026",
+                "title": ["Étude de la gouvernance au Maroc"],
+                "author": [{"given": "Rachid", "family": "Essedik"}],
+                "published": {"date-parts": [[2025, 6, 13]]},
+                "URL": "https://doi.org/10.1000/example.2026",
+                "publisher": "Policy Press",
+                "container-title": ["Public Policy Evaluation"],
+                "abstract": "<jats:p>Résumé scientifique complet sur la gouvernance au Maroc.</jats:p>",
+                "subject": ["Public policy"],
+            },
+        }
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)) as fetch:
+            item = collect_crossref_by_doi("https://doi.org/10.1000/EXAMPLE.2026")
+        self.assertIsNotNone(item)
+        self.assertEqual(item["doi"], "10.1000/example.2026")
+        self.assertEqual(item["authors"], ["Rachid Essedik"])
+        self.assertEqual(item["venue"], "Public Policy Evaluation")
+        self.assertIn("Résumé scientifique complet", item["abstract"])
+        self.assertIn("/works/doi/10.1000/example.2026", fetch.call_args.args[0])
+
+    def test_collect_crossref_api_mocked(self):
+        payload = {
+            "message": {
+                "items": [{
+                    "DOI": "10.1000/example.2026",
+                    "title": ["Public policy evaluation in Morocco"],
+                    "author": [{"given": "Rachid", "family": "Essedik"}],
+                    "published": {"date-parts": [[2025, 6, 13]]},
+                    "URL": "https://doi.org/10.1000/example.2026",
+                    "publisher": "Policy Press",
+                    "container-title": ["Public Policy Evaluation"],
+                    "abstract": "<jats:p>Policy evaluation in Morocco.</jats:p>",
+                    "subject": ["Public policy"],
+                }]
+            }
+        }
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)):
+            items = collect_from_source({
+                "id": "crossref_maroc", "type": "crossref",
+                "url": "https://api.crossref.org/works?query=Morocco",
+                "default_doc_type": "publication_scientifique",
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Public policy evaluation in Morocco")
+        self.assertEqual(items[0]["published_date"], "2025-06-13")
+        self.assertEqual(items[0]["authors"], ["Rachid Essedik"])
+        self.assertEqual(items[0]["doi"], "10.1000/example.2026")
+
+    def test_collect_hal_api_mocked(self):
+        payload = {
+            "response": {
+                "docs": [{
+                    "docid": "123456",
+                    "title_s": ["Gouvernance territoriale au Maroc"],
+                    "abstract_s": ["Étude sur les politiques publiques territoriales au Maroc."],
+                    "authFullName_s": ["Auteur Test"],
+                    "producedDateY_i": 2024,
+                    "uri_s": "https://hal.science/hal-0123456v1",
+                }]
+            }
+        }
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)):
+            items = collect_from_source({
+                "id": "hal_science_morocco", "type": "hal_api",
+                "url": "https://api.archives-ouvertes.fr/search/?q=morocco",
+                "default_doc_type": "publication_scientifique",
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Gouvernance territoriale au Maroc")
+        self.assertEqual(items[0]["published_date"], "2024")
+        self.assertEqual(items[0]["authors"], ["Auteur Test"])
+
+    def test_research_aggregators_do_not_get_national_source_boost(self):
+        aggregate = evaluate_morocco_relevance(
+            "Research methods in astronomy",
+            "A comparative research paper on astronomy and astrophysics.",
+            {"id": "crossref_maroc", "type": "crossref"},
+        )
+        self.assertFalse(aggregate["is_relevant"])
+        self.assertEqual(aggregate["score"], 0)
 
     def test_collect_rss_atom_mocked(self):
         sample_rss = """<?xml version="1.0" encoding="UTF-8"?>
@@ -149,24 +333,189 @@ class TestPipelineProcessors(unittest.TestCase):
               <pubDate>2026-10-12</pubDate>
               <description>&lt;p&gt;Indicateurs économiques et emploi au Maroc.&lt;/p&gt;</description>
             </item>
+            <item>
+              <title>Résumé du match de football</title>
+              <link>https://example.org/sport</link>
+              <pubDate>2026-10-13</pubDate>
+              <description>Sport et football.</description>
+            </item>
+            <item>
+              <title>Industrie de défense : financement et souveraineté</title>
+              <link>https://example.org/defense</link>
+              <pubDate>2026-10-14</pubDate>
+              <description>Une feuille de route stratégique pour le Maroc.</description>
+            </item>
           </channel>
         </rss>"""
 
-        with tempfile.TemporaryDirectory():
-            with patch("pipeline.collectors._fetch_text", return_value=sample_rss):
-                items = collect_from_source({
-                    "id": "test_rss",
-                    "name": "Flux Test",
-                    "type": "rss_atom",
-                    "url": "https://example.org/rss.xml",
-                    "lang_hint": "fr",
-                    "default_doc_type": "statistique",
-                })
-        self.assertEqual(len(items), 1)
+        with patch("pipeline.collectors._fetch_text", return_value=sample_rss):
+            items = collect_from_source({
+                "id": "test_rss",
+                "name": "Flux Test",
+                "type": "rss_atom",
+                "url": "https://example.org/rss.xml",
+                "lang_hint": "fr",
+                "default_doc_type": "article_presse",
+                "target_space": "veille",
+                "max_items": 10,
+                "include_title_tokens": ["économ", "défense"],
+                "exclude_title_tokens": ["football"],
+            })
+        self.assertEqual(len(items), 2)
         self.assertEqual(items[0]["title"], "Note de conjoncture au Maroc")
         self.assertEqual(items[0]["published_date"], "2026-10-12")
-        self.assertEqual(items[0]["default_doc_type"], "statistique")
-        self.assertTrue(Path(".").exists())
+        self.assertEqual(items[0]["default_doc_type"], "article_presse")
+        self.assertEqual(items[0]["espace"], "veille")
+        self.assertEqual(items[1]["title"], "Industrie de défense: financement et souveraineté")
+
+
+
+    def test_collect_institutional_html_links_enriches_detail_metadata(self):
+        listing = '<html><a href="/publication/report-2024/">Rapport annuel sur les finances publiques</a></html>'
+        detail = """
+        <html><head>
+          <meta property="og:title" content="Rapport annuel sur les finances publiques - Cour des comptes" />
+          <meta property="og:description" content="Ce rapport présente les résultats du contrôle de l'exécution des finances publiques et les principales recommandations de la Cour des comptes." />
+          <meta property="article:published_time" content="2026-07-08T11:12:24+00:00" />
+        </head><body><h1>Rapport annuel sur les finances publiques</h1>
+        <p>Le rapport analyse l'exécution budgétaire, les dépenses publiques et les principaux résultats de l'exercice.</p></body></html>
+        """
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, detail]):
+            items = collect_from_source({
+                "id": "cour_des_comptes_maroc",
+                "name": "Cour des comptes — Maroc",
+                "type": "html_links",
+                "url": "https://www.courdescomptes.ma/publications/",
+                "default_doc_type": "rapport_institutionnel",
+                "fetch_details": True,
+                "min_anchor_length": 12,
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Rapport annuel sur les finances publiques")
+        self.assertIn("contrôle de l'exécution", items[0]["abstract"])
+        self.assertEqual(items[0]["published_date"], "2026-07-08T11:12:24+00:00")
+
+
+
+    def test_collect_bank_al_maghrib_api_uses_subscription_key_and_maps_rates(self):
+        from unittest.mock import MagicMock
+        import os
+
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps([{
+            "coursJour": 10.25,
+            "diffCours": 0.03,
+            "libDevise": "EUR",
+            "coursVeille": 10.22,
+            "diffCoursVeille": 0.01,
+        }]).encode("utf-8")
+        with patch.dict(os.environ, {"BKAM_API_KEY": "test-key"}), patch("pipeline.collectors.urlopen", return_value=response) as mocked:
+            items = collect_bank_al_maghrib_api({
+                "id": "bank_al_maghrib",
+                "api_base": "https://api.centralbankofmorocco.ma/cours/Version1/api",
+                "currencies": ["EUR"],
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["statistics_series"]["latest"]["value"], 10.25)
+        self.assertEqual(items[0]["statistics_series"]["previous"]["value"], 10.22)
+        self.assertEqual(items[0]["statistics_series"]["change_unit"], "MAD")
+        request = mocked.call_args.args[0]
+        self.assertEqual(request.get_header("Subscription-key"), "test-key")
+
+    def test_collect_bank_al_maghrib_api_requires_secret(self):
+        import os
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "BKAM_API_KEY"):
+                collect_bank_al_maghrib_api({"currencies": ["EUR"]})
+
+    def test_collect_bank_al_maghrib_extracts_monthly_indicators_and_monia(self):
+        monthly_html = """
+        <html><body>
+        <h2>Principaux indicateurs du mois de Septembre 2026</h2>
+        <p>En septembre 2026, la masse monétaire a marqué une hausse, en glissement annuel, de 12,2% après 11,9% le mois dernier pour atteindre 2 237,9 MMDH.</p>
+        <p>Au niveau des contreparties de M3, les avoirs officiels de réserve et les créances nettes sur l'Administration Centrale ont enregistré des hausses respectives de 21,2% après 21,7% et de 6,7% après 7,2%.</p>
+        <p>Le crédit bancaire au secteur non financier s'est accru de 11,2% après 10,4%, reflétant la progression des concours aux sociétés non financières privées de 13,8% après 11,4% et aux ménages de 3,5% après 3,3%.</p>
+        <p>Les créances en souffrance ont décéléré de 3,7% à 2,3% et leur ratio au crédit bancaire s'est établi à 7,9% contre 8,2% en août 2026.</p>
+        </body></html>
+        """
+        monia_html = """
+        <html><body><table>
+          <tr><th>Indice MONIA</th><th>Volume JJ</th><th>Date de référence</th><th>Date de publication</th></tr>
+          <tr><td>2,195 %</td><td>12709</td><td>25/11/2026</td><td>26/11/2026</td></tr>
+          <tr><td>2,139 %</td><td>13888</td><td>24/11/2026</td><td>25/11/2026</td></tr>
+        </table></body></html>
+        """
+        source = {
+            "id": "bank_al_maghrib",
+            "name": "Bank Al-Maghrib",
+            "statistics_pages": [
+                {"kind": "monthly_indicators", "url": "https://www.bkam.ma/fr/Statistiques/Principaux-indicateurs"},
+                {"kind": "monia", "url": "https://www.bkam.ma/Marches/MONIA"},
+            ],
+        }
+        with patch("pipeline.collectors._fetch_text", side_effect=[monthly_html, monia_html]):
+            items = collect_bank_al_maghrib(source)
+        series = {item["statistics_series"]["indicator_code"]: item["statistics_series"] for item in items}
+        self.assertIn("BAM_M3_STOCK", series)
+        self.assertEqual(series["BAM_M3_STOCK"]["latest"]["value"], 2237.9)
+        self.assertEqual(series["BAM_M3_GROWTH"]["latest"]["value"], 12.2)
+        self.assertEqual(series["BAM_CREDIT_NFS_GROWTH"]["latest"]["value"], 11.2)
+        self.assertEqual(series["BAM_NPL_RATIO"]["latest"]["value"], 7.9)
+        self.assertEqual(series["BAM_MONIA_RATE"]["latest"], {"year": "2026-11-25", "value": 2.195})
+        self.assertEqual(series["BAM_MONIA_VOLUME"]["latest"]["value"], 12709)
+        bam_source = {
+            "id": "bank_al_maghrib",
+            "name": "Bank Al-Maghrib",
+            "target_space": "chiffres",
+            "default_doc_type": "statistique",
+        }
+        processed = process_raw_item(items[0], bam_source)
+        self.assertIsNotNone(processed)
+        self.assertEqual(processed["espace"], "chiffres")
+        self.assertEqual(processed["pole"], "economie_finances_publiques")
+
+    def test_collect_world_bank_api_builds_historical_series(self):
+        payload = [
+            {"lastupdated": "2026-11-11"},
+            [
+                {"date": "2025", "value": 4.5},
+                {"date": "2024", "value": 3.8},
+                {"date": "2023", "value": None},
+            ],
+        ]
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(payload)):
+            items = collect_world_bank_api({
+                "id": "world_bank_maroc",
+                "url": "https://api.worldbank.org/v2/country/MAR/indicator/",
+                "max_items": 1,
+                "indicators": [{
+                    "code": "NY.GDP.MKTP.KD.ZG",
+                    "label_fr": "Croissance du PIB",
+                    "label_ar": "نمو الناتج الداخلي الإجمالي",
+                    "unit_fr": "%",
+                    "unit_ar": "٪",
+                    "scale_divisor": 1,
+                    "precision": 1,
+                    "pole": "economie_finances_publiques",
+                }],
+            })
+        self.assertEqual(len(items), 1)
+        series = items[0]["statistics_series"]
+        self.assertEqual(series["latest"], {"year": 2025, "value": 4.5})
+        self.assertEqual(series["previous"], {"year": 2024, "value": 3.8})
+        self.assertEqual([point["year"] for point in series["history"]], [2024, 2025])
+        self.assertEqual(items[0]["espace"], "chiffres")
+
+    def test_collect_world_bank_api_continues_after_one_indicator_failure(self):
+        good_payload = json.dumps([{"lastupdated": "2026-11-11"}, [{"date": "2025", "value": 4.5}]])
+        with patch("pipeline.collectors._fetch_text", side_effect=[RuntimeError("temporary outage"), good_payload]):
+            items = collect_world_bank_api({
+                "url": "https://api.worldbank.org/v2/country/MAR/indicator/",
+                "indicators": [{"code": "BAD"}, {"code": "GOOD", "label_fr": "Indicateur"}],
+                "max_items": 2,
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["statistics_series"]["indicator_code"], "GOOD")
 
     def test_collect_html_links_mocked(self):
         sample_html = """
@@ -186,6 +535,148 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["url"], "https://example.org/rapports/rapport-annuel.pdf")
         self.assertEqual(items[0]["pdf_url"], "https://example.org/rapports/rapport-annuel.pdf")
+
+
+    def test_collect_hcp_enriches_article_metadata(self):
+        listing_html = """
+        <html><body>
+          <a href="/Marche-du-travail_r423.html">Marché du travail</a>
+          <a href="/Situation-du-marche-du-travail-au-Maroc_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>
+        </body></html>
+        """
+        detail_html = """
+        <html><head>
+          <title>Situation du marché du travail au Maroc</title>
+          <meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026" />
+          <meta property="og:description" content="Le HCP publie les principaux indicateurs du marché du travail au Maroc au troisième trimestre 2026." />
+          <meta property="article:published_time" content="2026-11-03T10:00:00+01:00" />
+          <meta name="author" content="HCP — Direction de la statistique" />
+        </head><body>
+          <h1>Situation du marché du travail au Maroc</h1>
+          <p>Rabat, le 3 novembre 2026, le Haut-Commissariat au Plan présente les résultats de l'enquête sur la main-d'œuvre.</p>
+          <p>Le taux d'activité, le taux d'emploi et le taux de chômage sont détaillés par sexe et par milieu de résidence.</p>
+        </body></html>
+        """
+
+        def fake_fetch(url):
+            if "_a4364.html" in url:
+                return detail_html
+            return listing_html
+
+        with patch("pipeline.collectors._fetch_text", side_effect=fake_fetch):
+            items = collect_from_source({
+                "id": "hcp_maroc",
+                "name": "Haut-Commissariat au Plan (HCP)",
+                "type": "html_links",
+                "url": "https://www.hcp.ma/",
+                "listing_urls": ["/listing"],
+                "lang_hint": "fr",
+                "default_doc_type": "statistique",
+                "max_items": 5,
+            })
+
+        self.assertEqual(len(items), 1)
+        self.assertIn("troisième trimestre 2026", items[0]["title"])
+        self.assertIn("principaux indicateurs", items[0]["abstract"])
+        self.assertEqual(items[0]["published_date"], "2026-11-03T10:00:00+01:00")
+        self.assertEqual(items[0]["authors"], ["HCP - Direction de la statistique"])
+        self.assertEqual(items[0]["default_doc_type"], "statistique")
+
+
+    def test_process_raw_item_uses_source_target_space(self):
+        proc = process_raw_item(
+            {
+                "title": "Taux de chômage au Maroc au troisième trimestre 2026",
+                "abstract": "Le HCP publie les indicateurs du marché du travail au Maroc.",
+                "published_date": "2026-11-03",
+                "url": "https://www.hcp.ma/example_a1234.html",
+                "default_doc_type": "statistique",
+            },
+            {
+                "id": "hcp_maroc",
+                "name": "Haut-Commissariat au Plan (HCP)",
+                "target_space": "chiffres",
+                "default_doc_type": "statistique",
+            },
+            now_iso="2026-11-26T19:00:00Z",
+        )
+        self.assertIsNotNone(proc)
+        self.assertEqual(proc["espace"], "chiffres")
+        self.assertEqual(proc["type_document"], "statistique")
+
+
+    def test_hcp_institutional_news_does_not_enter_statistics_space(self):
+        proc = process_raw_item(
+            {
+                "title": "Le HCP renforce sa coopération institutionnelle avec Statistics Denmark",
+                "abstract": "Un partenariat portant sur la modernisation statistique et la coopération institutionnelle.",
+                "published_date": "2026-11-25",
+                "url": "https://www.hcp.ma/example_a4372.html",
+                "default_doc_type": "rapport_institutionnel",
+            },
+            {
+                "id": "hcp_maroc",
+                "name": "Haut-Commissariat au Plan (HCP)",
+                "target_space": "chiffres",
+                "default_doc_type": "statistique",
+            },
+            now_iso="2026-11-26T20:00:00Z",
+        )
+        self.assertIsNotNone(proc)
+        self.assertEqual(proc["espace"], "bibliotheque")
+        self.assertEqual(proc["type_document"], "rapport_institutionnel")
+
+    def test_merge_refreshes_better_classification_and_date(self):
+        existing = {
+            "id": "kitn_hcp_merge",
+            "source_id": "hcp_maroc",
+            "titre_original": "Taux de chômage",
+            "date_publication": "2026",
+            "type_document": "publication_scientifique",
+            "espace": "science",
+            "pole": "recherche_scientifique",
+            "confiance_classification": "eleve",
+            "resume": "Résumé générique.",
+        }
+        incoming = {
+            "id": "kitn_hcp_merge",
+            "source_id": "hcp_maroc",
+            "titre_original": "Taux de chômage au Maroc au troisième trimestre 2026",
+            "date_publication": "2026-11-03",
+            "date_statut": "date_confirmee",
+            "date_anomalie": False,
+            "type_document": "statistique",
+            "espace": "chiffres",
+            "pole": "economie_finances_publiques",
+            "confiance_classification": "eleve",
+            "resume": "Résumé détaillé des indicateurs du marché du travail au Maroc.",
+        }
+        merged, changed = _merge_preserving_rich_fields(existing, incoming, "2026-11-26T19:00:00Z")
+        self.assertTrue(changed)
+        self.assertEqual(merged["espace"], "chiffres")
+        self.assertEqual(merged["type_document"], "statistique")
+        self.assertEqual(merged["date_publication"], "2026-11-03")
+        self.assertIn("troisième trimestre", merged["titre_original"])
+        self.assertEqual(merged["resume"], incoming["resume"])
+
+    def test_merge_does_not_transfer_future_date_anomaly_to_trusted_date(self):
+        existing = {
+            "id": "kitn_date_guard",
+            "date_publication": "2025-05-10",
+            "date_statut": "date_confirmee",
+            "date_anomalie": False,
+        }
+        incoming = {
+            "id": "kitn_date_guard",
+            "date_publication": "2027-03-15",
+            "date_statut": "date_future_a_verifier",
+            "date_anomalie": True,
+        }
+        merged, changed = _merge_preserving_rich_fields(existing, incoming, "2026-11-27T12:00:00Z")
+        self.assertFalse(changed)
+        self.assertEqual(merged["date_publication"], "2025-05-10")
+        self.assertFalse(merged["date_anomalie"])
+        self.assertEqual(merged["date_statut"], "date_confirmee")
 
     def test_run_pipeline_preserves_existing_and_merges_manual(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -237,6 +728,29 @@ class TestPipelineProcessors(unittest.TestCase):
                         "type_document": "rapport",
                         "pole": "economie_finances_publiques",
                         "resume": "Résumé détaillé déjà validé.",
+                        "doi": "https://doi.org/10.1000/DUPLICATE.1",
+                        "source_id": "crossref_test",
+                    }, {
+                        "id": "kitn_existing_duplicate_doi",
+                        "titre_original": "A differently titled record for the same DOI",
+                        "auteurs": ["Chercheur A", "Chercheur B"],
+                        "date_publication": "2026-09-02",
+                        "type_document": "publication_scientifique",
+                        "pole": "recherche_scientifique",
+                        "resume": "Second abstract from another source.",
+                        "doi": "10.1000/duplicate.1",
+                        "source_id": "openalex_test",
+                    }, {
+                        "id": "kitn_existing_enrich",
+                        "titre_original": "Étude scientifique à enrichir sur le Maroc",
+                        "auteurs": ["Auteur initial"],
+                        "date_publication": "2025-05-01",
+                        "type_document": "publication_scientifique",
+                        "espace": "science",
+                        "pole": "recherche_scientifique",
+                        "resume": "",
+                        "doi": "10.1000/enrich.1",
+                        "revue_ou_institution": "Revue initiale",
                     }]
                 }),
                 encoding="utf-8",
@@ -250,18 +764,40 @@ class TestPipelineProcessors(unittest.TestCase):
                 patch("pipeline.run_pipeline.PUBLIC_INDEX_FILE", pub_idx),
                 patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
                 patch("pipeline.run_pipeline.collect_from_source", return_value=[]),
+                patch("pipeline.run_pipeline.collect_crossref_by_doi", return_value={
+                    "title": "Étude scientifique à enrichir sur le Maroc",
+                    "abstract": "Résumé complet de la recherche portant sur les politiques publiques au Maroc.",
+                    "authors": ["Auteur initial", "Auteur complémentaire"],
+                    "venue": "Revue initiale",
+                    "keywords": ["gouvernance"],
+                    "published_date": "2025-05-01",
+                    "url": "https://doi.org/10.1000/enrich.1",
+                    "doi": "10.1000/enrich.1",
+                    "default_doc_type": "publication_scientifique",
+                }),
             ):
                 payload = run()
 
             ids = {it["id"] for it in payload["items"]}
             self.assertIn("kitn_existing_1", ids)
+            self.assertIn("kitn_existing_enrich", ids)
+            self.assertNotIn("kitn_existing_duplicate_doi", ids)
+            self.assertEqual(sum(1 for it in payload["items"] if normalize_doi(it.get("doi")) == "10.1000/duplicate.1"), 1)
             self.assertIn("kitn_manual_test1", ids)
+            enriched_item = next(it for it in payload["items"] if it["id"] == "kitn_existing_enrich")
+            self.assertIn("Résumé complet de la recherche", enriched_item["resume"])
+            self.assertIn("Auteur complémentaire", enriched_item["auteurs"])
+            self.assertEqual(enriched_item["metadata_source_enrichissement"], "Crossref")
+            self.assertTrue(enriched_item["metadata_enrichissement_tente_le"])
+            self.assertEqual(payload["doi_enrichment_attempted"], 1)
+            self.assertEqual(payload["doi_enrichment_updated"], 1)
             self.assertTrue(pub_idx.exists())
             self.assertTrue(health_path.exists())
             health_data = json.loads(health_path.read_text(encoding="utf-8"))
             self.assertEqual(health_data["sources"][0]["domain"], "example.ma")
             self.assertEqual(health_data["sources"][0]["target_space"], "chiffres")
-            self.assertEqual(health_data["sources"][0]["stage"], "collecte_effectuee")
+            self.assertEqual(health_data["sources"][0]["stage"], "aucun_contenu")
+            self.assertEqual(health_data["sources"][0]["status"], "warning")
 
 
 if __name__ == "__main__":

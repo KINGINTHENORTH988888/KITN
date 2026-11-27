@@ -154,24 +154,42 @@ def validate_publication_date(raw_date: str | None, reference_date: date | None 
     return {"date_statut": "date_invalide", "date_anomalie": True}
 
 
+def _contains_phrase(text: str, phrase: str) -> bool:
+    """Match a complete word or phrase, avoiding accidental hits such as MAD in 'made'."""
+    normalized_text = clean_text(text).casefold()
+    normalized_phrase = clean_text(phrase).casefold()
+    if not normalized_text or not normalized_phrase:
+        return False
+    pattern = r"(?<!\w)" + r"\s+".join(re.escape(part) for part in normalized_phrase.split()) + r"(?!\w)"
+    return re.search(pattern, normalized_text, flags=re.UNICODE) is not None
+
+
 def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | None = None) -> dict:
-    clean_t = clean_text(title).lower()
-    clean_a = clean_text(abstract).lower()
+    clean_t = clean_text(title).casefold()
+    clean_a = clean_text(abstract).casefold()
     combined = f"{clean_t} {clean_a}".strip()
 
-    strong_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if sig.lower() in combined]
-    title_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if sig.lower() in clean_t]
+    strong_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if _contains_phrase(combined, sig)]
+    title_matches = [sig for sig in MOROCCO_STRONG_SIGNALS if _contains_phrase(clean_t, sig)]
 
     pole_hits = 0
-    for keywords in POLE_KEYWORDS.values():
-        if any(kw.lower() in combined for kw in keywords):
+    for pole, keywords in POLE_KEYWORDS.items():
+        # "Research", "study" or "analysis" alone are generic academic words,
+        # not evidence that a paper has a Morocco-related policy topic.
+        if pole == "recherche_scientifique":
+            continue
+        if any(_contains_phrase(combined, kw) for kw in keywords):
             pole_hits += 1
 
     source_id = str((source or {}).get("id") or "").lower()
-    is_national_source = any(
+    is_research_aggregator = any(
+        token in source_id
+        for token in ("openalex", "crossref", "hal_", "arxiv", "semantic_scholar")
+    )
+    is_national_source = not is_research_aggregator and any(
         k in source_id
         for k in (
-            "maroc", "hcp", "bam", "bkam", "finances", "tgr",
+            "maroc", "hcp", "bam", "bkam", "bank_al_maghrib", "finances", "tgr",
             "cour_des_comptes", "cese", "sgg", "interieur",
             "emploi_public", "prsm", "imist", "map", "hespress", "medias24"
         )
@@ -179,10 +197,10 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
 
     score = 0
     if strong_matches:
-        score += 35 if title_matches else 20
-        score += min(30, 10 * max(0, len(strong_matches) - 1))
+        score += 35 if title_matches else 25
+        score += min(20, 10 * max(0, len(strong_matches) - 1))
     if pole_hits >= 1:
-        score += min(25, 12 * pole_hits)
+        score += min(30, 15 * pole_hits)
     if is_national_source and (strong_matches or pole_hits >= 1):
         score += 15
 
@@ -190,7 +208,7 @@ def evaluate_morocco_relevance(title: str, abstract: str = "", source: dict | No
 
     # Une mention seule dans le titre sans signal thématique (pole_hits == 0) ni source nationale est rejetée
     has_thematic_context = pole_hits >= 1 or is_national_source
-    is_relevant = score >= 45 and len(strong_matches) >= 1 and has_thematic_context
+    is_relevant = score >= 40 and len(strong_matches) >= 1 and has_thematic_context
 
     if title_matches and pole_hits >= 1:
         lien_maroc = "direct"
@@ -266,12 +284,24 @@ def classify_document(
     }
 
 
+def normalize_doi(raw_doi: str | None) -> str | None:
+    """Return a canonical DOI only when the identifier passes a conservative syntax check."""
+    if not raw_doi or not isinstance(raw_doi, str):
+        return None
+    value = clean_text(raw_doi).strip()
+    value = re.sub(r"^(?:doi:\s*)", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"^https?://(?:dx\.)?doi\.org/", "", value, flags=re.IGNORECASE)
+    value = value.strip().rstrip(".,;)")
+    if not re.fullmatch(r"10\.\d{4,9}/\S+", value, flags=re.IGNORECASE):
+        return None
+    return value.lower()
+
+
 def build_stable_id(doi: str | None, url: str | None, title: str, pub_date: str | None = None) -> str:
-    if doi:
-        clean_doi = re.sub(r"^https?://(dx\.)?doi\.org/", "", str(doi).strip(), flags=re.IGNORECASE).lower()
-        if clean_doi:
-            digest = hashlib.sha256(f"doi:{clean_doi}".encode("utf-8")).hexdigest()[:16]
-            return f"kitn_{digest}"
+    normalized_doi = normalize_doi(doi)
+    if normalized_doi:
+        digest = hashlib.sha256(f"doi:{normalized_doi}".encode("utf-8")).hexdigest()[:16]
+        return f"kitn_{digest}"
 
     norm_title = re.sub(r"\s+", " ", clean_text(title).lower()).strip()
     norm_date = str(pub_date or "").strip()[:10]
@@ -300,6 +330,8 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
     url_pub = sanitize_url(raw.get("url"))
     pdf_url = sanitize_url(raw.get("pdf_url"))
     doi_raw = clean_text(raw.get("doi")) or None
+    normalized_doi = normalize_doi(doi_raw)
+    doi_status = "absent" if not doi_raw else ("valide" if normalized_doi else "invalide")
     pub_date_raw = clean_text(raw.get("published_date")) or None
     date_info = validate_publication_date(pub_date_raw)
 
@@ -308,12 +340,20 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
         hint=raw.get("source_lang_hint") or source.get("lang_hint"),
     )
 
+    source_space = source.get("target_space") or source.get("space")
+    # The HCP publishes both statistical releases and institutional news.
+    # Its configured default space applies to statistics, not to every article.
+    if str(source.get("id") or "").lower() == "hcp_maroc":
+        incoming_type = raw.get("default_doc_type") or source.get("default_doc_type")
+        if incoming_type != "statistique":
+            source_space = None
+
     classification = classify_document(
         title,
         abstract,
         default_doc_type=raw.get("default_doc_type") or source.get("default_doc_type"),
         explicit_pole=raw.get("pole"),
-        explicit_space=raw.get("espace"),
+        explicit_space=raw.get("espace") or source_space,
     )
 
     authors_raw = raw.get("authors")
@@ -334,7 +374,7 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
     explicit_status = raw.get("statut_validation")
     statut_validation = explicit_status if explicit_status in ("valide", "a_verifier", "archive") else ("a_verifier" if has_anomaly else "valide")
 
-    item_id = clean_text(raw.get("id")) or build_stable_id(doi_raw, url_pub, title, pub_date_raw)
+    item_id = clean_text(raw.get("id")) or build_stable_id(normalized_doi, url_pub, title, pub_date_raw)
     stamp = now_iso or ""
 
     return {
@@ -360,7 +400,8 @@ def process_raw_item(raw: dict, source: dict, now_iso: str | None = None, bypass
         "lien_maroc": "direct" if bypass_relevance else relevance["lien_maroc"],
         "score_pertinence": int(raw["score_pertinence"]) if isinstance(raw.get("score_pertinence"), (int, float)) else (90 if bypass_relevance else relevance["score"]),
         "url_publication": url_pub,
-        "doi": doi_raw,
+        "doi": normalized_doi or doi_raw,
+        "doi_statut": doi_status,
         "pdf_direct": pdf_url,
         "texte_integral_disponible": bool(pdf_url or raw.get("texte_integral_disponible")),
         "resume": abstract,

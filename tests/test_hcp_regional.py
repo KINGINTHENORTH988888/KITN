@@ -40,8 +40,12 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
         self.assertEqual(dakhla["history"][-1]["year"], "T3/2026")
         self.assertEqual(dakhla["latest"]["value"], 64.7)
         self.assertEqual(dakhla["source_page"], 1)
+        self.assertEqual(dakhla["geography_name_ar"], "الداخلة-وادي الذهب")
+        self.assertEqual(dakhla["label_ar"], "معدل المشاركة في القوى العاملة")
         national = next(item for item in series if item["geography_code"] == "MAR")
         self.assertEqual(national["history"][-1]["value"], 41.8)
+        self.assertEqual(national["geography_name_ar"], "المجموع الوطني")
+        self.assertTrue(national["methodology_note_ar"])
 
     def test_preserves_medium_and_insufficient_significance_flags(self):
         extracted = """

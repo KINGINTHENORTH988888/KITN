@@ -4,6 +4,7 @@ from email.message import Message
 from unittest.mock import patch
 from urllib.error import HTTPError
 
+import pipeline.collectors as collectors
 from pipeline.collectors import _fetch_text, _retry_delay_seconds
 
 
@@ -64,6 +65,32 @@ class TestCollectorRetries(unittest.TestCase):
         self.assertEqual(result, '{"ok": true}')
         self.assertEqual(mocked.call_count, 4)
         self.assertEqual([call.args[0] for call in sleep.call_args_list], [2.0, 4.0, 8.0])
+
+
+    def test_openalex_429_opens_circuit_and_skips_later_sources(self):
+        error = HTTPError(
+            "https://api.openalex.org/works",
+            429,
+            "Too Many Requests",
+            Message(),
+            None,
+        )
+        with (
+            patch.object(collectors, "_OPENALEX_RATE_LIMITED_UNTIL", 0),
+            patch.object(collectors, "_OPENALEX_LAST_REQUEST_AT", 0),
+            patch("pipeline.collectors.time.monotonic", return_value=100.0),
+            patch("pipeline.collectors.urlopen", side_effect=error) as mocked,
+        ):
+            with self.assertRaises(HTTPError):
+                _fetch_text("https://api.openalex.org/works?search=Morocco")
+            with self.assertRaisesRegex(HTTPError, "circuit is open"):
+                _fetch_text("https://api.openalex.org/works?search=Morocco%20governance")
+
+        self.assertEqual(mocked.call_count, 1)
+        self.assertEqual(
+            collectors._OPENALEX_RATE_LIMITED_UNTIL,
+            100.0 + collectors._OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS,
+        )
 
     def test_excessive_retry_after_is_not_retried_early(self):
         self.assertIsNone(_retry_delay_seconds("300", 0))

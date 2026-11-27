@@ -124,6 +124,26 @@ class TestPipelineProcessors(unittest.TestCase):
         )
         self.assertFalse(irrelevant["is_relevant"])
 
+    def test_relevance_uses_word_boundaries_and_english_topics(self):
+        false_positive = evaluate_morocco_relevance(
+            "Made-up experimental notes",
+            "Laboratory analysis of generic samples.",
+        )
+        self.assertFalse(false_positive["is_relevant"])
+
+        english = evaluate_morocco_relevance(
+            "Moroccan public finance and fiscal policy reform",
+            "An empirical study of governance and public administration in Morocco.",
+        )
+        self.assertTrue(english["is_relevant"])
+        self.assertEqual(english["lien_maroc"], "direct")
+
+        isolated_city = evaluate_morocco_relevance(
+            "Rabat astronomy observations",
+            "A study of distant galaxies with no policy or social context.",
+        )
+        self.assertFalse(isolated_city["is_relevant"])
+
     def test_classify_document_poles_and_spaces(self):
         sec = classify_document(
             "Sécurité publique, police et ordre public",

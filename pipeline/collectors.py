@@ -558,7 +558,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 if url:
                     url_slug = unquote(urlsplit(url).path.rsplit("/", 1)[-1])
                     url_slug = re.sub(r"_a\d+\.html$", "", url_slug, flags=re.IGNORECASE)
-                probe = f"{title} {url_slug}".casefold()
+                probe = re.sub(r"[-_]+", " ", f"{title} {url_slug}".casefold())
                 if (
                     url and url not in seen
                     and "marche du travail" in probe.replace("marché", "marche")
@@ -1827,7 +1827,7 @@ def _bam_ckan_period(value: str) -> str | None:
         return f"{numeric.group(1)}-{int(numeric.group(2)):02d}"
     day_first = re.search(r"\b(?:0?[1-9]|[12]\d|3[01])[-/.](0?[1-9]|1[0-2])[-/.](20\d{2})\b", text)
     if day_first:
-        return f"{day_first.group(3)}-{int(day_first.group(2)):02d}"
+        return f"{day_first.group(2)}-{int(day_first.group(1)):02d}"
     compact = re.fullmatch(r"(20\d{2})(0[1-9]|1[0-2])", text)
     if compact:
         return f"{compact.group(1)}-{compact.group(2)}"

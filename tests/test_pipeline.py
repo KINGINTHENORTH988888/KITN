@@ -1158,6 +1158,23 @@ class TestPipelineProcessors(unittest.TestCase):
             **valid,
             "unit_fr": "*",
         }
+        unknown_unit = {
+            **valid,
+            "unit_fr": "Unité non précisée",
+        }
+        non_finite = {
+            **valid,
+            "latest": {"year": "2026-08", "value": float("inf")},
+        }
+        invalid_month = {
+            **valid,
+            "latest": {"year": "2026-13", "value": 100.0},
+        }
+        duplicate_periods = {
+            **valid,
+            "history": [{"year": "2026-08", "value": 90.0}],
+            "latest": {"year": "2026-08", "value": 100.0},
+        }
         non_bam = {
             "indicator_code": "NY.GDP.MKTP.CD",
             "latest": {"year": "2098", "value": 100.0},
@@ -1165,6 +1182,10 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertTrue(_is_valid_statistics_series(valid))
         self.assertFalse(_is_valid_statistics_series(impossible_year))
         self.assertFalse(_is_valid_statistics_series(footnote_unit))
+        self.assertFalse(_is_valid_statistics_series(unknown_unit))
+        self.assertFalse(_is_valid_statistics_series(non_finite))
+        self.assertFalse(_is_valid_statistics_series(invalid_month))
+        self.assertFalse(_is_valid_statistics_series(duplicate_periods))
         self.assertTrue(_is_valid_statistics_series(non_bam))
 
 

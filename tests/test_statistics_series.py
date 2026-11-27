@@ -104,6 +104,51 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
             ],
         )
 
+    def test_older_incoming_latest_does_not_replace_a_newer_published_observation(self):
+        existing = {
+            "indicator_code": "TEST_INDICATOR",
+            "history": [
+                {"year": "2020", "value": 10},
+                {"year": "2025", "value": 50},
+            ],
+            "latest": {"year": "2025", "value": 50},
+            "previous": {"year": "2020", "value": 10},
+        }
+        incoming = {
+            "indicator_code": "TEST_INDICATOR",
+            "history": [
+                {"year": "2021", "value": 20},
+                {"year": "2022", "value": 30},
+            ],
+            "latest": {"year": "2022", "value": 30},
+            "previous": {"year": "2021", "value": 20},
+        }
+
+        merged = _merge_statistics_series(existing, incoming, "2026-11-27T04:00:00Z")
+
+        self.assertEqual(merged["latest"], {"year": "2025", "value": 50})
+        self.assertEqual(merged["previous"], {"year": "2022", "value": 30})
+
+    def test_daily_previous_point_is_kept_and_sorted_before_today(self):
+        incoming = {
+            "indicator_code": "BAM_FX_EUR",
+            "history": [{"year": "Aujourd'hui", "value": 10.5}],
+            "latest": {"year": "Aujourd'hui", "value": 10.5},
+            "previous": {"year": "Veille", "value": 10.4},
+        }
+
+        merged = _merge_statistics_series(None, incoming, "2026-11-27T04:00:00Z")
+
+        self.assertEqual(
+            merged["history"],
+            [
+                {"year": "Veille", "value": 10.4},
+                {"year": "Aujourd'hui", "value": 10.5},
+            ],
+        )
+        self.assertEqual(merged["latest"], {"year": "Aujourd'hui", "value": 10.5})
+        self.assertEqual(merged["previous"], {"year": "Veille", "value": 10.4})
+
     def test_new_series_is_initialized_without_existing_history(self):
         incoming = {
             "indicator_code": "NEW_INDICATOR",

@@ -35,9 +35,9 @@ test("header exposes the six dedicated spaces and useful dropdown shortcuts", ()
 });
 
 test("homepage keeps Academy and the full research index out of the landing view", () => {
-  assert.match(source, /activeSpace === "academy" ? `/);
-  assert.match(source, /isDedicatedSpace ? `\s*<section class="section" id="research">/);
-  assert.match(source, /home-featured-grid/);
+  assert.ok(source.includes('${activeSpace === "academy" ? `'));
+  assert.ok(source.includes('${isDedicatedSpace ? `\n    <section class="section" id="research">'));
+  assert.ok(source.includes("home-featured-grid"));
 });
 
 test("dedicated spaces are addressable with hash routes and browser history", () => {

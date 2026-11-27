@@ -1534,6 +1534,135 @@ def collect_world_bank_api(source: dict) -> list[dict]:
     return items
 
 
+
+def _mef_number(raw: str) -> float | None:
+    """Parse MEF French-formatted values: 350.273 -> 350273; 862.341,94 -> 862341.94."""
+    value = clean_text(raw).replace("\\u00a0", "").replace(" ", "").replace("%", "")
+    value = value.replace("−", "-").replace("–", "-")
+    if "," in value:
+        value = value.replace(".", "").replace(",", ".")
+    else:
+        value = value.replace(".", "")
+    value = re.sub(r"[^0-9.\\-]", "", value)
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _mef_period(raw: str) -> str:
+    value = clean_text(raw).lower().replace(" ", "")
+    quarter = re.search(r"t([1-4])[-/](20\\d{2})", value)
+    if quarter:
+        return f"{quarter.group(2)}-T{quarter.group(1)}"
+    month_names = {
+        "janv": "01", "janvier": "01", "févr": "02", "fevr": "02", "février": "02",
+        "fevrier": "02", "mars": "03", "avr": "04", "avril": "04", "mai": "05",
+        "juin": "06", "juil": "07", "juillet": "07", "août": "08", "aout": "08",
+        "sept": "09", "septembre": "09", "oct": "10", "octobre": "10",
+        "nov": "11", "novembre": "11", "déc": "12", "dec": "12",
+        "décembre": "12", "decembre": "12",
+    }
+    month = re.search(r"([a-zà-ÿ]+)\\.?[-/](20\\d{2}|\\d{2})", value)
+    if month:
+        mm = month_names.get(month.group(1))
+        year = month.group(2)
+        if mm:
+            year = f"20{year}" if len(year) == 2 else year
+            return f"{year}-{mm}"
+    year = re.search(r"20\\d{2}", value)
+    return year.group(0) if year else value
+
+
+def collect_mef_tand_statistics(source: dict) -> list[dict]:
+    """Collect selected national accounts, public finance, monetary and external indicators from MEF's DSBB table."""
+    page_url = str(source.get("statistics_url") or source.get("url") or "").strip()
+    if not page_url:
+        return []
+    parser = _BAMPageExtractor()
+    parser.feed(_fetch_text(page_url))
+    # Exact row labels prevent headings and unrelated table values from becoming indicators.
+    definitions = {
+        "a) pib à prix constant (2014)": ("MEF_GDP_CONSTANT", "PIB à prix constant (base 2014)", "MDH", "Évolution du produit intérieur brut en volume, aux prix constants de 2014.", "economie_finances_publiques"),
+        "b) pib à prix courant": ("MEF_GDP_CURRENT", "PIB à prix courant", "MDH", "Produit intérieur brut aux prix courants.", "economie_finances_publiques"),
+        "population active occupée": ("MEF_EMPLOYED_POPULATION", "Population active occupée", "milliers", "Effectif de la population active occupée.", "societe_developpement_humain"),
+        "taux de chômage": ("MEF_UNEMPLOYMENT_RATE", "Taux de chômage", "%", "Taux de chômage publié dans le tableau statistique du Maroc.", "societe_developpement_humain"),
+        "indice des salaires": ("MEF_WAGE_INDEX", "Indice des salaires", "base 2004=100", "Indice des salaires.", "societe_developpement_humain"),
+        "indice de la production industrielle (industries de transformation)": ("MEF_INDUSTRIAL_PRODUCTION", "Indice de la production industrielle", "base 2015=100", "Indice de la production des industries de transformation.", "economie_finances_publiques"),
+        "indices de prix à la consommation": ("MEF_CPI_INDEX", "Indice des prix à la consommation", "base 2017=100", "Indice des prix à la consommation.", "economie_finances_publiques"),
+        "indices des prix à la production (industries manufacturières)": ("MEF_PPI_INDEX", "Indice des prix à la production", "base 2018=100", "Indice des prix à la production des industries manufacturières.", "economie_finances_publiques"),
+        "1- recettes ordinaires": ("MEF_ORDINARY_REVENUES", "Recettes ordinaires du Trésor", "MDH", "Recettes ordinaires de l'administration centrale.", "economie_finances_publiques"),
+        "2- dépenses ordinaires": ("MEF_ORDINARY_EXPENDITURES", "Dépenses ordinaires du Trésor", "MDH", "Dépenses ordinaires de l'administration centrale.", "economie_finances_publiques"),
+        "3- solde (excédent+/déficit-)": ("MEF_TREASURY_BALANCE", "Solde budgétaire du Trésor", "MDH", "Solde des opérations de l'administration centrale; un signe négatif indique un déficit.", "economie_finances_publiques"),
+        "encours dette intérieure": ("MEF_DOMESTIC_TREASURY_DEBT", "Encours de la dette intérieure du Trésor", "MDH", "Encours de la dette intérieure du Trésor.", "economie_finances_publiques"),
+        "encours dette extérieure du trésor": ("MEF_EXTERNAL_TREASURY_DEBT", "Encours de la dette extérieure du Trésor", "MDH", "Encours de la dette extérieure du Trésor.", "economie_finances_publiques"),
+        "total encours de la dette": ("MEF_TOTAL_CENTRAL_GOV_DEBT", "Encours total de la dette de l'administration centrale", "MDH", "Encours total de la dette de l'administration centrale.", "economie_finances_publiques"),
+        "m1": ("MEF_M1", "Agrégat monétaire M1", "MDH", "Agrégat monétaire M1.", "economie_finances_publiques"),
+        "m2": ("MEF_M2", "Agrégat monétaire M2", "MDH", "Agrégat monétaire M2.", "economie_finances_publiques"),
+        "m3": ("MEF_M3", "Agrégat monétaire M3", "MDH", "Agrégat monétaire M3.", "economie_finances_publiques"),
+        "avoirs extérieurs nets": ("MEF_NET_FOREIGN_ASSETS", "Avoirs extérieurs nets", "MDH", "Avoirs extérieurs nets des institutions de dépôt.", "economie_finances_publiques"),
+        "créances nettes sur l'administration centrale": ("MEF_NET_CLAIMS_CENTRAL_GOV", "Créances nettes sur l'administration centrale", "MDH", "Créances nettes des institutions de dépôt sur l'administration centrale.", "economie_finances_publiques"),
+        "créances sur les autres secteurs": ("MEF_CLAIMS_OTHER_SECTORS", "Créances sur les autres secteurs", "MDH", "Créances des institutions de dépôt sur les autres secteurs.", "economie_finances_publiques"),
+        "total des exportations (fob)": ("MEF_EXPORTS_FOB", "Exportations de biens (FOB)", "MDH", "Valeur totale des exportations de biens, base FOB.", "economie_finances_publiques"),
+        "total des importations (caf)": ("MEF_IMPORTS_CIF", "Importations de biens (CAF)", "MDH", "Valeur totale des importations de biens, base CAF.", "economie_finances_publiques"),
+        "population": ("MEF_LEGAL_POPULATION", "Population", "milliers", "Population selon la dernière référence statistique affichée.", "societe_developpement_humain"),
+    }
+    histories: dict[str, list[dict]] = {}
+    meta: dict[str, tuple] = {}
+    for row in parser.rows:
+        if len(row) < 5:
+            continue
+        label_key = clean_text(row[0]).casefold()
+        definition = definitions.get(label_key)
+        if not definition:
+            continue
+        code, label, unit, description, pole = definition
+        period = _mef_period(row[2])
+        current = _mef_number(row[3])
+        previous = _mef_number(row[4])
+        if not period or current is None:
+            continue
+        histories.setdefault(code, []).append({"year": period, "value": current})
+        if previous is not None:
+            # The previous-period observation is retained with the same official period label only when explicitly available.
+            previous_period = period
+            histories[code].append({"year": previous_period + "-previous", "value": previous})
+        meta[code] = (label, unit, description, pole, page_url, row[5] if len(row) > 5 else "")
+    items = []
+    for code, points in histories.items():
+        label, unit, description, pole, source_url, variation_raw = meta[code]
+        # Preserve the official current and previous values without inventing a historical date.
+        current = next((p for p in points if not str(p["year"]).endswith("-previous")), None)
+        previous = next((p for p in points if str(p["year"]).endswith("-previous")), None)
+        if not current:
+            continue
+        series = {
+            "id": code, "indicator_code": code, "label_fr": label, "label_ar": label,
+            "description_fr": description, "description_ar": description,
+            "unit_fr": unit, "unit_ar": unit, "scale_divisor": 1, "precision": 2 if unit == "MDH" else 1,
+            "category": "economie_finances_publiques" if pole == "economie_finances_publiques" else "societe_developpement_humain",
+            "pole": pole, "latest": current, "previous": previous,
+            "history": [p for p in (previous, current) if p],
+            "source_name": "Ministère de l'Économie et des Finances — Tableau d'affichage DSBB",
+            "source_url": source_url, "last_updated": None,
+            "reference_period": current["year"],
+        }
+        variation = _mef_number(variation_raw)
+        if variation is not None:
+            series["published_variation"] = variation
+            series["published_variation_raw"] = clean_text(variation_raw)
+        items.append({
+            "title": f"{label} — {current['year']}", "abstract": description,
+            "authors": ["Ministère de l'Économie et des Finances"],
+            "venue": "MEF — Statistiques économiques et financières",
+            "keywords": ["Maroc", "MEF", "statistiques économiques", "finances publiques", code],
+            "published_date": None, "url": source_url, "doi": None,
+            "espace": "chiffres", "pole": pole, "default_doc_type": "statistique",
+            "statistics_series": series, "source_lang_hint": "fr",
+        })
+    return items
+
+
 def collect_from_source(source: dict) -> list[dict]:
     stype = (source.get("type") or "").lower()
     if stype == "openalex":
@@ -1542,6 +1671,8 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_crossref(source)
     if stype == "world_bank_api":
         return collect_world_bank_api(source)
+    if stype == "mef_tand_statistics":
+        return collect_mef_tand_statistics(source)
     if stype == "hcp_labour_statistics":
         return collect_hcp_labour_statistics(source)
     if stype == "bank_al_maghrib":

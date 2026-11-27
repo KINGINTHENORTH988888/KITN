@@ -930,8 +930,10 @@ class TestPipelineProcessors(unittest.TestCase):
             index_path = index_dir / "search-index.json"
             health_path = data_dir / "sources-health.json"
             statistics_path = data_dir / "statistics.json"
+            regional_statistics_path = data_dir / "regional-statistics.json"
             public_index = public_dir / "index" / "search-index.json"
             public_statistics = public_dir / "statistics.json"
+            public_regional_statistics = public_dir / "regional-statistics.json"
             sources_path.write_text(json.dumps([{
                 "id": "mef_test",
                 "name": "MEF — statistiques",
@@ -956,6 +958,14 @@ class TestPipelineProcessors(unittest.TestCase):
                     "source_name": "MEF",
                     "source_url": "https://finances.gov.ma/statistiques/pib",
                 },
+                "regional_statistics": [{
+                    "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+                    "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+                    "indicator_code": "HCP_EMO_REGIONAL_TEST",
+                    "geography_code": "MAR",
+                    "residence_scope": "all",
+                    "history": [{"year": "T3/2026", "value": 41.8, "quality_flag": "standard"}],
+                }],
             }]
 
             with (
@@ -967,6 +977,8 @@ class TestPipelineProcessors(unittest.TestCase):
                 patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
                 patch("pipeline.run_pipeline.STATISTICS_FILE", statistics_path),
                 patch("pipeline.run_pipeline.PUBLIC_STATISTICS_FILE", public_statistics),
+                patch("pipeline.run_pipeline.REGIONAL_STATISTICS_FILE", regional_statistics_path),
+                patch("pipeline.run_pipeline.PUBLIC_REGIONAL_STATISTICS_FILE", public_regional_statistics),
                 patch("pipeline.run_pipeline.collect_from_source", return_value=statistical_items),
                 patch("pipeline.run_pipeline.process_raw_item", return_value=None),
             ):
@@ -979,11 +991,16 @@ class TestPipelineProcessors(unittest.TestCase):
             self.assertEqual(source_health["fetched"], 1)
             self.assertEqual(source_health["accepted"], 0)
             self.assertEqual(source_health["statistics_collected"], 1)
+            self.assertEqual(source_health["regional_statistics_collected"], 1)
             self.assertEqual(source_health["statistics_indicators"], ["MEF_GDP_CONSTANT"])
             statistics = json.loads(statistics_path.read_text(encoding="utf-8"))
             self.assertEqual(statistics["indicators"][0]["indicator_code"], "MEF_GDP_CONSTANT")
             self.assertEqual(statistics["indicator_count"], 1)
             self.assertTrue(public_statistics.exists())
+            regional = json.loads(regional_statistics_path.read_text(encoding="utf-8"))
+            self.assertEqual(regional["series_count"], 1)
+            self.assertEqual(regional["series"][0]["geography_code"], "MAR")
+            self.assertTrue(public_regional_statistics.exists())
 
 
 

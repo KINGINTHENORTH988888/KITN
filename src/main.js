@@ -937,14 +937,23 @@ function renderStatisticsDashboard() {
   }
   const cards = filteredIndicators.map((indicator) => {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
-    const history = filterStatisticsHistory(allHistory, statisticsRange, statisticsData?.generated_at);
-    const latest = indicator.latest || allHistory[allHistory.length - 1];
-    const previous = indicator.previous;
-    const delta = previous && latest
+    const referenceDate = statisticsData?.generated_at;
+    const validHistory = filterStatisticsHistory(allHistory, "all", referenceDate);
+    const history = filterStatisticsHistory(validHistory, statisticsRange, referenceDate);
+    const validLatest = filterStatisticsHistory(indicator.latest ? [indicator.latest] : [], "all", referenceDate)[0] || null;
+    const validPrevious = filterStatisticsHistory(indicator.previous ? [indicator.previous] : [], "all", referenceDate)[0] || null;
+    const latest = validHistory[validHistory.length - 1] || validLatest;
+    const previous = validHistory.length > 1 ? validHistory[validHistory.length - 2] : validPrevious;
+    const latestNumeric = Number(latest?.value);
+    const previousNumeric = Number(previous?.value);
+    const hasComparableValues = Boolean(
+      latest && previous && Number.isFinite(latestNumeric) && Number.isFinite(previousNumeric)
+    );
+    const delta = hasComparableValues
       ? (indicator.change_mode === "absolute"
-          ? Number(latest.value) - Number(previous.value)
-          : (Number(previous.value) !== 0
-              ? ((Number(latest.value) - Number(previous.value)) / Math.abs(Number(previous.value))) * 100
+          ? latestNumeric - previousNumeric
+          : (previousNumeric !== 0
+              ? ((latestNumeric - previousNumeric) / Math.abs(previousNumeric)) * 100
               : null))
       : null;
     const numericValues = history.map((point) => Number(point.value)).filter(Number.isFinite);
@@ -985,7 +994,7 @@ function renderStatisticsDashboard() {
     return `
       <article class="stat-card">
         <div class="stat-card-top"><span>${escapeHtml(label)}</span><span class="stat-year">${escapeHtml(String(latest?.year || "—"))}</span></div>
-        <div class="stat-value">${escapeHtml(formatStatisticValue(indicator, latest?.value ?? 0))}<small>${escapeHtml(unit || "")}</small></div>
+        <div class="stat-value">${escapeHtml(latest ? formatStatisticValue(indicator, latest.value) : "—")}<small>${escapeHtml(unit || "")}</small></div>
         <p class="stat-description">${escapeHtml(description || "")}</p>
         <div class="stat-trend"><span>${escapeHtml(changeText)}</span></div>
         <svg class="stat-sparkline" viewBox="0 0 100 64" role="img" aria-label="${escapeHtml(chartTitle)}">

@@ -1057,5 +1057,17 @@
     "listing_urls": [
       "/Actualite-marche-du-travail_r424.html"
     ]
+  },
+  {
+    "id": "mef_tand_statistics",
+    "name": "Ministère de l'Économie et des Finances — Tableau DSBB",
+    "domain": "www.finances.gov.ma",
+    "target_space": "chiffres",
+    "type": "mef_tand_statistics",
+    "url": "https://www.finances.gov.ma/",
+    "statistics_url": "https://www.finances.gov.ma/Pages/TAND_Maroc_Francais.htm?wpmobileexternal=true",
+    "enabled": true,
+    "lang_hint": "fr",
+    "default_doc_type": "statistique"
   }
 ]

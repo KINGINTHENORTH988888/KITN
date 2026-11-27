@@ -5,8 +5,26 @@ import { readFileSync } from "node:fs";
 const regional = JSON.parse(
   readFileSync(new URL("../data/regional-statistics.json", import.meta.url), "utf8"),
 );
+const regionalPublic = JSON.parse(
+  readFileSync(new URL("../public/data/regional-statistics.json", import.meta.url), "utf8"),
+);
+const statistics = JSON.parse(
+  readFileSync(new URL("../data/statistics.json", import.meta.url), "utf8"),
+);
+const statisticsPublic = JSON.parse(
+  readFileSync(new URL("../public/data/statistics.json", import.meta.url), "utf8"),
+);
+const searchIndex = JSON.parse(
+  readFileSync(new URL("../data/index/search-index.json", import.meta.url), "utf8"),
+);
+const searchIndexPublic = JSON.parse(
+  readFileSync(new URL("../public/data/index/search-index.json", import.meta.url), "utf8"),
+);
 const academy = JSON.parse(
   readFileSync(new URL("../data/academy/academy.json", import.meta.url), "utf8"),
+);
+const academyPublic = JSON.parse(
+  readFileSync(new URL("../public/data/academy/academy.json", import.meta.url), "utf8"),
 );
 
 function periodKey(value) {
@@ -102,6 +120,39 @@ test("Academy has three bilingual tracks with valid answer indexes", () => {
         );
         assert.ok(question.correction, `${language}/${track.id}/${index} needs an explanation`);
       }
+    }
+  }
+});
+
+
+test("published data mirrors are synchronized with the frontend copies", () => {
+  assert.deepEqual(regionalPublic, regional, "regional data in public/ must match the source dataset");
+  assert.deepEqual(statisticsPublic, statistics, "national statistics in public/ must match the source dataset");
+  assert.deepEqual(searchIndexPublic, searchIndex, "document index in public/ must match the source index");
+  assert.deepEqual(academyPublic, academy, "Academy content in public/ must match the source content");
+});
+
+test("document index preserves stable identity and flags future-dated records for review", () => {
+  const items = searchIndex.items || [];
+  assert.equal(searchIndex.total, items.length, "document index total must match the actual item count");
+
+  const ids = items.map((item) => item.id);
+  assert.ok(ids.every(Boolean), "every indexed document needs a stable ID");
+  assert.equal(new Set(ids).size, ids.length, "document IDs must be unique");
+
+  for (const item of items) {
+    assert.ok(item.titre_original, `${item.id} needs a title`);
+    assert.ok(item.source_nom, `${item.id} needs a source name`);
+    assert.ok(
+      ["valide", "a_verifier", "archive"].includes(item.statut_validation),
+      `${item.id} has an unsupported validation status`,
+    );
+    if (item.date_anomalie || item.date_statut === "date_future_a_verifier") {
+      assert.equal(
+        item.statut_validation,
+        "a_verifier",
+        `${item.id} has an anomalous date and must not be presented as validated`,
+      );
     }
   }
 });

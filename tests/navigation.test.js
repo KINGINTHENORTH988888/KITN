@@ -78,3 +78,13 @@ test("homepage hero actions lead to useful KITN spaces rather than dead anchors"
 test("legacy dashboard sections are no longer displayed on the homepage", () => {
   assert.ok(styles.includes("#portal-hub, #themes { display: none; }"));
 });
+
+
+test("each dedicated space updates the browser document title", () => {
+  assert.ok(source.includes('document.title = activeSpace === "all"'));
+  assert.ok(source.includes('${activeSpaceObj.label} | KITN'));
+});
+
+test("returning to the home space also restores the root URL", () => {
+  assert.ok(source.includes('window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all)'));
+});

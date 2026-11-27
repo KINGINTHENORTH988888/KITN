@@ -181,3 +181,10 @@ test("global search includes national statistical indicators and opens their ded
   assert.match(styles, /\.global-stat-results/);
   assert.match(styles, /\.global-stat-result/);
 });
+
+test("search normalization ignores accents and combining diacritics", () => {
+  assert.match(source, /function normalizeSearchText\(value\)/);
+  assert.match(source, /\.normalize\("NFD"\)/);
+  assert.match(source, /normalizeSearchText\(searchQuery\)/);
+  assert.match(source, /normalizeSearchText\(statisticsSearch\)/);
+});

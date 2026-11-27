@@ -53,6 +53,10 @@ Le contrôle mobile de la prévisualisation a observé un rendu plus propre que 
 - La page Academy expose les onglets DGSN, IRAT et Concours admin. Le fichier de contenu contient 3 parcours en français et 3 en arabe, avec 5 questions et 2 anciens sujets par parcours. Le passage DGSN → IRAT fonctionne ; le QCM DGSN affiche une correction après sélection de la bonne réponse.
 - La page Bibliothèque répond à la recherche « HCP » avec 3 notices correspondantes. Les titres, dates, auteurs et résumés restent lisibles dans les cartes.
 
+### Limite du contrôle mobile sur le dernier déploiement
+
+Une tentative de contrôle mobile sur le déploiement exact du commit `9bfe778` a été exécutée, mais le navigateur de test est resté à une largeur desktop (environ 1280 px). Il ne faut donc pas présenter ce passage comme une validation réelle à 390 px. Les règles CSS du dépôt prévoient bien le menu repliable sous 820 px (`.menu-toggle`, `.nav.is-open`) et plusieurs grilles adaptatives, mais l'ouverture/fermeture du menu et l'absence de débordement à 390 px restent à confirmer dans un vrai viewport mobile.
+
 ### Données régionales vérifiées dans le dépôt de la branche
 
 - 342 séries régionales : 234 séries EMO (6 indicateurs × 13 géographies × 3 milieux) et 108 séries sociales.

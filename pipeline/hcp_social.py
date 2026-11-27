@@ -103,54 +103,54 @@ def _numbers_from_row(line: str) -> list[float]:
 
 
 def _extract_table_observations(lines: list[str], definition: dict) -> tuple[list[dict], str | None]:
-    start = next(
-        (i for i, line in enumerate(lines) if re.search(definition["table"], line, re.IGNORECASE)),
-        None,
-    )
-    if start is None:
+    starts = [
+        i for i, line in enumerate(lines)
+        if re.search(definition["table"], line, re.IGNORECASE)
+    ]
+    if not starts:
         return [], f"{definition['code']} : tableau HCP introuvable ({definition['table']})."
 
-    block = []
-    for line in lines[start + 1 : start + 65]:
-        if re.search(r"\bTableau\s+\d+\.\d+\s*:", line, re.IGNORECASE):
-            break
-        block.append(re.sub(r"\s+", " ", line).strip())
+    for start in starts:
+        block = []
+        for line in lines[start + 1 : start + 65]:
+            if re.search(r"\\bTableau\\s+\\d+\\.\\d+(?:\\s+[a-z])?\\s*:", line, re.IGNORECASE):
+                break
+            block.append(re.sub(r"\\s+", " ", line).strip())
 
-    years = []
-    for line in block:
-        candidates = _YEAR_RE.findall(line)
-        if len(candidates) >= 2:
-            years = [re.sub(r"\s+", "", item) for item in candidates]
-            break
-    if not years:
-        return [], f"{definition['code']} : en-tête des périodes introuvable."
-
-    national_seen = not definition.get("national_section", False)
-    selected = None
-    for line in block:
-        if definition.get("national_section") and re.match(r"^National\b", line, re.IGNORECASE):
-            national_seen = True
+        years = []
+        for line in block:
+            candidates = _YEAR_RE.findall(line)
+            if len(candidates) >= 2:
+                years = [re.sub(r"\\s+", "", item) for item in candidates]
+                break
+        if not years:
+            # The first occurrence is often the table of contents; keep looking
+            # for the actual table, which has a period header and data rows.
             continue
-        if not national_seen:
+
+        national_seen = not definition.get("national_section", False)
+        selected = None
+        for line in block:
+            if definition.get("national_section") and re.match(r"^National\\b", line, re.IGNORECASE):
+                national_seen = True
+                continue
+            if not national_seen:
+                continue
+            if re.search(definition["row"], line, re.IGNORECASE):
+                selected = line
+                break
+
+        if selected is None:
             continue
-        if re.search(definition["row"], line, re.IGNORECASE):
-            selected = line
-            break
+        values = _numbers_from_row(selected)
+        if len(values) != len(years):
+            continue
+        return [
+            {"year": year, "value": value}
+            for year, value in zip(years, values)
+        ], None
 
-    if selected is None:
-        return [], f"{definition['code']} : ligne de total attendue introuvable."
-    values = _numbers_from_row(selected)
-    if len(values) != len(years):
-        return [], (
-            f"{definition['code']} : {len(values)} valeurs détectées pour "
-            f"{len(years)} périodes ; série ignorée par prudence."
-        )
-
-    return [
-        {"year": year, "value": value}
-        for year, value in zip(years, values)
-    ], None
-
+    return [], f"{definition['code']} : tableau trouvé mais ligne nationale ou périodes non exploitables."
 
 def parse_hcp_social_indicators(text: str, source_url: str = HCP_SOCIAL_REPORT_URL) -> tuple[list[dict], list[str]]:
     """Parse explicitly identified national rows from the HCP 2026 social indicators PDF."""

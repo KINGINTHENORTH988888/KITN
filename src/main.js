@@ -1179,10 +1179,10 @@ function renderRegionalStatisticsDashboard() {
       <tbody>${rows || `<tr><td colspan="${model.periods.length + 1}">${isAr ? "لا توجد بيانات متاحة." : "Aucune observation disponible."}</td></tr>`}</tbody>
     </table></div>
     <p class="regional-legend">${isAr
-      ? "ms: دلالة إحصائية متوسطة · ps: غير دال إحصائياً بما يكفي · .: غير متاح."
-      : "ms : significativité moyenne · ps : résultat insuffisamment significatif · . : valeur non disponible."}</p>
+      ? "ms: دلالة إحصائية متوسطة · *: قيمة مقدّرة · ps: غير دال إحصائياً بما يكفي · .: غير متاح."
+      : "ms : significativité moyenne · * : valeur estimée · ps : résultat insuffisamment significatif · . : valeur non disponible."}</p>
     <p class="regional-methodology-note">${escapeHtml(methodologyText)}</p>
-    <div class="stat-card-foot"><span>${escapeHtml(isAr ? model.sourceNameAr : model.sourceName)} · ${model.rows.length} ${isAr ? "جهة ومجموع وطني" : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"} ↗</a>` : ""}</div>
+    <div class="stat-card-foot"><span>${escapeHtml(isAr ? model.sourceNameAr : model.sourceName)} · ${model.rows.length} ${isAr ? (model.rows.some((row) => row.geographyCode === "MAR") ? "جهة ومجموع وطني" : "جهة") : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"} ↗</a>` : ""}</div>
   </section>`;
 }
 

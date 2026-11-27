@@ -982,6 +982,7 @@ class TestPipelineProcessors(unittest.TestCase):
             self.assertEqual(source_health["statistics_indicators"], ["MEF_GDP_CONSTANT"])
             statistics = json.loads(statistics_path.read_text(encoding="utf-8"))
             self.assertEqual(statistics["indicators"][0]["indicator_code"], "MEF_GDP_CONSTANT")
+            self.assertEqual(statistics["indicator_count"], 1)
             self.assertTrue(public_statistics.exists())
 
 
@@ -1137,6 +1138,34 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(items[0]["statistics_series"]["latest"], {"year": "2026", "value": 1200.0})
         self.assertEqual(items[0]["statistics_series"]["unit_fr"], "MDH")
         self.assertEqual(items[1]["statistics_series"]["latest"]["value"], 1180.0)
+
+
+
+    def test_previous_bam_statistics_filter_impossible_years_and_footnote_units(self):
+        from pipeline.run_pipeline import _is_valid_statistics_series
+
+        valid = {
+            "indicator_code": "BAM_CKAN_COMPTE_ACTIF",
+            "unit_fr": "MDH",
+            "latest": {"year": "2026-08", "value": 100.0},
+            "history": [{"year": "2025-08", "value": 90.0}],
+        }
+        impossible_year = {
+            **valid,
+            "latest": {"year": "2098", "value": 100.0},
+        }
+        footnote_unit = {
+            **valid,
+            "unit_fr": "*",
+        }
+        non_bam = {
+            "indicator_code": "NY.GDP.MKTP.CD",
+            "latest": {"year": "2098", "value": 100.0},
+        }
+        self.assertTrue(_is_valid_statistics_series(valid))
+        self.assertFalse(_is_valid_statistics_series(impossible_year))
+        self.assertFalse(_is_valid_statistics_series(footnote_unit))
+        self.assertTrue(_is_valid_statistics_series(non_bam))
 
 
 

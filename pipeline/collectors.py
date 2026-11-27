@@ -2434,7 +2434,7 @@ def collect_hcp_social_indicators(source: dict) -> list[dict]:
             except TypeError:
                 page_text = page.extract_text() or ""
             pages.append(page_text)
-        extracted_text = "\\n".join(pages)
+        extracted_text = "\n".join(pages)
         series, warnings = parse_hcp_social_indicators(extracted_text, source_url=pdf_url)
         regional_series, regional_warnings = parse_hcp_social_regional_indicators(extracted_text, source_url=pdf_url)
         warnings.extend(regional_warnings)

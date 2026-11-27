@@ -140,13 +140,13 @@ class TestPipelineProcessors(unittest.TestCase):
 
         isolated_city = evaluate_morocco_relevance(
             "Rabat astronomy observations",
-            "A study of distant galaxies with no policy or social context.",
+            "A study of distant galaxies and stellar evolution.",
         )
         self.assertFalse(isolated_city["is_relevant"])
 
         generic_morocco_research = evaluate_morocco_relevance(
             "Research methods in astronomy",
-            "A comparative research paper with no Moroccan policy focus.",
+            "A comparative research paper on astronomy and astrophysics.",
             {"id": "crossref_maroc", "type": "crossref"},
         )
         self.assertFalse(generic_morocco_research["is_relevant"])

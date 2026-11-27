@@ -60,6 +60,7 @@ jobs:
       - name: Verify root Vite build
         run: |
           npm ci
+          npm run test:statistics
           npm run build
 
   collect-and-update:
@@ -110,6 +111,7 @@ jobs:
       - name: Verify root Vite build
         run: |
           npm ci
+          npm run test:statistics
           npm run build
 
       - name: Commit and push generated data only

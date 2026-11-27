@@ -19,6 +19,7 @@ from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, normalize_doi, sanitize_url
 from pipeline.hcp_regional import HCP_EMO_REGIONS, HCP_EMO_REGIONAL_INDICATORS, parse_hcp_emo_regional_tables
+from pipeline.hcp_social import parse_hcp_social_indicators
 from pypdf import PdfReader
 
 _USER_AGENT = (
@@ -2408,6 +2409,72 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
     return output
 
 
+
+def collect_hcp_social_indicators(source: dict) -> list[dict]:
+    """Collect selected national indicators from the HCP 2026 social compendium."""
+    pdf_url = str(source.get("pdf_url") or source.get("url") or "").strip()
+    if not pdf_url:
+        return [{
+            "statistics_collection_warnings": [
+                "HCP indicateurs sociaux : URL du rapport PDF absente de la configuration."
+            ],
+            "source_lang_hint": "fr",
+        }]
+
+    try:
+        payload = _fetch_pdf_bytes(
+            pdf_url,
+            referer=str(source.get("referer") or "https://www.hcp.ma/downloads/Les-indicateurs-sociaux_t22430.html"),
+        )
+        reader = PdfReader(io.BytesIO(payload))
+        pages = []
+        for page in reader.pages:
+            try:
+                page_text = page.extract_text(extraction_mode="layout") or ""
+            except TypeError:
+                page_text = page.extract_text() or ""
+            pages.append(page_text)
+        extracted_text = "\\n".join(pages)
+        series, warnings = parse_hcp_social_indicators(extracted_text, source_url=pdf_url)
+    except Exception as exc:
+        return [{
+            "statistics_collection_warnings": [
+                f"HCP indicateurs sociaux : erreur de lecture du rapport ({type(exc).__name__}: {clean_text(str(exc))[:220]})."
+            ],
+            "source_lang_hint": "fr",
+        }]
+
+    items = [{
+        "title": f"{item['label_fr']} — Maroc",
+        "abstract": item["description_fr"],
+        "authors": ["Haut-Commissariat au Plan"],
+        "venue": "Les indicateurs sociaux du Maroc — édition 2026",
+        "keywords": ["Maroc", "indicateur social", item["indicator_code"], item["category"]],
+        "published_date": "2026-07-27",
+        "url": pdf_url,
+        "doi": None,
+        "espace": "chiffres",
+        "pole": "societe_developpement_humain",
+        "default_doc_type": "statistique",
+        "statistics_series": item,
+        "source_lang_hint": "fr",
+    } for item in series]
+
+    if warnings:
+        items.append({
+            "statistics_collection_warnings": warnings,
+            "source_lang_hint": "fr",
+        })
+    if not items:
+        items.append({
+            "statistics_collection_warnings": [
+                "HCP indicateurs sociaux : aucune série exploitable extraite du rapport 2026."
+            ],
+            "source_lang_hint": "fr",
+        })
+    return items
+
+
 def collect_from_source(source: dict) -> list[dict]:
     stype = (source.get("type") or "").lower()
     if stype == "openalex":
@@ -2422,6 +2489,8 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_bank_al_maghrib_ckan(source)
     if stype == "hcp_labour_statistics":
         return collect_hcp_labour_statistics(source)
+    if stype == "hcp_social_indicators_pdf":
+        return collect_hcp_social_indicators(source)
     if stype == "bank_al_maghrib":
         return collect_bank_al_maghrib(source)
     if stype == "bank_al_maghrib_api":

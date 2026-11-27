@@ -883,7 +883,7 @@
     "enabled": true,
     "lang_hint": "fr",
     "default_doc_type": "statistique",
-    "max_items": 6,
+    "max_items": 14,
     "indicators": [
       {
         "code": "NY.GDP.MKTP.CD",
@@ -962,8 +962,105 @@
         "precision": 2,
         "category": "economie_finances_publiques",
         "pole": "economie_finances_publiques"
+      },
+      {
+        "code": "SL.TLF.CACT.ZS",
+        "label_fr": "Taux d’activité de la population",
+        "label_ar": "معدل النشاط",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Emploi et activité",
+        "description_fr": "Part de la population en âge de travailler qui participe au marché du travail, selon les estimations de l’OIT publiées par la Banque mondiale."
+      },
+      {
+        "code": "SL.UEM.1524.ZS",
+        "label_fr": "Taux de chômage des jeunes (15–24 ans)",
+        "label_ar": "معدل بطالة الشباب (15–24 سنة)",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Emploi et activité",
+        "description_fr": "Part de la population active âgée de 15 à 24 ans qui est sans emploi et en recherche d’emploi, selon les estimations modélisées de l’OIT."
+      },
+      {
+        "code": "SL.EMP.TOTL.SP.ZS",
+        "label_fr": "Ratio emploi-population",
+        "label_ar": "نسبة التشغيل إلى السكان",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Emploi et activité",
+        "description_fr": "Part de la population en âge de travailler qui occupe un emploi, selon les estimations de l’OIT."
+      },
+      {
+        "code": "SP.DYN.LE00.IN",
+        "label_fr": "Espérance de vie à la naissance",
+        "label_ar": "متوسط العمر المتوقع عند الولادة",
+        "unit_fr": "Années",
+        "unit_ar": "سنة",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Santé",
+        "description_fr": "Nombre moyen d’années qu’un nouveau-né peut espérer vivre si les conditions de mortalité observées restent constantes."
+      },
+      {
+        "code": "SH.DYN.MORT",
+        "label_fr": "Mortalité des enfants de moins de cinq ans",
+        "label_ar": "وفيات الأطفال دون سن الخامسة",
+        "unit_fr": "Décès pour 1 000 naissances vivantes",
+        "unit_ar": "وفاة لكل 1,000 ولادة حية",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Santé",
+        "description_fr": "Probabilité de décès avant l’âge de cinq ans, exprimée pour 1 000 naissances vivantes."
+      },
+      {
+        "code": "SP.URB.TOTL.IN.ZS",
+        "label_fr": "Population urbaine",
+        "label_ar": "السكان الحضريون",
+        "unit_fr": "% de la population totale",
+        "unit_ar": "٪ من مجموع السكان",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Démographie et territoire",
+        "description_fr": "Part de la population résidant dans les zones classées comme urbaines selon la définition nationale."
+      },
+      {
+        "code": "SE.PRM.ENRR",
+        "label_fr": "Taux brut de scolarisation dans le primaire",
+        "label_ar": "معدل التمدرس الإجمالي في التعليم الابتدائي",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Éducation",
+        "description_fr": "Effectifs inscrits dans l’enseignement primaire, quel que soit leur âge, rapportés à la population d’âge officiel du primaire."
+      },
+      {
+        "code": "SE.SEC.ENRR",
+        "label_fr": "Taux brut de scolarisation dans le secondaire",
+        "label_ar": "معدل التمدرس الإجمالي في التعليم الثانوي",
+        "unit_fr": "%",
+        "unit_ar": "٪",
+        "scale_divisor": 1,
+        "precision": 1,
+        "pole": "societe_developpement_humain",
+        "category": "Éducation",
+        "description_fr": "Effectifs inscrits dans l’enseignement secondaire, quel que soit leur âge, rapportés à la population d’âge officiel du secondaire."
       }
-    ]
+    ],
+    "history_points": 25
   },
   {
     "id": "openalex_morocco_governance",

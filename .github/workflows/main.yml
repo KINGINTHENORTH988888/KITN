@@ -39,12 +39,16 @@ permissions:
   contents: read
 
 concurrency:
-  group: kitn-veille-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Isoler chaque SHA évite qu'une publication de données sur la branche
+  # annule une validation de code encore en cours.
+  group: kitn-veille-${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
 
 jobs:
   validate-pull-request:
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    # Le workflow HCP pousse un commit de données marqué ; ne pas relancer
+    # toute la validation pour ce seul commit généré.
+    if: (github.event_name == 'pull_request' && !contains(github.event.pull_request.head.commit.message, '[skip hcp data refresh]')) || github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout pull request

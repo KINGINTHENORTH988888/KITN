@@ -222,7 +222,7 @@ class HcpSocialIndicatorsTests(unittest.TestCase):
     def test_collector_emits_statistical_items_and_preserves_diagnostics(self):
         class FakePage:
             def extract_text(self, extraction_mode=None):
-                return HCP_SOCIAL_FIXTURE
+                return HCP_SOCIAL_FIXTURE + "\n" + HCP_SOCIAL_REGIONAL_FIXTURE
 
         class FakeReader:
             def __init__(self, stream):
@@ -239,6 +239,7 @@ class HcpSocialIndicatorsTests(unittest.TestCase):
         self.assertEqual(len(statistical_items), 8)
         self.assertTrue(all(item["pole"] == "societe_developpement_humain" for item in statistical_items))
         self.assertEqual(statistical_items[0]["statistics_series"]["source_url"], "https://www.hcp.ma/file/248623/")
+        self.assertEqual(len(statistical_items[0]["regional_statistics"]), 108)
 
 
 if __name__ == "__main__":

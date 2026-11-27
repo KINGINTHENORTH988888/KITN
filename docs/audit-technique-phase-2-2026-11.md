@@ -201,7 +201,9 @@ Deux comportements ressortent du rapprochement entre `src/main.js` et les collec
 
 Une revue des fonctions de fusion a révélé que le tri des périodes reconnaissait les dates et années à partir de 2000, alors que le filtre qualité BAM CKAN autorise aussi des observations à partir de 1900. Une série historique commençant avant 2000 pouvait donc être mal triée : des observations anciennes étaient placées après des années récentes et pouvaient devenir la valeur `latest`.
 
-Le parseur de périodes de fusion a été élargi aux années 1900–2099, pour les formats annuels, mensuels, quotidiens et trimestriels. Deux tests de non-régression couvrent le tri chronologique et la fusion d'une série commençant en 1998.
+Le parseur de périodes de fusion a été élargi aux années 1900–2099, pour les formats annuels, mensuels, quotidiens et trimestriels. Les dates calendaires mal formées sont désormais ignorées sans interrompre la fusion. Des tests de non-régression couvrent le tri chronologique, les dates invalides et la fusion d'une série commençant en 1998.
+
+Une protection supplémentaire empêche une nouvelle série BAM CKAN non conforme (unité inconnue, période future/invalide ou observations non numériques) de remplacer les métadonnées ou l'historique précédemment publiés. La série invalide est signalée dans la santé de la source ; l'ancienne série reste conservée comme donnée reportée.
 
 ### 3.9 Premières corrections réalisées sur la branche de revue
 

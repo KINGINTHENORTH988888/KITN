@@ -110,6 +110,24 @@ Le collecteur a aussi été rendu plus explicite :
 
 Le test de régression confirme le comportement sur une fixture fidèle à la publication officielle. Il ne remplace pas encore une exécution réelle du collecteur avec les requêtes réseau du pipeline GitHub Actions.
 
+### 3.2 ter Vérification directe des sources HCP et Banque mondiale
+
+Une vérification réseau distincte des tests simulés a été effectuée sur les pages et API officielles le 27 novembre 2026.
+
+**HCP EMO :**
+- La [page mobile officielle de veille du marché du travail](https://m.hcp.ma/Actualite-marche-du-travail_r424.html) expose bien le dernier article avec un lien générique « Lire la suite ».
+- La [publication officielle du T3 2026](https://m.hcp.ma/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026-selon-l-enquete-sur-la-main-d-oeuvre-EMO2026_a4364.html) est accessible et contient les huit valeurs nationales ciblées par le collecteur : main-d’œuvre, personnes en emploi contre revenu, chômage strict, sous-utilisation composite, et les taux par sexe/âge.
+- La publication contient également des informations régionales (participation et sous-utilisation selon la région). Elles ne sont pas encore extraites par le collecteur actuel : c'est une extension à prévoir, pas une donnée déjà disponible dans KITN.
+- Les huit séries extraites portent désormais une note de rupture méthodologique ENE/EMO, en français et en arabe, affichée dans la fiche statistique.
+
+**Banque mondiale :**
+- Les huit endpoints configurés ont répondu avec succès.
+- Les réponses annoncent `lastupdated = 2026-11-11`, `per_page = 25` et jusqu'à 66 observations disponibles.
+- Les dernières observations non nulles atteignent 2025 pour quatre séries (activité, chômage des jeunes, ratio emploi-population et population urbaine) et 2024 pour quatre autres (espérance de vie, mortalité des moins de cinq ans, scolarisation primaire et secondaire).
+- Chaque endpoint fournit entre 20 et 25 observations non nulles dans la fenêtre demandée.
+
+Cette vérification confirme que les URLs et codes d'indicateurs sont valides et que la profondeur de 25 observations est suffisante pour amorcer les séries. Elle ne signifie pas encore que ces huit séries sont présentes dans le fichier statistique publié : cela nécessite une exécution complète du pipeline sur la branche de revue.
+
 ### 3.3 MEF — séries statistiques et notices documentaires sont deux flux différents
 
 Le collecteur MEF renvoie des objets portant `statistics_series`. L'orchestrateur les compte et les place dans le fichier statistique avant le traitement des notices documentaires.

@@ -1983,7 +1983,8 @@ def _append_bam_ckan_series(output: list, label: str, points: list[dict], datase
         return
     code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"(?:\(|\[)([^()\[\]]{1,24})(?:\)|\])", label)
-    unit = clean_text(unit_match.group(1)) if unit_match else (re.search(r"\b(MDH|MMDH|KDH|Nombre|%)\b", notes, re.IGNORECASE).group(1) if re.search(r"\b(MDH|MMDH|KDH|Nombre|%)\b", notes, re.IGNORECASE) else "Unité non précisée")
+    unit_match_global = re.search(r"(MDH|MMDH|KDH|Nombre|%)", notes, re.IGNORECASE)
+    unit = clean_text(unit_match.group(1)) if unit_match else (unit_match_global.group(1) if unit_match_global else "Unité non précisée")
     label_clean = clean_text(re.sub(r"\s*[\[(][^()\[\]]{1,24}[\])]\s*", " ", label))
     series = {
         "id": code, "indicator_code": code,

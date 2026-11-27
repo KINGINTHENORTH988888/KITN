@@ -1,5 +1,6 @@
 import "./style.css";
 import { filterStatisticsHistory, getStatisticsCategory } from "./statistics.js";
+import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -650,6 +651,9 @@ let activeModalItem = null;
 let remoteItems = [];
 let indexItems = [];
 let statisticsData = null;
+let regionalStatisticsData = null;
+let regionalIndicatorCode = "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT";
+let regionalResidenceScope = "all";
 let statisticsCategory = "all";
 let statisticsRange = "all";
 
@@ -933,7 +937,7 @@ function renderStatisticsDashboard() {
       </div>
     </div>`;
   if (!allIndicators.length) {
-    return `<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>`;
+    return `<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>${renderRegionalStatisticsDashboard()}`;
   }
   const cards = filteredIndicators.map((indicator) => {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
@@ -1023,7 +1027,91 @@ function renderStatisticsDashboard() {
       ${controls}
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
       <p class="stats-source-note">${isAr ? "تاريخ إنشاء الملف لا يعني بالضرورة أن كل مؤشر قد حُيّن. الفترات المعروضة هي الفترات الفعلية للقيم المتاحة." : "La date de génération du fichier ne correspond pas nécessairement à la date de la dernière observation. Les périodes affichées correspondent aux valeurs réellement disponibles."}</p>
+    </section>
+    ${renderRegionalStatisticsDashboard()}`;
+}
+
+function renderRegionalStatisticsDashboard() {
+  const isAr = lang === "ar";
+  const model = buildRegionalStatisticsModel(
+    regionalStatisticsData,
+    regionalIndicatorCode,
+    regionalResidenceScope
+  );
+  const title = isAr ? "المقارنة الإحصائية بين الجهات" : "Comparaison statistique entre les régions";
+  const intro = isAr
+    ? "بيانات بحث القوى العاملة حسب المؤشر والمجال الحضري أو القروي."
+    : "Données de l’Enquête sur la main-d’œuvre, par indicateur et milieu de résidence.";
+  if (!model.available) {
+    return `<section class="regional-stats-dashboard">
+      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div></div>
+      <p class="regional-empty">${isAr
+        ? "ستظهر المقارنات الجهوية بعد إدراج بيانات HCP الإقليمية في ملف البيانات المنشور."
+        : "Les comparaisons régionales apparaîtront après l’intégration des séries HCP dans le prochain fichier de données publié."}</p>
     </section>`;
+  }
+
+  regionalIndicatorCode = model.activeIndicatorCode;
+  regionalResidenceScope = model.activeScope;
+  const indicatorLabel = model.selectedIndicator
+    ? (isAr ? model.selectedIndicator.labelAr : model.selectedIndicator.labelFr)
+    : "";
+  const indicatorOptions = model.indicatorOptions.map((item) =>
+    `<option value="${escapeHtml(item.code)}" ${item.code === model.activeIndicatorCode ? "selected" : ""}>${escapeHtml(isAr ? item.labelAr : item.labelFr)}</option>`
+  ).join("");
+  const scopeLabels = {
+    all: isAr ? "المجموع" : "Ensemble",
+    urban: isAr ? "حضري" : "Urbain",
+    rural: isAr ? "قروي" : "Rural"
+  };
+  const scopeButtons = model.availableScopes.map((scope) =>
+    `<button type="button" class="stats-filter-btn ${scope === model.activeScope ? "is-active" : ""}" data-regional-scope="${scope}" aria-pressed="${scope === model.activeScope}">${scopeLabels[scope] || scope}</button>`
+  ).join("");
+  const rows = model.rows.map((row) => {
+    const cells = row.points.map((point) => {
+      if (!point) return "<td>—</td>";
+      if (point.value === null || point.value === undefined) {
+        const missing = point.quality_flag === "insufficient_significance" ? "ps"
+          : point.quality_flag === "not_available" ? "."
+          : point.quality_flag === "unrecognized" ? "?"
+          : "—";
+        const label = point.quality_flag === "insufficient_significance"
+          ? (isAr ? "غير دال إحصائياً بما يكفي" : "Insuffisamment significatif")
+          : point.quality_flag === "not_available"
+            ? (isAr ? "غير متاح" : "Non disponible")
+            : (isAr ? "قيد التحقق" : "À vérifier");
+        return `<td><span class="regional-quality" title="${label}">${missing}</span></td>`;
+      }
+      const value = new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", { maximumFractionDigits: 1 }).format(Number(point.value));
+      const marker = point.quality_flag === "medium_significance"
+        ? `<sup class="regional-quality" title="${isAr ? "دلالة إحصائية متوسطة" : "Significativité moyenne"}">ms</sup>`
+        : "";
+      return `<td>${escapeHtml(value)}${marker}</td>`;
+    }).join("");
+    return `<tr><th scope="row">${escapeHtml(isAr ? row.nameAr : row.nameFr)}</th>${cells}</tr>`;
+  }).join("");
+  const sourceUrl = isSafeHttpUrl(model.sourceUrl) ? model.sourceUrl : "";
+  const updateDate = model.generatedAt ? String(model.generatedAt).slice(0, 10) : "";
+  const methodologyNote = isAr ? model.methodologyNoteAr : model.methodologyNoteFr;
+  const methodologyText = methodologyNote || (isAr
+    ? "تنبيه منهجي: لا ينبغي وصل نتائج EMO 2026 مباشرة بالسلاسل القديمة للبحث الوطني حول التشغيل."
+    : "Précaution méthodologique : les résultats EMO 2026 ne doivent pas être raccordés directement aux anciennes séries ENE.");
+  return `<section class="regional-stats-dashboard">
+    <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تحديث البيانات" : "Données générées le"} : ${escapeHtml(updateDate || "—")}</span></div>
+    <div class="regional-controls">
+      <label><span>${isAr ? "المؤشر" : "Indicateur"}</span><select data-regional-indicator aria-label="${isAr ? "اختيار المؤشر" : "Choisir un indicateur"}">${indicatorOptions}</select></label>
+      <div class="stats-filter-group" role="group" aria-label="${isAr ? "مجال الإقامة" : "Milieu de résidence"}">${scopeButtons}</div>
+    </div>
+    <div class="regional-table-wrap"><table class="regional-table">
+      <thead><tr><th scope="col">${isAr ? "الجهة" : "Région"}</th>${model.periods.map((period) => `<th scope="col">${escapeHtml(period)}</th>`).join("")}</tr></thead>
+      <tbody>${rows || `<tr><td colspan="${model.periods.length + 1}">${isAr ? "لا توجد بيانات متاحة." : "Aucune observation disponible."}</td></tr>`}</tbody>
+    </table></div>
+    <p class="regional-legend">${isAr
+      ? "ms: دلالة إحصائية متوسطة · ps: غير دال إحصائياً بما يكفي · .: غير متاح."
+      : "ms : significativité moyenne · ps : résultat insuffisamment significatif · . : valeur non disponible."}</p>
+    <p class="regional-methodology-note">${escapeHtml(methodologyText)}</p>
+    <div class="stat-card-foot"><span>${escapeHtml(model.sourceName)} · ${model.rows.length} ${isAr ? "جهة ومجموع وطني" : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"} ↗</a>` : ""}</div>
+  </section>`;
 }
 
 function renderLibraryDirectory() {
@@ -1778,6 +1866,17 @@ function render() {
     });
   });
 
+  document.querySelector("[data-regional-indicator]")?.addEventListener("change", (event) => {
+    regionalIndicatorCode = event.target.value || "";
+    render();
+  });
+  document.querySelectorAll("[data-regional-scope]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      regionalResidenceScope = btn.getAttribute("data-regional-scope") || "all";
+      render();
+    });
+  });
+
   document.getElementById("manual-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const titleVal = (document.getElementById("m-title")?.value || "").trim();
@@ -1985,6 +2084,16 @@ async function initStatistics() {
   render();
 }
 
+async function initRegionalStatistics() {
+  try {
+    const res = await fetch("/data/regional-statistics.json", { cache: "no-store" });
+    if (res.ok) regionalStatisticsData = await res.json();
+  } catch {
+    regionalStatisticsData = null;
+  }
+  render();
+}
+
 async function initIndex() {
   try {
     const res = await fetch("/data/index/search-index.json", { cache: "no-store" });
@@ -2005,3 +2114,4 @@ render();
 initAcademy();
 initIndex();
 initStatistics();
+initRegionalStatistics();

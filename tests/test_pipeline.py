@@ -917,5 +917,74 @@ class TestPipelineProcessors(unittest.TestCase):
             self.assertEqual(health_data["sources"][0]["status"], "warning")
 
 
+    def test_run_pipeline_reports_statistical_series_separately_from_documents(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            data_dir = root / "data"
+            public_dir = root / "public" / "data"
+            index_dir = data_dir / "index"
+            index_dir.mkdir(parents=True, exist_ok=True)
+            public_dir.mkdir(parents=True, exist_ok=True)
+            sources_path = data_dir / "sources.json"
+            manual_path = data_dir / "manual_contributions.json"
+            index_path = index_dir / "search-index.json"
+            health_path = data_dir / "sources-health.json"
+            statistics_path = data_dir / "statistics.json"
+            public_index = public_dir / "index" / "search-index.json"
+            public_statistics = public_dir / "statistics.json"
+            sources_path.write_text(json.dumps([{
+                "id": "mef_test",
+                "name": "MEF — statistiques",
+                "domain": "finances.gov.ma",
+                "target_space": "chiffres",
+                "type": "mef_tand_statistics",
+                "enabled": True,
+                "default_doc_type": "statistique",
+            }]), encoding="utf-8")
+            manual_path.write_text(json.dumps({"items": []}), encoding="utf-8")
+            index_path.write_text(json.dumps({"items": []}), encoding="utf-8")
+
+            statistical_items = [{
+                "title": "PIB à prix constant — Maroc",
+                "abstract": "Série officielle du PIB.",
+                "url": "https://finances.gov.ma/statistiques/pib",
+                "statistics_series": {
+                    "indicator_code": "MEF_GDP_CONSTANT",
+                    "label_fr": "PIB à prix constant",
+                    "latest": {"year": "2026-T2", "value": 350273},
+                    "history": [{"year": "2026-T2", "value": 350273}],
+                    "source_name": "MEF",
+                    "source_url": "https://finances.gov.ma/statistiques/pib",
+                },
+            }]
+
+            with (
+                patch("pipeline.run_pipeline.SOURCES_FILE", sources_path),
+                patch("pipeline.run_pipeline.MANUAL_CONTRIBUTIONS_FILE", manual_path),
+                patch("pipeline.run_pipeline.INDEX_DIR", index_dir),
+                patch("pipeline.run_pipeline.INDEX_FILE", index_path),
+                patch("pipeline.run_pipeline.PUBLIC_INDEX_FILE", public_index),
+                patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
+                patch("pipeline.run_pipeline.STATISTICS_FILE", statistics_path),
+                patch("pipeline.run_pipeline.PUBLIC_STATISTICS_FILE", public_statistics),
+                patch("pipeline.run_pipeline.collect_from_source", return_value=statistical_items),
+                patch("pipeline.run_pipeline.process_raw_item", return_value=None),
+            ):
+                run()
+
+            health = json.loads(health_path.read_text(encoding="utf-8"))
+            source_health = health["sources"][0]
+            self.assertEqual(source_health["status"], "ok")
+            self.assertEqual(source_health["stage"], "series_statistiques_collectees")
+            self.assertEqual(source_health["fetched"], 1)
+            self.assertEqual(source_health["accepted"], 0)
+            self.assertEqual(source_health["statistics_collected"], 1)
+            self.assertEqual(source_health["statistics_indicators"], ["MEF_GDP_CONSTANT"])
+            statistics = json.loads(statistics_path.read_text(encoding="utf-8"))
+            self.assertEqual(statistics["indicators"][0]["indicator_code"], "MEF_GDP_CONSTANT")
+            self.assertTrue(public_statistics.exists())
+
+
+
 if __name__ == "__main__":
     unittest.main()

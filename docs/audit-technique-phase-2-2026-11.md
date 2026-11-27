@@ -217,6 +217,21 @@ Les changements statistiques, OpenAlex, HCP, BAM CKAN, navigation publique et Vi
 - Le comptage automatisé du fichier statistique de production donne 845 séries : 842 en économie et finances publiques, 3 en société et développement humain, aucune sans code de domaine. Les trois séries sociales existantes sont : chômage (estimation OIT) et population totale via la Banque mondiale, plus population via le tableau de bord DSBB du MEF. Le problème de couverture sociale est donc confirmé : elle est très faible, mais pas inexistante.
 - L'index documentaire contient 265 notices. En appliquant exactement la règle de l'interface (anomalie signalée, statut futur ou date de publication supérieure à la date UTC du jour), 25 notices sont mises en attente de vérification et 240 restent visibles.
 
+### 3.11 Extension contrôlée des indicateurs sociaux — Banque mondiale
+
+La vérification directe de l'API World Development Indicators pour le Maroc confirme des observations récentes pour huit séries supplémentaires. Elles ont été ajoutées à la source `world_bank_maroc`, toutes classées dans `societe_developpement_humain` :
+
+- Emploi : taux d'activité (`SL.TLF.CACT.ZS`), chômage des jeunes de 15–24 ans (`SL.UEM.1524.ZS`), ratio emploi-population (`SL.EMP.TOTL.SP.ZS`).
+- Santé : espérance de vie (`SP.DYN.LE00.IN`), mortalité des moins de cinq ans (`SH.DYN.MORT`).
+- Démographie : population urbaine (`SP.URB.TOTL.IN.ZS`).
+- Éducation : taux brut de scolarisation primaire (`SE.PRM.ENRR`) et secondaire (`SE.SEC.ENRR`).
+
+La source compte maintenant 14 indicateurs configurés et demande jusqu'à 25 observations annuelles par indicateur, au lieu des 12 observations codées en dur auparavant. Le collecteur utilise désormais le paramètre `history_points` configurable et plafonné à 100.
+
+Les séries d'emploi reposent sur des estimations modélisées de l'OIT diffusées par la Banque mondiale ; elles ne doivent pas être présentées comme des mesures directes de l'enquête HCP. Les métadonnées et les sources doivent rester visibles.
+
+**Important :** ces huit séries sont configurées et leur disponibilité API a été vérifiée, mais elles ne sont pas encore présentes dans le fichier statistique publié. Leur intégration effective doit être confirmée par une collecte complète après validation de la branche.
+
 ## 4. État de la couverture de tests
 
 Le workflow exécute `python -m unittest discover -s tests -v`. Le fichier `tests/test_pipeline.py` couvre déjà de nombreux scénarios : pertinence Maroc, DOI, dates, HCP, MEF, MONIA, Banque mondiale, HAL, Crossref, concours, fusion de notices et CKAN.

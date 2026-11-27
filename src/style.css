@@ -1266,3 +1266,31 @@ textarea {
     padding: 0.85rem;
   }
 }
+
+
+.stats-view-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.75rem 0 1rem;
+  padding: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: var(--surface-alt);
+}
+.stats-view-tab {
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.stats-view-tab.is-active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 7%);
+}

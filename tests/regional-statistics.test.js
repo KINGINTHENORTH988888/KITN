@@ -127,6 +127,7 @@ test("supports annual HCP social indicators and regional urban/rural scopes", ()
         source_name: "HCP — Les indicateurs sociaux du Maroc",
         source_name_ar: "المندوبية السامية للتخطيط — المؤشرات الاجتماعية للمغرب",
         source_url: "https://www.hcp.ma/file/248623/",
+        source_page: 35,
       },
       {
         indicator_code: "HCP_SOCIAL_REGIONAL_FERTILITY",
@@ -161,6 +162,7 @@ test("supports annual HCP social indicators and regional urban/rural scopes", ()
   assert.equal(urban.rows[0].points[0].value, 1.8);
   assert.equal(urban.selectedIndicator.labelAr, "مؤشر الخصوبة الإجمالي");
   assert.equal(urban.unitAr, "طفل لكل امرأة");
+  assert.equal(urban.sourcePage, 35);
 
   const rural = buildRegionalStatisticsModel(socialPayload, "HCP_SOCIAL_REGIONAL_FERTILITY", "rural");
   assert.equal(rural.rows[0].points[0].value, 2.46);

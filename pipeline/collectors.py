@@ -669,7 +669,7 @@ def _extract_hcp_emo_regional_statistics(
                     page_diagnostics.append(
                         f"p{len(pages)} ({len(page_text)} caractères): {compact_page[:220]}"
                     )
-            extracted_text = "\\f".join(pages)
+            extracted_text = "\f".join(pages)
             if "taux de participation" not in extracted_text.casefold():
                 continue
             parsed = parse_hcp_emo_regional_tables(

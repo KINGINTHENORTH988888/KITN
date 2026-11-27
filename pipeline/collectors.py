@@ -14,7 +14,7 @@ from email.utils import parsedate_to_datetime
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.error import HTTPError
-from urllib.parse import quote, unquote, urlencode, urljoin, urlsplit
+from urllib.parse import parse_qsl, quote, unquote, urlencode, urljoin, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, normalize_doi, sanitize_url
@@ -351,18 +351,59 @@ def collect_hal_api(source: dict) -> list[dict]:
     return items
 
 
+def _openalex_cursor_url(url: str, cursor: str, page_size: int) -> str:
+    """Build an OpenAlex cursor-paginated URL without discarding source filters."""
+    parts = urlsplit(url)
+    query = [
+        (key, value)
+        for key, value in parse_qsl(parts.query, keep_blank_values=True)
+        if key not in {"cursor", "per-page"}
+    ]
+    query.extend((("per-page", str(page_size)), ("cursor", cursor)))
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
+
+
 def collect_openalex(source: dict) -> list[dict]:
     url = source.get("url")
     if not url:
         return []
-    max_items = int(source.get("max_items", 20))
-    payload = json.loads(_fetch_text(url))
-    results = payload.get("results") or []
-    items: list[dict] = []
 
-    for work in results[:max_items]:
-        if not isinstance(work, dict):
-            continue
+    max_items = max(0, int(source.get("max_items", 20)))
+    if max_items == 0:
+        return []
+
+    query_page_size = next(
+        (value for key, value in parse_qsl(urlsplit(url).query) if key == "per-page"),
+        str(min(max_items, 25)),
+    )
+    try:
+        configured_page_size = int(source.get("page_size", query_page_size))
+    except (TypeError, ValueError):
+        configured_page_size = min(max_items, 25)
+    page_size = min(200, max(1, configured_page_size))
+
+    # OpenAlex cursor paging is required to move beyond the first result page.
+    # Keep max_items as a hard per-source cap to bound runtime and API usage.
+    works: list[dict] = []
+    cursor = "*"
+    seen_cursors = {cursor}
+    while len(works) < max_items:
+        page_url = _openalex_cursor_url(url, cursor, page_size)
+        payload = json.loads(_fetch_text(page_url))
+        page_results = payload.get("results") or []
+        if not isinstance(page_results, list) or not page_results:
+            break
+
+        remaining = max_items - len(works)
+        works.extend(work for work in page_results[:remaining] if isinstance(work, dict))
+        next_cursor = ((payload.get("meta") or {}).get("next_cursor"))
+        if len(works) >= max_items or not next_cursor or next_cursor in seen_cursors:
+            break
+        seen_cursors.add(next_cursor)
+        cursor = next_cursor
+
+    items: list[dict] = []
+    for work in works:
         title = clean_text(work.get("display_name") or work.get("title"))
         if not title:
             continue

@@ -1537,13 +1537,13 @@ def collect_world_bank_api(source: dict) -> list[dict]:
 
 def _mef_number(raw: str) -> float | None:
     """Parse MEF French-formatted values: 350.273 -> 350273; 862.341,94 -> 862341.94."""
-    value = clean_text(raw).replace("\\u00a0", "").replace(" ", "").replace("%", "")
+    value = clean_text(raw).replace("\u00a0", "").replace(" ", "").replace("%", "")
     value = value.replace("−", "-").replace("–", "-")
     if "," in value:
         value = value.replace(".", "").replace(",", ".")
     else:
         value = value.replace(".", "")
-    value = re.sub(r"[^0-9.\\-]", "", value)
+    value = re.sub(r"[^0-9.\-]", "", value)
     try:
         return float(value)
     except (TypeError, ValueError):
@@ -1552,7 +1552,7 @@ def _mef_number(raw: str) -> float | None:
 
 def _mef_period(raw: str) -> str:
     value = clean_text(raw).lower().replace(" ", "")
-    quarter = re.search(r"t([1-4])[-/](20\\d{2})", value)
+    quarter = re.search(r"t([1-4])[-/](20\d{2})", value)
     if quarter:
         return f"{quarter.group(2)}-T{quarter.group(1)}"
     month_names = {
@@ -1563,15 +1563,30 @@ def _mef_period(raw: str) -> str:
         "nov": "11", "novembre": "11", "déc": "12", "dec": "12",
         "décembre": "12", "decembre": "12",
     }
-    month = re.search(r"([a-zà-ÿ]+)\\.?[-/](20\\d{2}|\\d{2})", value)
+    month = re.search(r"([a-zà-ÿ]+)\.?[-/](20\d{2}|\d{2})", value)
     if month:
         mm = month_names.get(month.group(1))
         year = month.group(2)
         if mm:
             year = f"20{year}" if len(year) == 2 else year
             return f"{year}-{mm}"
-    year = re.search(r"20\\d{2}", value)
+    year = re.search(r"20\d{2}", value)
     return year.group(0) if year else value
+
+
+def _mef_previous_period(period: str) -> str | None:
+    quarter = re.fullmatch(r"(20\d{2})-T([1-4])", period)
+    if quarter:
+        year, q = int(quarter.group(1)), int(quarter.group(2))
+        return f"{year - 1}-T4" if q == 1 else f"{year}-T{q - 1}"
+    month = re.fullmatch(r"(20\d{2})-(0[1-9]|1[0-2])", period)
+    if month:
+        year, m = int(month.group(1)), int(month.group(2))
+        return f"{year - 1}-12" if m == 1 else f"{year}-{m - 1:02d}"
+    if re.fullmatch(r"20\d{2}", period):
+        return str(int(period) - 1)
+    return None
+
 
 
 def collect_mef_tand_statistics(source: dict) -> list[dict]:
@@ -1623,17 +1638,17 @@ def collect_mef_tand_statistics(source: dict) -> list[dict]:
         if not period or current is None:
             continue
         histories.setdefault(code, []).append({"year": period, "value": current})
-        if previous is not None:
-            # The previous-period observation is retained with the same official period label only when explicitly available.
-            previous_period = period
-            histories[code].append({"year": previous_period + "-previous", "value": previous})
+        previous_period = _mef_previous_period(period)
+        if previous is not None and previous_period:
+            histories[code].append({"year": previous_period, "value": previous})
         meta[code] = (label, unit, description, pole, page_url, row[5] if len(row) > 5 else "")
     items = []
     for code, points in histories.items():
         label, unit, description, pole, source_url, variation_raw = meta[code]
         # Preserve the official current and previous values without inventing a historical date.
-        current = next((p for p in points if not str(p["year"]).endswith("-previous")), None)
-        previous = next((p for p in points if str(p["year"]).endswith("-previous")), None)
+        ordered_points = sorted(points, key=lambda point: str(point["year"]))
+        current = ordered_points[-1] if ordered_points else None
+        previous = ordered_points[-2] if len(ordered_points) > 1 else None
         if not current:
             continue
         series = {

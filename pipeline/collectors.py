@@ -627,11 +627,208 @@ def _extract_institutional_detail(page_url: str, source: dict) -> dict | None:
     }
 
 
+
+class _PageMetadataExtractor(HTMLParser):
+    """Extract visible text, metadata and links from public pages."""
+    def __init__(self) -> None:
+        super().__init__()
+        self.meta: dict[str, str] = {}
+        self.text_parts: list[str] = []
+        self.links: list[tuple[str, str]] = []
+        self.href = ""
+        self.link_parts: list[str] = []
+        self.skip_depth = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        tag = tag.lower()
+        attr = {k.lower(): (v or "").strip() for k, v in attrs}
+        if tag in ("script", "style", "noscript"):
+            self.skip_depth += 1
+            return
+        if self.skip_depth:
+            return
+        if tag == "meta":
+            key = (attr.get("property") or attr.get("name") or "").lower()
+            if key and attr.get("content"):
+                self.meta[key] = clean_text(attr["content"])
+        elif tag == "a":
+            self.href = attr.get("href", "")
+            self.link_parts = []
+
+    def handle_data(self, data: str) -> None:
+        if self.skip_depth:
+            return
+        value = clean_text(data)
+        if value:
+            self.text_parts.append(value)
+            if self.href:
+                self.link_parts.append(value)
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        if tag in ("script", "style", "noscript") and self.skip_depth:
+            self.skip_depth -= 1
+            return
+        if not self.skip_depth and tag == "a" and self.href:
+            label = clean_text(" ".join(self.link_parts))
+            if label:
+                self.links.append((self.href, label))
+            self.href, self.link_parts = "", []
+
+
+_FR_MONTHS = {
+    "janvier":"01", "février":"02", "fevrier":"02", "mars":"03", "avril":"04",
+    "mai":"05", "juin":"06", "juillet":"07", "août":"08", "aout":"08",
+    "septembre":"09", "octobre":"10", "novembre":"11", "décembre":"12", "decembre":"12",
+}
+
+
+def _emploi_date(text: str) -> str | None:
+    value = clean_text(text)
+    m = re.search(r"\b(\d{1,2})\s+(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\s+(20\d{2})\b", value, re.I)
+    if m:
+        return f"{m.group(3)}-{_FR_MONTHS[m.group(2).lower()]}-{int(m.group(1)):02d}"
+    m = re.search(r"\b(\d{2})/(\d{2})/(20\d{2})\b", value)
+    return f"{m.group(3)}-{m.group(2)}-{m.group(1)}" if m else None
+
+
+def collect_emploi_public(source: dict) -> list[dict]:
+    """Read official competition listings, then enrich from each official detail page."""
+    listing_urls = source.get("listing_urls") or [source.get("url") or "https://www.emploi-public.ma/fr/concours-liste?page=1"]
+    limit = max(1, int(source.get("max_items", 20)))
+    candidates, seen = [], set()
+    for listing_url in listing_urls:
+        parser = _PageMetadataExtractor()
+        parser.feed(_fetch_text(str(listing_url)))
+        for href, label in parser.links:
+            url = sanitize_url(urljoin(str(listing_url), href))
+            if not url or not re.search(r"/fr/concours/details/[0-9a-f-]{20,}", url, re.I) or url in seen:
+                continue
+            seen.add(url)
+            title = re.sub(r"^Avis de concours de recrutement de\s+", "", clean_text(label), flags=re.I)
+            title = re.split(r"\s+(?:Annonce|Convocation|Résultats?|Résultat)\b", title, maxsplit=1, flags=re.I)[0]
+            if title:
+                candidates.append((url, title))
+            if len(candidates) >= limit:
+                break
+        if len(candidates) >= limit:
+            break
+
+    items = []
+    for detail_url, listing_title in candidates:
+        try:
+            parser = _PageMetadataExtractor()
+            parser.feed(_fetch_text(detail_url))
+        except Exception:
+            continue
+        body = clean_text(" ".join(parser.text_parts))
+        admin_m = re.search(r"Administration qui recrute\s+(.+?)(?=\s*(?:Délai de dépôt|Date du concours|Date de publication|Téléchargement|Description))", body, re.I)
+        grade_m = re.search(r"Grade\s*:\s*(.+?)(?=\s*(?:Nombre de postes|Type de recrutement|Type de dépôt|Code du concours|Administration organisatrice))", body, re.I)
+        posts_m = re.search(r"Nombre de postes\s*:\s*(\d+)", body, re.I)
+        code_m = re.search(r"Code du concours\s*:\s*([A-Z0-9/.-]+)", body, re.I)
+        deadline_m = re.search(r"Délai de dépôt des candidatures\s+(.+?)(?=\s*(?:Date du concours|Date de publication|Téléchargement|Description))", body, re.I)
+        exam_m = re.search(r"Date du concours\s+(.+?)(?=\s*(?:Date de publication|Téléchargement|Description))", body, re.I)
+        published_m = re.search(r"Date de publication\s+(.+?)(?=\s*(?:Téléchargement|Description))", body, re.I)
+        administration = clean_text(admin_m.group(1)) if admin_m else ""
+        grade = clean_text(grade_m.group(1)) if grade_m else ""
+        # Do not publish a generic card unless its official detail page confirms grade and administration.
+        if not administration or not grade:
+            continue
+        deadline = clean_text(deadline_m.group(1)) if deadline_m else ""
+        exam_date = clean_text(exam_m.group(1)) if exam_m else ""
+        published = clean_text(published_m.group(1)) if published_m else ""
+        pdf_url = next((sanitize_url(urljoin(detail_url, href)) for href, label in parser.links
+                        if "arrêté" in label.casefold() or href.lower().split("?")[0].endswith(".pdf")), None)
+        summary = [
+            "Concours de recrutement de la fonction publique au Maroc.",
+            f"Administration organisatrice : {administration}.", f"Grade : {grade}.",
+        ]
+        if posts_m: summary.append(f"Nombre de postes : {posts_m.group(1)}.")
+        if deadline: summary.append(f"Délai de dépôt : {deadline}.")
+        if exam_date: summary.append(f"Date du concours : {exam_date}.")
+        if code_m: summary.append(f"Code du concours : {code_m.group(1)}.")
+        items.append({
+            "title": grade or listing_title, "abstract": " ".join(summary), "authors": [],
+            "venue": "Emploi-Public.ma — " + administration,
+            "keywords": ["concours", "recrutement", "fonction publique", "Maroc"],
+            "published_date": _emploi_date(published) or _emploi_date(body),
+            "url": detail_url, "pdf_url": pdf_url, "texte_integral_disponible": bool(pdf_url),
+            "source_lang_hint": "fr", "default_doc_type": "concours", "espace": "academy",
+        })
+    return items
+
+
+def collect_hespress_news(source: dict) -> list[dict]:
+    """Collect only Moroccan public-affairs/economy news matching configured topic filters."""
+    listing_urls = source.get("listing_urls") or [source.get("url") or "https://www.hespress.com/"]
+    limit = max(1, int(source.get("max_items", 15)))
+    include = [str(t).casefold() for t in source.get("include_title_tokens", []) if str(t).strip()]
+    exclude = [str(t).casefold() for t in source.get("exclude_title_tokens", []) if str(t).strip()]
+    candidates, seen = [], set()
+    for listing_url in listing_urls:
+        parser = _PageMetadataExtractor()
+        parser.feed(_fetch_text(str(listing_url)))
+        for href, title in parser.links:
+            title = clean_text(title)
+            url = sanitize_url(urljoin(str(listing_url), href))
+            if not url or len(title) < 18 or url in seen:
+                continue
+            host, path = (urlsplit(url).hostname or "").lower(), urlsplit(url).path.lower()
+            if not (host == "hespress.com" or host.endswith(".hespress.com")):
+                continue
+            if path in ("", "/", "/politique", "/economie", "/societe") or any(x in path for x in ("/tag/", "/author/", "/category/", "/page/")):
+                continue
+            probe = title.casefold()
+            if include and not any(t in probe for t in include):
+                continue
+            if any(t in probe for t in exclude):
+                continue
+            seen.add(url)
+            candidates.append((url, title))
+            if len(candidates) >= limit:
+                break
+        if len(candidates) >= limit:
+            break
+
+    items = []
+    for article_url, fallback_title in candidates:
+        try:
+            parser = _HCPDetailExtractor()
+            parser.feed(_fetch_text(article_url))
+        except Exception:
+            continue
+        title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title or fallback_title)
+        title = re.sub(r"\s+[|–-]\s+Hespress.*$", "", title, flags=re.I)
+        description = clean_text(parser.meta.get("og:description") or parser.meta.get("description"))
+        paragraphs = [p for p in parser.paragraphs if len(p) >= 35]
+        excerpt = description if len(description) >= 50 else " ".join(paragraphs[:3])
+        if len(title) < 12 or len(excerpt) < 45:
+            continue
+        published = parser.meta.get("article:published_time") or parser.meta.get("article:modified_time") or parser.published_time or _extract_date_hint(excerpt, article_url)
+        author = parser.meta.get("author")
+        items.append({
+            "title": title, "abstract": "Actualité de la presse marocaine : " + excerpt[:1200],
+            "authors": [author] if author else [], "venue": "Hespress",
+            "keywords": ["Maroc", "politique publique", "économie", "actualité"],
+            "published_date": published or None, "url": article_url, "doi": None,
+            "pdf_url": None, "texte_integral_disponible": False,
+            "source_lang_hint": source.get("lang_hint") or "fr",
+            "default_doc_type": "article_presse", "espace": "veille",
+        })
+        if len(items) >= limit:
+            break
+    return items
+
+
 def collect_html_links(source: dict) -> list[dict]:
     src_id = str(source.get("id") or "").lower()
     base_url = source.get("url") or ""
     if src_id == "hcp_maroc" or "hcp.ma" in base_url.lower():
         return collect_hcp(source)
+    if src_id == "emploi_public_maroc" or (source.get("type") or "").lower() == "emploi_public":
+        return collect_emploi_public(source)
+    if src_id.startswith("hespress") or (source.get("type") or "").lower() == "hespress_news":
+        return collect_hespress_news(source)
     if not base_url:
         return []
 

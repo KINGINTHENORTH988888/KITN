@@ -986,5 +986,89 @@ class TestPipelineProcessors(unittest.TestCase):
 
 
 
+    def test_bam_ckan_xlsx_parser_extracts_horizontal_monthly_series(self):
+        import io
+        import zipfile
+        from pipeline.collectors import _xlsx_read_rows, _bam_ckan_series_from_rows
+
+        sheet = """<?xml version="1.0" encoding="UTF-8"?>
+        <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+          <sheetData>
+            <row r="1">
+              <c r="A1" t="inlineStr"><is><t>Indicateur</t></is></c>
+              <c r="B1" t="inlineStr"><is><t>Décembre 2024</t></is></c>
+              <c r="C1" t="inlineStr"><is><t>Janvier 2025</t></is></c>
+              <c r="D1" t="inlineStr"><is><t>Février 2025</t></is></c>
+            </row>
+            <row r="2">
+              <c r="A2" t="inlineStr"><is><t>Masse monétaire M3 (MDH)</t></is></c>
+              <c r="B2"><v>1000</v></c><c r="C2"><v>1010,5</v></c><c r="D2"><v>1020</v></c>
+            </row>
+          </sheetData>
+        </worksheet>"""
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr("xl/worksheets/sheet1.xml", sheet)
+        rows = _xlsx_read_rows(buffer.getvalue())
+        items = _bam_ckan_series_from_rows(
+            rows,
+            {"title": "Agrégats de monnaie", "notes": "Séries officielles mensuelles"},
+            {"url": "https://data.gov.ma/resource.xlsx", "name": "Agregats_Aout_2026.xlsx"},
+        )
+        self.assertEqual(len(items), 1)
+        series = items[0]["statistics_series"]
+        self.assertEqual(series["indicator_code"], "BAM_CKAN_AGR_GATS_DE_MONNAIE_MASSE_MON_TAIRE_M3_MDH")
+        self.assertEqual(series["latest"], {"year": "2025-02", "value": 1020.0})
+        self.assertEqual(len(series["history"]), 3)
+        self.assertEqual(series["unit_fr"], "MDH")
+        self.assertEqual(series["source_url"], "https://data.gov.ma/resource.xlsx")
+
+    def test_bam_ckan_collector_discovers_and_downloads_latest_xlsx(self):
+        from pipeline.collectors import collect_bank_al_maghrib_ckan
+
+        package_payload = {
+            "success": True,
+            "result": {"results": [{
+                "title": "Agrégats de monnaie",
+                "name": "agregats-de-monnaie",
+                "notes": "Historique des agrégats",
+                "resources": [{
+                    "format": "XLSX", "state": "active",
+                    "created": "2026-11-02T09:00:00",
+                    "url": "https://data.gov.ma/resource.xlsx",
+                    "name": "Agregats_Aout_2026.xlsx",
+                }],
+            }]},
+        }
+        with patch("pipeline.collectors._fetch_text", return_value=json.dumps(package_payload)), patch(
+            "pipeline.collectors._fetch_bytes", return_value=b"PK-test"
+        ) as download, patch(
+            "pipeline.collectors._xlsx_read_rows",
+            return_value=[
+                ["Indicateur", "Décembre 2024", "Janvier 2025", "Février 2025"],
+                ["Masse monétaire M3 (MDH)", "1000", "1010", "1020"],
+            ],
+        ):
+            items = collect_bank_al_maghrib_ckan({
+                "api_base": "https://data.gov.ma/data/api/3/action",
+                "organization": "bank-al-maghrib",
+                "max_datasets": 43,
+            })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["statistics_series"]["latest"]["value"], 1020.0)
+        download.assert_called_once_with(
+            "https://data.gov.ma/resource.xlsx", timeout=30, max_bytes=8000000
+        )
+
+    def test_bam_ckan_period_and_number_parsers_handle_french_values(self):
+        from pipeline.collectors import _bam_ckan_period, _bam_ckan_number
+        self.assertEqual(_bam_ckan_period("Août 2026"), "2026-08")
+        self.assertEqual(_bam_ckan_period("2026-T3"), "2026-T3")
+        self.assertEqual(_bam_ckan_number("1 234,56"), 1234.56)
+        self.assertEqual(_bam_ckan_number("(25,5)"), -25.5)
+        self.assertIsNone(_bam_ckan_number("—"))
+
+
+
 if __name__ == "__main__":
     unittest.main()

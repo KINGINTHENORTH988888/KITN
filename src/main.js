@@ -2214,11 +2214,18 @@ const SPACE_PATHS = {
   academy: "/academy"
 };
 function getSpaceFromLocation() {
-  const pathname = window.location.pathname.replace(/\\/+$/, "") || "/";
+  const currentPath = window.location.pathname;
+  const pathname = currentPath.length > 1 && currentPath.endsWith("/")
+    ? currentPath.slice(0, -1)
+    : currentPath;
   const match = Object.entries(SPACE_PATHS).find(([, path]) => path === pathname);
   if (match) return match[0];
-  const legacyRoute = window.location.hash.match(/^#\\/(all|veille|science|chiffres|academy|bibliotheque)$/);
-  return legacyRoute ? legacyRoute[1] : "all";
+  const legacyHash = window.location.hash.startsWith("#/")
+    ? window.location.hash.slice(2)
+    : "";
+  return ["all", "veille", "science", "chiffres", "academy", "bibliotheque"].includes(legacyHash)
+    ? legacyHash
+    : "all";
 }
 activeSpace = getSpaceFromLocation();
 window.addEventListener("popstate", () => {

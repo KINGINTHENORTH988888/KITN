@@ -1093,6 +1093,23 @@ function renderRegionalStatisticsDashboard() {
   const scopeButtons = model.availableScopes.map((scope) =>
     `<button type="button" class="stats-filter-btn ${scope === model.activeScope ? "is-active" : ""}" data-regional-scope="${scope}" aria-pressed="${scope === model.activeScope}">${scopeLabels[scope] || scope}</button>`
   ).join("");
+  const latestPeriodIndex = model.periods.length - 1;
+  const latestRanking = model.rows
+    .filter((row) => row.geographyCode !== "MAR")
+    .map((row) => ({ ...row, latestPoint: row.points[latestPeriodIndex] }))
+    .filter((row) => row.latestPoint && row.latestPoint.value !== null && row.latestPoint.value !== undefined && Number.isFinite(Number(row.latestPoint.value)))
+    .sort((a, b) => Number(b.latestPoint.value) - Number(a.latestPoint.value));
+  const rankingMax = Math.max(0, ...latestRanking.map((row) => Number(row.latestPoint.value)));
+  const rankingMarkup = latestRanking.length
+    ? '<div class="regional-ranking" aria-label="' + (isAr ? "ترتيب الجهات حسب آخر قيمة متاحة" : "Classement régional pour la dernière période") + '">' +
+      '<div class="regional-ranking-heading"><h4>' + (isAr ? "ترتيب الجهات" : "Classement des régions") + '</h4><span>' + escapeHtml(model.latestPeriod) + '</span></div>' +
+      '<ol>' + latestRanking.map((row) => {
+        const value = Number(row.latestPoint.value);
+        const width = rankingMax > 0 ? Math.max(2, value / rankingMax * 100) : 0;
+        const formatted = new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", { maximumFractionDigits: 1 }).format(value);
+        return '<li><span class="regional-ranking-name">' + escapeHtml(isAr ? row.nameAr : row.nameFr) + '</span><span class="regional-ranking-track"><span style="width:' + width.toFixed(2) + '%"></span></span><strong>' + escapeHtml(formatted) + '</strong></li>';
+      }).join("") + '</ol></div>'
+    : "";
   const rows = model.rows.map((row) => {
     const cells = row.points.map((point) => {
       if (!point) return "<td>—</td>";
@@ -1142,6 +1159,7 @@ function renderRegionalStatisticsDashboard() {
       <div><span>${isAr ? "قيم غير متاحة" : "Valeurs manquantes"}</span><strong>${model.latestMissingCount}</strong></div>
       <p>${isAr ? "الفترة الأخيرة" : "Dernière période"} : <strong>${escapeHtml(model.latestPeriod || "—")}</strong></p>
     </div>
+    ${rankingMarkup}
     <div class="regional-table-wrap"><table class="regional-table">
       <thead><tr><th scope="col">${isAr ? "الجهة" : "Région"}</th>${model.periods.map((period) => `<th scope="col">${escapeHtml(period)}${regionalUnit ? ` (${escapeHtml(regionalUnit)})` : ""}</th>`).join("")}</tr></thead>
       <tbody>${rows || `<tr><td colspan="${model.periods.length + 1}">${isAr ? "لا توجد بيانات متاحة." : "Aucune observation disponible."}</td></tr>`}</tbody>

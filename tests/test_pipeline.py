@@ -22,6 +22,52 @@ from pipeline.run_pipeline import _content_fingerprint, _doi_key, _merge_preserv
 
 
 class TestPipelineProcessors(unittest.TestCase):
+    def test_emploi_public_collector_extracts_official_notice_fields(self):
+        listing = '<a href="/fr/concours/details/5200930a-096d-4d16-b1f6-4f140fc3b9e0">Avis de concours de recrutement de Administrateur 2ème grade - echelle 11 Annonce 2 postes</a>'
+        detail = """<html><body>Administration qui recrute Archives du Maroc
+        Délai de dépôt des candidatures 28 Août 2026 - 16:30
+        Date du concours 27 Septembre 2026 Date de publication 10 Août 2026
+        Téléchargement <a href="/files/arrete.pdf">Arrêté d'ouverture du concours</a>
+        Description Grade : Administrateur 2ème grade - echelle 11
+        Nombre de postes : 2 Type de recrutement : Recrutement régulier
+        Code du concours : C43219/26</body></html>"""
+        source = {"id":"emploi_public_maroc","type":"emploi_public","url":"https://www.emploi-public.ma/fr/concours-liste?page=1","max_items":10}
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, detail]):
+            items = collect_from_source(source)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Administrateur 2ème grade - echelle 11")
+        self.assertIn("Archives du Maroc", items[0]["abstract"])
+        self.assertIn("Nombre de postes : 2", items[0]["abstract"])
+        self.assertIn("C43219/26", items[0]["abstract"])
+        self.assertEqual(items[0]["published_date"], "2026-08-10")
+        self.assertEqual(items[0]["pdf_url"], "https://www.emploi-public.ma/files/arrete.pdf")
+        self.assertEqual(items[0]["espace"], "academy")
+
+    def test_hespress_collector_filters_topics_and_extracts_metadata(self):
+        listing = """<a href="/politique/article/123">Le gouvernement annonce une réforme des finances publiques au Maroc</a>
+        <a href="/sport/article/456">Le Maroc gagne un match de football</a>"""
+        article = """<html><head>
+        <meta property="og:title" content="Réforme des finances publiques au Maroc - Hespress"/>
+        <meta property="og:description" content="Le gouvernement présente les grandes lignes de la réforme budgétaire et ses effets sur les politiques publiques au Maroc."/>
+        <meta property="article:published_time" content="2026-11-26T10:30:00+01:00"/>
+        <meta name="author" content="Rédaction"/></head><body><h1>Réforme des finances publiques au Maroc</h1></body></html>"""
+        source = {"id":"hespress_ar","type":"hespress_news","url":"https://www.hespress.com/","max_items":10,"include_title_tokens":["gouvernement","budget","finances publiques","réforme"],"exclude_title_tokens":["football","sport"]}
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+            items = collect_from_source(source)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["published_date"], "2026-11-26T10:30:00+01:00")
+        self.assertEqual(items[0]["authors"], ["Rédaction"])
+        self.assertEqual(items[0]["espace"], "veille")
+
+    def test_hespress_collector_skips_irrelevant_and_empty_detail_pages(self):
+        listing = """<a href="/sport/article/456">Le Maroc gagne un match de football</a>
+        <a href="/politique/article/789">Une actualité sur un sujet sans résumé</a>"""
+        article = "<html><head><title>Une actualité</title></head><body><h1>Une actualité</h1></body></html>"
+        source = {"id":"hespress_ar","type":"hespress_news","url":"https://www.hespress.com/","max_items":10,"include_title_tokens":["gouvernement","budget","réforme"]}
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+            self.assertEqual(collect_from_source(source), [])
+
+
     def test_detect_real_language(self):
         self.assertEqual(detect_real_language("Politique publique et gouvernance au Maroc"), "fr")
         self.assertEqual(detect_real_language("Public policy and economic growth in Morocco"), "en")

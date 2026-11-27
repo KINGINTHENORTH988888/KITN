@@ -1002,7 +1002,14 @@ class TestPipelineProcessors(unittest.TestCase):
             self.assertEqual(source_health["statistics_indicators"], ["MEF_GDP_CONSTANT"])
             statistics = json.loads(statistics_path.read_text(encoding="utf-8"))
             self.assertEqual(statistics["indicators"][0]["indicator_code"], "MEF_GDP_CONSTANT")
-            self.assertEqual(statistics["indicator_count"], 1)
+            self.assertEqual(statistics["indicator_count"], 2)
+            hcp_national = next(
+                item for item in statistics["indicators"]
+                if item["indicator_code"] == "HCP_EMO_REGIONAL_TEST"
+            )
+            self.assertEqual(hcp_national["pole"], "societe_developpement_humain")
+            self.assertEqual(hcp_national["latest"], {"year": "T3/2026", "value": 41.8, "quality_flag": "standard"})
+            self.assertEqual(hcp_national["collection_status"], "collected")
             self.assertTrue(public_statistics.exists())
             regional = json.loads(regional_statistics_path.read_text(encoding="utf-8"))
             self.assertEqual(regional["series_count"], 1)

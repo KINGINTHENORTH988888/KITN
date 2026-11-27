@@ -27,7 +27,7 @@ class TestPipelineProcessors(unittest.TestCase):
         article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
         <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
         <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
-        <p>Le taux de chômage strict s’élève respectivement à 30,5% et 16,7% pour ces deux catégories.</p>
+        <p>Le taux de chômage strict atteint 30,5% chez les jeunes de 15 à 24 ans et 16,7% chez les femmes.</p>
         <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 44,5% chez les jeunes de 15-24 ans et 28,5% chez les femmes.</p>
         </body></html>"""
         source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
@@ -1091,7 +1091,7 @@ class TestPipelineProcessors(unittest.TestCase):
         </head><body>
           <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
           <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
-          <p>Le taux de chômage strict s’élève respectivement à 30,5% et 16,7% pour ces deux catégories.</p>
+          <p>Le taux de chômage strict atteint 30,5% chez les jeunes de 15 à 24 ans et 16,7% chez les femmes.</p>
           <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 44,5% chez les jeunes de 15-24 ans et 28,5% chez les femmes.</p>
         </body></html>
         """

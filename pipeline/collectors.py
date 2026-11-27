@@ -552,7 +552,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                     url and url not in seen
                     and "marché du travail" in probe
                     and "trimestre" in probe
-                    and re.search(r"20\\d{2}", probe)
+                    and re.search(r"20\d{2}", probe)
                 ):
                     seen.add(url)
                     candidates.append(candidate)
@@ -563,7 +563,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
 
     def period_key(candidate: dict) -> tuple[int, int]:
         title = str(candidate.get("title") or "").casefold()
-        year_match = re.search(r"(20\\d{2})", title)
+        year_match = re.search(r"(20\d{2})", title)
         year = int(year_match.group(1)) if year_match else 0
         quarter_terms = (("premier", 1), ("deuxième", 2), ("deuxieme", 2), ("second", 2),
                          ("troisième", 3), ("troisieme", 3), ("quatrième", 4), ("quatrieme", 4))
@@ -599,19 +599,19 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
 
         metrics = [
             ("HCP_EMO_UNEMPLOYMENT", "Taux de chômage strict", "%",
-             number(r"taux de chômage strict s['’]établit à\\s*([0-9]+(?:[,.][0-9]+)?)\\s*%"),
+             number(r"taux de chômage strict s['’]établit à\s*([0-9]+(?:[,.][0-9]+)?)\s*%"),
              "Part de la main-d’œuvre au chômage strict selon l'Enquête sur la main-d’œuvre (EMO)."),
             ("HCP_EMO_UNDERUTILIZATION", "Taux composite de sous-utilisation de la main-d’œuvre", "%",
-             number(r"taux composite de la sous[- ]utilisation de la main[- ]d’œuvre atteint\\s*([0-9]+(?:[,.][0-9]+)?)\\s*%"),
+             number(r"taux composite de la sous[- ]utilisation de la main[- ]d’œuvre atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*%"),
              "Mesure élargie des besoins de travail non satisfaits selon l'EMO."),
             ("HCP_EMO_LABOUR_FORCE", "Main-d’œuvre", "millions",
-             number(r"main[- ]d’œuvre s['’]établit à\\s*([0-9]+(?:[,.][0-9]+)?)\\s*millions"),
+             number(r"main[- ]d’œuvre s['’]établit à\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
              "Effectif de la main-d’œuvre au Maroc, en millions de personnes."),
             ("HCP_EMO_EMPLOYMENT", "Personnes en emploi contre revenu", "millions",
-             number(r"nombre de personnes en emploi contre revenu atteint\\s*([0-9]+(?:[,.][0-9]+)?)\\s*millions"),
+             number(r"nombre de personnes en emploi contre revenu atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
              "Effectif des personnes en emploi contre revenu, en millions."),
             ("HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
-             number(r"taux de chômage strict s’élève respectivement à\\s*([0-9]+(?:[,.][0-9]+)?)\\s*%"),
+             number(r"taux de chômage strict s’élève respectivement à\s*([0-9]+(?:[,.][0-9]+)?)\s*%"),
              "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO."),
         ]
         for code, label, unit, value, description in metrics:

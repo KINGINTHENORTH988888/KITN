@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pipeline.collectors import collect_hcp_social_indicators
-from pipeline.run_pipeline import _merge_valid_statistics_series
+from pipeline.run_pipeline import _merge_regional_statistics_series, _merge_valid_statistics_series
 
 
 EXPECTED_LATEST = {
@@ -18,6 +18,51 @@ EXPECTED_LATEST = {
     "HCP_SOCIAL_GINI": 0.405,
 }
 SOURCE_NAME = "Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026"
+EXPECTED_REGIONAL_SERIES = 108
+
+
+
+def merge_hcp_regional_preview(existing_payload: dict, incoming: list[dict], collected_at: str) -> dict:
+    """Append HCP social regional series without discarding existing EMO history."""
+    if not isinstance(existing_payload, dict):
+        raise ValueError("Existing HCP regional dataset is not a JSON object.")
+    existing_series = existing_payload.get("series")
+    if not isinstance(existing_series, list):
+        raise ValueError("Existing HCP regional dataset has no valid series list.")
+
+    merged_by_key = {}
+    for series in existing_series:
+        if not isinstance(series, dict):
+            continue
+        key = str(series.get("series_key") or series.get("id") or "").strip()
+        if key:
+            merged_by_key[key] = series
+
+    for series in incoming:
+        if not isinstance(series, dict):
+            raise ValueError("HCP social regional series contains a non-object entry.")
+        key = str(series.get("series_key") or series.get("id") or "").strip()
+        merged = _merge_regional_statistics_series(merged_by_key.get(key), series, collected_at)
+        if merged is None:
+            raise ValueError(f"Quality validation rejected HCP regional series {key or '(missing key)'}.")
+        merged_by_key[key] = merged
+
+    merged_series = sorted(
+        merged_by_key.values(),
+        key=lambda item: (
+            str(item.get("indicator_code") or ""),
+            str(item.get("residence_scope") or ""),
+            str(item.get("geography_code") or ""),
+        ),
+    )
+    payload = dict(existing_payload)
+    payload.update({
+        "generated_at": collected_at,
+        "source": "Sources officielles du HCP — EMO et indicateurs sociaux du Maroc, édition 2026",
+        "series_count": len(merged_series),
+        "series": merged_series,
+    })
+    return payload
 
 
 def main() -> None:
@@ -36,11 +81,22 @@ def main() -> None:
         for item in items
         for warning in (item.get("statistics_collection_warnings") or [])
     })
+    regional_incoming = [
+        regional
+        for item in items
+        if isinstance(item, dict)
+        for regional in (item.get("regional_statistics") or [])
+        if isinstance(regional, dict)
+    ]
     observed = {item["indicator_code"]: item.get("latest", {}).get("value") for item in incoming}
     if warnings:
         raise SystemExit("HCP social report warnings: " + " | ".join(warnings))
     if set(observed) != set(EXPECTED_LATEST):
         raise SystemExit(f"Expected {len(EXPECTED_LATEST)} social series, received {len(observed)}.")
+    if len(regional_incoming) != EXPECTED_REGIONAL_SERIES:
+        raise SystemExit(
+            f"Expected {EXPECTED_REGIONAL_SERIES} regional social series, received {len(regional_incoming)}."
+        )
     for code, expected in EXPECTED_LATEST.items():
         actual = observed.get(code)
         if actual is None or abs(float(actual) - expected) > 0.001:
@@ -79,7 +135,20 @@ def main() -> None:
     statistics_path.write_text(serialized, encoding="utf-8")
     public_statistics_path.write_text(serialized, encoding="utf-8")
 
+    regional_path = Path("data/regional-statistics.json")
+    public_regional_path = Path("public/data/regional-statistics.json")
+    if not regional_path.exists():
+        raise SystemExit("HCP EMO regional dataset is missing; refusing to publish a partial social preview.")
+    regional_payload = json.loads(regional_path.read_text(encoding="utf-8"))
+    regional_payload = merge_hcp_regional_preview(regional_payload, regional_incoming, collected_at)
+    regional_serialized = json.dumps(regional_payload, ensure_ascii=False, indent=2) + "\n"
+    public_regional_path.parent.mkdir(parents=True, exist_ok=True)
+    regional_path.write_text(regional_serialized, encoding="utf-8")
+    public_regional_path.write_text(regional_serialized, encoding="utf-8")
+
     print("HCP SOCIAL PREVIEW SERIES:", len(incoming))
+    print("HCP SOCIAL REGIONAL SERIES:", len(regional_incoming))
+    print("REGIONAL STATISTICS TOTAL AFTER HCP:", regional_payload["series_count"])
     print("HCP SOCIAL PREVIEW VALUES:", observed)
     print("STATISTICS TOTAL AFTER HCP:", len(indicators))
     print(

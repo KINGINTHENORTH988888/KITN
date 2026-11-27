@@ -82,10 +82,13 @@ class TestOpenAlexPagination(unittest.TestCase):
             "max_items": 3,
         }
 
-        with patch(
-            "pipeline.collectors._fetch_text",
-            side_effect=[json.dumps(page), json.dumps(page)],
-        ) as fetch:
+        with (
+            patch.dict("os.environ", {"OPENALEX_API_KEY": "test-openalex-key"}),
+            patch(
+                "pipeline.collectors._fetch_text",
+                side_effect=[json.dumps(page), json.dumps(page)],
+            ) as fetch,
+        ):
             items = collect_openalex(source)
 
         self.assertEqual(len(items), 2)

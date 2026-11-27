@@ -127,3 +127,10 @@ test("regional HCP dashboard displays territorial coverage and missing-value cou
   assert.ok(source.includes("model.latestMissingCount"));
   assert.ok(source.includes("model.latestPeriod"));
 });
+
+test("regional HCP dashboard ranks only available regional observations for the latest period", () => {
+  assert.ok(source.includes('class="regional-ranking"'));
+  assert.ok(source.includes('row.geographyCode !== "MAR"'));
+  assert.ok(source.includes("latestRanking"));
+  assert.ok(source.includes("model.latestPeriod"));
+});

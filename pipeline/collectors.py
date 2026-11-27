@@ -136,7 +136,7 @@ def _retry_delay_seconds(retry_after: str | None, attempt: int, now: datetime | 
     return delay + random.uniform(0, min(1.0, delay * 0.2))
 
 
-def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
+def _fetch_text(url: str, timeout: int = 20, referer: str | None = None, extra_headers: dict | None = None) -> str:
     parsed = urlsplit(url)
     origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "https://www.bkam.ma/"
     host = parsed.hostname or ""
@@ -152,6 +152,7 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
         "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-Site": "same-origin" if referer else "none",
     }
+    headers.update(extra_headers or {})
     req = Request(url, headers=headers)
     for attempt in range(4):
         _wait_for_openalex_slot(host)
@@ -381,15 +382,22 @@ def collect_openalex(source: dict) -> list[dict]:
     except (TypeError, ValueError):
         configured_page_size = min(max_items, 25)
     page_size = min(200, max(1, configured_page_size))
+    api_key = os.environ.get("OPENALEX_API_KEY", "").strip()
+    request_headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
 
-    # OpenAlex cursor paging is required to move beyond the first result page.
+    # OpenAlex allows a small keyless first page, but cursor paging beyond it
+    # requires an activated API key. Keep collection healthy when the secret is
+    # absent instead of turning every source into an authentication error.
+    if not api_key:
+        max_items = min(max_items, page_size)
+
     # Keep max_items as a hard per-source cap to bound runtime and API usage.
     works: list[dict] = []
     cursor = "*"
     seen_cursors = {cursor}
     while len(works) < max_items:
         page_url = _openalex_cursor_url(url, cursor, page_size)
-        payload = json.loads(_fetch_text(page_url))
+        payload = json.loads(_fetch_text(page_url, extra_headers=request_headers))
         page_results = payload.get("results") or []
         if not isinstance(page_results, list) or not page_results:
             break

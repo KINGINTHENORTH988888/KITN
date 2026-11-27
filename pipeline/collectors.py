@@ -543,52 +543,94 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
 
 
 
+def _normalize_hcp_emo_text(value: object) -> str:
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(char for char in text if not unicodedata.combining(char))
+    return re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", text.casefold())).strip()
+
+
+def _hcp_emo_period(value: object) -> tuple[int, int]:
+    """Read HCP labour release periods from titles or URL slugs."""
+    text = _normalize_hcp_emo_text(value)
+    year_match = re.search(r"\b(20\d{2})\b", text)
+    if not year_match:
+        return 0, 0
+    year = int(year_match.group(1))
+
+    quarter_match = re.search(r"\bt\s*([1-4])\b", text)
+    if quarter_match:
+        return year, int(quarter_match.group(1))
+
+    quarter_match = re.search(r"\b([1-4])\s*(?:er|ere|e|eme)?\s*trimestre\b", text)
+    if quarter_match:
+        return year, int(quarter_match.group(1))
+
+    quarter_words = (
+        ("premier", 1), ("deuxieme", 2), ("second", 2),
+        ("troisieme", 3), ("quatrieme", 4),
+    )
+    quarter = next((number for word, number in quarter_words if word in text), 0)
+    return year, quarter
+
+
 def collect_hcp_labour_statistics(source: dict) -> list[dict]:
-    """Extract a small set of headline labour-market indicators from the latest HCP release."""
+    """Discover HCP labour releases from article titles or URL slugs, then extract headline indicators."""
     base_url = str(source.get("url") or "https://www.hcp.ma/").rstrip("/") + "/"
     listing_urls = source.get("listing_urls") or ["/Actualite-marche-du-travail_r424.html"]
     candidates: list[dict] = []
     seen: set[str] = set()
+    hcp_hosts = {"hcp.ma", "www.hcp.ma", "m.hcp.ma"}
+
+    # This source uses a dedicated discovery pass: the general HCP collector
+    # deliberately accepts only known article/PDF URL shapes, which can change.
     for listing in listing_urls:
         listing_url = urljoin(base_url, str(listing))
         try:
-            for candidate in _collect_hcp_page(listing_url, source, strict_tokens=True):
-                title = clean_text(candidate.get("title"))
-                url = sanitize_url(candidate.get("url"))
-                url_slug = ""
-                if url:
-                    url_slug = unquote(urlsplit(url).path.rsplit("/", 1)[-1])
-                    url_slug = re.sub(r"_a\d+\.html$", "", url_slug, flags=re.IGNORECASE)
-                probe = re.sub(r"[-_]+", " ", f"{title} {url_slug}".casefold())
-                if (
-                    url and url not in seen
-                    and "marche du travail" in probe.replace("marché", "marche")
-                    and "trimestre" in probe
-                    and re.search(r"20\d{2}", probe)
-                ):
-                    # HCP listing pages often label the article link only "Lire la suite".
-                    # Recover a useful title from the article slug before ranking quarters.
-                    if len(title) < 25 or "lire la suite" in title.casefold():
-                        candidate["title"] = clean_text(url_slug.replace("-", " ").replace("_", " "))
-                    seen.add(url)
-                    candidates.append(candidate)
+            parser = _AnchorExtractor()
+            parser.feed(_fetch_text(listing_url))
         except Exception:
             continue
-    if not candidates:
-        return []
 
-    def period_key(candidate: dict) -> tuple[int, int]:
-        title = str(candidate.get("title") or "").casefold()
-        year_match = re.search(r"(20\d{2})", title)
-        year = int(year_match.group(1)) if year_match else 0
-        quarter_terms = (("premier", 1), ("deuxième", 2), ("deuxieme", 2), ("second", 2),
-                         ("troisième", 3), ("troisieme", 3), ("quatrième", 4), ("quatrieme", 4))
-        quarter = next((n for word, n in quarter_terms if word in title), 0)
-        return year, quarter
+        listing_path = urlsplit(listing_url).path.rstrip("/").casefold()
+        for href, anchor_text in parser.links:
+            if href.startswith(("#", "mailto:", "tel:", "javascript:")):
+                continue
+            url = sanitize_url(urljoin(listing_url, href))
+            if not url or url in seen:
+                continue
+            parsed = urlsplit(url)
+            if (parsed.hostname or "").casefold() not in hcp_hosts:
+                continue
+            path = unquote(parsed.path).rstrip("/").casefold()
+            if path == listing_path or re.search(r"_r\d+\.html$", path):
+                continue
+            if any(token in path for token in _NOISE_PATH_TOKENS):
+                continue
 
-    candidates.sort(key=period_key, reverse=True)
+            slug = unquote(parsed.path.rsplit("/", 1)[-1])
+            slug = re.sub(r"_a\d+\.html$", "", slug, flags=re.IGNORECASE)
+            probe = _normalize_hcp_emo_text(f"{anchor_text} {slug}")
+            if "marche du travail" not in probe and "emploi" not in probe:
+                continue
+            year, quarter = _hcp_emo_period(probe)
+            if not year or not quarter:
+                continue
+
+            title = clean_text(anchor_text)
+            if len(title) < 25 or "lire la suite" in _normalize_hcp_emo_text(title):
+                title = clean_text(slug.replace("-", " ").replace("_", " "))
+            candidates.append({
+                "title": title,
+                "url": url,
+                "published_date": _extract_date_hint(anchor_text, url),
+                "period": (year, quarter),
+            })
+            seen.add(url)
+
+    candidates.sort(key=lambda candidate: candidate["period"], reverse=True)
     max_pages = max(1, min(3, int(source.get("max_pages", 1))))
     items: list[dict] = []
+
     for candidate in candidates[:max_pages]:
         page_url = str(candidate.get("url") or "")
         try:
@@ -596,9 +638,10 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
             parser.feed(_fetch_text(page_url))
         except Exception:
             continue
+
         title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title or candidate.get("title"))
         body = clean_text(" ".join(parser.paragraphs))
-        period = period_key({"title": title})
+        period = _hcp_emo_period(f"{title} {candidate.get('title', '')} {page_url}")
         if not body or not period[0] or not period[1]:
             continue
         period_label = f"T{period[1]}/{period[0]}"
@@ -653,10 +696,10 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                  float(underutilization_pair.group(2).replace(",", ".")),
                  "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
             ])
+
         for code, label, unit, value, description in metrics:
             if value is None:
                 continue
-            # The first number in the paired youth/women sentence is the youth value.
             series = {
                 "id": code, "indicator_code": code, "label_fr": label, "label_ar": label,
                 "description_fr": description, "description_ar": description,
@@ -676,7 +719,6 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 "pole": "societe_developpement_humain", "default_doc_type": "statistique",
                 "statistics_series": series, "source_lang_hint": "fr",
             })
-        # Avoid mixing multiple quarters into one run; only the latest release is authoritative.
         if items:
             break
     return items

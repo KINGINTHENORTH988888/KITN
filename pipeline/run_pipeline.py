@@ -572,6 +572,16 @@ def run() -> dict:
                     statistics_series[code] = merged_series
                     statistics_count += 1
                     statistics_codes.append(code)
+            configured_statistics_codes = sorted({
+                str(indicator.get("code") or "").strip()
+                for indicator in (src.get("indicators") or [])
+                if isinstance(indicator, dict) and str(indicator.get("code") or "").strip()
+            })
+            missing_statistics_codes = sorted(set(configured_statistics_codes) - set(statistics_codes))
+            for missing_code in missing_statistics_codes:
+                statistics_warnings.append(
+                    f"{missing_code} : indicateur configuré mais aucune série collectée lors de cette exécution."
+                )
             statistics_warnings = sorted(set(statistics_warnings))
             if not raw_items:
                 status = "warning"
@@ -646,9 +656,12 @@ def run() -> dict:
             "stage": stage,
             "fetched": fetched_count,
             "accepted": accepted_count,
+            "statistics_configured": len(configured_statistics_codes) if "configured_statistics_codes" in locals() else 0,
+            "statistics_configured_indicators": configured_statistics_codes if "configured_statistics_codes" in locals() else [],
             "statistics_collected": statistics_count,
             "regional_statistics_collected": regional_statistics_count,
             "statistics_indicators": sorted(set(statistics_codes)),
+            "statistics_missing_indicators": missing_statistics_codes if "missing_statistics_codes" in locals() else [],
             "statistics_warnings": statistics_warnings,
             "error": error_msg,
             "checked_at": now_iso,

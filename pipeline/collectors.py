@@ -1,4 +1,5 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 import os
 import re
 import time
@@ -1960,9 +1961,9 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
     datasets = payload.get("result", {}).get("results", [])
     max_datasets = max(1, min(int(source.get("max_datasets") or 43), 100))
     max_bytes = max(100_000, min(int(source.get("max_resource_bytes") or 8_000_000), 20_000_000))
-    output = []
-    extraction_errors = []
-    for dataset in datasets[:max_datasets]:
+    timeout = int(source.get("download_timeout") or 30)
+
+    def extract_dataset(dataset: dict) -> tuple[list[dict], str | None]:
         resources = [
             resource for resource in (dataset.get("resources") or [])
             if str(resource.get("format") or "").upper() == "XLSX"
@@ -1970,22 +1971,38 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
             and resource.get("url")
         ]
         if not resources:
-            continue
+            return [], None
         resources.sort(key=lambda item: str(item.get("last_modified") or item.get("created") or ""), reverse=True)
         resource = resources[0]
         try:
-            workbook = _fetch_bytes(str(resource["url"]), timeout=int(source.get("download_timeout") or 30), max_bytes=max_bytes)
+            workbook = _fetch_bytes(str(resource["url"]), timeout=timeout, max_bytes=max_bytes)
             rows = _xlsx_read_rows(workbook)
             extracted = _bam_ckan_series_from_rows(rows, dataset, resource)
-            output.extend(extracted)
+            if not extracted:
+                title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
+                return [], f"{title}: aucune série reconnue dans le classeur {clean_text(resource.get('name') or '')}"
+            return extracted, None
         except Exception as exc:
-            # One unavailable or malformed workbook must not suppress other BAM datasets.
-            extraction_errors.append(f"{clean_text(dataset.get('title') or dataset.get('name') or 'Jeu BAM')}: {str(exc)[:180]}")
+            title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
+            return [], f"{title}: {str(exc)[:180]}"
+
+    output = []
+    extraction_errors = []
+    selected_datasets = datasets[:max_datasets]
+    # Five concurrent downloads keep the daily workflow bounded without overloading the open-data portal.
+    with ThreadPoolExecutor(max_workers=max(1, min(5, len(selected_datasets)))) as executor:
+        for extracted, error in executor.map(extract_dataset, selected_datasets):
+            output.extend(extracted)
+            if error:
+                extraction_errors.append(error)
+
     if extraction_errors:
         if output:
             output[0]["statistics_collection_warnings"] = extraction_errors
         else:
             raise RuntimeError("Aucune ressource BAM n'a pu être extraite. " + " | ".join(extraction_errors[:5]))
+    if not output and not extraction_errors:
+        raise RuntimeError("Le catalogue CKAN BAM n'a fourni aucune ressource XLSX active.")
     return output
 
 

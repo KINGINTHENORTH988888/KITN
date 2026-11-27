@@ -27,16 +27,19 @@ class TestPipelineProcessors(unittest.TestCase):
         article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
         <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
         <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
+        <p>Le taux de chômage strict s’élève respectivement à 30,5% et 16,7% pour ces deux catégories.</p>
         </body></html>"""
         source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
         with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
             items = collect_from_source(source)
-        self.assertEqual(len(items), 4, [x["statistics_series"]["indicator_code"] for x in items])
+        self.assertEqual(len(items), 6, [x["statistics_series"]["indicator_code"] for x in items])
         values = {x["statistics_series"]["indicator_code"]: x["statistics_series"]["latest"]["value"] for x in items}
         self.assertEqual(values["HCP_EMO_UNEMPLOYMENT"], 10.5)
         self.assertEqual(values["HCP_EMO_UNDERUTILIZATION"], 19.6)
         self.assertEqual(values["HCP_EMO_LABOUR_FORCE"], 11.7)
         self.assertEqual(values["HCP_EMO_EMPLOYMENT"], 10.5)
+        self.assertEqual(values["HCP_EMO_YOUTH_UNEMPLOYMENT"], 30.5)
+        self.assertEqual(values["HCP_EMO_WOMEN_UNEMPLOYMENT"], 16.7)
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
 
     def test_bank_al_maghrib_public_monia_scraper_needs_no_api_key(self):

@@ -831,7 +831,7 @@ def run() -> dict:
     }
     REGIONAL_STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)
     REGIONAL_STATISTICS_FILE.write_text(
-        json.dumps(regional_payload, ensure_ascii=False, indent=2) + "\\n",
+        json.dumps(regional_payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     _sync_public_index(REGIONAL_STATISTICS_FILE, PUBLIC_REGIONAL_STATISTICS_FILE)

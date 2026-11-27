@@ -631,8 +631,10 @@ class TestPipelineProcessors(unittest.TestCase):
                 "indicators": [{"code": "BAD"}, {"code": "GOOD", "label_fr": "Indicateur"}],
                 "max_items": 2,
             })
-        self.assertEqual(len(items), 1)
+        self.assertEqual(len(items), 2)
         self.assertEqual(items[0]["statistics_series"]["indicator_code"], "GOOD")
+        self.assertIn("BAD", items[1]["statistics_collection_warnings"][0])
+        self.assertIn("temporary outage", items[1]["statistics_collection_warnings"][0])
 
     def test_collect_html_links_mocked(self):
         sample_html = """

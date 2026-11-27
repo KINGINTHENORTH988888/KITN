@@ -5,6 +5,7 @@ from datetime import date, timedelta
 import os
 import re
 import time
+import unicodedata
 import io
 import posixpath
 import zipfile

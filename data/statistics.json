@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T19:44:43Z",
+  "generated_at": "2026-11-27T19:46:28Z",
   "source": "Sources officielles — Bank Al-Maghrib et Bank Al-Maghrib — Données ouvertes et Banque mondiale — World Development Indicators et Ministère de l'Économie et des Finances — Tableau d'affichage DSBB et Haut-Commissariat au Plan — Les indicateurs sociaux du Maroc, édition 2026",
   "sources": [
     "Bank Al-Maghrib",
@@ -345968,7 +345968,7 @@
         "year": "2014",
         "value": 33848.0
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "الديموغرافيا"
     },
@@ -346018,7 +346018,7 @@
         "year": "2014",
         "value": 60.4
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "الديموغرافيا"
     },
@@ -346068,7 +346068,7 @@
         "year": "2014",
         "value": 2.22
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "الديموغرافيا"
     },
@@ -346138,7 +346138,7 @@
         "year": "2023",
         "value": 13.0
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "التشغيل والنشاط"
     },
@@ -346200,7 +346200,7 @@
         "year": "2023/24",
         "value": 111.6
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "التعليم"
     },
@@ -346262,7 +346262,7 @@
         "year": "2023/24",
         "value": 68.5
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "التعليم"
     },
@@ -346308,7 +346308,7 @@
         "year": "2011",
         "value": 30.5
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "الصحة"
     },
@@ -346354,7 +346354,7 @@
         "year": "2014",
         "value": 0.395
       },
-      "last_successful_collection_at": "2026-11-27T19:44:43Z",
+      "last_successful_collection_at": "2026-11-27T19:46:28Z",
       "collection_status": "collected",
       "category_ar": "الفقر والتفاوتات"
     }

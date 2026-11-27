@@ -647,6 +647,7 @@ let scienceYearFilter = "";
 let futureDatesOnly = false;
 let favoritesOnly = false;
 let resultsPage = 1;
+let lastResultsFilterKey = "";
 const RESULTS_PAGE_SIZE = 24;
 let favorites = loadJsonStorage(FAVORITES_KEY, []);
 let manualItems = loadJsonStorage(MANUAL_ITEMS_KEY, []);
@@ -1429,6 +1430,16 @@ function renderResults() {
   const poleBanner = document.getElementById("active-pole-banner");
   if (!container || !countBadge) return;
 
+  const filterKey = JSON.stringify([
+    activeSpace, searchQuery, selectedPolesFilter, selectedSinglePoleFilter,
+    selectedTypeFilter, selectedConfidenceFilter, selectedDocLangFilter,
+    dateFromFilter, dateToFilter, sortOrder, futureDatesOnly, favoritesOnly,
+    favoritesOnly ? favorites : []
+  ]);
+  if (filterKey !== lastResultsFilterKey) {
+    resultsPage = 1;
+    lastResultsFilterKey = filterKey;
+  }
   const filtered = getFilteredItems();
   const pagination = getPageSlice(filtered, resultsPage, RESULTS_PAGE_SIZE);
   resultsPage = pagination.page;

@@ -81,7 +81,7 @@ test("legacy dashboard sections are no longer displayed on the homepage", () => 
 
 
 test("each dedicated space updates the browser document title", () => {
-  assert.ok(source.includes('document.title = activeSpace === "all"'));
+  assert.ok(source.includes("document.title = activeArticleItem"));
   assert.ok(source.includes('${activeSpaceObj.label} | KITN'));
 });
 

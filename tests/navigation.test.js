@@ -120,3 +120,10 @@ test("national statistics provide searchable indicators and visible result count
   assert.ok(source.includes('stats-results-meta'));
   assert.ok(source.includes('indicator.indicator_code'));
 });
+
+test("regional HCP dashboard displays territorial coverage and missing-value counts", () => {
+  assert.ok(source.includes('class="regional-coverage"'));
+  assert.ok(source.includes("model.latestAvailableCount"));
+  assert.ok(source.includes("model.latestMissingCount"));
+  assert.ok(source.includes("model.latestPeriod"));
+});

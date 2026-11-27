@@ -1450,3 +1450,11 @@ textarea {
   .article-reading-header { padding-top: 1rem; }
   .article-reading-body { margin-top: 1.3rem; }
 }
+
+/* KITN statistics discovery controls */
+.stats-search-wrap { display: grid; gap: 0.35rem; width: min(100%, 27rem); color: var(--muted); font-size: 0.82rem; font-weight: 650; }
+.stats-search-wrap input { width: 100%; min-height: 2.8rem; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 0.65rem; background: var(--surface); color: var(--text); }
+.stats-search-wrap input:focus-visible { outline: 3px solid rgba(24, 90, 131, 0.2); border-color: var(--accent); }
+.stats-results-meta { margin: 0.25rem 0 0.85rem; color: var(--muted); font-size: 0.88rem; }
+.stats-results-meta strong { color: var(--text); }
+@media (max-width: 640px) { .stats-search-wrap { width: 100%; } }

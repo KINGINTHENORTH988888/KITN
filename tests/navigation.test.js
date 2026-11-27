@@ -73,5 +73,4 @@ test("homepage hero actions lead to useful KITN spaces rather than dead anchors"
 
 test("legacy dashboard sections are no longer displayed on the homepage", () => {
   assert.ok(styles.includes("#portal-hub, #themes { display: none; }"));
-  assert.ok(!source.includes('id="portal-hub"') || source.includes('id="portal-hub"'));
 });

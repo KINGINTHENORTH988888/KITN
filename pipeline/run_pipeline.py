@@ -850,6 +850,100 @@ def run() -> dict:
         encoding="utf-8",
     )
     _sync_public_index(REGIONAL_STATISTICS_FILE, PUBLIC_REGIONAL_STATISTICS_FILE)
+
+    # Promote the national "Ensemble" values from HCP's EMO regional tables
+    # into the national dashboard. This keeps the same official source and
+    # methodology while making the HCP social indicators discoverable beside
+    # the other national statistics.
+    promoted_hcp_count = 0
+    for regional in regional_series:
+        if (
+            regional.get("geography_code") != "MAR"
+            or regional.get("residence_scope") != "all"
+        ):
+            continue
+        code = str(regional.get("indicator_code") or "").strip()
+        raw_history = regional.get("history")
+        if not code or not isinstance(raw_history, list) or not raw_history:
+            continue
+        history = [
+            dict(point) for point in raw_history
+            if isinstance(point, dict)
+            and point.get("year") is not None
+            and point.get("value") is not None
+        ]
+        if not history:
+            continue
+        latest = regional.get("latest") if isinstance(regional.get("latest"), dict) else history[-1]
+        if latest.get("value") is None:
+            # Do not promote an older observation as the current value when
+            # the HCP has suppressed the latest national result.
+            continue
+        numeric_history = [
+            point for point in history
+            if isinstance(point.get("value"), (int, float))
+            and math.isfinite(float(point["value"]))
+        ]
+        if not numeric_history:
+            continue
+        latest = dict(latest)
+        previous = numeric_history[-2] if len(numeric_history) > 1 else None
+        projected = {
+            "id": code,
+            "indicator_code": code,
+            "label_fr": regional.get("label_fr") or code,
+            "label_ar": regional.get("label_ar") or regional.get("label_fr") or code,
+            "description_fr": (
+                f"{regional.get('label_fr') or code} — valeur nationale (ensemble), "
+                "issue de l’Enquête sur la main-d’œuvre 2026 du HCP."
+            ),
+            "description_ar": (
+                f"{regional.get('label_ar') or regional.get('label_fr') or code} — "
+                "القيمة الوطنية (المجموع)، وفق بحث اليد العاملة 2026 للمندوبية السامية للتخطيط."
+            ),
+            "unit_fr": regional.get("unit_fr") or "%",
+            "unit_ar": regional.get("unit_ar") or "%",
+            "scale_divisor": 1,
+            "precision": 1,
+            "category": "societe_developpement_humain",
+            "pole": "societe_developpement_humain",
+            "frequency": regional.get("frequency") or "quarterly",
+            "latest": latest,
+            "previous": previous,
+            "history": numeric_history,
+            "source_name": regional.get("source_name") or "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
+            "source_name_ar": regional.get("source_name_ar") or "المندوبية السامية للتخطيط — بحث اليد العاملة",
+            "source_url": regional.get("source_url") or "",
+            "last_updated": regional.get("last_updated") or latest.get("year"),
+            "last_successful_collection_at": regional.get("last_successful_collection_at") or "",
+            "collection_status": regional.get("collection_status") or "carried_forward",
+            "comparability_group": regional.get("comparability_group") or "HCP_EMO_2026",
+            "methodology_break": bool(regional.get("methodology_break", True)),
+            "methodology_note_fr": regional.get("methodology_note_fr") or "",
+            "methodology_note_ar": regional.get("methodology_note_ar") or "",
+        }
+        statistics_series[code] = projected
+        promoted_hcp_count += 1
+
+    if promoted_hcp_count:
+        statistics_sources = sorted({
+            str(item.get("source_name") or "")
+            for item in statistics_series.values()
+            if item.get("source_name")
+        })
+        statistics_payload = {
+            "generated_at": now_iso,
+            "source": "Sources officielles — " + " et ".join(statistics_sources) if statistics_sources else "Aucune source statistique disponible",
+            "sources": statistics_sources,
+            "indicator_count": len(statistics_series),
+            "indicators": list(statistics_series.values()),
+        }
+        STATISTICS_FILE.write_text(
+            json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\\n",
+            encoding="utf-8",
+        )
+        _sync_public_index(STATISTICS_FILE, PUBLIC_STATISTICS_FILE)
+
     return index_payload
 
 

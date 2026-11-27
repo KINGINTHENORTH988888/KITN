@@ -1158,22 +1158,6 @@
     ]
   },
   {
-    "id": "hcp_social_indicators_2026",
-    "name": "HCP — Indicateurs sociaux du Maroc, édition 2026",
-    "domain": "hcp.ma",
-    "target_space": "chiffres",
-    "type": "hcp_social_indicators_pdf",
-    "enabled": true,
-    "lang_hint": "fr",
-    "default_doc_type": "statistique",
-    "url": "https://www.hcp.ma/file/248623/",
-    "pdf_url": "https://www.hcp.ma/file/248623/",
-    "referer": "https://www.hcp.ma/downloads/Les-indicateurs-sociaux_t22430.html",
-    "publication_date": "2026-07-27",
-    "description_fr": "Recueil officiel de 296 pages couvrant population, emploi, éducation, santé, habitat, niveau de vie et culture. Extraction limitée aux lignes de tableaux identifiées et contrôlées.",
-    "description_ar": "مرجع رسمي من 296 صفحة يغطي السكان والتشغيل والتعليم والصحة والسكن ومستوى المعيشة والثقافة. يقتصر الاستخراج على صفوف الجداول المحددة والمتحقق منها."
-  },
-  {
     "id": "mef_tand_statistics",
     "name": "Ministère de l'Économie et des Finances — Tableau DSBB",
     "domain": "www.finances.gov.ma",

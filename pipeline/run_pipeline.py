@@ -179,8 +179,16 @@ def _merge_preserving_rich_fields(existing: dict, incoming: dict, now_iso: str) 
                 merged[field] = value
                 changed = True
 
-    if incoming.get("date_anomalie") is not None and merged.get("date_anomalie") != incoming.get("date_anomalie"):
+    incoming_date = str(incoming.get("date_publication") or "").strip()
+    merged_date = str(merged.get("date_publication") or "").strip()
+    if (
+        incoming_date
+        and incoming_date == merged_date
+        and incoming.get("date_anomalie") is not None
+        and merged.get("date_anomalie") != incoming.get("date_anomalie")
+    ):
         merged["date_anomalie"] = bool(incoming.get("date_anomalie"))
+        merged["date_statut"] = incoming.get("date_statut") or merged.get("date_statut")
         changed = True
 
     if incoming.get("texte_integral_disponible") and not merged.get("texte_integral_disponible"):

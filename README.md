@@ -54,3 +54,8 @@ Les collecteurs institutionnels visitent les pages de détail lorsqu'elles sont 
 ### Bank Al-Maghrib API
 
 Le connecteur officiel `bank_al_maghrib_api` récupère les cours de virement EUR, USD et CAD via l'API de Bank Al-Maghrib. Il attend la clé dans la variable d'environnement `BKAM_API_KEY`, transmise uniquement via le secret GitHub Actions du même nom. La source reste désactivée tant que la clé n'a pas été configurée. Ne jamais placer cette clé dans un fichier du dépôt.
+
+
+## Enrichissement académique par DOI
+
+Les notices scientifiques incomplètes disposant d'un DOI sont enrichies progressivement à partir de la fiche Crossref correspondante. Le traitement est limité à 12 tentatives par exécution (maximum configurable avec `KITN_DOI_ENRICHMENT_LIMIT`) et une même notice n'est pas retentée pendant 7 jours. Les champs existants sont conservés lorsqu'ils sont déjà renseignés ; les dates futures ou incohérentes restent signalées au lieu d'écraser une date fiable. Les résumés ne sont jamais générés artificiellement.

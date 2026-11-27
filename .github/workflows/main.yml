@@ -8,6 +8,19 @@ on:
   pull_request:
     branches:
       - main
+    # Les publications automatiques de fichiers JSON générés ne doivent pas
+    # relancer une validation complète ni annuler un build déjà en cours.
+    paths:
+      - ".github/workflows/**"
+      - "pipeline/**"
+      - "scripts/**"
+      - "tests/**"
+      - "src/**"
+      - "data/sources.json"
+      - "data/academy/**"
+      - "requirements.txt"
+      - "package.json"
+      - "package-lock.json"
   push:
     branches:
       - main

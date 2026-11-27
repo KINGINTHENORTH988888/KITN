@@ -628,6 +628,59 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
 
 
 
+
+def _extract_hcp_emo_regional_statistics(
+    attachment_links: list[str],
+    article_url: str,
+    published_date: str | None,
+) -> tuple[list[dict], list[str]]:
+    """Read the French HCP EMO PDF attachment and parse its regional tables."""
+    attachment_urls: list[str] = []
+    for href in attachment_links:
+        absolute = sanitize_url(urljoin(article_url, href))
+        if not absolute:
+            continue
+        path = urlsplit(absolute).path.lower()
+        if "/attachment/" in path and absolute not in attachment_urls:
+            attachment_urls.append(absolute)
+
+    if not attachment_urls:
+        return [], ["Aucune pièce jointe HCP détectée pour les tableaux régionaux EMO."]
+
+    errors: list[str] = []
+    best_series: list[dict] = []
+    for attachment_url in attachment_urls[:4]:
+        try:
+            payload = _fetch_bytes(attachment_url, referer=article_url)
+            reader = PdfReader(io.BytesIO(payload))
+            pages: list[str] = []
+            for page in reader.pages:
+                try:
+                    page_text = page.extract_text(extraction_mode="layout") or ""
+                except TypeError:
+                    page_text = page.extract_text() or ""
+                pages.append(page_text)
+            extracted_text = "\\f".join(pages)
+            if "taux de participation" not in extracted_text.casefold():
+                continue
+            parsed = parse_hcp_emo_regional_tables(
+                extracted_text,
+                source_url=attachment_url,
+                published_date=published_date,
+            )
+            if len(parsed) > len(best_series):
+                best_series = parsed
+            if len(best_series) >= 200:
+                break
+        except Exception as exc:
+            errors.append(f"{attachment_url}: {type(exc).__name__}: {exc}")
+
+    if best_series:
+        return best_series, []
+    detail = " | ".join(errors[:2]) if errors else "aucun tableau régional français reconnu"
+    return [], [f"Extraction des tableaux régionaux HCP EMO impossible : {detail}"]
+
+
 def collect_hcp_labour_statistics(source: dict) -> list[dict]:
     """Extract a small set of headline labour-market indicators from the latest HCP release."""
     base_url = str(source.get("url") or "https://www.hcp.ma/").rstrip("/") + "/"
@@ -695,6 +748,9 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
             continue
         period_label = f"T{period[1]}/{period[0]}"
         published = parser.meta.get("article:published_time") or parser.published_time or candidate.get("published_date")
+        regional_statistics, regional_warnings = _extract_hcp_emo_regional_statistics(
+            parser.links, page_url, published
+        )
 
         def number(pattern: str) -> float | None:
             match = re.search(pattern, body, re.IGNORECASE)
@@ -758,6 +814,7 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
         ]
         if listing_errors:
             statistics_warnings.extend(f"Page de liste indisponible : {error}" for error in listing_errors[:2])
+        statistics_warnings.extend(regional_warnings)
 
         for code, label, unit, value, description in metrics:
             if value is None:
@@ -795,6 +852,10 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 "statistics_series": series, "source_lang_hint": "fr",
                 "statistics_collection_warnings": statistics_warnings,
             })
+        if items and regional_statistics:
+            # Attach the regional dataset once; the pipeline stores it separately from national series.
+            items[0]["regional_statistics"] = regional_statistics
+
         # Avoid mixing multiple quarters into one run; only the latest release is authoritative.
         if items:
             break

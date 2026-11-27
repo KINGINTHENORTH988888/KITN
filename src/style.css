@@ -1340,3 +1340,28 @@ textarea {
   .nav-group:hover .nav-dropdown, .nav-group:focus-within .nav-dropdown { display: grid; }
   .home-featured-grid { grid-template-columns: 1fr; }
 }
+
+
+/* Statistical overview: compact context before the detailed indicator cards */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .85rem;
+  margin: 1.1rem 0 1.35rem;
+}
+.stats-overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+  background: var(--surface);
+}
+.stats-overview-card span { color: var(--muted); font-size: .8rem; }
+.stats-overview-card strong { color: var(--text); font-size: 1.55rem; line-height: 1.15; font-weight: 750; }
+@media (max-width: 600px) {
+  .stats-overview { grid-template-columns: 1fr; gap: .55rem; }
+  .stats-overview-card { padding: .8rem .95rem; }
+  .stats-overview-card strong { font-size: 1.3rem; }
+}

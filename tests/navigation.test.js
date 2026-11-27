@@ -239,3 +239,13 @@ test("content grids cannot force horizontal overflow on narrow phones", () => {
   assert.match(styles, /\.results-grid\s*\{[^}]*minmax\(min\(100%, 290px\), 1fr\)/s);
   assert.match(styles, /\.theme-detail,[\s\S]*?grid-template-columns: repeat\(auto-fit, minmax\(min\(100%, 260px\), 1fr\)\)/);
 });
+
+
+test("monitoring dashboard exposes individual source failures and diagnostics", () => {
+  assert.match(source, /sourceAttentionItems = enabledSources\.filter/);
+  assert.match(source, /source\.source_name \|\| source\.source_id/);
+  assert.match(source, /source\.error \|\| source\.message/);
+  assert.match(source, /watch-source-issues/);
+  assert.match(styles, /\.watch-source-issue\.is-error/);
+  assert.match(styles, /\.watch-source-issue-heading/);
+});

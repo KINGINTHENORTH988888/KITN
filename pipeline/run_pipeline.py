@@ -392,7 +392,11 @@ def run() -> dict:
         })
 
     # Enrich a small batch of DOI-backed scientific records without replacing trusted fields.
-    enrichment_limit = max(0, min(30, int(os.environ.get("KITN_DOI_ENRICHMENT_LIMIT", "12"))))
+    try:
+        requested_enrichment_limit = int(os.environ.get("KITN_DOI_ENRICHMENT_LIMIT", "12"))
+    except (TypeError, ValueError):
+        requested_enrichment_limit = 12
+    enrichment_limit = max(0, min(30, requested_enrichment_limit))
     enrichment_attempted = 0
     enrichment_updated = 0
     for iid in order_ids:

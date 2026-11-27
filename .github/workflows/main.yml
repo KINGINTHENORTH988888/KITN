@@ -26,7 +26,7 @@ permissions:
 
 concurrency:
   group: kitn-veille-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   validate-pull-request:
@@ -63,6 +63,7 @@ jobs:
           npm run build
 
   collect-and-update:
+    timeout-minutes: 20
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:

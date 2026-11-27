@@ -1578,7 +1578,7 @@ function render() {
               <span>${lang === "ar" ? "سنة النشر" : "Année de publication"}</span>
               <select id="science-year-select">
                 <option value="">${lang === "ar" ? "كل السنوات" : "Toutes les années"}</option>
-                ${scienceYears.map((year) => \`<option value="${year}" ${scienceYearFilter === year ? "selected" : ""}>${year}</option>\`).join("")}
+                ${scienceYears.map((year) => `<option value="${year}" ${scienceYearFilter === year ? "selected" : ""}>${year}</option>`).join("")}
               </select>
             </label>
           </div>

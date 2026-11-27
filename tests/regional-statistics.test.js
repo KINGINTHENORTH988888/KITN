@@ -125,3 +125,13 @@ test("reports latest regional coverage separately from the national aggregate", 
   assert.equal(model.latestPeriod, "T3/2026");
   assert.equal(model.latestAverage, 4.6);
 });
+
+test("does not count null regional observations as available numeric values", () => {
+  const incompletePayload = structuredClone(payload);
+  const regionalSeries = incompletePayload.series.find((item) => item.geography_code !== "MAR" && item.residence_scope === "all");
+  regionalSeries.history[regionalSeries.history.length - 1].value = null;
+  const model = buildRegionalStatisticsModel(incompletePayload, "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT", "all");
+  assert.equal(model.latestAvailableCount, 0);
+  assert.equal(model.latestMissingCount, 1);
+  assert.equal(model.latestAverage, null);
+});

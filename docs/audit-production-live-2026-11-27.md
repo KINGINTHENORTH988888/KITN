@@ -184,3 +184,45 @@ Après ces validations, le workflow HCP a publié les fichiers JSON vérifiés d
 GitHub a ensuite marqué les nouveaux runs déclenchés sur le commit de données comme action_required, sans démarrer de jobs. Les tests et le build du code ont néanmoins bien réussi sur le commit parent, avec le jeu de données réel utilisé avant sa publication dans la branche. Si l'on veut que les checks soient également attachés au SHA le plus récent, les exécutions en attente devront être approuvées dans l'interface GitHub Actions.
 
 **Limites restantes :** le contrôle Cloudflare Workers Build reste non résolu faute de journal détaillé et de configuration Worker dans le dépôt ; le contrôle réel du menu sur un viewport mobile de 360–390 px reste à effectuer. La PR demeure en brouillon et aucune fusion ou publication sur kitn.pages.dev n'a été faite.
+
+
+## 13. Audit complémentaire des données publiées et stabilisation CI
+
+### Inventaire et qualité des séries régionales
+
+Sur la dernière publication de la branche :
+- 342 séries sont présentes, et le champ `series_count` correspond à l'inventaire réel.
+- Les 6 indicateurs EMO comportent chacun 39 séries (13 géographies × 3 milieux).
+- Les 7 familles sociales couvrent 108 séries au total ; la fécondité comporte 36 séries et les six autres familles 12 chacune.
+- Contrôles effectués : aucun identifiant dupliqué, aucune source ou URL HTTPS manquante, aucun historique vide ou désordonné, aucune valeur non finie et aucun libellé manquant.
+- Les copies `data/` et `public/data/` ont le même contenu pour le jeu régional, le jeu national, l'index documentaire et Academy.
+
+### Index documentaire
+
+Le dernier index contient 269 notices :
+- 167 publications scientifiques ;
+- 229 notices marquées « valide » et 40 « à vérifier » ;
+- 24 dates futures/anormales, toutes explicitement marquées « à vérifier » ;
+- 20 notices sans date et 50 avec date partielle ;
+- 58 notices sans auteur et 32 sans résumé. Ces deux champs restent facultatifs dans certaines sources et ne sont pas assimilés automatiquement à des erreurs ;
+- 3 contributions manuelles KITN sans URL externe ni DOI. Elles restent des contributions internes et ne doivent pas être traitées comme des liens cassés.
+
+Aucun identifiant ni DOI dupliqué n'a été détecté. Les notices aux dates futures sont conservées pour contrôle, mais leur statut empêche de les présenter comme des dates confirmées.
+
+### Test de non-régression ajouté
+
+`tests/published-data.test.js` contrôle désormais aussi :
+- la synchronisation des fichiers publiés entre `data/` et `public/data/` ;
+- la cohérence du nombre de notices et l'unicité de leurs identifiants ;
+- la présence d'un titre et d'une source pour chaque notice ;
+- l'obligation de classer « à vérifier » toute notice avec une anomalie de date.
+
+### Réduction des relances CI inutiles
+
+Le workflow principal filtre maintenant les événements de pull request par chemins pertinents (code, tests, pipeline, scripts et configuration). Les commits qui ne font que publier les JSON générés ne relancent plus l'intégralité des validations. Cela évite les exécutions redondantes lors des mises à jour automatiques du jeu HCP.
+
+Le code applicatif et les validations HCP ont réussi sur le commit parent `1ba5a067` : les trois workflows (Tests, KITN Veille Automatisée et HCP EMO Live Validation) ont terminé avec succès. Les changements plus récents concernent le filtre CI, les données générées et les nouveaux tests d'intégrité ; leur validation complète sur le dernier SHA reste à confirmer.
+
+### Accès Cloudflare nécessaire
+
+Le journal Workers Build reste inaccessible sans session Cloudflare authentifiée. Une demande de connexion sécurisée Cloudflare a été ouverte dans cette conversation. Après connexion, il sera possible d'examiner le build en échec et de déterminer si le projet Worker est mal configuré ou si une dépendance externe manque. Aucun secret ni mot de passe ne doit être partagé dans le chat.

@@ -805,13 +805,15 @@ textarea {
 
   .nav {
     display: none;
-    position: absolute;
-    top: 100%;
-    inset-inline: 0;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
-    padding: 1rem 1.5rem;
+    position: static;
+    order: 3;
+    width: 100%;
+    inset: auto;
+    background: transparent;
+    border: 0;
+    padding: 0.5rem 0 0.75rem;
     flex-direction: column;
+    align-items: stretch;
   }
 
   .nav.is-open {

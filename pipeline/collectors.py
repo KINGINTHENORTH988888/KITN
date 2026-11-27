@@ -89,21 +89,42 @@ _HCP_RELEVANT_TOKENS = (
 
 
 _OPENALEX_MIN_REQUEST_INTERVAL = 3.0
+_OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS = 300.0
 _OPENALEX_LAST_REQUEST_AT = 0.0
+_OPENALEX_RATE_LIMITED_UNTIL = 0.0
 _OPENALEX_REQUEST_LOCK = threading.Lock()
 
 
 def _wait_for_openalex_slot(host: str) -> None:
-    """Keep OpenAlex requests spaced even when several thematic sources run in one job."""
+    """Space OpenAlex requests and stop a run from hammering an endpoint after HTTP 429."""
     global _OPENALEX_LAST_REQUEST_AT
     if host.lower() != "api.openalex.org":
         return
     with _OPENALEX_REQUEST_LOCK:
-        elapsed = time.monotonic() - _OPENALEX_LAST_REQUEST_AT
+        now = time.monotonic()
+        if now < _OPENALEX_RATE_LIMITED_UNTIL:
+            raise HTTPError(
+                "https://api.openalex.org/",
+                429,
+                "OpenAlex rate-limit circuit is open; remaining sources were skipped for this run",
+                None,
+                None,
+            )
+        elapsed = now - _OPENALEX_LAST_REQUEST_AT
         wait = _OPENALEX_MIN_REQUEST_INTERVAL - elapsed
         if wait > 0:
             time.sleep(wait)
         _OPENALEX_LAST_REQUEST_AT = time.monotonic()
+
+
+def _openalex_record_rate_limit() -> None:
+    """Open a short per-run circuit after a provider 429 to protect the API and CI runtime."""
+    global _OPENALEX_RATE_LIMITED_UNTIL
+    with _OPENALEX_REQUEST_LOCK:
+        _OPENALEX_RATE_LIMITED_UNTIL = max(
+            _OPENALEX_RATE_LIMITED_UNTIL,
+            time.monotonic() + _OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS,
+        )
 
 
 def _retry_delay_seconds(retry_after: str | None, attempt: int, now: datetime | None = None) -> float | None:
@@ -162,6 +183,11 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None, extra_h
                 charset = resp.headers.get_content_charset() or "utf-8"
                 return raw.decode(charset, errors="replace")
         except HTTPError as exc:
+            if host.lower() == "api.openalex.org" and exc.code == 429:
+                # One rejected OpenAlex request is enough evidence to stop querying
+                # the remaining thematic endpoints in this pipeline execution.
+                _openalex_record_rate_limit()
+                raise
             if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
                 raise
             retry_after = exc.headers.get("Retry-After") if exc.headers else None

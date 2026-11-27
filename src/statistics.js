@@ -13,7 +13,9 @@ export function getStatisticsCategory(indicator) {
 
 function utcDate(year, month = 1, day = 1) {
   const date = new Date(Date.UTC(year, month - 1, day));
-  return Number.isNaN(date.getTime()) ? null : date;
+  if (Number.isNaN(date.getTime())) return null;
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() + 1 !== month || date.getUTCDate() !== day) return null;
+  return date;
 }
 
 function anchorAsDate(anchor) {
@@ -77,6 +79,6 @@ export function filterStatisticsHistory(history, range, referenceDate = null) {
   if (!datedPoints.length) return history;
 
   return datedPoints
-    .filter((entry) => entry.date >= cutoff)
+    .filter((entry) => entry.date >= cutoff && entry.date <= anchor)
     .map((entry) => entry.point);
 }

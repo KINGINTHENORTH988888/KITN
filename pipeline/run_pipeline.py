@@ -3,7 +3,7 @@ import json
 import re
 import shutil
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -92,6 +92,9 @@ def _content_fingerprint(item: dict) -> str:
         "url_publication": item.get("url_publication"),
         "doi": item.get("doi"),
         "doi_statut": item.get("doi_statut"),
+        "metadata_enrichissement_tente_le": item.get("metadata_enrichissement_tente_le"),
+        "metadata_enrichie_le": item.get("metadata_enrichie_le"),
+        "metadata_source_enrichissement": item.get("metadata_source_enrichissement"),
         "pdf_direct": item.get("pdf_direct"),
         "resume": item.get("resume"),
         "analyse_strategique": item.get("analyse_strategique"),
@@ -403,7 +406,18 @@ def run() -> dict:
         if not needs_metadata:
             continue
 
+        last_attempt = str(item.get("metadata_enrichissement_tente_le") or "").strip()
+        if last_attempt:
+            try:
+                last_attempt_dt = datetime.fromisoformat(last_attempt.replace("Z", "+00:00"))
+                current_dt = datetime.fromisoformat(now_iso.replace("Z", "+00:00"))
+                if current_dt - last_attempt_dt < timedelta(days=7):
+                    continue
+            except ValueError:
+                pass
+
         enrichment_attempted += 1
+        item["metadata_enrichissement_tente_le"] = now_iso
         try:
             raw_enrichment = collect_crossref_by_doi(doi)
             if not raw_enrichment:

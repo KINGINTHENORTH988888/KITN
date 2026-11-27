@@ -63,9 +63,9 @@ Les QCM, grands tableaux statistiques, filtres avancés et listes complètes res
 
 ## 7. Pages internes
 
-Chaque espace dispose de son propre titre, d'une introduction brève, de ses outils et de ses filtres. La navigation change réellement d'espace et l'URL doit permettre de retrouver la page sélectionnée.
+Chaque espace dispose de son propre titre, d'une introduction brève, de ses outils et de ses filtres. La première implémentation utilise des URL propres (`/maroc-en-chiffres`, `/veille`, `/etudes-recherche`, `/bibliotheque`, `/academy`) avec retour navigateur et fallback Cloudflare Pages. L'application reste techniquement une SPA Vite : les vues sont distinctes et adressables, mais ce ne sont pas encore des documents HTML autonomes.
 
-Les articles et notices doivent avoir une page de lecture interne. La reproduction intégrale n'est autorisée que lorsque les droits ou la licence le permettent ; sinon KITN affiche une synthèse originale, les métadonnées, la référence et un lien vers la source.
+Les publications mises en avant depuis l'accueil ouvrent désormais une page de lecture interne (`/publication/<id>`), avec métadonnées, résumé disponible, éventuelle analyse, citation et liens vers la source/DOI/PDF. Le texte intégral n'est pas inventé ni aspiré automatiquement : il ne sera reproduit que lorsque les droits ou la licence le permettent ; sinon KITN affiche une synthèse ou le résumé disponible et renvoie vers la source.
 
 ## 8. Administration et contributions
 
@@ -73,7 +73,7 @@ Ces fonctions ne sont pas des espaces publics. L'administration sert au pilotage
 
 ## 9. Séquence d'implémentation
 
-1. Navigation par espaces et accueil allégé.
+1. Navigation par espaces, URL propres et accueil allégé (première version implémentée sur la branche de travail).
 2. Pages internes avec sous-navigation et filtres spécifiques.
 3. Pages de lecture des publications et règles de droits.
 4. Refonte visuelle détaillée de Maroc en chiffres.

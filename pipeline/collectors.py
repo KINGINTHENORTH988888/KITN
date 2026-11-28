@@ -2566,8 +2566,8 @@ def _append_bam_ckan_series(
     history = sorted(unique.values(), key=lambda point: str(point["year"]))
     if len(history) < 2:
         return
-    context_slug = _bam_ckan_slug(context_fr) if context_fr else _bam_ckan_slug(source_position)
-    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(sheet_name)}_{context_slug}_{_bam_ckan_slug(label)}"
+    context_slug = _bam_ckan_slug(context_fr) if context_fr else "SECTION"
+    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(sheet_name)}_{context_slug}_{_bam_ckan_slug(source_position)}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"[(\[]([^()\[\]]{1,40})[)\]]", label)
     unit_match_global = re.search(r"(MMDH|MDH|KDH|Nombre|%)", notes, re.IGNORECASE)
     label_unit = clean_text(unit_match.group(1)) if unit_match else ""

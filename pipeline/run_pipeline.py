@@ -437,6 +437,10 @@ def _merge_regional_statistics_series(
     for point in history:
         if isinstance(point, dict) and point.get("year"):
             value = point.get("value")
+            # bool is a subclass of int in Python, but True/False are not
+            # valid statistical observations and must never become 1/0.
+            if isinstance(value, bool):
+                return None
             if value is not None and not isinstance(value, (int, float)):
                 return None
             if isinstance(value, (int, float)) and not math.isfinite(float(value)):

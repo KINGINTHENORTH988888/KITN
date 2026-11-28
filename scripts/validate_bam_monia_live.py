@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 
 from pipeline.collectors import collect_bank_al_maghrib
 from pipeline.run_pipeline import _is_valid_statistics_series
@@ -41,7 +41,7 @@ def main() -> int:
             "series": [],
         }
         OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-        OUTPUT_FILE.write_text(json.dumps(blocked, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+        OUTPUT_FILE.write_text(json.dumps(blocked, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"BAM MONIA BLOCKED: HTTP {exc.code} — refus du serveur officiel, sans tentative de contournement.")
         print("BAM MONIA PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))
         return 0

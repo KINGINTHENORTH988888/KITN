@@ -723,6 +723,8 @@ let statisticsCategory = "all";
 let statisticsSearch = "";
 let statisticsRange = "all";
 let statisticsView = "national";
+let statisticsPage = 1;
+const STATISTICS_PAGE_SIZE = 24;
 
 function escapeHtml(str = "") {
   return String(str)
@@ -1028,7 +1030,14 @@ function renderStatisticsDashboard() {
       : "";
     return `${viewTabs}<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${emptyState}</p>${retry}</section>`;
   }
-  const cards = filteredIndicators.map((indicator) => {
+  const statisticsPageCount = Math.ceil(filteredIndicators.length / STATISTICS_PAGE_SIZE);
+  statisticsPage = statisticsPageCount
+    ? Math.min(Math.max(1, statisticsPage), statisticsPageCount)
+    : 1;
+  const pageStart = filteredIndicators.length ? (statisticsPage - 1) * STATISTICS_PAGE_SIZE + 1 : 0;
+  const pageEnd = Math.min(statisticsPage * STATISTICS_PAGE_SIZE, filteredIndicators.length);
+  const visibleIndicators = filteredIndicators.slice(pageStart - 1, pageEnd);
+  const cards = visibleIndicators.map((indicator) => {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
     const referenceDate = statisticsData?.generated_at;
     const validHistory = filterStatisticsHistory(allHistory, "all", referenceDate);
@@ -1110,14 +1119,22 @@ function renderStatisticsDashboard() {
   }).join("");
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";
   const emptyFiltered = isAr ? "لا توجد مؤشرات في هذا التصنيف." : "Aucun indicateur dans cette catégorie.";
+  const statisticsPagination = statisticsPageCount > 1
+    ? `<nav class="stats-pagination" aria-label="${isAr ? "التنقل بين المؤشرات" : "Pagination des indicateurs"}">
+        <button type="button" class="stats-filter-btn" data-stat-page="${statisticsPage - 1}" ${statisticsPage <= 1 ? "disabled" : ""}>${isAr ? "السابق" : "Précédent"}</button>
+        <span aria-live="polite">${isAr ? "صفحة" : "Page"} <strong>${statisticsPage}</strong> / ${statisticsPageCount}</span>
+        <button type="button" class="stats-filter-btn" data-stat-page="${statisticsPage + 1}" ${statisticsPage >= statisticsPageCount ? "disabled" : ""}>${isAr ? "التالي" : "Suivant"}</button>
+      </nav>`
+    : "";
   return `
     ${viewTabs}
     <section class="stats-dashboard">
       ${overview}
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تاريخ إنشاء ملف البيانات" : "Fichier statistique généré le"} : ${escapeHtml(updateDate)}</span></div>
       ${controls}
-      <div class="stats-results-meta">${isAr ? "المؤشرات المعروضة" : "Indicateurs affichés"} : <strong>${filteredIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong> / ${allIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</div>
+      <div class="stats-results-meta">${isAr ? "المؤشرات المعروضة" : "Indicateurs affichés"} : <strong>${pageStart.toLocaleString(isAr ? "ar-MA" : "fr-MA")}–${pageEnd.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong> / ${filteredIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")} (${allIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")} ${isAr ? "إجمالاً" : "au total"})</div>
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
+      ${statisticsPagination}
       <p class="stats-source-note">${isAr ? "تاريخ إنشاء الملف لا يعني بالضرورة أن كل مؤشر قد حُيّن. الفترات المعروضة هي الفترات الفعلية للقيم المتاحة." : "La date de génération du fichier ne correspond pas nécessairement à la date de la dernière observation. Les périodes affichées correspondent aux valeurs réellement disponibles."}</p>
     </section>`;
 }
@@ -2551,12 +2568,14 @@ function render() {
 
   document.querySelector("[data-stat-search]")?.addEventListener("change", (event) => {
     statisticsSearch = event.target.value || "";
+    statisticsPage = 1;
     render();
   });
 
   document.querySelectorAll("[data-stat-category]").forEach((btn) => {
     btn.addEventListener("click", () => {
       statisticsCategory = btn.getAttribute("data-stat-category") || "all";
+      statisticsPage = 1;
       render();
     });
   });
@@ -2564,7 +2583,17 @@ function render() {
   document.querySelectorAll("[data-stat-range]").forEach((btn) => {
     btn.addEventListener("click", () => {
       statisticsRange = btn.getAttribute("data-stat-range") || "all";
+      statisticsPage = 1;
       render();
+    });
+  });
+  document.querySelectorAll("[data-stat-page]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const requestedPage = Number(btn.getAttribute("data-stat-page"));
+      if (!Number.isInteger(requestedPage) || requestedPage < 1) return;
+      statisticsPage = requestedPage;
+      render();
+      document.querySelector(".stats-heading")?.scrollIntoView({ block: "start", behavior: "smooth" });
     });
   });
 

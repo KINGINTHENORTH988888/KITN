@@ -114,3 +114,13 @@ test("numeric source counters are normalized without losing valid values", () =>
   assert.equal(rows[0].fetched, 12);
   assert.equal(rows[0].accepted, 8);
 });
+
+
+test("invalid ISO calendar dates and malformed timestamp types have unknown freshness", () => {
+  const now = Date.parse("2026-11-28T12:00:00Z");
+  assert.equal(getSourceHealthFreshness("2026-02-31T10:00:00Z", now), "unknown");
+  assert.equal(getSourceHealthFreshness("2026-13-01T10:00:00Z", now), "unknown");
+  assert.equal(getSourceHealthFreshness("2026-11-28T25:00:00Z", now), "unknown");
+  assert.equal(getSourceHealthFreshness(1795867200, now), "unknown");
+  assert.equal(getSourceHealthFreshness("2026-11-28T11:00:00+01:00", now), "fresh");
+});

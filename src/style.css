@@ -473,6 +473,98 @@ textarea {
   background: var(--surface-alt);
 }
 
+.academy-progress-overview {
+  margin: 0 0 1.1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--surface);
+}
+
+.academy-progress-heading,
+.academy-progress-item-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.academy-progress-heading h3 {
+  margin: 0.2rem 0 0;
+  font-size: 1.05rem;
+}
+
+.academy-progress-total {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.academy-progress-track {
+  display: block;
+  overflow: hidden;
+  height: 0.55rem;
+  margin-top: 0.75rem;
+  border-radius: 999px;
+  background: var(--surface-alt);
+}
+
+.academy-progress-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 180ms ease;
+}
+
+.academy-progress-meta,
+.academy-progress-item-status {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.academy-progress-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.academy-progress-item {
+  min-width: 0;
+  padding: 0.65rem 0.7rem;
+  text-align: start;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--surface-alt);
+  color: inherit;
+  cursor: pointer;
+}
+
+.academy-progress-item:hover,
+.academy-progress-item:focus-visible {
+  border-color: var(--accent);
+}
+
+.academy-progress-item-heading {
+  font-size: 0.84rem;
+}
+
+.academy-progress-item-heading span {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.academy-progress-track-small {
+  height: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.academy-progress-item.is-complete .academy-progress-item-status {
+  color: var(--ok-text);
+  font-weight: 700;
+}
+
 .academy-tabs,
 .spaces-bar {
   display: flex;

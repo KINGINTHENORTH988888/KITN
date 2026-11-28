@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  getEffectiveSourceStatus,
   getSourceHealthFreshness,
   isSourceHealthStale,
   reconcileSourceHealth,
@@ -68,4 +69,15 @@ test("reported failures and warnings are preserved when reconciling", () => {
   assert.deepEqual(rows.map((row) => row.status), ["error", "warning"]);
   assert.equal(rows[0].error, "HTTP 429");
   assert.equal(rows[1].error, "Données partielles");
+});
+
+test("stale or unknown reports cannot present previously healthy sources as operational", () => {
+  assert.equal(getEffectiveSourceStatus("ok", "stale"), "unknown");
+  assert.equal(getEffectiveSourceStatus("ok", "unknown"), "unknown");
+  assert.equal(getEffectiveSourceStatus("ok", "fresh"), "ok");
+});
+
+test("observed source failures and warnings remain visible even when the report is stale", () => {
+  assert.equal(getEffectiveSourceStatus("error", "stale"), "error");
+  assert.equal(getEffectiveSourceStatus("warning", "unknown"), "warning");
 });

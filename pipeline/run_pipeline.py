@@ -223,6 +223,27 @@ def _sync_public_index(src_file: Path, dst_file: Path) -> None:
 
 
 
+
+def _is_superseded_legacy_bam_series(previous: dict, current_series: dict) -> bool:
+    """Drop pre-sheet-ID BAM entries when the same dataset/label now has sheet-specific IDs."""
+    code = str(previous.get("indicator_code") or "")
+    if not code.startswith("BAM_CKAN_") or previous.get("sheet_name"):
+        return False
+    dataset_name = clean_text(previous.get("dataset_name") or "")
+    label = clean_text(previous.get("label_fr") or "")
+    if not dataset_name or not label:
+        return False
+    return any(
+        str(series.get("indicator_code") or "").startswith("BAM_CKAN_")
+        and bool(series.get("sheet_name"))
+        and clean_text(series.get("dataset_name") or "") == dataset_name
+        and clean_text(series.get("label_fr") or "") == label
+        for series in current_series.values()
+        if isinstance(series, dict)
+    )
+
+
+
 def _is_valid_statistics_series(series: dict) -> bool:
     """Reject BAM CKAN series with unusable units, periods or numeric observations."""
     code = str(series.get("indicator_code") or "")
@@ -782,6 +803,8 @@ def run() -> dict:
                 if not isinstance(previous, dict) or not previous.get("indicator_code"):
                     continue
                 code = str(previous["indicator_code"])
+                if _is_superseded_legacy_bam_series(previous, statistics_series):
+                    continue
                 if code in statistics_series:
                     # Merge the prior published history into the current collection;
                     # the new observation wins if the source revised the same period.

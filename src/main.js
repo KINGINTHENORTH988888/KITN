@@ -3,7 +3,7 @@ import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCateg
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getHomeFeaturedItems } from "./home-discovery.js";
-import { getAcademyProgressSummary, normalizeAcademyProgress } from "./academy-progress.js";
+import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "./academy-progress.js";
 import { getPageSlice } from "./pagination.js";
 import { getSourceHealthFreshness } from "./source-health.js";
 import { getLibraryQualitySummary } from "./library-quality.js";
@@ -688,6 +688,7 @@ let sortOrder = "newest";
 let selectedPrincipleIndex = 0;
 let selectedAcademyIndex = 0;
 let quizAnswers = loadAcademyProgress();
+let academyProgressNotice = "";
 let selectedQuizQuestionIndex = 0;
 let searchQuery = "";
 let scienceAuthorFilter = "";
@@ -2000,6 +2001,14 @@ function render() {
             <span style="width: ${academyProgressSummary.percent}%"></span>
           </div>
           <p class="academy-progress-meta">${academyProgressSummary.answered} / ${academyProgressSummary.total} ${lang === "ar" ? "إجابات" : "réponses"} · ${academyProgressSummary.correct} ${lang === "ar" ? "صحيحة" : "correctes"} · ${academyProgressSummary.completedTracks} / ${academyProgressSummary.tracks.length} ${lang === "ar" ? "مسارات مكتملة" : "parcours terminés"}</p>
+          <div class="academy-progress-actions">
+            <button type="button" class="tab-btn" data-academy-export>${lang === "ar" ? "تصدير التقدم" : "Exporter ma progression"}</button>
+            <label class="tab-btn academy-import-label">${lang === "ar" ? "استيراد نسخة" : "Importer une sauvegarde"}
+              <input type="file" accept="application/json,.json" data-academy-import>
+            </label>
+          </div>
+          ${academyProgressNotice ? `<p class="academy-progress-notice" role="status">${escapeHtml(academyProgressNotice)}</p>` : ""}
+
           <div class="academy-progress-list">
             ${academyProgressSummary.tracks.map((track, trackIndex) => `
               <button type="button" class="academy-progress-item ${track.completed ? "is-complete" : ""}" data-academy-progress-idx="${trackIndex}">
@@ -2355,6 +2364,51 @@ function render() {
     activePoleLabel = th.title;
     renderResults();
     document.getElementById("research")?.scrollIntoView({ behavior: "smooth" });
+  });
+
+  document.querySelectorAll("[data-academy-export]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const payload = {
+        format: "kitn-academy-progress",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        answers: mergeAcademyProgress({}, quizAnswers, ACADEMY_TRACKS[lang])
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = "kitn-academy-progress.json";
+      link.click();
+      URL.revokeObjectURL(objectUrl);
+      academyProgressNotice = lang === "ar" ? "تم تجهيز نسخة من تقدمك." : "Sauvegarde téléchargée.";
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-academy-import]").forEach((input) => {
+    input.addEventListener("change", async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const payload = JSON.parse(await file.text());
+        if (payload?.format !== "kitn-academy-progress" || payload?.version !== 1) {
+          throw new Error("Unsupported backup format");
+        }
+        const imported = mergeAcademyProgress({}, payload.answers, ACADEMY_TRACKS[lang]);
+        const importedCount = Object.keys(imported).length;
+        quizAnswers = mergeAcademyProgress(quizAnswers, imported, ACADEMY_TRACKS[lang]);
+        saveJsonStorage(ACADEMY_PROGRESS_KEY, quizAnswers);
+        academyProgressNotice = lang === "ar"
+          ? `تم استيراد ${importedCount} إجابة.`
+          : `${importedCount} réponse(s) récupérée(s) depuis la sauvegarde.`;
+      } catch {
+        academyProgressNotice = lang === "ar"
+          ? "تعذر قراءة النسخة. تحقق من الملف."
+          : "Sauvegarde illisible ou incompatible. Vérifie le fichier.";
+      }
+      render();
+    });
   });
 
   document.querySelectorAll("[data-academy-progress-idx]").forEach((btn) => {

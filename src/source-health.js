@@ -13,6 +13,11 @@ export function isSourceHealthStale(updatedAt, now = Date.now()) {
   return getSourceHealthFreshness(updatedAt, now) === "stale";
 }
 
+function nonNegativeCount(value) {
+  const count = Number(value);
+  return Number.isFinite(count) && count > 0 ? count : 0;
+}
+
 export function reconcileSourceHealth(configuredSources, reportSources) {
   const reportById = new Map(
     (Array.isArray(reportSources) ? reportSources : [])
@@ -37,8 +42,8 @@ export function reconcileSourceHealth(configuredSources, reportSources) {
           ? report.status
           : "unknown",
         stage: report?.stage || "non_verifie",
-        fetched: report ? Number(report.fetched || 0) : 0,
-        accepted: report ? Number(report.accepted || 0) : 0,
+        fetched: report ? nonNegativeCount(report.fetched) : 0,
+        accepted: report ? nonNegativeCount(report.accepted) : 0,
         error: report?.error || report?.message || null,
         checked_at: report?.checked_at || null,
         reported: Boolean(report)

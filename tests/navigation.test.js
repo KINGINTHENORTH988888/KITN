@@ -368,5 +368,8 @@ test("document detail modal lets readers follow a related item into its full pag
   assert.match(modal, /aria-labelledby="notice-modal-title"/);
   assert.match(modal, /document\.getElementById\("close-modal"\)\?\.focus\(\)/);
   assert.match(modal, /event\.key !== "Escape"/);
+  assert.match(modal, /event\.key !== "Tab"/);
+  assert.match(modal, /event\.shiftKey && \(document\.activeElement === first/);
+  assert.match(modal, /document\.activeElement === last/);
   assert.match(modal, /modalReturnFocus\?\.isConnected/);
 });

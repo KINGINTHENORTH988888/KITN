@@ -24,6 +24,15 @@ test("related knowledge matches meaningful complete terms across different space
   assert.deepEqual(result[0].sharedTerms.sort(), ["administrative", "deconcentration"]);
 });
 
+test("cross-space matches take priority over stronger same-space matches", () => {
+  const source = { id: "a", espace: "bibliotheque", titre_original: "Transition énergétique et gouvernance territoriale" };
+  const sameSpace = { id: "b", espace: "bibliotheque", titre_original: "Transition énergétique et gouvernance territoriale au Maroc" };
+  const crossSpace = { id: "c", espace: "veille", titre_original: "Transition énergétique" };
+  const result = related([source, sameSpace, crossSpace], source);
+  assert.equal(result[0].item.id, "c");
+  assert.equal(result[0].crossSpace, true);
+});
+
 test("related knowledge excludes self and future content, ranks stronger topical matches first", () => {
   const source = { id: "a", espace: "science", titre_original: "Transition énergétique et énergies renouvelables" };
   const weak = { id: "b", espace: "veille", titre_original: "Transition énergétique au Maroc", date_publication: "2025-01-01" };

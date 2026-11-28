@@ -2001,8 +2001,8 @@ function render() {
           </div>
           <p class="academy-progress-meta">${academyProgressSummary.answered} / ${academyProgressSummary.total} ${lang === "ar" ? "إجابات" : "réponses"} · ${academyProgressSummary.correct} ${lang === "ar" ? "صحيحة" : "correctes"} · ${academyProgressSummary.completedTracks} / ${academyProgressSummary.tracks.length} ${lang === "ar" ? "مسارات مكتملة" : "parcours terminés"}</p>
           <div class="academy-progress-list">
-            ${academyProgressSummary.tracks.map((track) => `
-              <button type="button" class="academy-progress-item ${track.completed ? "is-complete" : ""}" data-academy-progress-idx="${academyProgressSummary.tracks.indexOf(track)}">
+            ${academyProgressSummary.tracks.map((track, trackIndex) => `
+              <button type="button" class="academy-progress-item ${track.completed ? "is-complete" : ""}" data-academy-progress-idx="${trackIndex}">
                 <span class="academy-progress-item-heading"><strong>${escapeHtml(track.label)}</strong><span>${track.answered}/${track.total}</span></span>
                 <span class="academy-progress-track academy-progress-track-small"><span style="width: ${track.percent}%"></span></span>
                 <span class="academy-progress-item-status">${track.completed ? (lang === "ar" ? "مكتمل" : "Terminé") : (track.answered ? (lang === "ar" ? "قيد التقدم" : "En cours") : (lang === "ar" ? "لم يبدأ" : "À commencer"))}</span>
@@ -2355,6 +2355,15 @@ function render() {
     activePoleLabel = th.title;
     renderResults();
     document.getElementById("research")?.scrollIntoView({ behavior: "smooth" });
+  });
+
+  document.querySelectorAll("[data-academy-progress-idx]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectedAcademyIndex = Number(btn.getAttribute("data-academy-progress-idx")) || 0;
+      selectedQuizQuestionIndex = 0;
+      render();
+      document.getElementById("academy")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   });
 
   document.querySelectorAll("[data-academy-idx]").forEach((btn) => {

@@ -302,6 +302,7 @@ test("homepage highlights recent content from distinct KITN spaces", () => {
   assert.match(source, /function getHomeFeaturedItems\(items, limit = 5\)/);
   assert.match(source, /const homeFeaturedItems = getHomeFeaturedItems\(visibleItems, 5\)/);
   assert.match(source, /homeFeaturedItems\.map\(\(item\) =>/);
+  assert.match(source, /spaces\.find\(\(space\) => space\.id === resolveItemSpace\(item\)\)\?\.label/);
   assert.match(source, /selectedSpaces\.has\(space\)/);
   assert.match(source, /String\(b\.date_publication \|\| ""\)\.localeCompare\(String\(a\.date_publication \|\| ""\)\)/);
 });

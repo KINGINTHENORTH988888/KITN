@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "../src/academy-progress.js";
+import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress, parseAcademyProgressStorage } from "../src/academy-progress.js";
 
 test("keeps valid answers for each Academy track and question", () => {
   assert.deepEqual(normalizeAcademyProgress({ "dgsn:0": 2, "irat:4": 1, "administrateur:12": 3 }), {
@@ -84,4 +84,19 @@ test("merging a backup preserves existing answers missing from the imported file
   assert.deepEqual(mergeAcademyProgress({ "dgsn:0": 1, "dgsn:1": 0 }, {
     "dgsn:0": 0
   }, tracks), { "dgsn:0": 0, "dgsn:1": 0 });
+});
+
+test("parses stored progress and validates it against the current course catalogue", () => {
+  const tracks = [{ id: "dgsn", questions: [{ options: ["a", "b"] }] }];
+  assert.deepEqual(parseAcademyProgressStorage(
+    JSON.stringify({ "dgsn:0": 1, "dgsn:1": 0, "unknown:0": 1, "dgsn:0:extra": 0 }),
+    tracks
+  ), { "dgsn:0": 1 });
+});
+
+test("malformed or unavailable Academy storage safely starts with empty progress", () => {
+  const tracks = [{ id: "dgsn", questions: [{ options: ["a", "b"] }] }];
+  assert.deepEqual(parseAcademyProgressStorage("{broken", tracks), {});
+  assert.deepEqual(parseAcademyProgressStorage(null, tracks), {});
+  assert.deepEqual(parseAcademyProgressStorage("", tracks), {});
 });

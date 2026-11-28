@@ -2,6 +2,7 @@ import "./style.css";
 import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
+import { getHomeFeaturedItems } from "./home-discovery.js";
 import { getPageSlice } from "./pagination.js";
 import { getSourceHealthFreshness } from "./source-health.js";
 import { getLibraryQualitySummary } from "./library-quality.js";
@@ -1354,33 +1355,6 @@ function renderLibraryDirectory() {
     '</section>';
 }
 
-function getHomeFeaturedItems(items, limit = 5) {
-  const recentItems = [...items].sort((a, b) =>
-    String(b.date_publication || "").localeCompare(String(a.date_publication || ""))
-  );
-  const selected = [];
-  const selectedKeys = new Set();
-  const selectedSpaces = new Set();
-
-  for (const item of recentItems) {
-    const space = resolveItemSpace(item);
-    if (!space || selectedSpaces.has(space)) continue;
-    selected.push(item);
-    selectedSpaces.add(space);
-    selectedKeys.add(getItemKey(item));
-    if (selected.length >= limit) return selected;
-  }
-
-  for (const item of recentItems) {
-    const key = getItemKey(item);
-    if (selectedKeys.has(key)) continue;
-    selected.push(item);
-    selectedKeys.add(key);
-    if (selected.length >= limit) break;
-  }
-  return selected;
-}
-
 function getRelatedKnowledgeItems(item, limit = 3) {
   const sourceSpace = resolveItemSpace(item);
   const sourceText = normalizeSearchText([
@@ -1791,7 +1765,7 @@ function render() {
   const scienceFutureDateCount = scienceItems.filter((it) => isFutureDate(it)).length;
 
   const visibleItems = indexItems.filter((it) => !isFutureDate(it));
-  const homeFeaturedItems = getHomeFeaturedItems(visibleItems, 5);
+  const homeFeaturedItems = getHomeFeaturedItems(visibleItems, { getSpace: resolveItemSpace, getKey: getItemKey, limit: 5 });
   const scienceVisibleCount = visibleItems.filter((it) => resolveItemSpace(it) === "science").length;
   const scienceCount = scienceVisibleCount;
   const statsCount = visibleItems.filter((it) => resolveItemSpace(it) === "chiffres").length;

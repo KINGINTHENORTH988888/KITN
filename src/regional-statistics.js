@@ -7,10 +7,19 @@ function isFiniteObservationValue(value) {
 }
 
 function periodSortKey(value) {
-  const match = String(value || "").match(/^T([1-4])\/((?:19|20)\d{2})$/i);
-  if (match) return Number(match[2]) * 10 + Number(match[1]);
-  const year = String(value || "").match(/^(19|20)\d{2}/);
-  return year ? Number(year[0]) * 10 : Number.MAX_SAFE_INTEGER;
+  const period = String(value || "").trim();
+  const quarter = period.match(/^(?:T([1-4])\/((?:19|20)\d{2})|((?:19|20)\d{2})-T([1-4])|((?:19|20)\d{2})[ -]Q([1-4]))$/i);
+  if (quarter) {
+    const quarterNumber = Number(quarter[1] || quarter[4] || quarter[6]);
+    const year = Number(quarter[2] || quarter[3] || quarter[5]);
+    return year * 10000 + ((quarterNumber - 1) * 3 + 1) * 100 + 1;
+  }
+  const dated = period.match(/^((?:19|20)\d{2})(?:-(0[1-9]|1[0-2]))?(?:-(0[1-9]|[12]\d|3[01]))?$/);
+  if (!dated) return Number.MAX_SAFE_INTEGER;
+  const year = Number(dated[1]);
+  const month = Number(dated[2] || 1);
+  const day = Number(dated[3] || 1);
+  return year * 10000 + month * 100 + day;
 }
 
 export function buildRegionalStatisticsModel(payload, indicatorCode = "", residenceScope = "all") {

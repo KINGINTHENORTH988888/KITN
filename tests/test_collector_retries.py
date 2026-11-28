@@ -86,11 +86,12 @@ class TestCollectorRetries(unittest.TestCase):
             with self.assertRaisesRegex(HTTPError, "circuit is open"):
                 _fetch_text("https://api.openalex.org/works?search=Morocco%20governance")
 
+            self.assertEqual(
+                collectors._OPENALEX_RATE_LIMITED_UNTIL,
+                100.0 + collectors._OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS,
+            )
+
         self.assertEqual(mocked.call_count, 1)
-        self.assertEqual(
-            collectors._OPENALEX_RATE_LIMITED_UNTIL,
-            100.0 + collectors._OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS,
-        )
 
     def test_monia_reports_both_csv_and_page_failures(self):
         csv_error = HTTPError(

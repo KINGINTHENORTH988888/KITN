@@ -276,3 +276,16 @@ test("monitoring dashboard exposes individual source failures and diagnostics", 
   assert.match(styles, /\.watch-source-issue\.is-error/);
   assert.match(styles, /\.watch-source-issue-heading/);
 });
+
+test("homepage space cards explain the purpose of all five spaces in French and Arabic", () => {
+  const descriptions = source.match(/const SPACE_DESCRIPTIONS = \{([\s\S]*?)\n\};/)?.[1] || "";
+  const french = descriptions.match(/fr:\s*\{([\s\S]*?)\},\s*ar:/)?.[1] || "";
+  const arabic = descriptions.match(/ar:\s*\{([\s\S]*?)\}\s*$/)?.[1] || "";
+  for (const id of ["chiffres", "veille", "science", "bibliotheque", "academy"]) {
+    assert.match(french, new RegExp(`${id}:`), `French description missing for ${id}`);
+    assert.match(arabic, new RegExp(`${id}:`), `Arabic description missing for ${id}`);
+  }
+  assert.match(source, /SPACE_DESCRIPTIONS\[lang\]\[sp\.id\]/);
+  assert.match(source, /<p>\\\$\\\{escapeHtml\(SPACE_DESCRIPTIONS/);
+  assert.match(styles, /\.home-space-card p\s*\{/);
+});

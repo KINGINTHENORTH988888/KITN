@@ -340,7 +340,7 @@ test("publication pages recommend related knowledge across KITN spaces", () => {
   assert.match(source, /candidateSpace !== sourceSpace/);
   assert.match(source, /crossSpace \? 3 : 0/);
   assert.match(source, /return \{ item: candidate, sharedTerms, crossSpace/);
-  assert.match(source, /relatedItems\\.map\\(\\(\\{ item: related, crossSpace, sharedTerms \\}\\)/);
+  assert.ok(source.includes("relatedItems.map(({ item: related, crossSpace, sharedTerms })"));
   assert.match(source, /Thèmes communs : /);
   assert.match(source, /sharedTerms\.slice\(0, 3\)\.join\(" · "\)/);
   assert.match(styles, /\.related-knowledge-grid\s*\{/);

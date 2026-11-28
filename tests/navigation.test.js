@@ -365,4 +365,8 @@ test("document detail modal lets readers follow a related item into its full pag
   assert.match(modal, /data-related-item=/);
   assert.match(modal, /modal\.querySelectorAll\("\[data-related-item\]"\)/);
   assert.match(modal, /activeArticleId = key/);
+  assert.match(modal, /aria-labelledby="notice-modal-title"/);
+  assert.match(modal, /document\.getElementById\("close-modal"\)\?\.focus\(\)/);
+  assert.match(modal, /event\.key !== "Escape"/);
+  assert.match(modal, /modalReturnFocus\?\.isConnected/);
 });

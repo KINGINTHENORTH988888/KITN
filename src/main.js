@@ -710,6 +710,12 @@ let remoteItems = [];
 let indexItems = [];
 let statisticsData = null;
 let regionalStatisticsData = null;
+let statisticsLoading = false;
+let statisticsLoaded = false;
+let statisticsLoadFailed = false;
+let regionalStatisticsLoading = false;
+let regionalStatisticsLoaded = false;
+let regionalStatisticsLoadFailed = false;
 let sourceHealthData = null;
 let regionalIndicatorCode = "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT";
 let regionalResidenceScope = "all";
@@ -1012,7 +1018,15 @@ function renderStatisticsDashboard() {
       </div>
     </div>`;
   if (!allIndicators.length) {
-    return `${viewTabs}<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>`;
+    const emptyState = statisticsLoading
+      ? (isAr ? "جارٍ تحميل المؤشرات والبيانات التاريخية..." : "Chargement des indicateurs et des séries historiques…")
+      : statisticsLoadFailed
+        ? (isAr ? "تعذر تحميل ملف المؤشرات. تحقق من الاتصال ثم أعد المحاولة." : "Le fichier des indicateurs n’a pas pu être chargé. Vérifiez la connexion puis réessayez.")
+        : empty;
+    const retry = statisticsLoadFailed
+      ? `<button type="button" class="stats-filter-btn" data-stat-retry>${isAr ? "إعادة المحاولة" : "Réessayer"}</button>`
+      : "";
+    return `${viewTabs}<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${emptyState}</p>${retry}</section>`;
   }
   const cards = filteredIndicators.map((indicator) => {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
@@ -1120,11 +1134,17 @@ function renderRegionalStatisticsDashboard() {
     ? "استكشف المؤشرات الاجتماعية والاقتصادية حسب الجهة والفترة، مع التمييز بين الوسط الحضري والقروي عند توفر البيانات."
     : "Explorez les indicateurs sociaux et économiques par région et par période, avec distinction urbain/rural lorsque les données le permettent.";
   if (!model.available) {
+    const emptyState = regionalStatisticsLoading
+      ? (isAr ? "جارٍ تحميل السلاسل الجهوية والمقارنات..." : "Chargement des séries régionales et des comparaisons…")
+      : regionalStatisticsLoadFailed
+        ? (isAr ? "تعذر تحميل ملف البيانات الجهوية. تحقق من الاتصال ثم أعد المحاولة." : "Le fichier des données régionales n’a pas pu être chargé. Vérifiez la connexion puis réessayez.")
+        : (isAr ? "لا توجد سلسلة جهوية متاحة في الملف المنشور." : "Aucune série régionale disponible dans le fichier publié.");
+    const retry = regionalStatisticsLoadFailed
+      ? `<button type="button" class="stats-filter-btn" data-regional-stat-retry>${isAr ? "إعادة المحاولة" : "Réessayer"}</button>`
+      : "";
     return `<section class="regional-stats-dashboard">
       <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div></div>
-      <p class="regional-empty">${isAr
-        ? "بيانات المندوبية السامية للتخطيط الجهوية غير متوفرة بعد في مجموعة البيانات المنشورة. تم اختبار آلية الاستخراج، لكن الجمع الفعلي والنشر ما زالا بحاجة إلى التحقق."
-        : "Les séries régionales HCP ne sont pas encore présentes dans le jeu de données publié. Leur extraction est couverte par des tests, mais la collecte réelle et la publication restent à valider."}</p>
+      <p class="regional-empty">${emptyState}</p>${retry}
     </section>`;
   }
 
@@ -2496,6 +2516,16 @@ function render() {
       render();
     });
   });
+  document.querySelector("[data-stat-retry]")?.addEventListener("click", () => {
+    statisticsLoaded = false;
+    statisticsLoadFailed = false;
+    initStatistics();
+  });
+  document.querySelector("[data-regional-stat-retry]")?.addEventListener("click", () => {
+    regionalStatisticsLoaded = false;
+    regionalStatisticsLoadFailed = false;
+    initRegionalStatistics();
+  });
 
   document.querySelector("[data-stat-search]")?.addEventListener("change", (event) => {
     statisticsSearch = event.target.value || "";
@@ -2702,6 +2732,15 @@ function render() {
 
   renderResults();
   renderModal();
+
+  // Statistical datasets are large: fetch them only when the user opens this space.
+  if (activeSpace === "chiffres") {
+    if (statisticsView === "regional") {
+      if (!regionalStatisticsLoaded && !regionalStatisticsLoading) initRegionalStatistics();
+    } else if (!statisticsLoaded && !statisticsLoading) {
+      initStatistics();
+    }
+  }
 }
 
 async function initAcademy() {
@@ -2725,23 +2764,49 @@ async function initAcademy() {
 
 
 async function initStatistics() {
+  if (statisticsLoading || statisticsLoaded) return;
+  statisticsLoading = true;
+  statisticsLoadFailed = false;
+  render();
   try {
     const res = await fetch("/data/statistics.json", { cache: "no-store" });
-    if (res.ok) statisticsData = await res.json();
+    if (!res.ok) throw new Error(`Statistics request failed: ${res.status}`);
+    const payload = await res.json();
+    if (!Array.isArray(payload?.indicators) || !payload.indicators.length) {
+      throw new Error("Statistics payload is empty or invalid");
+    }
+    statisticsData = payload;
   } catch {
     statisticsData = null;
+    statisticsLoadFailed = true;
+  } finally {
+    statisticsLoading = false;
+    statisticsLoaded = true;
+    render();
   }
-  render();
 }
 
 async function initRegionalStatistics() {
+  if (regionalStatisticsLoading || regionalStatisticsLoaded) return;
+  regionalStatisticsLoading = true;
+  regionalStatisticsLoadFailed = false;
+  render();
   try {
     const res = await fetch("/data/regional-statistics.json", { cache: "no-store" });
-    if (res.ok) regionalStatisticsData = await res.json();
+    if (!res.ok) throw new Error(`Regional statistics request failed: ${res.status}`);
+    const payload = await res.json();
+    if (!Array.isArray(payload?.series) || !payload.series.length) {
+      throw new Error("Regional statistics payload is empty or invalid");
+    }
+    regionalStatisticsData = payload;
   } catch {
     regionalStatisticsData = null;
+    regionalStatisticsLoadFailed = true;
+  } finally {
+    regionalStatisticsLoading = false;
+    regionalStatisticsLoaded = true;
+    render();
   }
-  render();
 }
 
 async function initSourceHealth() {
@@ -2813,5 +2878,3 @@ render();
 initSourceHealth();
 initAcademy();
 initIndex();
-initStatistics();
-initRegionalStatistics();

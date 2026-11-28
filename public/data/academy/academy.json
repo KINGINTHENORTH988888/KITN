@@ -74,6 +74,18 @@
             "answer": 1,
             "correction": "L'action de sécurité doit répondre à la situation, rester proportionnée et respecter les droits fondamentaux."
           }
+        ],
+        "learning_objectives": [
+          "Expliquer le rôle de la prévention et de la police de proximité dans la sécurité publique.",
+          "Analyser une situation de désinformation ou de cybermenace en distinguant faits, risques et réponse institutionnelle.",
+          "Présenter les principes de coordination opérationnelle, de légalité et de proportionnalité.",
+          "Construire une réponse argumentée sur la sécurité d'un grand événement."
+        ],
+        "study_plan": [
+          "Maîtriser les notions : prévention, proximité, confiance citoyenne et sécurité publique.",
+          "Réviser la cybersécurité, la désinformation et la protection des données à partir d'exemples vérifiés.",
+          "Étudier la coordination entre services et la préparation des grands événements.",
+          "S'entraîner à traiter un sujet en trois temps : diagnostic, mesures adaptées, garanties et évaluation."
         ]
       },
       {
@@ -148,6 +160,18 @@
             "answer": 0,
             "correction": "L'évaluation examine la cohérence entre objectifs, moyens, réalisations et effets concrets sur la population."
           }
+        ],
+        "learning_objectives": [
+          "Distinguer déconcentration administrative, décentralisation et régionalisation avancée.",
+          "Expliquer comment coordonner les services de l'État et les collectivités territoriales.",
+          "Analyser la convergence des politiques publiques à l'échelle territoriale.",
+          "Évaluer une action publique locale à partir des besoins des citoyens et des résultats."
+        ],
+        "study_plan": [
+          "Clarifier les notions de territoire, déconcentration, décentralisation et compétences locales.",
+          "Réviser les mécanismes de coordination entre administrations territoriales et collectivités.",
+          "Relier aménagement du territoire, services publics et réduction des disparités territoriales.",
+          "S'entraîner sur un cas local : diagnostic, acteurs, coordination, indicateurs et résultats."
         ]
       },
       {
@@ -222,6 +246,18 @@
             "answer": 1,
             "correction": "Le suivi budgétaire permet d'identifier les écarts et d'ajuster la gestion pour atteindre les objectifs."
           }
+        ],
+        "learning_objectives": [
+          "Expliquer le lien entre objectifs publics, moyens budgétaires et résultats mesurables.",
+          "Présenter les enjeux de la qualité du service public et de la protection sociale.",
+          "Analyser les effets de la transformation numérique sur l'accès et la continuité des services.",
+          "Construire une argumentation structurée avec un exemple, des indicateurs et une limite."
+        ],
+        "study_plan": [
+          "Réviser les notions de budget-programme, performance, indicateur et reddition des comptes.",
+          "Étudier les enjeux de la protection sociale et de l'équité d'accès aux services.",
+          "Analyser les opportunités et risques de la digitalisation des services publics.",
+          "S'entraîner à relier chaque proposition à un objectif, un acteur, un indicateur et un résultat attendu."
         ]
       }
     ],
@@ -298,6 +334,18 @@
             "answer": 1,
             "correction": "ينبغي أن يكون التدخل الأمني ملائماً للوضعية ومتناسباً معها ويحترم الحقوق الأساسية."
           }
+        ],
+        "learning_objectives": [
+          "شرح دور الوقاية وشرطة القرب في تعزيز الأمن العام.",
+          "تحليل حالات التضليل أو التهديدات السيبرانية مع التمييز بين الوقائع والمخاطر والاستجابة المؤسساتية.",
+          "عرض مبادئ التنسيق الميداني والمشروعية والتناسب.",
+          "بناء جواب تحليلي حول تأمين التظاهرات الكبرى."
+        ],
+        "study_plan": [
+          "ضبط مفاهيم الوقاية والقرب والثقة بين المواطن والمؤسسات والأمن العام.",
+          "مراجعة الأمن السيبراني والتضليل وحماية المعطيات بالاعتماد على أمثلة موثوقة.",
+          "دراسة التنسيق بين المصالح والاستعداد للتظاهرات الكبرى.",
+          "التدرب على معالجة موضوع عبر ثلاث مراحل: التشخيص، التدابير المناسبة، الضمانات والتقييم."
         ]
       },
       {
@@ -372,6 +420,18 @@
             "answer": 0,
             "correction": "يقيس التقييم مدى الانسجام بين الأهداف والموارد والإنجازات والآثار الفعلية على السكان."
           }
+        ],
+        "learning_objectives": [
+          "التمييز بين اللاتمركز الإداري واللامركزية والجهوية المتقدمة.",
+          "شرح سبل التنسيق بين مصالح الدولة والجماعات الترابية.",
+          "تحليل التقائية السياسات العمومية على المستوى الترابي.",
+          "تقييم العمل العمومي المحلي انطلاقا من حاجيات المواطنين والنتائج المحققة."
+        ],
+        "study_plan": [
+          "توضيح مفاهيم المجال الترابي واللاتمركز واللامركزية والاختصاصات المحلية.",
+          "مراجعة آليات التنسيق بين الإدارات الترابية والجماعات.",
+          "ربط إعداد التراب والخدمات العمومية وتقليص الفوارق المجالية.",
+          "التدرب على حالة محلية: التشخيص، المتدخلون، التنسيق، المؤشرات والنتائج."
         ]
       },
       {
@@ -446,6 +506,18 @@
             "answer": 1,
             "correction": "يساعد التتبع الميزانياتي على رصد الفوارق وتعديل التدبير لتحقيق الأهداف."
           }
+        ],
+        "learning_objectives": [
+          "شرح العلاقة بين الأهداف العمومية والموارد الميزانياتية والنتائج القابلة للقياس.",
+          "عرض رهانات جودة المرفق العام والحماية الاجتماعية.",
+          "تحليل آثار التحول الرقمي على الولوج إلى الخدمات واستمراريتها.",
+          "بناء حجة منظمة مدعومة بمثال ومؤشرات مع إبراز حدودها."
+        ],
+        "study_plan": [
+          "مراجعة مفاهيم ميزانية البرامج والنجاعة والمؤشر وربط المسؤولية بالمحاسبة.",
+          "دراسة رهانات الحماية الاجتماعية والإنصاف في الولوج إلى الخدمات.",
+          "تحليل فرص ومخاطر رقمنة المرافق العمومية.",
+          "التدرب على ربط كل مقترح بهدف ومتدخل ومؤشر ونتيجة منتظرة."
         ]
       }
     ]

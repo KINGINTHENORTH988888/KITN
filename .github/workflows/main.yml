@@ -16,6 +16,7 @@ on:
       - "scripts/**"
       - "tests/**"
       - "src/**"
+      - "web/**"
       - "data/sources.json"
       - "data/academy/**"
       - "requirements.txt"
@@ -130,6 +131,11 @@ jobs:
           node -e 'const a=require("/tmp/kitn-npm-audit.json"); for (const [name,v] of Object.entries(a.vulnerabilities||{})) console.log("NPM AUDIT:", name, "| severity:", v.severity, "| direct:", v.isDirect, "| fix:", JSON.stringify(v.fixAvailable), "| via:", (v.via||[]).map(x => typeof x === "string" ? x : x.name).join(", "))'
           npm run test:frontend
           npm run build
+
+      - name: Verify Astro Pages application
+        run: |
+          npm --prefix web install --no-package-lock
+          npm --prefix web run build
 
   collect-and-update:
     timeout-minutes: 20

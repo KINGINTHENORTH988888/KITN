@@ -399,6 +399,30 @@ textarea {
   padding: 1.25rem;
 }
 
+.academy-learning-block {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: var(--surface-alt);
+}
+
+.academy-learning-block h4 {
+  margin: 0 0 0.55rem;
+  font-size: 0.95rem;
+}
+
+.academy-learning-block ul,
+.academy-learning-block ol {
+  margin: 0;
+  padding-inline-start: 1.35rem;
+}
+
+.academy-learning-block li {
+  margin: 0.45rem 0;
+  line-height: 1.55;
+}
+
 .theme-tags {
   display: flex;
   flex-wrap: wrap;

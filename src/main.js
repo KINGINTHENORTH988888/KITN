@@ -1896,14 +1896,14 @@ function render() {
             <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
             <div class="quiz-question-nav" aria-label="${lang === "ar" ? "اختيار السؤال" : "Choisir une question"}">
               ${quizQuestions.map((question, qIdx) => `
-                <button type="button" class="quiz-step ${qIdx === selectedQuizQuestionIndex ? "is-active" : ""} ${Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`) ? "is-answered" : ""}" data-quiz-question="${qIdx}" aria-label="${lang === "ar" ? "السؤال" : "Question"} ${qIdx + 1}">${qIdx + 1}</button>
+                <button type="button" class="quiz-step ${qIdx === selectedQuizQuestionIndex ? "is-active" : ""} ${Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`) ? "is-answered" : ""}" data-quiz-question="${qIdx}" aria-current="${qIdx === selectedQuizQuestionIndex ? "step" : "false"}" aria-label="${lang === "ar" ? "السؤال" : "Question"} ${qIdx + 1}">${qIdx + 1}</button>
               `).join("")}
             </div>
             <p class="quiz-progress">${lang === "ar" ? "السؤال" : "Question"} ${Math.min(selectedQuizQuestionIndex + 1, quizQuestions.length)} / ${quizQuestions.length} · ${lang === "ar" ? "الإجابات" : "Réponses"} ${quizAnsweredCount} / ${quizQuestions.length} · ${lang === "ar" ? "الصحيحة" : "Bonnes réponses"} ${quizCorrectCount}</p>
             <p class="quiz-question">${escapeHtml(activeQuizQuestion.question)}</p>
             <div class="quiz-options">
               ${activeQuizQuestion.options.map((opt, oIdx) => `
-                <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}">${escapeHtml(opt)}</button>
+                <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}" aria-pressed="${selectedQuizOption === oIdx}">${escapeHtml(opt)}</button>
               `).join("")}
             </div>
             ${selectedQuizOption !== null ? `

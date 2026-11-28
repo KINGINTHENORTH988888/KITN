@@ -204,6 +204,24 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None, extra_h
                 charset = resp.headers.get_content_charset() or "utf-8"
                 return raw.decode(charset, errors="replace")
         except HTTPError as exc:
+            if host.lower() == "api.openalex.org" and exc.code == 403:
+                payload = _openalex_rate_limit_payload(exc)
+                error_code = payload.get("code") or payload.get("error")
+                if isinstance(error_code, dict):
+                    error_code = error_code.get("code")
+                if error_code == "key_not_activated":
+                    raise RuntimeError(
+                        "La clé OPENALEX_API_KEY existe mais n'est pas activée : "
+                        "son propriétaire doit confirmer l'adresse e-mail reçue d'OpenAlex."
+                    ) from exc
+                detail = payload.get("message") or (
+                    error_code if isinstance(error_code, str) else ""
+                )
+                suffix = f" Détail fournisseur : {detail}" if detail else ""
+                raise RuntimeError(
+                    "OpenAlex a refusé l'accès (HTTP 403). Vérifier les droits et l'état de la clé."
+                    + suffix
+                ) from exc
             if host.lower() == "api.openalex.org" and exc.code == 429:
                 payload = _openalex_rate_limit_payload(exc)
                 reason = _openalex_rate_limit_reason(payload)
@@ -416,14 +434,14 @@ def collect_hal_api(source: dict) -> list[dict]:
 def _openalex_cursor_url(url: str, cursor: str, page_size: int, api_key: str = "") -> str:
     """Build an OpenAlex cursor URL using its documented api_key query parameter."""
     parts = urlsplit(url)
+    # Keep credentials out of URLs: query strings can be captured in proxy and CI logs.
+    # OpenAlex supports the same API key through an Authorization bearer header.
     query = [
         (key, value)
         for key, value in parse_qsl(parts.query, keep_blank_values=True)
         if key not in {"cursor", "per-page", "api_key"}
     ]
     query.extend((("per-page", str(page_size)), ("cursor", cursor)))
-    if api_key:
-        query.append(("api_key", api_key))
     return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
 
@@ -472,7 +490,10 @@ def collect_openalex(source: dict) -> list[dict]:
     while len(works) < max_items:
         page_url = _openalex_cursor_url(url, cursor, page_size, api_key=api_key)
         try:
-            response_text = _fetch_text(page_url)
+            response_text = _fetch_text(
+                page_url,
+                extra_headers={"Authorization": f"Bearer {api_key}"} if api_key else None,
+            )
         except HTTPError as exc:
             if exc.code == 429:
                 payload = getattr(exc, "openalex_payload", {})

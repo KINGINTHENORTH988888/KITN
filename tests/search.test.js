@@ -31,3 +31,10 @@ test("document search matches Arabic text with or without diacritics", () => {
 test("empty search queries match all text", () => {
   assert.equal(matchesSearchQuery("N'importe quel document", "   "), true);
 });
+
+test("multi-word searches match regardless of word order", () => {
+  const title = "Évolution du chômage et de l'emploi au Maroc";
+  assert.equal(matchesSearchQuery(title, "Maroc chomage"), true);
+  assert.equal(matchesSearchQuery(title, "emploi évolution"), true);
+  assert.equal(matchesSearchQuery(title, "Maroc inflation"), false);
+});

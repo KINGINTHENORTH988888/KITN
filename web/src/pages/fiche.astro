@@ -41,7 +41,11 @@ const indexData = loadSearchIndex();
       const favs = getFavs();
       if (favs.has(id)) favs.delete(id);
       else favs.add(id);
-      localStorage.setItem('kitn_favorites', JSON.stringify([...favs]));
+      try {
+        localStorage.setItem('kitn_favorites', JSON.stringify([...favs]));
+      } catch {
+        return;
+      }
       renderFiche();
     }
 

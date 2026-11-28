@@ -111,6 +111,62 @@
           "Réviser la cybersécurité, la désinformation et la protection des données à partir d'exemples vérifiés.",
           "Étudier la coordination entre services et la préparation des grands événements.",
           "S'entraîner à traiter un sujet en trois temps : diagnostic, mesures adaptées, garanties et évaluation."
+        ],
+        "lessons": [
+          {
+            "id": "prevention-proximite",
+            "title": "Prévention et police de proximité",
+            "summary": "Comprendre comment la présence, l'écoute et la coopération locale contribuent à prévenir les risques et à renforcer la confiance.",
+            "concepts": [
+              [
+                "Prévention",
+                "Agir en amont pour réduire les facteurs de risque, plutôt que se limiter à la réaction après un incident."
+              ],
+              [
+                "Proximité",
+                "Connaître les réalités locales, maintenir un contact régulier et rendre l'action publique plus accessible."
+              ],
+              [
+                "Confiance",
+                "Elle se construit par le professionnalisme, l'impartialité, l'écoute et la cohérence des interventions."
+              ],
+              [
+                "Partenariat",
+                "La sécurité mobilise plusieurs acteurs : services publics, collectivités, établissements scolaires, associations et citoyens."
+              ]
+            ],
+            "example": "Dans un quartier confronté à des dégradations répétées autour d'un équipement public, un diagnostic partagé peut identifier les horaires sensibles, les problèmes d'éclairage et les besoins des usagers. Les réponses associent présence adaptée, prévention, entretien et dialogue local, puis un suivi des incidents.",
+            "essay": "La prévention et la proximité peuvent-elles constituer des leviers durables d'amélioration de la sécurité publique ?",
+            "exercise": "Un établissement scolaire signale des tensions récurrentes aux abords de ses locaux. Proposez une démarche en quatre étapes qui combine diagnostic, coordination, prévention et évaluation.",
+            "guidance": "Commencer par recueillir des faits et écouter les acteurs ; cartographier les moments et lieux sensibles ; coordonner les intervenants compétents dans le respect de leurs missions ; définir des actions proportionnées et mesurer leur effet avec des indicateurs simples."
+          },
+          {
+            "id": "cyber-desinformation",
+            "title": "Cybersécurité et désinformation",
+            "summary": "Distinguer incident numérique, manipulation de l'information et réponse institutionnelle proportionnée.",
+            "concepts": [
+              [
+                "Disponibilité",
+                "Un service numérique doit rester accessible ; une interruption peut affecter les citoyens et les opérations."
+              ],
+              [
+                "Confidentialité",
+                "Les données ne doivent être accessibles qu'aux personnes autorisées."
+              ],
+              [
+                "Intégrité",
+                "Les informations doivent rester exactes et ne pas être altérées sans autorisation."
+              ],
+              [
+                "Vérification",
+                "Avant de partager une alerte, vérifier sa source, sa date, son contexte et sa confirmation indépendante."
+              ]
+            ],
+            "example": "Une capture d'écran non datée circule et prétend annoncer la fermeture immédiate d'un service public. Une réponse sérieuse consiste à vérifier l'origine du document, contacter l'organisme concerné, publier une clarification accessible et suivre l'évolution de la rumeur sans amplifier son contenu.",
+            "essay": "Comment les institutions peuvent-elles préserver la confiance publique face à la désinformation numérique ?",
+            "exercise": "Vous recevez une publication virale attribuant à une administration une décision urgente. Décrivez les vérifications et les mesures de communication à mener avant toute diffusion officielle.",
+            "guidance": "Conserver la publication comme élément à vérifier ; identifier l'auteur et la date ; comparer avec les canaux officiels ; demander confirmation au service compétent ; publier une réponse factuelle, datée et accessible ; corriger si de nouveaux éléments apparaissent."
+          }
         ]
       },
       {
@@ -222,6 +278,62 @@
           "Réviser les mécanismes de coordination entre administrations territoriales et collectivités.",
           "Relier aménagement du territoire, services publics et réduction des disparités territoriales.",
           "S'entraîner sur un cas local : diagnostic, acteurs, coordination, indicateurs et résultats."
+        ],
+        "lessons": [
+          {
+            "id": "deconcentration-decentralisation",
+            "title": "Déconcentration, décentralisation et régionalisation",
+            "summary": "Distinguer les formes d'organisation territoriale et comprendre leurs effets sur la décision publique.",
+            "concepts": [
+              [
+                "Déconcentration",
+                "Répartition de compétences au sein de l'État vers ses services territoriaux, qui agissent dans le cadre de l'organisation étatique."
+              ],
+              [
+                "Décentralisation",
+                "Transfert de compétences à des collectivités territoriales dotées d'une personnalité juridique et d'organes propres."
+              ],
+              [
+                "Régionalisation avancée",
+                "Approfondissement du rôle des régions dans la conception et la conduite du développement territorial, dans le cadre constitutionnel et légal."
+              ],
+              [
+                "Subsidiarité et proximité",
+                "Rechercher le niveau d'action pertinent au regard de la nature du besoin, des compétences et des capacités disponibles."
+              ]
+            ],
+            "example": "Pour améliorer l'accès à un service dans une province éloignée, les services déconcentrés de l'État peuvent adapter leur organisation territoriale, tandis que la région et les autres collectivités interviennent dans les domaines relevant de leurs compétences. La coordination évite les doublons.",
+            "essay": "En quoi la complémentarité entre déconcentration et décentralisation peut-elle améliorer la gouvernance territoriale ?",
+            "exercise": "Une commune rurale connaît des difficultés d'accès à plusieurs services. Identifiez les acteurs à associer et proposez une méthode de coordination sans confondre leurs compétences.",
+            "guidance": "Décrire le besoin à partir de données locales ; identifier les compétences respectives de l'État territorial et des collectivités ; désigner un mécanisme de concertation ; programmer les moyens ; fixer des indicateurs d'accès et de qualité."
+          },
+          {
+            "id": "convergence-evaluation",
+            "title": "Convergence des politiques publiques et évaluation territoriale",
+            "summary": "Apprendre à coordonner les interventions publiques autour d'un diagnostic partagé et de résultats mesurables.",
+            "concepts": [
+              [
+                "Diagnostic territorial",
+                "Analyse des besoins, ressources, contraintes, inégalités et dynamiques propres à un territoire."
+              ],
+              [
+                "Convergence",
+                "Mise en cohérence des programmes et interventions de plusieurs acteurs autour d'objectifs partagés."
+              ],
+              [
+                "Indicateur de réalisation",
+                "Mesure ce qui a été produit ou réalisé : équipements livrés, formations organisées, dossiers traités."
+              ],
+              [
+                "Indicateur de résultat",
+                "Mesure le changement observé pour les bénéficiaires : accès amélioré, délai réduit, fréquentation accrue."
+              ]
+            ],
+            "example": "Un programme d'amélioration de l'accès à l'eau en milieu rural ne se juge pas uniquement au nombre d'ouvrages réalisés. Il faut aussi examiner leur fonctionnement, la continuité du service, la distance parcourue par les ménages et les écarts entre localités.",
+            "essay": "Pourquoi l'évaluation territoriale doit-elle dépasser le simple suivi des dépenses et des réalisations ?",
+            "exercise": "Un programme régional finance des espaces de formation pour les jeunes. Proposez trois indicateurs de réalisation et trois indicateurs de résultat.",
+            "guidance": "Réalisation : centres équipés, sessions organisées, participants inscrits. Résultat : taux d'achèvement, accès à une formation qualifiante ou à l'emploi, satisfaction des bénéficiaires. Préciser la source et la périodicité de chaque mesure."
+          }
         ]
       },
       {
@@ -333,6 +445,62 @@
           "Étudier les enjeux de la protection sociale et de l'équité d'accès aux services.",
           "Analyser les opportunités et risques de la digitalisation des services publics.",
           "S'entraîner à relier chaque proposition à un objectif, un acteur, un indicateur et un résultat attendu."
+        ],
+        "lessons": [
+          {
+            "id": "performance-service-public",
+            "title": "Performance et qualité du service public",
+            "summary": "Relier les objectifs d'une administration aux moyens mobilisés, aux résultats et à l'expérience de l'usager.",
+            "concepts": [
+              [
+                "Efficacité",
+                "Degré d'atteinte des objectifs fixés."
+              ],
+              [
+                "Efficience",
+                "Rapport entre les résultats obtenus et les ressources mobilisées."
+              ],
+              [
+                "Qualité de service",
+                "Accessibilité, continuité, fiabilité, délais, accueil et traitement équitable."
+              ],
+              [
+                "Reddition des comptes",
+                "Obligation d'expliquer l'utilisation des ressources, les décisions prises et les résultats obtenus."
+              ]
+            ],
+            "example": "Pour réduire le délai de délivrance d'un document administratif, l'administration peut cartographier le parcours du dossier, identifier les étapes redondantes, clarifier les responsabilités et suivre le délai médian ainsi que le taux de dossiers incomplets.",
+            "essay": "La performance de l'administration doit-elle être appréciée uniquement à travers la maîtrise des dépenses ?",
+            "exercise": "Un service reçoit de nombreuses réclamations sur les délais. Construisez un mini-plan d'amélioration avec un objectif, deux actions et trois indicateurs.",
+            "guidance": "Objectif mesurable et daté ; simplification du parcours et information claire des usagers ; indicateurs portant sur délai médian, taux de dossiers traités dans le délai cible et satisfaction, en veillant à ne pas dégrader l'équité d'accès."
+          },
+          {
+            "id": "budget-programme",
+            "title": "Budget, programmation et suivi des résultats",
+            "summary": "Comprendre le lien entre programmation budgétaire, objectifs publics, indicateurs et pilotage.",
+            "concepts": [
+              [
+                "Programmation",
+                "Traduire des priorités en objectifs, actions, calendrier et ressources prévisionnelles."
+              ],
+              [
+                "Budget-programme",
+                "Présenter les crédits en lien avec des programmes, objectifs et indicateurs de performance."
+              ],
+              [
+                "Écart budgétaire",
+                "Différence entre prévisions et exécution, qui doit être analysée et expliquée."
+              ],
+              [
+                "Évaluation",
+                "Apprécier les réalisations et les effets d'une politique, au-delà du seul taux de consommation des crédits."
+              ]
+            ],
+            "example": "Un programme de formation peut afficher un taux élevé de consommation budgétaire sans atteindre ses objectifs d'insertion. Le suivi doit donc rapprocher les dépenses, le nombre de bénéficiaires formés, l'achèvement des parcours et les résultats ultérieurs.",
+            "essay": "Comment renforcer la performance de la dépense publique sans réduire l'action publique à une logique comptable ?",
+            "exercise": "Un programme a consommé 90 % de son budget, mais seulement la moitié des bénéficiaires prévus ont terminé leur formation. Quels éléments faut-il analyser avant de conclure ?",
+            "guidance": "Examiner le calendrier, les marchés, la capacité des opérateurs, l'assiduité, la pertinence des formations et la qualité des données. Distinguer consommation des crédits, réalisations et résultats ; proposer des mesures correctives documentées."
+          }
         ]
       }
     ],
@@ -446,6 +614,62 @@
           "مراجعة الأمن السيبراني والتضليل وحماية المعطيات بالاعتماد على أمثلة موثوقة.",
           "دراسة التنسيق بين المصالح والاستعداد للتظاهرات الكبرى.",
           "التدرب على معالجة موضوع عبر ثلاث مراحل: التشخيص، التدابير المناسبة، الضمانات والتقييم."
+        ],
+        "lessons": [
+          {
+            "id": "prevention-proximite",
+            "title": "الوقاية وشرطة القرب",
+            "summary": "فهم دور الحضور الميداني والإنصات والتعاون المحلي في الوقاية من المخاطر وتعزيز الثقة.",
+            "concepts": [
+              [
+                "الوقاية",
+                "التدخل بشكل استباقي للحد من عوامل الخطر، بدل الاقتصار على رد الفعل بعد وقوع الحادث."
+              ],
+              [
+                "القرب",
+                "معرفة الخصوصيات المحلية وإقامة تواصل منتظم وتقريب العمل العمومي من المواطنين."
+              ],
+              [
+                "الثقة",
+                "تُبنى بالاحترافية والحياد والإنصات وتناسق التدخلات."
+              ],
+              [
+                "الشراكة",
+                "يتطلب الأمن مساهمة عدة أطراف، من مصالح عمومية وجماعات ومؤسسات تعليمية وجمعيات ومواطنين."
+              ]
+            ],
+            "example": "إذا عرف حيّ تكرار أعمال تخريب قرب مرفق عمومي، يمكن لتشخيص مشترك تحديد الأوقات والأماكن الحساسة ومشاكل الإنارة وحاجيات المستعملين. وتشمل الاستجابة حضوراً مناسباً ووقاية وصيانة وحواراً محلياً، مع تتبع النتائج.",
+            "essay": "إلى أي حد تشكل الوقاية وشرطة القرب رافعتين مستدامتين لتحسين الأمن العام؟",
+            "exercise": "أبلغت مؤسسة تعليمية عن توترات متكررة قرب محيطها. اقترحوا مقاربة من أربع مراحل تجمع التشخيص والتنسيق والوقاية والتقييم.",
+            "guidance": "جمع المعطيات والاستماع للمتدخلين؛ تحديد الأوقات والأماكن الحساسة؛ تنسيق تدخلات الجهات المختصة مع احترام مهامها؛ اعتماد إجراءات متناسبة وقياس أثرها بمؤشرات بسيطة."
+          },
+          {
+            "id": "cyber-desinformation",
+            "title": "الأمن السيبراني والتضليل المعلوماتي",
+            "summary": "التمييز بين الحادث الرقمي والتلاعب بالمعلومات واختيار استجابة مؤسساتية متناسبة.",
+            "concepts": [
+              [
+                "الإتاحة",
+                "ضمان استمرار الولوج إلى الخدمة الرقمية، لأن توقفها قد يؤثر في المواطنين وسير المرافق."
+              ],
+              [
+                "السرية",
+                "عدم تمكين غير المرخص لهم من الاطلاع على المعطيات."
+              ],
+              [
+                "سلامة المعطيات",
+                "الحفاظ على دقة المعلومات ومنع تغييرها دون ترخيص."
+              ],
+              [
+                "التحقق",
+                "فحص المصدر والتاريخ والسياق والبحث عن تأكيد مستقل قبل نشر التنبيه."
+              ]
+            ],
+            "example": "تنتشر صورة شاشة غير مؤرخة تزعم الإغلاق الفوري لمرفق عمومي. تقتضي الاستجابة التحقق من أصل الوثيقة والاتصال بالمؤسسة المعنية ونشر توضيح واضح ومؤرخ، مع تتبع الإشاعة دون إعادة نشر مضمونها بشكل يساهم في انتشارها.",
+            "essay": "كيف يمكن للمؤسسات حماية الثقة العامة في مواجهة التضليل الرقمي؟",
+            "exercise": "توصلتم بمنشور واسع الانتشار ينسب قراراً مستعجلاً إلى إدارة عمومية. اشرحوا خطوات التحقق والتواصل قبل إصدار أي بلاغ رسمي.",
+            "guidance": "الاحتفاظ بالمنشور كعنصر للتحقق؛ تحديد صاحبه وتاريخه؛ مقارنته بالقنوات الرسمية؛ طلب تأكيد المصلحة المختصة؛ نشر جواب واقعي ومؤرخ وواضح؛ تصحيح المعلومة عند ظهور معطيات جديدة."
+          }
         ]
       },
       {
@@ -557,6 +781,62 @@
           "مراجعة آليات التنسيق بين الإدارات الترابية والجماعات.",
           "ربط إعداد التراب والخدمات العمومية وتقليص الفوارق المجالية.",
           "التدرب على حالة محلية: التشخيص، المتدخلون، التنسيق، المؤشرات والنتائج."
+        ],
+        "lessons": [
+          {
+            "id": "deconcentration-decentralisation",
+            "title": "اللاتمركز واللامركزية والجهوية المتقدمة",
+            "summary": "التمييز بين أنماط التنظيم الترابي وفهم أثرها على اتخاذ القرار العمومي.",
+            "concepts": [
+              [
+                "اللاتمركز الإداري",
+                "توزيع الاختصاصات داخل الدولة على مصالحها الترابية التي تمارس مهامها ضمن التنظيم الإداري للدولة."
+              ],
+              [
+                "اللامركزية",
+                "نقل اختصاصات إلى جماعات ترابية تتمتع بالشخصية الاعتبارية وأجهزة خاصة بها."
+              ],
+              [
+                "الجهوية المتقدمة",
+                "تعزيز دور الجهات في إعداد وتنفيذ التنمية الترابية في إطار الدستور والقوانين."
+              ],
+              [
+                "القرب والتفريع",
+                "اختيار المستوى الأنسب للتدخل وفق طبيعة الحاجة والاختصاصات والإمكانات المتاحة."
+              ]
+            ],
+            "example": "لتحسين الولوج إلى خدمة في إقليم بعيد، يمكن لمصالح الدولة اللاممركزة تكييف تنظيمها الترابي، بينما تتدخل الجهة والجماعات الأخرى في المجالات الداخلة ضمن اختصاصاتها. ويساعد التنسيق على تفادي تكرار التدخلات.",
+            "essay": "كيف يمكن للتكامل بين اللاتمركز واللامركزية أن يحسن الحكامة الترابية؟",
+            "exercise": "تعاني جماعة قروية من صعوبات في الولوج إلى عدة خدمات. حددوا الأطراف الواجب إشراكها واقترحوا طريقة للتنسيق دون الخلط بين اختصاصاتها.",
+            "guidance": "تحديد الحاجة انطلاقاً من معطيات محلية؛ ضبط اختصاصات الدولة ومصالحها الترابية والجماعات؛ إرساء آلية للتشاور؛ برمجة الموارد؛ وضع مؤشرات للولوج وجودة الخدمة."
+          },
+          {
+            "id": "convergence-evaluation",
+            "title": "التقائية السياسات العمومية والتقييم الترابي",
+            "summary": "تعلم تنسيق التدخلات العمومية انطلاقاً من تشخيص مشترك ونتائج قابلة للقياس.",
+            "concepts": [
+              [
+                "التشخيص الترابي",
+                "تحليل الحاجيات والموارد والإكراهات والفوارق والديناميات الخاصة بالمجال."
+              ],
+              [
+                "الالتقائية",
+                "تحقيق الانسجام بين برامج وتدخلات عدة أطراف حول أهداف مشتركة."
+              ],
+              [
+                "مؤشر الإنجاز",
+                "يقيس ما تم إنتاجه أو إنجازه، مثل التجهيزات المسلمة أو الدورات المنظمة أو الملفات المعالجة."
+              ],
+              [
+                "مؤشر النتيجة",
+                "يقيس التغيير لدى المستفيدين، مثل تحسين الولوج أو تقليص الآجال أو ارتفاع الاستفادة."
+              ]
+            ],
+            "example": "لا يقاس برنامج تحسين الولوج إلى الماء بالعالم القروي بعدد المنشآت المنجزة فقط، بل يجب فحص اشتغالها واستمرارية الخدمة والمسافة التي تقطعها الأسر والفوارق بين الدواوير.",
+            "essay": "لماذا ينبغي أن يتجاوز التقييم الترابي تتبع النفقات والإنجازات المادية؟",
+            "exercise": "يمول برنامج جهوي فضاءات للتكوين لفائدة الشباب. اقترحوا ثلاثة مؤشرات للإنجاز وثلاثة مؤشرات للنتيجة.",
+            "guidance": "الإنجاز: المراكز المجهزة والدورات المنظمة والمشاركون المسجلون. النتيجة: نسبة إتمام التكوين والولوج إلى تكوين مؤهل أو شغل ورضا المستفيدين. يجب تحديد مصدر ودورية كل مؤشر."
+          }
         ]
       },
       {
@@ -668,6 +948,62 @@
           "دراسة رهانات الحماية الاجتماعية والإنصاف في الولوج إلى الخدمات.",
           "تحليل فرص ومخاطر رقمنة المرافق العمومية.",
           "التدرب على ربط كل مقترح بهدف ومتدخل ومؤشر ونتيجة منتظرة."
+        ],
+        "lessons": [
+          {
+            "id": "performance-service-public",
+            "title": "نجاعة المرفق العمومي وجودة الخدمات",
+            "summary": "ربط أهداف الإدارة بالموارد المستعملة والنتائج وتجربة المرتفق.",
+            "concepts": [
+              [
+                "الفعالية",
+                "مدى تحقيق الأهداف المحددة."
+              ],
+              [
+                "النجاعة",
+                "العلاقة بين النتائج المحققة والموارد المستعملة."
+              ],
+              [
+                "جودة الخدمة",
+                "سهولة الولوج والاستمرارية والموثوقية والآجال والاستقبال والمعاملة المنصفة."
+              ],
+              [
+                "ربط المسؤولية بالمحاسبة",
+                "تقديم التوضيحات حول استعمال الموارد والقرارات والنتائج المحققة."
+              ]
+            ],
+            "example": "لتقليص أجل تسليم وثيقة إدارية، يمكن للإدارة تحليل مسار الملف وتحديد المراحل المتكررة وتوضيح المسؤوليات وتتبع الأجل المتوسط ونسبة الملفات غير المكتملة.",
+            "essay": "هل ينبغي تقييم أداء الإدارة فقط من خلال التحكم في النفقات؟",
+            "exercise": "يتلقى مرفق إداري شكايات كثيرة بشأن الآجال. أعدوا خطة مصغرة للتحسين تتضمن هدفاً وإجراءين وثلاثة مؤشرات.",
+            "guidance": "تحديد هدف قابل للقياس ومحدد زمنياً؛ تبسيط المسار وتوفير معلومات واضحة للمرتفقين؛ اعتماد مؤشرات الأجل المتوسط ونسبة الملفات المعالجة داخل الأجل المستهدف ورضا المرتفقين، مع الحفاظ على الإنصاف في الولوج."
+          },
+          {
+            "id": "budget-programme",
+            "title": "الميزانية والبرمجة وتتبع النتائج",
+            "summary": "فهم العلاقة بين البرمجة الميزانياتية والأهداف العمومية والمؤشرات والتوجيه.",
+            "concepts": [
+              [
+                "البرمجة",
+                "تحويل الأولويات إلى أهداف وأنشطة وجدول زمني وموارد متوقعة."
+              ],
+              [
+                "ميزانية البرامج",
+                "عرض الاعتمادات في ارتباط ببرامج وأهداف ومؤشرات للنجاعة."
+              ],
+              [
+                "الفارق الميزانياتي",
+                "الفرق بين التوقعات والتنفيذ، وهو ما يستوجب التحليل والتفسير."
+              ],
+              [
+                "التقييم",
+                "قياس الإنجازات وآثار السياسة العمومية، وليس فقط نسبة استهلاك الاعتمادات."
+              ]
+            ],
+            "example": "قد يسجل برنامج للتكوين نسبة مرتفعة من استهلاك الميزانية دون تحقيق أهداف الإدماج المهني. لذلك ينبغي ربط النفقات بعدد المستفيدين الذين أتموا التكوين والنتائج اللاحقة.",
+            "essay": "كيف يمكن تعزيز نجاعة الإنفاق العمومي دون اختزال العمل العمومي في منطق محاسباتي؟",
+            "exercise": "استهلك برنامج 90 في المائة من ميزانيته، لكن نصف المستفيدين فقط أتموا التكوين. ما العناصر التي ينبغي تحليلها قبل إصدار حكم؟",
+            "guidance": "تحليل الجدولة الزمنية والصفقات وقدرات المتدخلين والمواظبة وملاءمة التكوين وجودة المعطيات. يجب التمييز بين استهلاك الاعتمادات والإنجازات والنتائج واقتراح إجراءات تصحيحية موثقة."
+          }
         ]
       }
     ]

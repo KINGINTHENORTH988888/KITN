@@ -7,6 +7,14 @@ const styles = await readFile(new URL("../src/style.css", import.meta.url), "utf
 const searchSource = await readFile(new URL("../src/search.js", import.meta.url), "utf8");
 const spacesMatch = source.match(/const SPACES = \{([\s\S]*?)\n\};/);
 
+test("Academy renders structured learning objectives and revision plans", () => {
+  assert.match(source, /activeTrack\.learning_objectives/);
+  assert.match(source, /activeTrack\.study_plan/);
+  assert.match(source, /academyObjectivesLabel/);
+  assert.match(source, /academyPlanLabel/);
+  assert.match(styles, /\.academy-learning-block/);
+});
+
 test("public navigation exposes exactly six spaces in French and Arabic", () => {
   assert.ok(spacesMatch, "SPACES configuration must exist");
   const spaces = spacesMatch[1];

@@ -23,15 +23,18 @@ const GENERIC_TERMS = new Set([
 ]);
 
 function getMeaningfulTerms(item, normalizeText) {
-  const text = normalizeText([
-    item?.titre_original || "",
-    item?.resume || "",
-    item?.analyse_strategique || "",
-    ...(Array.isArray(item?.mots_cles) ? item.mots_cles : [])
-  ].join(" "));
-  return new Set(text.split(" ").filter((term) =>
+  const toTerms = (value) => new Set(normalizeText(value).split(" ").filter((term) =>
     term.length >= 4 && !/^\d+$/.test(term) && !GENERIC_TERMS.has(term)
   ));
+  const primary = toTerms([
+    item?.titre_original || "",
+    ...(Array.isArray(item?.mots_cles) ? item.mots_cles : [])
+  ].join(" "));
+  const context = toTerms([
+    item?.resume || "",
+    item?.analyse_strategique || ""
+  ].join(" "));
+  return { primary, context };
 }
 
 export function findRelatedKnowledgeItems(items, item, {
@@ -43,7 +46,7 @@ export function findRelatedKnowledgeItems(items, item, {
 } = {}) {
   if (!Array.isArray(items) || !item || !Number.isInteger(limit) || limit <= 0) return [];
   const sourceTerms = getMeaningfulTerms(item, normalizeText);
-  if (!sourceTerms.size) return [];
+  if (!sourceTerms.primary.size && !sourceTerms.context.size) return [];
   const sourceSpace = getSpace?.(item);
   const sourceKey = getKey?.(item) ?? item;
   return items
@@ -51,17 +54,20 @@ export function findRelatedKnowledgeItems(items, item, {
     .map((candidate) => {
       const candidateSpace = getSpace?.(candidate);
       const candidateTerms = getMeaningfulTerms(candidate, normalizeText);
-      const sharedTerms = [...sourceTerms].filter((term) => candidateTerms.has(term));
+      const sharedPrimary = [...sourceTerms.primary].filter((term) => candidateTerms.primary.has(term));
+      const sharedContext = [...sourceTerms.primary].filter((term) => candidateTerms.context.has(term))
+        .concat([...sourceTerms.context].filter((term) => candidateTerms.primary.has(term)));
+      const sharedTerms = [...new Set([...sharedPrimary, ...sharedContext])];
       const samePole = Boolean(item.pole && candidate.pole === item.pole);
       const crossSpace = Boolean(sourceSpace && candidateSpace && candidateSpace !== sourceSpace);
       return {
         item: candidate,
         sharedTerms,
         crossSpace,
-        score: sharedTerms.length * 2 + (samePole ? 2 : 0) + (crossSpace ? 3 : 0)
+        score: sharedPrimary.length * 4 + sharedContext.length + (samePole ? 2 : 0) + (crossSpace ? 8 : 0)
       };
     })
-    .filter((entry) => entry.sharedTerms.length > 0)
+    .filter((entry) => entry.sharedTerms.length > 0 && (entry.sharedTerms.length >= 2 || entry.sharedTerms.some((term) => term.length >= 7)))
     .sort((a, b) =>
       Number(b.crossSpace) - Number(a.crossSpace) ||
       b.score - a.score ||

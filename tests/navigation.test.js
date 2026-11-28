@@ -147,7 +147,8 @@ test("monitoring space exposes thematic entry points with grounded indexed count
 test("library hub metrics are computed from available indexed documents", () => {
   assert.match(source, /function renderLibraryDirectory\(\)/);
   assert.match(source, /matchesSpace\(item, "bibliotheque"\)/);
-  assert.match(source, /withPdf = docs\.filter/);
+  assert.match(source, /getLibraryQualitySummary\(docs\)/);
+  assert.match(source, /libraryQuality\.needsReview/);
   assert.match(source, /library-recent-item/);
   assert.match(source, /Les portails institutionnels peuvent proposer/);
   assert.match(styles, /\.library-metrics/);

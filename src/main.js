@@ -38,6 +38,22 @@ const SPACES = {
   ]
 };
 
+const SPACE_DESCRIPTIONS = {
+  fr: {
+    chiffres: "Explorer les indicateurs nationaux, suivre leur évolution et comparer les régions à partir de données documentées.",
+    veille: "Suivre les actualités et les institutions, repérer les évolutions importantes et contrôler la fraîcheur des sources.",
+    science: "Retrouver des publications, consulter leurs résumés et DOI, puis explorer les travaux par thème et discipline.",
+    bibliotheque: "Consulter rapports, études et documents de référence avec des repères sur leur date, leur source et leur qualité.",
+    academy: "Suivre des parcours de préparation, étudier des leçons structurées et s'entraîner avec des QCM expliqués."
+  },
+  ar: {
+    chiffres: "استكشاف المؤشرات الوطنية وتتبع تطورها ومقارنة الجهات انطلاقاً من بيانات موثقة.",
+    veille: "متابعة الأخبار والمؤسسات ورصد التحولات المهمة والتحقق من حداثة المصادر.",
+    science: "البحث عن المنشورات العلمية وقراءة ملخصاتها ومعرفات DOI واستكشاف الدراسات حسب الموضوع والتخصص.",
+    bibliotheque: "الاطلاع على التقارير والدراسات والوثائق المرجعية مع معلومات عن التاريخ والمصدر والجودة.",
+    academy: "اتباع مسارات للتحضير ودراسة دروس منظمة والتدرب عبر أسئلة متعددة الخيارات مع شروحات."
+  }
+};
 const THEMES = {
   fr: [
     {
@@ -1892,7 +1908,8 @@ function render() {
             <button type="button" class="home-space-card" data-space-id="${sp.id}">
               <span class="home-space-mark">${({ chiffres: "01", veille: "02", science: "03", bibliotheque: "04", academy: "05" })[sp.id] || "•"}</span>
               <strong>${escapeHtml(sp.label)}</strong>
-              <span>${lang === "ar" ? "اكتشف المساحة" : "Explorer l'espace"} ↗</span>
+              <p>${escapeHtml(SPACE_DESCRIPTIONS[lang][sp.id] || "")}</p>
+              <span>${lang === "ar" ? "اكتشف المساحة" : "Explorer cet espace"} ↗</span>
             </button>
           `).join("")}
         </div>

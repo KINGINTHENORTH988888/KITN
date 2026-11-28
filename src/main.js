@@ -2046,6 +2046,7 @@ function render() {
               `).join("")}
             </div>
             <p class="quiz-progress">${lang === "ar" ? "السؤال" : "Question"} ${Math.min(selectedQuizQuestionIndex + 1, quizQuestions.length)} / ${quizQuestions.length} · ${lang === "ar" ? "الإجابات" : "Réponses"} ${quizAnsweredCount} / ${quizQuestions.length} · ${lang === "ar" ? "الصحيحة" : "Bonnes réponses"} ${quizCorrectCount}</p>
+            ${quizAnsweredCount ? `<button type="button" class="tab-btn quiz-reset" data-quiz-reset>${lang === "ar" ? "إعادة ضبط هذا المسار" : "Réinitialiser ce parcours"}</button>` : ""}
             <p class="quiz-question">${escapeHtml(activeQuizQuestion.question)}</p>
             <div class="quiz-options">
               ${activeQuizQuestion.options.map((opt, oIdx) => `
@@ -2343,6 +2344,18 @@ function render() {
   document.querySelectorAll("[data-quiz-question]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedQuizQuestionIndex = Number(btn.getAttribute("data-quiz-question")) || 0;
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-quiz-reset]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const trackId = ACADEMY_TRACKS[lang][selectedAcademyIndex]?.id || "default";
+      quizAnswers = Object.fromEntries(
+        Object.entries(quizAnswers).filter(([key]) => !key.startsWith(`${trackId}:`))
+      );
+      saveJsonStorage(ACADEMY_PROGRESS_KEY, quizAnswers);
+      selectedQuizQuestionIndex = 0;
       render();
     });
   });

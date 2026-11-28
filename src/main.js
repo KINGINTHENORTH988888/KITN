@@ -639,7 +639,7 @@ let dateToFilter = "";
 let sortOrder = "newest";
 let selectedPrincipleIndex = 0;
 let selectedAcademyIndex = 0;
-let selectedQuizOption = null;
+let quizAnswers = {};
 let selectedQuizQuestionIndex = 0;
 let searchQuery = "";
 let scienceAuthorFilter = "";
@@ -1632,6 +1632,17 @@ function render() {
     ? activeTrack.questions
     : [{ question: activeTrack.question, options: activeTrack.options, answer: activeTrack.answer, correction: activeTrack.correction }];
   const activeQuizQuestion = quizQuestions[Math.min(selectedQuizQuestionIndex, quizQuestions.length - 1)];
+  const quizAnswerKey = `${activeTrack.id}:${selectedQuizQuestionIndex}`;
+  const selectedQuizOption = Object.prototype.hasOwnProperty.call(quizAnswers, quizAnswerKey)
+    ? quizAnswers[quizAnswerKey]
+    : null;
+  const quizAnsweredCount = quizQuestions.filter((_, qIdx) =>
+    Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`)
+  ).length;
+  const quizCorrectCount = quizQuestions.filter((question, qIdx) =>
+    Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`)
+    && quizAnswers[`${activeTrack.id}:${qIdx}`] === question.answer
+  ).length;
   const activeSpaceObj = spaces.find((s) => s.id === activeSpace) || spaces[0];
   const activeArticleItem = activeArticleId ? indexItems.find((item) => getItemKey(item) === activeArticleId) || null : null;
   document.title = activeArticleItem
@@ -1885,10 +1896,10 @@ function render() {
             <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
             <div class="quiz-question-nav" aria-label="${lang === "ar" ? "اختيار السؤال" : "Choisir une question"}">
               ${quizQuestions.map((question, qIdx) => `
-                <button type="button" class="quiz-step ${qIdx === selectedQuizQuestionIndex ? "is-active" : ""}" data-quiz-question="${qIdx}" aria-label="${lang === "ar" ? "السؤال" : "Question"} ${qIdx + 1}">${qIdx + 1}</button>
+                <button type="button" class="quiz-step ${qIdx === selectedQuizQuestionIndex ? "is-active" : ""} ${Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`) ? "is-answered" : ""}" data-quiz-question="${qIdx}" aria-label="${lang === "ar" ? "السؤال" : "Question"} ${qIdx + 1}">${qIdx + 1}</button>
               `).join("")}
             </div>
-            <p class="quiz-progress">${lang === "ar" ? "السؤال" : "Question"} ${Math.min(selectedQuizQuestionIndex + 1, quizQuestions.length)} / ${quizQuestions.length}</p>
+            <p class="quiz-progress">${lang === "ar" ? "السؤال" : "Question"} ${Math.min(selectedQuizQuestionIndex + 1, quizQuestions.length)} / ${quizQuestions.length} · ${lang === "ar" ? "الإجابات" : "Réponses"} ${quizAnsweredCount} / ${quizQuestions.length} · ${lang === "ar" ? "الصحيحة" : "Bonnes réponses"} ${quizCorrectCount}</p>
             <p class="quiz-question">${escapeHtml(activeQuizQuestion.question)}</p>
             <div class="quiz-options">
               ${activeQuizQuestion.options.map((opt, oIdx) => `
@@ -2173,7 +2184,6 @@ function render() {
     btn.addEventListener("click", () => {
       selectedAcademyIndex = Number(btn.getAttribute("data-academy-idx")) || 0;
       selectedQuizQuestionIndex = 0;
-      selectedQuizOption = null;
       render();
     });
   });
@@ -2188,7 +2198,8 @@ function render() {
 
   document.querySelectorAll("[data-quiz-opt]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selectedQuizOption = Number(btn.getAttribute("data-quiz-opt"));
+      const trackId = ACADEMY_TRACKS[lang][selectedAcademyIndex]?.id || "default";
+      quizAnswers[`${trackId}:${selectedQuizQuestionIndex}`] = Number(btn.getAttribute("data-quiz-opt"));
       render();
     });
   });

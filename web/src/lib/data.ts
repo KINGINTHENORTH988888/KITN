@@ -1,6 +1,7 @@
 import { getSourceHealthFreshness, reconcileSourceHealth } from '../../../src/source-health.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { safeExternalUrl } from '../../../src/url-safety.js';
 
 export interface PublicationItem {
   id: string;
@@ -29,22 +30,7 @@ export interface SearchIndexPayload {
   items: PublicationItem[];
 }
 
-/**
- * Only expose absolute HTTP(S) links from collected records.
- * This prevents unsafe schemes (for example javascript: or data:) from
- * becoming clickable links in the browser UI.
- */
-export function safeExternalUrl(value: unknown): string | null {
-  if (typeof value !== 'string' || !value.trim()) return null;
-  try {
-    const parsed = new URL(value.trim());
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
-    if (!parsed.hostname || parsed.username || parsed.password) return null;
-    return parsed.toString();
-  } catch {
-    return null;
-  }
-}
+export { safeExternalUrl };
 
 export interface SourceHealthRow {
   source_id: string;

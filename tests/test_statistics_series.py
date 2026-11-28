@@ -201,12 +201,14 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
                 "dataset_name": "Compte de patrimoine des OPCVM",
                 "label_fr": "Autres sociétés financières",
                 "sheet_name": "Actif",
+                "source_position": "L2",
             },
             "BAM_CKAN_COMPTE_ACTIF_SHEET_2": {
                 "indicator_code": "BAM_CKAN_COMPTE_ACTIF_SHEET_2",
                 "dataset_name": "Compte de patrimoine des OPCVM",
                 "label_fr": "Autres sociétés financières",
                 "sheet_name": "Passif",
+                "source_position": "L3",
             },
         }
         self.assertTrue(_is_superseded_legacy_bam_series(legacy, current))
@@ -254,6 +256,30 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         for raw, expected in cases.items():
             with self.subTest(raw=raw):
                 self.assertEqual(_bam_ckan_number(raw), expected)
+
+    def test_bam_ckan_disambiguates_repeated_labels_within_one_worksheet(self):
+        rows = [
+            ["Encours en MDH"],
+            ["Indicateur", "2024", "2025"],
+            ["Actif"],
+            ["Autres sociétés financières", "100", "110"],
+            ["Passif"],
+            ["Autres sociétés financières", "200", "220"],
+        ]
+        items = _bam_ckan_series_from_rows(
+            rows,
+            {"title": "Compte de patrimoine", "notes": ""},
+            {"url": "https://data.gov.ma/compte.xlsx", "name": "compte.xlsx"},
+            sheet_name="Compte",
+        )
+        self.assertEqual(len(items), 2)
+        first, second = [item["statistics_series"] for item in items]
+        self.assertNotEqual(first["indicator_code"], second["indicator_code"])
+        self.assertEqual(first["source_position"], "L4")
+        self.assertEqual(second["source_position"], "L6")
+        self.assertEqual(first["context_fr"], "Actif")
+        self.assertEqual(second["context_fr"], "Passif")
+        self.assertEqual([first["latest"]["value"], second["latest"]["value"]], [110.0, 220.0])
 
     def test_bam_ckan_keeps_worksheet_units_separate(self):
         combined_rows = [

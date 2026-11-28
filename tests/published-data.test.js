@@ -192,6 +192,24 @@ test("published data mirrors are synchronized with the frontend copies", () => {
   assert.deepEqual(academyPublic, academy, "Academy content in public/ must match the source content");
 });
 
+test("document index only omits external URLs for explicitly manual contributions", () => {
+  for (const item of searchIndex.items || []) {
+    if (!item.url_publication) {
+      assert.equal(item.source_id, "manual_studio", `${item.id} may omit its URL only when it is a manual KITN contribution`);
+      assert.equal(item.origine, "manuel", `${item.id} must identify its manual origin`);
+      assert.equal(item.doi || null, null, `${item.id} must not imply a DOI when no source URL exists`);
+      assert.equal(item.pdf_direct || null, null, `${item.id} must not imply a PDF when no source URL exists`);
+      continue;
+    }
+
+    assert.match(item.url_publication, /^https?:\\/\\//i, `${item.id} must use an HTTP(S) publication URL`);
+    if (item.pdf_direct) {
+      assert.match(item.pdf_direct, /^https?:\\/\\//i, `${item.id} must use an HTTP(S) PDF URL`);
+    }
+  }
+});
+
+
 test("document index preserves stable identity and flags future-dated records for review", () => {
   const items = searchIndex.items || [];
   assert.equal(searchIndex.total, items.length, "document index total must match the actual item count");

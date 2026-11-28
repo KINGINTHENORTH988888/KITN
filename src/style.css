@@ -470,6 +470,11 @@ textarea {
   font-size: 0.85rem;
 }
 
+.quiz-step.is-answered:not(.is-active) {
+  border-color: var(--ok-text);
+  color: var(--ok-text);
+}
+
 .quiz-step.is-active {
   background: var(--accent);
   color: var(--accent-ink);

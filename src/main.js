@@ -3,7 +3,7 @@ import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCateg
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { normalizeSearchText } from "./search.js";
 import { getPageSlice } from "./pagination.js";
-import { isSourceHealthStale } from "./source-health.js";
+import { getSourceHealthFreshness } from "./source-health.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -1234,12 +1234,16 @@ function renderWatchDashboard() {
   const sourceDate = Number.isFinite(sourceTimestamp)
     ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceTimestamp))
     : "";
-  const sourceReportIsStale = isSourceHealthStale(sourceHealthData?.updated_at);
-  const sourceStaleNotice = sourceReportIsStale
+  const sourceFreshness = getSourceHealthFreshness(sourceHealthData?.updated_at);
+  const sourceStaleNotice = sourceFreshness === "stale"
     ? '<p class="watch-source-stale" role="status">' + (isAr
       ? "تنبيه: تقرير المصادر أقدم من 24 ساعة؛ تحقق من آخر تشغيل لعملية الجمع قبل اعتبار هذه الحالة حديثة."
       : "Attention : ce rapport date de plus de 24 heures. Vérifiez la dernière exécution du pipeline avant de considérer cet état comme récent.") + '</p>'
-    : "";
+    : sourceFreshness === "unknown"
+      ? '<p class="watch-source-stale" role="status">' + (isAr
+        ? "تعذر التحقق من تاريخ التقرير؛ قد تكون حالة المصادر غير محدثة."
+        : "Date du rapport absente ou invalide : impossible de confirmer la fraîcheur de l’état des sources.") + '</p>'
+      : "";
   const sourceAttentionItems = enabledSources.filter((source) =>
     source.status === "warning" || source.status === "error"
   );

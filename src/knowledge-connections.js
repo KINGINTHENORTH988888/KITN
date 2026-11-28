@@ -8,7 +8,7 @@ const GENERIC_TERMS = new Set([
   "publiques", "ministère", "ministere", "ministères", "ministeres", "conseil",
   "président", "president", "présidence", "presidence", "institution", "institutions",
   "économique", "economique", "économiques", "economiques", "social", "sociale",
-  "sociaux", "sociales", "développement", "developpement", "stratégique", "strategique",
+  "sociaux", "sociales", "environnement", "environnemental", "environnementale", "environnementaux", "développement", "developpement", "stratégique", "strategique",
   "stratégiques", "strategiques", "général", "general", "générale", "generale",
   "plus", "moins", "ainsi", "aussi", "avec", "dans", "pour", "entre", "après",
   "avant", "selon", "cette", "celui", "celle", "leurs", "notamment", "également",

@@ -2321,24 +2321,53 @@ def _bam_ckan_period(value: str) -> str | None:
 
 
 def _bam_ckan_number(value: str) -> float | None:
-    text = str(value or "").strip().replace("\u00a0", "").replace(" ", "")
+    """Parse numeric cells and French/English formatted text without shifting decimals."""
+    text = str(value or "").strip()
     if not text or text.casefold() in {"-", "—", "n.d.", "nd", "na", "n/a", "…"}:
         return None
+
     negative = text.startswith("(") and text.endswith(")")
-    text = text.strip("()").replace("%", "").replace("٬", "").replace("٫", ".")
-    if "," in text and "." not in text:
-        text = text.replace(",", ".")
-    else:
-        text = text.replace(",", "")
-    text = re.sub(r"[^0-9.+-]", "", text)
-    if text in {"", ".", "+", "-"}:
+    text = text.strip("()")
+    text = (
+        text.replace("\\u00a0", "")
+        .replace("\\u202f", "")
+        .replace(" ", "")
+        .replace("٬", "")
+        .replace("٫", ".")
+        .replace("−", "-")
+        .replace("%", "")
+        .replace("’", "")
+        .replace("'", "")
+    )
+    # The right-most separator is decimal when both French and English
+    # grouping conventions are present: 1.234,56 and 1,234.56.
+    if "," in text and "." in text:
+        if text.rfind(",") > text.rfind("."):
+            text = text.replace(".", "").replace(",", ".")
+        else:
+            text = text.replace(",", "")
+    elif "," in text:
+        groups = text.split(",")
+        if len(groups) > 2 and all(len(group) == 3 for group in groups[1:]):
+            text = "".join(groups)
+        else:
+            text = ".".join(groups)
+    elif text.count(".") > 1:
+        groups = text.split(".")
+        if all(len(group) == 3 for group in groups[1:]):
+            text = "".join(groups)
+        else:
+            text = "".join(groups[:-1]) + "." + groups[-1]
+
+    if not re.fullmatch(r"[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?", text):
         return None
     try:
         number = float(text)
+        if not math.isfinite(number):
+            return None
         return -number if negative else number
-    except ValueError:
+    except (TypeError, ValueError, OverflowError):
         return None
-
 
 
 def _bam_ckan_is_numeric(value: str) -> bool:

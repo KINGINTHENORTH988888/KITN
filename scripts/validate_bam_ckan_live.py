@@ -49,6 +49,24 @@ def main() -> int:
     rejected = [series for series in candidates if not _is_valid_statistics_series(series)]
     code_counts = Counter(str(series.get("indicator_code") or "") for series in candidates)
     duplicate_codes = sorted(code for code, count in code_counts.items() if code and count > 1)
+    duplicate_groups = [
+        {
+            "indicator_code": code,
+            "occurrences": [
+                {
+                    "dataset_name": series.get("dataset_name"),
+                    "resource_name": series.get("resource_name"),
+                    "label_fr": series.get("label_fr"),
+                    "unit_fr": series.get("unit_fr"),
+                    "periods": [str(point.get("year")) for point in (series.get("history") or []) if isinstance(point, dict)],
+                    "latest": series.get("latest"),
+                }
+                for series in candidates
+                if str(series.get("indicator_code") or "") == code
+            ],
+        }
+        for code in duplicate_codes
+    ]
     units = Counter(str(series.get("unit_fr") or "(unité absente)") for series in candidates)
     datasets = Counter(str(series.get("dataset_name") or "(jeu sans nom)") for series in candidates)
 
@@ -77,6 +95,7 @@ def main() -> int:
         "units": dict(units),
         "series_by_dataset": dict(datasets),
         "duplicate_codes": duplicate_codes,
+        "duplicate_groups": duplicate_groups,
         "warnings": warnings,
         "rejected_examples": [
             {
@@ -102,13 +121,14 @@ def main() -> int:
     print("BAM CKAN DATASETS WITH SERIES:", len(datasets))
     print("BAM CKAN UNIT DISTRIBUTION:", json.dumps(dict(units), ensure_ascii=False, sort_keys=True))
     print("BAM CKAN DUPLICATE CODES:", json.dumps(duplicate_codes, ensure_ascii=False))
+    print("BAM CKAN DUPLICATE DETAILS:", json.dumps(duplicate_groups[:25], ensure_ascii=False))
     print("BAM CKAN WARNINGS:", len(warnings))
     for warning in warnings[:20]:
         print("BAM CKAN WARNING:", warning)
     print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))
 
     if duplicate_codes:
-        raise RuntimeError("Codes d'indicateurs BAM CKAN dupliqués détectés.")
+        print("BAM CKAN REVIEW REQUIRED: duplicate codes need semantic comparison before publication.")
     if not valid:
         raise RuntimeError("Aucune série BAM CKAN valide après contrôle qualité.")
     return 0

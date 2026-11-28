@@ -1103,6 +1103,42 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(series["unit_fr"], "MDH")
         self.assertEqual(series["source_url"], "https://data.gov.ma/resource.xlsx")
 
+    def test_xlsx_reader_preserves_worksheet_names(self):
+        import io
+        import zipfile
+        from pipeline.collectors import _xlsx_read_sheets
+
+        workbook = """<?xml version="1.0" encoding="UTF-8"?>
+        <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+                  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+          <sheets>
+            <sheet name="Actif" sheetId="1" r:id="rId1"/>
+            <sheet name="Passif" sheetId="2" r:id="rId2"/>
+          </sheets>
+        </workbook>"""
+        relationships = """<?xml version="1.0" encoding="UTF-8"?>
+        <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+          <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+          <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>
+        </Relationships>"""
+        sheet_one = """<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>
+          <row r="1"><c r="A1" t="inlineStr"><is><t>Actif total</t></is></c></row>
+        </sheetData></worksheet>"""
+        sheet_two = """<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>
+          <row r="1"><c r="A1" t="inlineStr"><is><t>Passif total</t></is></c></row>
+        </sheetData></worksheet>"""
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr("xl/workbook.xml", workbook)
+            archive.writestr("xl/_rels/workbook.xml.rels", relationships)
+            archive.writestr("xl/worksheets/sheet1.xml", sheet_one)
+            archive.writestr("xl/worksheets/sheet2.xml", sheet_two)
+
+        sheets = _xlsx_read_sheets(buffer.getvalue())
+        self.assertEqual([name for name, _ in sheets], ["Actif", "Passif"])
+        self.assertEqual(sheets[0][1][0][0], "Actif total")
+        self.assertEqual(sheets[1][1][0][0], "Passif total")
+
     def test_bam_ckan_collector_discovers_and_downloads_latest_xlsx(self):
         from pipeline.collectors import collect_bank_al_maghrib_ckan
 

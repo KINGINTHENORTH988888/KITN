@@ -258,3 +258,11 @@ Le snapshot de la branche est daté du 27 novembre à 16:33:58 UTC (662 récupé
 - CI complète sur la tête actuelle : toujours non confirmée.
 - PR #22 : ouverte, brouillon, non fusionnée ; aucune publication production.
 
+## 8. Contrôle des types numériques régionaux — 28 novembre 2026
+
+- Un défaut subtil a été identifié dans `_merge_regional_statistics_series` : en Python, `bool` hérite de `int`, donc `True` et `False` satisfaisaient le contrôle `isinstance(value, (int, float))` et pouvaient être publiés comme observations 1/0.
+- Correction : les booléens sont désormais rejetés explicitement avant le contrôle des nombres et des valeurs finies.
+- Test de non-régression ajouté pour les deux valeurs booléennes, en complément du test qui rejette déjà les chaînes numériques mal formatées.
+- Commits : `0ac0a57d396b04068b40e3bafc3c9638e6fc45c9` (correction) et `17ee00fed104e9e37353d35cd9c87087d3fa141e` (test).
+- Validation : modification ciblée du code et ajout du test effectués sur la branche d'audit. La suite Python/Node complète et les workflows CI doivent encore être exécutés sur la nouvelle tête ; aucun résultat CI n'est revendiqué.
+- Impact : les observations régionales booléennes ne peuvent plus être converties implicitement en 1/0. Les valeurs numériques finies et les valeurs manquantes explicites `null` restent acceptées.

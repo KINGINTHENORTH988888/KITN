@@ -165,10 +165,18 @@ export function loadSourcesHealth(): SourceHealthSnapshot {
   }
 
   const reportRows = Array.isArray(report.sources) ? report.sources : [];
-  const sources = reconcileSourceHealth(configuredSources, reportRows) as SourceHealthRow[];
+  const updatedAt = typeof report.updated_at === 'string' ? report.updated_at : null;
+  const freshness = getSourceHealthFreshness(updatedAt);
+  const reconciledSources = reconcileSourceHealth(configuredSources, reportRows) as SourceHealthRow[];
+  // The Astro site is the directory served by Wrangler. Apply the same freshness
+  // rule here as in the Vite application: a stale report cannot certify a source.
+  const sources = reconciledSources.map((source) => ({
+    ...source,
+    status: source.status === 'ok' && freshness !== 'fresh' ? 'unknown' as const : source.status
+  }));
   return {
-    updatedAt: typeof report.updated_at === 'string' ? report.updated_at : null,
-    freshness: getSourceHealthFreshness(typeof report.updated_at === 'string' ? report.updated_at : null),
+    updatedAt,
+    freshness,
     activeCount: sources.length,
     reportCount: reportRows.length,
     operationalCount: sources.filter((source) => source.status === 'ok').length,

@@ -46,3 +46,11 @@ export function reconcileSourceHealth(configuredSources, reportSources) {
     })
     .filter(Boolean);
 }
+
+export function getEffectiveSourceStatus(status, reportFreshness) {
+  // An old or undated report cannot prove that a previously healthy source is
+  // still operational. Preserve observed failures and warnings, but downgrade
+  // stale "ok" results to unverified until a fresh run confirms them.
+  if (status === "ok" && reportFreshness !== "fresh") return "unknown";
+  return ["ok", "warning", "error", "unknown"].includes(status) ? status : "unknown";
+}

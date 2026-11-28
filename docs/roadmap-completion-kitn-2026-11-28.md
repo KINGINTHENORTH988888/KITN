@@ -266,3 +266,8 @@ Le snapshot de la branche est daté du 27 novembre à 16:33:58 UTC (662 récupé
 - Commits : `0ac0a57d396b04068b40e3bafc3c9638e6fc45c9` (correction) et `17ee00fed104e9e37353d35cd9c87087d3fa141e` (test).
 - Validation : modification ciblée du code et ajout du test effectués sur la branche d'audit. La suite Python/Node complète et les workflows CI doivent encore être exécutés sur la nouvelle tête ; aucun résultat CI n'est revendiqué.
 - Impact : les observations régionales booléennes ne peuvent plus être converties implicitement en 1/0. Les valeurs numériques finies et les valeurs manquantes explicites `null` restent acceptées.
+- Contrôle approfondi complémentaire : les anciennes observations déjà présentes dans l'historique étaient copiées sans validation. Les snapshots historiques pouvaient donc conserver des booléens ou des chaînes numériques invalides, même après le premier correctif.
+- Deuxième correction : l'historique repris est désormais assaini avant fusion ; les valeurs booléennes, les chaînes non numériques et les nombres non finis sont écartés, tandis que les valeurs numériques valides et `null` sont conservés.
+- Test supplémentaire : un historique antérieur contenant `True` et une chaîne invalide est fusionné avec de nouvelles observations ; seules les observations valides sont conservées.
+- Commits complémentaires : `4fc9ae9b8168e714c4f0e3a6d76390c301089dc7` (assainissement de l'historique) et `cef26fd796488fb132905e26064b4a082d8ea50f` (test).
+

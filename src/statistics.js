@@ -137,6 +137,12 @@ export function filterStatisticsHistory(history, range, referenceDate = null) {
       if (entry.date > anchor) return false;
       return !useCalendarWindow || entry.date >= cutoff;
     })
+    .sort((a, b) => {
+      if (!a.date && !b.date) return 0;
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return a.date.getTime() - b.date.getTime();
+    })
     .map((entry) => entry.point);
 }
 

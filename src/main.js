@@ -1,6 +1,7 @@
 import "./style.css";
 import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
+import { safeExternalUrl } from "./url-safety.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getHomeFeaturedItems } from "./home-discovery.js";
 import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "./academy-progress.js";
@@ -738,13 +739,7 @@ function escapeHtml(str = "") {
 }
 
 function isSafeHttpUrl(url) {
-  if (!url || typeof url !== "string") return false;
-  try {
-    const parsed = new URL(url.trim());
-    return parsed.protocol === "https:" || parsed.protocol === "http:";
-  } catch {
-    return false;
-  }
+  return Boolean(safeExternalUrl(url));
 }
 
 function getDoiUrl(doi) {

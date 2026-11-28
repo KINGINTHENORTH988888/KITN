@@ -1504,7 +1504,7 @@ function renderModal() {
         <h4>${lang === "ar" ? "اكتشف مواضيع مرتبطة" : "À explorer également"}</h4>
       </div>
       <div class="related-knowledge-grid">
-        ${relatedItems.map(({ item: related, crossSpace }) => `
+        ${relatedItems.map(({ item: related, crossSpace, sharedTerms }) => `
           <button type="button" class="related-knowledge-card" data-related-item="${escapeHtml(getItemKey(related))}">
             <span>${escapeHtml(crossSpace ? (lang === "ar" ? "مجال آخر" : "Autre espace") : (lang === "ar" ? "موضوع مرتبط" : "Même espace"))}</span>
             <strong>${escapeHtml(related.titre_original || "")}</strong>

@@ -69,7 +69,7 @@ def main() -> int:
         OUTPUT_FILE.write_text(json.dumps(preview, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print("BAM CKAN LIVE STATUS: unavailable")
         print("BAM CKAN LIVE ERROR:", preview["error"])
-        print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))
+        print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.name)
         return 0
 
     candidates = [
@@ -171,7 +171,7 @@ def main() -> int:
     print("BAM CKAN WARNINGS:", len(warnings))
     for warning in warnings[:20]:
         print("BAM CKAN WARNING:", warning)
-    print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))
+    print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.name)
 
     if duplicate_codes:
         raise RuntimeError("Codes BAM CKAN encore dupliqués après l'ajout du nom de feuille.")

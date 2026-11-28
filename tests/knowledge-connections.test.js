@@ -15,6 +15,12 @@ test("related knowledge ignores years and generic words as thematic connections"
   assert.deepEqual(related([source, candidate], source), []);
 });
 
+test("related knowledge ignores months, ordinals and generic news wording", () => {
+  const source = { id: "a", espace: "bibliotheque", titre_original: "Rapport stratégique novembre 2026" };
+  const candidate = { id: "b", espace: "veille", titre_original: "Rencontre du premier novembre 2026" };
+  assert.deepEqual(related([source, candidate], source), []);
+});
+
 test("related knowledge matches meaningful complete terms across different spaces", () => {
   const source = { id: "a", espace: "bibliotheque", pole: "institutions_gouvernance", titre_original: "Déconcentration administrative et gouvernance locale" };
   const candidate = { id: "b", espace: "veille", titre_original: "La déconcentration administrative au Maroc" };

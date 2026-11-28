@@ -7,6 +7,7 @@ import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgre
 import { getPageSlice } from "./pagination.js";
 import { getSourceHealthFreshness } from "./source-health.js";
 import { getLibraryQualitySummary } from "./library-quality.js";
+import { findRelatedKnowledgeItems } from "./knowledge-connections.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -1368,30 +1369,13 @@ function renderLibraryDirectory() {
 }
 
 function getRelatedKnowledgeItems(item, limit = 3) {
-  const sourceSpace = resolveItemSpace(item);
-  const sourceText = normalizeSearchText([
-    item.titre_original || "", item.resume || "", item.analyse_strategique || "",
-    item.pole || "", ...(Array.isArray(item.mots_cles) ? item.mots_cles : [])
-  ].join(" "));
-  const terms = [...new Set(sourceText.split(" ").filter((term) => term.length >= 4))];
-  if (!terms.length) return [];
-  const sourceKey = getItemKey(item);
-  return indexItems
-    .filter((candidate) => getItemKey(candidate) !== sourceKey && !isFutureDate(candidate))
-    .map((candidate) => {
-      const candidateSpace = resolveItemSpace(candidate);
-      const candidateText = normalizeSearchText([
-        candidate.titre_original || "", candidate.resume || "", candidate.analyse_strategique || "",
-        candidate.pole || "", ...(Array.isArray(candidate.mots_cles) ? candidate.mots_cles : [])
-      ].join(" "));
-      const sharedTerms = terms.filter((term) => candidateText.includes(term));
-      const samePole = Boolean(item.pole && candidate.pole === item.pole);
-      const crossSpace = candidateSpace !== sourceSpace;
-      return { item: candidate, sharedTerms, crossSpace, score: sharedTerms.length + (samePole ? 2 : 0) + (crossSpace ? 3 : 0) };
-    })
-    .filter((entry) => entry.sharedTerms > 0)
-    .sort((a, b) => b.score - a.score || String(b.item.date_publication || "").localeCompare(String(a.item.date_publication || "")))
-    .slice(0, limit);
+  return findRelatedKnowledgeItems(indexItems, item, {
+    getSpace: resolveItemSpace,
+    getKey: getItemKey,
+    isFutureDate,
+    normalizeText: normalizeSearchText,
+    limit
+  });
 }
 
 function renderArticlePage(item) {

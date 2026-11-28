@@ -7,3 +7,9 @@ export function normalizeSearchText(value) {
     .replaceAll(/\s+/g, " ")
     .trim();
 }
+
+export function matchesSearchQuery(text, query) {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return true;
+  return normalizeSearchText(text).includes(normalizedQuery);
+}

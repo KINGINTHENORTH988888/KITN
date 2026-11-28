@@ -10,9 +10,9 @@ export function getLibraryQualitySummary(items, isFutureDate = () => false) {
   };
   const normalizeDoi = (value) => {
     const doi = String(value || "").trim()
-      .replace(/^https?:\\/\\/(?:dx\\.)?doi\\.org\\//i, "")
-      .replace(/^doi:\\s*/i, "");
-    return /^10\\.\\d{4,9}\\/\\S+$/i.test(doi) ? doi.toLowerCase() : "";
+      .replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")
+      .replace(/^doi:\s*/i, "");
+    return /^10\.\d{4,9}\/\S+$/i.test(doi) ? doi.toLowerCase() : "";
   };
   const documentIdentity = (item) => {
     const doi = normalizeDoi(item.doi) || normalizeDoi(item.url_publication);
@@ -20,7 +20,7 @@ export function getLibraryQualitySummary(items, isFutureDate = () => false) {
     try {
       const url = new URL(String(item.url_publication || "").trim());
       if (url.protocol !== "http:" && url.protocol !== "https:") return "";
-      return `url:${url.origin.toLowerCase()}${url.pathname.replace(/\\/$/, "").toLowerCase()}`;
+      return `url:${url.origin.toLowerCase()}${url.pathname.replace(/\/$/, "").toLowerCase()}`;
     } catch {
       return "";
     }

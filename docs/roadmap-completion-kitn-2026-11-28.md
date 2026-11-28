@@ -217,3 +217,44 @@ Le prototype `web/` déclare `astro: ^4.16.0`, mais ne possède pas de `web/pack
 ### État CI de la tête courante
 
 Le commit documentaire `9154b6afd9c27386109a5d40b3b260b04089fd78` est la tête de branche au moment du contrôle. Aucun status check ni workflow associé à ce SHA n'a été retourné. Les derniers workflows visibles réussis sont encore rattachés à des SHA antérieurs. La CI complète sur la tête exacte demeure donc non vérifiée.
+
+
+## 7. Contrôle qualité de l'index documentaire et santé des sources — 28 novembre 2026
+
+Comparaison calculée directement sur les fichiers JSON de la branche et de `main` :
+
+### Index documentaire (269 notices)
+- Les deux snapshots contiennent exactement 269 notices et le champ `total` est cohérent.
+- Répartition identique : 229 `valide`, 40 `a_verifier`.
+- 22 identifiants de source historiques présents dans l'index, pour 20 sources actuellement actives.
+- Aucun identifiant de notice dupliqué et aucun DOI dupliqué.
+- 24 notices portent une anomalie/date future et restent correctement classées `a_verifier`.
+- 113 notices ont un DOI ; 58 n'ont pas d'auteur et 32 n'ont pas de résumé. Ces champs ne sont pas obligatoires pour toutes les sources.
+- Trois notices n'ont volontairement pas d'URL externe : les contributions éditoriales internes `manual_studio`, origine `manuel`, sans DOI ni PDF. Ce n'est pas une erreur de source.
+
+### Test de non-régression renforcé
+Le test `tests/published-data.test.js` ajoute maintenant une règle explicite :
+- une notice avec URL de publication doit utiliser HTTP ou HTTPS ;
+- une URL PDF éventuelle doit utiliser HTTP ou HTTPS ;
+- une notice sans URL externe n'est admise que pour une contribution manuelle KITN explicitement marquée `source_id=manual_studio` et `origine=manuel`, sans DOI ni PDF fictif.
+
+Contrôle statique du vrai index de branche : 269 notices parcourues, les trois exceptions manuelles identifiées, aucune autre URL absente et aucun protocole non HTTP(S) détecté. Le fichier de test a été compilé en JavaScript après retrait des imports Node pour vérifier sa syntaxe. **La suite Node complète n'a pas été exécutée dans cette session** ; le nouveau test attend donc encore le résultat CI.
+
+### Santé des sources — snapshot le plus récent disponible sur main
+Le rapport du 28 novembre à 04:25:26 UTC indique :
+- 20 sources actives ;
+- 1 139 éléments récupérés, 121 acceptés ;
+- 12 sources en état OK, 7 en erreur et 1 en avertissement ;
+- les 6 requêtes OpenAlex restent en HTTP 429 ;
+- MONIA reste en HTTP 403 ;
+- HCP Labour Statistics reste en avertissement : aucun document exploitable détecté.
+
+Le snapshot de la branche est daté du 27 novembre à 16:33:58 UTC (662 récupérés, 120 acceptés), mais conserve la même répartition des statuts. Le commit de données de `main` a amélioré le volume récupéré sans résoudre les erreurs de disponibilité. La clé gratuite `OPENALEX_API_KEY` et le budget/quota fournisseur doivent être vérifiés avant d'attribuer les 429 à un défaut de code.
+
+### Tête de branche après les corrections de documentation et de test
+- Dernier correctif de code ajouté : `918c086` — test des URLs et des exceptions de contributions manuelles.
+- Vérification syntaxique du test : réussie.
+- Contrôle statique des 269 notices : aucune anomalie sur les URLs selon la règle ajoutée.
+- CI complète sur la tête actuelle : toujours non confirmée.
+- PR #22 : ouverte, brouillon, non fusionnée ; aucune publication production.
+

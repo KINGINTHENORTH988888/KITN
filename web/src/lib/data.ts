@@ -88,6 +88,11 @@ export interface AcademyModule {
   };
 }
 
+function nonNegativeCount(value: unknown): number {
+  const count = Number(value);
+  return Number.isFinite(count) && count > 0 ? count : 0;
+}
+
 function resolveDataRoot(): string {
   const candidates = [
     path.resolve(process.cwd(), '..', 'data'),
@@ -239,8 +244,8 @@ export function loadSourcesHealth(): SourceHealthSnapshot {
     warningCount: sources.filter((source) => source.status === 'warning').length,
     errorCount: sources.filter((source) => source.status === 'error').length,
     unverifiedCount: sources.filter((source) => source.status === 'unknown').length,
-    totalFetched: Number(report.total_fetched || 0),
-    totalAccepted: Number(report.total_accepted || 0),
+    totalFetched: nonNegativeCount(report.total_fetched),
+    totalAccepted: nonNegativeCount(report.total_accepted),
     sources
   };
 }

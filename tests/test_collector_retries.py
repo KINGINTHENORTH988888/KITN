@@ -92,6 +92,32 @@ class TestCollectorRetries(unittest.TestCase):
             100.0 + collectors._OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS,
         )
 
+    def test_monia_reports_both_csv_and_page_failures(self):
+        csv_error = HTTPError(
+            "https://www.bkam.ma/export/blockcsv/data",
+            403,
+            "Forbidden",
+            Message(),
+            None,
+        )
+        page_error = HTTPError(
+            "https://www.bkam.ma/monia",
+            403,
+            "Forbidden",
+            Message(),
+            None,
+        )
+        source = {
+            "statistics_pages": [{
+                "kind": "monia",
+                "url": "https://www.bkam.ma/monia",
+                "csv_url": "https://www.bkam.ma/export/blockcsv/data",
+            }]
+        }
+        with patch("pipeline.collectors._fetch_text", side_effect=[csv_error, page_error]):
+            with self.assertRaisesRegex(RuntimeError, "export CSV.*page officielle"):
+                collectors.collect_bank_al_maghrib(source)
+
     def test_excessive_retry_after_is_not_retried_early(self):
         self.assertIsNone(_retry_delay_seconds("300", 0))
 

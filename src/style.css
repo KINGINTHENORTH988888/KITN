@@ -1770,7 +1770,7 @@ textarea {
 }
 .library-metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
   gap: 0.7rem;
 }
 .library-metrics > div {

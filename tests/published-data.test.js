@@ -125,6 +125,20 @@ test("Academy has three bilingual tracks with valid answer indexes", () => {
 });
 
 
+test("Academy quiz options all include bilingual pedagogical explanations", () => {
+  for (const language of ["fr", "ar"]) {
+    for (const track of academy.tracks?.[language] || []) {
+      for (const [index, question] of (track.questions || []).entries()) {
+        assert.equal(question.option_explanations?.length, question.options.length,
+          `${language}/${track.id}/${index} must explain every option`);
+        assert.ok(question.option_explanations.every((explanation) => typeof explanation === "string" && explanation.trim().length >= 20));
+        assert.ok(question.option_explanations[question.answer].length >= 20,
+          `${language}/${track.id}/${index} must explain the correct answer`);
+      }
+    }
+  }
+});
+
 test("Academy learning paths provide bilingual objectives and actionable revision steps", () => {
   for (const language of ["fr", "ar"]) {
     const tracks = academy.tracks?.[language] || [];

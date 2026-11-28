@@ -29,6 +29,23 @@ export interface SearchIndexPayload {
   items: PublicationItem[];
 }
 
+/**
+ * Only expose absolute HTTP(S) links from collected records.
+ * This prevents unsafe schemes (for example javascript: or data:) from
+ * becoming clickable links in the browser UI.
+ */
+export function safeExternalUrl(value: unknown): string | null {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  try {
+    const parsed = new URL(value.trim());
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+    if (!parsed.hostname) return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 export interface SourceHealthRow {
   source_id: string;
   source_name: string;
@@ -118,6 +135,8 @@ export function loadSearchIndex(): SearchIndexPayload {
     const verif = (full.verification_liens || {}) as Record<string, unknown>;
     return {
       ...item,
+      url_publication: safeExternalUrl(item.url_publication),
+      pdf_direct: safeExternalUrl(item.pdf_direct),
       resume: typeof full.resume === 'string' && full.resume.trim() ? full.resume : item.resume,
       justification_pertinence:
         typeof pert.justification === 'string' ? pert.justification : undefined,

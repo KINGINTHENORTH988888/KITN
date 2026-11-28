@@ -3,6 +3,7 @@ import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCateg
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { normalizeSearchText } from "./search.js";
 import { getPageSlice } from "./pagination.js";
+import { isSourceHealthStale } from "./source-health.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -1233,8 +1234,7 @@ function renderWatchDashboard() {
   const sourceDate = Number.isFinite(sourceTimestamp)
     ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceTimestamp))
     : "";
-  const sourceReportIsStale = Number.isFinite(sourceTimestamp)
-    && Date.now() - sourceTimestamp > 24 * 60 * 60 * 1000;
+  const sourceReportIsStale = isSourceHealthStale(sourceHealthData?.updated_at);
   const sourceStaleNotice = sourceReportIsStale
     ? '<p class="watch-source-stale" role="status">' + (isAr
       ? "تنبيه: تقرير المصادر أقدم من 24 ساعة؛ تحقق من آخر تشغيل لعملية الجمع قبل اعتبار هذه الحالة حديثة."

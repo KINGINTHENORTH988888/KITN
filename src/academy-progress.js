@@ -1,4 +1,4 @@
-export function normalizeAcademyProgress(value) {
+export function normalizeAcademyProgress(value, tracks = null) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   const progress = {};
   for (const [key, answer] of Object.entries(value)) {
@@ -6,12 +6,26 @@ export function normalizeAcademyProgress(value) {
     if (!Number.isInteger(answer) || answer < 0 || answer > 9) continue;
     progress[key] = answer;
   }
-  return progress;
+
+  // When the course catalogue is available, also reject stale question IDs
+  // and answer indexes that no longer exist in the corresponding question.
+  if (!Array.isArray(tracks)) return progress;
+  const trackMap = new Map(tracks.map((track) => [String(track?.id || ""), track]));
+  return Object.fromEntries(Object.entries(progress).filter(([key, answer]) => {
+    const separator = key.lastIndexOf(":");
+    const track = trackMap.get(key.slice(0, separator));
+    const questionIndex = Number(key.slice(separator + 1));
+    if (!track || !Number.isInteger(questionIndex)) return false;
+    const questions = Array.isArray(track.questions) && track.questions.length ? track.questions : [track];
+    const question = questions[questionIndex];
+    const options = Array.isArray(question?.options) ? question.options : [];
+    return Boolean(question) && answer < options.length;
+  }));
 }
 
 export function getAcademyProgressSummary(tracks, answers) {
   const safeTracks = Array.isArray(tracks) ? tracks : [];
-  const safeAnswers = normalizeAcademyProgress(answers);
+  const safeAnswers = normalizeAcademyProgress(answers, safeTracks);
   const byTrack = safeTracks.map((track) => {
     const questions = Array.isArray(track?.questions) && track.questions.length
       ? track.questions
@@ -46,19 +60,9 @@ export function getAcademyProgressSummary(tracks, answers) {
 }
 
 export function mergeAcademyProgress(current, incoming, tracks) {
-  const merged = normalizeAcademyProgress(current);
-  const candidates = normalizeAcademyProgress(incoming);
-  const trackMap = new Map((Array.isArray(tracks) ? tracks : []).map((track) => [String(track?.id || ""), track]));
+  const merged = normalizeAcademyProgress(current, tracks);
+  const candidates = normalizeAcademyProgress(incoming, tracks);
   for (const [key, answer] of Object.entries(candidates)) {
-    const separator = key.lastIndexOf(":");
-    const trackId = key.slice(0, separator);
-    const questionIndex = Number(key.slice(separator + 1));
-    const track = trackMap.get(trackId);
-    if (!track || !Number.isInteger(questionIndex)) continue;
-    const questions = Array.isArray(track.questions) && track.questions.length ? track.questions : [track];
-    const question = questions[questionIndex];
-    const options = Array.isArray(question?.options) ? question.options : [];
-    if (!question || answer >= options.length) continue;
     merged[key] = answer;
   }
   return merged;

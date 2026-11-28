@@ -176,3 +176,44 @@ Ce document est le point de reprise global. Une fonctionnalité codée n'est con
 8. À chaque session, mettre à jour ce document et terminer le compte rendu par toutes les phases encore ouvertes.
 
 **Prochaine reprise technique :** commencer par la Phase A et valider la tête `1ab12bf748323ea7a7c6cdd6a04c601a0a6b36a5`. Le dernier commit ajoute un test de tri chronologique ; il faut obtenir la suite frontend complète sur cette tête. La production reste inchangée.
+
+
+## 6. Mise à jour de l'audit de branche — 28 novembre 2026, après ajout de la feuille de route
+
+### Divergence avec `main` : cause du commit manquant identifiée
+
+Le comparatif GitHub confirme :
+- branche d'audit : 690 commits en avance sur `main` ;
+- branche `main` : 1 commit en avance sur la base commune ;
+- base commune : `08a51613ae4c5c795767ccb8a9cd89a590b58394` ;
+- commit présent uniquement sur `main` : `2a134a864fbed7747c78e1cbfa96217e603e7fb6`, intitulé `chore(data): mise à jour automatique de la veille KITN`.
+
+Ce commit ne contient pas de nouvelle logique applicative. Il actualise les fichiers générés :
+- `data/index/search-index.json` et sa copie publique ;
+- `data/sources-health.json` ;
+- `data/statistics.json` et sa copie publique.
+
+La publication du 28 novembre indique 269 notices, 20 sources actives, 1 139 éléments récupérés et 121 acceptés. Les cinq collecteurs OpenAlex apparaissent toujours en HTTP 429 et MONIA en HTTP 403 dans le rapport. Le rapport de branche est plus ancien (27 novembre 16:33 UTC) et indique 662 récupérés / 120 acceptés. Ces données ne doivent pas être fusionnées séparément du jeu statistique associé : relancer la collecte sur la branche après stabilisation est préférable à un cherry-pick aveugle de snapshots.
+
+Le gros fichier `data/statistics.json` dépasse la capacité de lecture du connecteur GitHub dans cette session ; son contenu n'a donc pas été déclaré comparé ou validé. Son diff représente la majeure partie du volume PR et reste un point d'audit obligatoire avec un checkout local ou un artefact CI.
+
+### Inventaire réel du PR
+
+- 81 fichiers modifiés.
+- 312 164 ajouts et 265 306 suppressions selon les métadonnées GitHub du PR.
+- Aucun chemin `node_modules/` dans la liste exhaustive des 81 fichiers modifiés.
+- Cinq caches Python suivis apparaissent supprimés : quatre dans `pipeline/__pycache__/` et un dans `tests/__pycache__/`. Les règles `.gitignore` les excluent déjà.
+
+L'ancienne mention de 191 fichiers `node_modules/` n'est pas confirmée par le PR actuel et ne doit pas être reprise comme un fait.
+
+### Fraîcheur des données de veille
+
+La branche contient encore un rapport de santé et un index datés du 27 novembre à 16:33:58 UTC ; `main` contient la publication du 28 novembre à 04:25:26 UTC. Les copies `data/` et `public/data/` sont synchronisées sur la branche, mais elles sont plus anciennes que le dernier snapshot de `main`. Ne pas remplacer uniquement certains fichiers générés : synchroniser le jeu complet après une collecte cohérente sur la branche.
+
+### Reproductibilité du prototype Astro
+
+Le prototype `web/` déclare `astro: ^4.16.0`, mais ne possède pas de `web/package-lock.json`. Le workflow construit ce prototype avec `npm --prefix web install --no-package-lock`. Le build peut donc résoudre des versions différentes dans le temps. Cette cible est distincte de l'application Vite active et du déploiement Pages ; si le Worker Astro reste nécessaire, ajouter une stratégie de verrouillage reproductible et tester le Worker séparément, sans changer ses assets ou sa destination de production implicitement.
+
+### État CI de la tête courante
+
+Le commit documentaire `9154b6afd9c27386109a5d40b3b260b04089fd78` est la tête de branche au moment du contrôle. Aucun status check ni workflow associé à ce SHA n'a été retourné. Les derniers workflows visibles réussis sont encore rattachés à des SHA antérieurs. La CI complète sur la tête exacte demeure donc non vérifiée.

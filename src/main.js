@@ -5,7 +5,8 @@ import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getHomeFeaturedItems } from "./home-discovery.js";
 import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "./academy-progress.js";
 import { getPageSlice } from "./pagination.js";
-import { getSourceHealthFreshness } from "./source-health.js";
+import { getSourceHealthFreshness, reconcileSourceHealth } from "./source-health.js";
+import configuredSources from "../data/sources.json";
 import { getLibraryQualitySummary } from "./library-quality.js";
 import { findRelatedKnowledgeItems } from "./knowledge-connections.js";
 
@@ -1266,9 +1267,9 @@ function renderWatchDashboard() {
   const topTypes = [...types.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
   const typeLabels = topTypes.map(([type, count]) => '<span class="watch-type-chip">' + escapeHtml(formatDocType(type) || (isAr ? "غير مصنف" : "Non classé")) + ' <strong>' + count + '</strong></span>').join("");
   const sourceRows = Array.isArray(sourceHealthData?.sources) ? sourceHealthData.sources : [];
-  const enabledSources = sourceRows.filter((source) => source.enabled !== false);
+  const enabledSources = reconcileSourceHealth(configuredSources, sourceRows);
   const sourceOk = enabledSources.filter((source) => source.status === "ok").length;
-  const sourceAttention = enabledSources.filter((source) => source.status === "warning" || source.status === "error").length;
+  const sourceAttention = enabledSources.filter((source) => source.status !== "ok").length;
   const sourceTimestamp = sourceHealthData?.updated_at ? Date.parse(sourceHealthData.updated_at) : Number.NaN;
   const sourceDate = Number.isFinite(sourceTimestamp)
     ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceTimestamp))
@@ -1283,20 +1284,25 @@ function renderWatchDashboard() {
         ? "تعذر التحقق من تاريخ التقرير؛ قد تكون حالة المصادر غير محدثة."
         : "Date du rapport absente ou invalide : impossible de confirmer la fraîcheur de l’état des sources.") + '</p>'
       : "";
-  const sourceAttentionItems = enabledSources.filter((source) =>
-    source.status === "warning" || source.status === "error"
-  );
+  const sourceAttentionItems = enabledSources.filter((source) => source.status !== "ok");
   const sourceAttentionMarkup = sourceAttentionItems.length
     ? '<div class="watch-source-issues"><h5>' + (isAr ? "مصادر تحتاج إلى متابعة" : "Sources à examiner") + '</h5><ul>' +
       sourceAttentionItems.map((source) => {
         const failed = source.status === "error";
+        const unverified = source.status === "unknown";
         const statusLabel = failed
           ? (isAr ? "فشل الجمع" : "Échec de collecte")
-          : (isAr ? "نتيجة جزئية" : "Résultat partiel");
-        const detail = String(source.error || source.message || "").trim();
+          : unverified
+            ? (isAr ? "غير متحقق منه" : "Non vérifiée")
+            : (isAr ? "نتيجة جزئية" : "Résultat partiel");
+        const detail = unverified
+          ? (isAr ? "لا يوجد سجل لهذا المصدر في آخر تقرير؛ لم يتم إثبات تنفيذ الجمع." : "Aucune ligne pour cette source dans le dernier rapport : son exécution n’est pas démontrée.")
+          : String(source.error || source.message || "").trim();
         const fetched = Number(source.fetched || 0);
         const accepted = Number(source.accepted || 0);
-        const counts = (isAr ? "تم فحص " : "Examinés : ") + fetched + (isAr ? " · مقبولة " : " · retenus : ") + accepted;
+        const counts = unverified
+          ? (isAr ? "لا توجد بيانات تنفيذ في التقرير" : "Aucune donnée d’exécution dans le rapport")
+          : (isAr ? "تم فحص " : "Examinés : ") + fetched + (isAr ? " · مقبولة " : " · retenus : ") + accepted;
         return '<li class="watch-source-issue ' + (failed ? "is-error" : "is-warning") + '">' +
           '<div class="watch-source-issue-heading"><strong>' + escapeHtml(source.source_name || source.source_id || (isAr ? "مصدر غير معروف" : "Source inconnue")) + '</strong><span>' + statusLabel + '</span></div>' +
           '<small>' + escapeHtml(counts) + '</small>' +
@@ -1305,10 +1311,10 @@ function renderWatchDashboard() {
       }).join("") +
       '</ul></div>'
     : '<p class="watch-source-all-ok">' + (isAr ? "لا توجد مصادر مفعلة تحتاج إلى متابعة في آخر تقرير." : "Aucune source activée en anomalie dans le dernier rapport.") + '</p>';
-  const sourceHealthMarkup = sourceRows.length
+  const sourceHealthMarkup = enabledSources.length
     ? '<section class="watch-source-health" aria-label="' + (isAr ? "حالة مصادر الرصد" : "État des sources de veille") + '">' +
       '<div class="watch-source-heading"><div><span class="mini-label">' + (isAr ? "شفافية الجمع" : "TRANSPARENCE DE LA COLLECTE") + '</span><h4>' + (isAr ? "حالة مصادر المعلومات" : "État des sources d’information") + '</h4></div><span class="watch-source-updated">' + (isAr ? "آخر تحديث" : "Dernière mise à jour") + (sourceDate ? " · " + escapeHtml(sourceDate) : "") + '</span></div>' +
-      '<div class="watch-source-metrics"><div><strong>' + sourceOk + '/' + enabledSources.length + '</strong><span>' + (isAr ? "مصادر تعمل" : "sources opérationnelles") + '</span></div><div><strong>' + sourceAttention + '</strong><span>' + (isAr ? "مصادر تحتاج إلى متابعة" : "sources à surveiller") + '</span></div><div><strong>' + Number(sourceHealthData.total_fetched || 0).toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "عناصر جرى فحصها" : "éléments examinés") + '</span></div></div>' +
+      '<div class="watch-source-metrics"><div><strong>' + sourceOk + '/' + enabledSources.length + '</strong><span>' + (isAr ? "مصادر تعمل" : "sources opérationnelles") + '</span></div><div><strong>' + sourceAttention + '</strong><span>' + (isAr ? "مصادر تحتاج إلى متابعة" : "sources à surveiller") + '</span></div><div><strong>' + Number(sourceHealthData?.total_fetched || 0).toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "عناصر جرى فحصها" : "éléments examinés") + '</span></div></div>' +
       '<p>' + (isAr ? "تعكس هذه الحالة آخر تقرير آلي متاح، ولا تعني أن جميع المصادر الخارجية متاحة في الوقت الفعلي." : "Cet état reflète le dernier rapport automatisé disponible ; il ne garantit pas la disponibilité en temps réel de chaque site externe.") + '</p>' + sourceStaleNotice + sourceAttentionMarkup + '</section>'
     : '<p class="watch-source-unavailable">' + (isAr ? "تقرير حالة المصادر غير متاح حالياً." : "Le rapport d’état des sources n’est pas disponible pour le moment.") + '</p>';
   return '<section class="watch-dashboard">' +

@@ -298,6 +298,15 @@ test("all document search fields use accent-insensitive normalized matching", ()
 });
 
 
+test("Academy progress can be exported and restored from a local JSON backup", () => {
+  assert.match(source, /data-academy-export/);
+  assert.match(source, /data-academy-import/);
+  assert.match(source, /format: "kitn-academy-progress"/);
+  assert.match(source, /URL\.createObjectURL\(blob\)/);
+  assert.match(source, /await file\.text\(\)/);
+  assert.match(source, /mergeAcademyProgress\(quizAnswers, imported, ACADEMY_TRACKS\[lang\]\)/);
+});
+
 test("Academy displays a cross-track learning progress overview", () => {
   assert.match(source, /getAcademyProgressSummary\(tracks, quizAnswers\)/);
   assert.match(source, /academy-progress-overview/);

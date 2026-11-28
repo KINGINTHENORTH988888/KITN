@@ -2189,8 +2189,8 @@ def _xlsx_cell_column(reference: str) -> int:
     return value - 1
 
 
-def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
-    """Read XLSX worksheet values using only the Python standard library."""
+def _xlsx_read_sheets(payload: bytes) -> list[tuple[str, list[list[str]]]]:
+    """Read XLSX worksheets with their names, preserving each sheet as an independent table."""
     with zipfile.ZipFile(io.BytesIO(payload)) as archive:
         names = set(archive.namelist())
         shared = []
@@ -2200,7 +2200,7 @@ def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
             for item in root.findall("x:si", ns):
                 shared.append("".join(node.text or "" for node in item.findall(".//x:t", ns)))
 
-        sheet_paths = []
+        sheet_paths: list[tuple[str, str]] = []
         if "xl/workbook.xml" in names and "xl/_rels/workbook.xml.rels" in names:
             workbook = ET.fromstring(archive.read("xl/workbook.xml"))
             rels_root = ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
@@ -2216,14 +2216,22 @@ def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
                 if target:
                     path = target.lstrip("/") if target.startswith("/") else posixpath.normpath(posixpath.join("xl", target))
                     if path in names:
-                        sheet_paths.append(path)
+                        sheet_name = str(sheet.attrib.get("name") or f"Feuille {len(sheet_paths) + 1}")
+                        sheet_paths.append((sheet_name, path))
         if not sheet_paths:
-            sheet_paths = sorted(name for name in names if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", name))
+            sheet_paths = [
+                (f"Feuille {index + 1}", path)
+                for index, path in enumerate(sorted(
+                    name for name in names
+                    if re.fullmatch(r"xl/worksheets/sheet\\d+\\.xml", name)
+                ))
+            ]
 
-        all_rows = []
+        all_sheets: list[tuple[str, list[list[str]]]] = []
         ns = {"x": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
-        for sheet_path in sheet_paths[:8]:
+        for sheet_name, sheet_path in sheet_paths[:8]:
             root = ET.fromstring(archive.read(sheet_path))
+            sheet_rows = []
             for row_node in root.findall(".//x:sheetData/x:row", ns):
                 cells = {}
                 for cell in row_node.findall("x:c", ns):
@@ -2243,10 +2251,20 @@ def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
                     row = [""] * (max(cells) + 1)
                     for col, value in cells.items():
                         row[col] = value
-                    all_rows.append(row)
-            if all_rows:
-                all_rows.append([])
-        return all_rows
+                    sheet_rows.append(row)
+            if sheet_rows:
+                all_sheets.append((sheet_name, sheet_rows))
+        return all_sheets
+
+
+def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
+    """Read XLSX worksheet values as rows, retaining blank separators between sheets."""
+    rows: list[list[str]] = []
+    for _, sheet_rows in _xlsx_read_sheets(payload):
+        if rows:
+            rows.append([])
+        rows.extend(sheet_rows)
+    return rows
 
 
 _BAM_MONTHS = {
@@ -2409,7 +2427,12 @@ def _split_xlsx_sheets(rows: list[list[str]]) -> list[list[list[str]]]:
     return sheets
 
 
-def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: dict) -> list[dict]:
+def _bam_ckan_series_from_rows(
+    rows: list[list[str]],
+    dataset: dict,
+    resource: dict,
+    sheet_name: str = "Feuille 1",
+) -> list[dict]:
     """Recognize common official workbook layouts: periods across columns or down rows."""
     if not rows:
         return []
@@ -2458,7 +2481,7 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
                 if value is not None:
                     points.append({"year": period, "value": value})
             if len(points) >= 2:
-                _append_bam_ckan_series(output, label, points, title, f"{notes} {unit_hint}", resource_url, resource_name)
+                _append_bam_ckan_series(output, label, points, title, f"{notes} {unit_hint}", resource_url, resource_name, sheet_name)
 
     if output:
         return output
@@ -2504,7 +2527,7 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
                     if value is not None:
                         points.append({"year": period, "value": value})
                 if len(points) >= 2:
-                    _append_bam_ckan_series(output, header, points, title, f"{notes} {unit_hint}", resource_url, resource_name)
+                    _append_bam_ckan_series(output, header, points, title, f"{notes} {unit_hint}", resource_url, resource_name, sheet_name)
             if output:
                 break
         if output:
@@ -2512,12 +2535,21 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
     return output
 
 
-def _append_bam_ckan_series(output: list, label: str, points: list[dict], dataset_title: str, notes: str, resource_url: str, resource_name: str) -> None:
+def _append_bam_ckan_series(
+    output: list,
+    label: str,
+    points: list[dict],
+    dataset_title: str,
+    notes: str,
+    resource_url: str,
+    resource_name: str,
+    sheet_name: str,
+) -> None:
     unique = {str(point["year"]): point for point in points}
     history = sorted(unique.values(), key=lambda point: str(point["year"]))
     if len(history) < 2:
         return
-    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
+    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(sheet_name)}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"[(\[]([^()\[\]]{1,40})[)\]]", label)
     unit_match_global = re.search(r"(MMDH|MDH|KDH|Nombre|%)", notes, re.IGNORECASE)
     label_unit = clean_text(unit_match.group(1)) if unit_match else ""
@@ -2541,6 +2573,7 @@ def _append_bam_ckan_series(output: list, label: str, points: list[dict], datase
         "source_url": resource_url,
         "dataset_name": dataset_title,
         "resource_name": resource_name,
+        "sheet_name": sheet_name,
         "reference_period": history[-1]["year"],
         "last_updated": None,
     }
@@ -2585,10 +2618,13 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
         try:
             workbook = _fetch_bytes(str(resource["url"]), timeout=timeout, max_bytes=max_bytes)
             rows = _xlsx_read_rows(workbook)
-            sheets = _split_xlsx_sheets(rows)
+            sheets = _xlsx_read_sheets(workbook)
+            rows = [row for _, sheet_rows in sheets for row in sheet_rows]
             extracted = []
-            for sheet_rows in sheets:
-                extracted.extend(_bam_ckan_series_from_rows(sheet_rows, dataset, resource))
+            for sheet_name, sheet_rows in sheets:
+                extracted.extend(
+                    _bam_ckan_series_from_rows(sheet_rows, dataset, resource, sheet_name=sheet_name)
+                )
             if not extracted:
                 title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
                 preview = " || ".join(" | ".join(clean_text(cell) for cell in row[:8] if clean_text(cell)) for row in rows[:12] if row)

@@ -304,6 +304,7 @@ test("publication pages recommend related knowledge across KITN spaces", () => {
   assert.match(source, /related-knowledge-grid/);
   assert.match(source, /data-open-home-item=/);
   assert.match(source, /candidateSpace !== sourceSpace/);
+  assert.match(source, /crossSpace \\? 3 : 0/);
   assert.match(styles, /\.related-knowledge-grid\s*\{/);
   assert.match(styles, /\.related-knowledge-card\s*\{/);
 });

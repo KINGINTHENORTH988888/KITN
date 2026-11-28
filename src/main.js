@@ -709,6 +709,7 @@ let favorites = loadJsonStorage(FAVORITES_KEY, []);
 let manualItems = loadJsonStorage(MANUAL_ITEMS_KEY, []);
 let statusOverrides = {};
 let activeModalItem = null;
+let modalReturnFocus = null;
 let activeArticleId = null;
 let remoteItems = [];
 let indexItems = [];
@@ -1474,7 +1475,11 @@ function renderArticlePage(item) {
 function renderModal() {
   const existing = document.getElementById("notice-modal");
   if (existing) existing.remove();
-  if (!activeModalItem) return;
+  if (!activeModalItem) {
+    if (modalReturnFocus?.isConnected) modalReturnFocus.focus();
+    modalReturnFocus = null;
+    return;
+  }
 
   const c = COPY[lang];
   const item = activeModalItem;
@@ -1518,12 +1523,12 @@ function renderModal() {
   modal.id = "notice-modal";
   modal.className = "modal-backdrop";
   modal.innerHTML = `
-    <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="notice-modal-title">
       <div class="modal-head">
         <span>${escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || "")}</span>
         <button type="button" class="modal-close" id="close-modal">${escapeHtml(c.closeBtn)} ✕</button>
       </div>
-      <h3>${escapeHtml(item.titre_original || "")}</h3>
+      <h3 id="notice-modal-title">${escapeHtml(item.titre_original || "")}</h3>
       ${isFutureDate(item) ? `<span class="flag-warn">${escapeHtml(c.futureBadge)}</span>` : ""}
       <dl class="modal-meta">
         <div><dt>${escapeHtml(c.labelAuthor)}</dt><dd>${escapeHtml(authorsText)}</dd></div>
@@ -1561,6 +1566,13 @@ function renderModal() {
   `;
 
   document.body.appendChild(modal);
+  document.getElementById("close-modal")?.focus();
+  modal.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    activeModalItem = null;
+    renderModal();
+  });
   modal.querySelectorAll("[data-related-item]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const key = btn.getAttribute("data-related-item");
@@ -1768,6 +1780,7 @@ function renderResults() {
   container.querySelectorAll("[data-open-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const i = Number(btn.getAttribute("data-open-index"));
+      modalReturnFocus = btn;
       activeModalItem = pageItems[i] || null;
       renderModal();
     });

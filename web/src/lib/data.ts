@@ -144,10 +144,23 @@ export function loadSearchIndex(): SearchIndexPayload {
     };
   });
 
+  const updatedAt =
+    typeof parsed.updated_at === 'string'
+      ? parsed.updated_at
+      : typeof parsed.generated_at === 'string'
+        ? parsed.generated_at
+        : null;
+  const addedInRun = Number.isFinite(parsed.added_in_run) ? parsed.added_in_run : 0;
+  const updatedInRun = Number.isFinite(parsed.updated_in_run) ? parsed.updated_in_run : 0;
+
   return {
-    updated_at: parsed.updated_at || null,
+    updated_at: updatedAt,
     total: typeof parsed.total === 'number' ? parsed.total : enrichedItems.length,
-    new_or_updated_this_run: parsed.new_or_updated_this_run || 0,
+    // Support both the legacy field and the current collector schema.
+    new_or_updated_this_run:
+      Number.isFinite(parsed.new_or_updated_this_run)
+        ? parsed.new_or_updated_this_run
+        : addedInRun + updatedInRun,
     items: enrichedItems
   };
 }

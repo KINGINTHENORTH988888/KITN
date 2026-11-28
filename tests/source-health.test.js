@@ -92,6 +92,20 @@ test("invalid, negative and non-finite source counters are normalized to zero", 
   assert.equal(rows[0].accepted, 0);
 });
 
+test("boolean, empty and non-numeric source counters are never coerced into counts", () => {
+  const rows = reconcileSourceHealth(
+    [{ id: "bad_counts", name: "Compteurs invalides", enabled: true }],
+    [{
+      source_id: "bad_counts",
+      status: "ok",
+      fetched: true,
+      accepted: "   ",
+    }],
+  );
+  assert.equal(rows[0].fetched, 0);
+  assert.equal(rows[0].accepted, 0);
+});
+
 test("numeric source counters are normalized without losing valid values", () => {
   const rows = reconcileSourceHealth(
     [{ id: "valid_counts", name: "Compteurs valides", enabled: true }],

@@ -15,7 +15,7 @@ test("Academy course UI renders concepts, local examples and applied exercises",
   assert.match(source, /academyExerciseLabel/);
   assert.match(source, /academy-guidance/);
   assert.match(styles, /\.academy-lesson/);
-  assert.match(styles, /@media \\(max-width: 560px\\)/);
+  assert.ok(styles.includes("@media (max-width: 560px)"), "Academy lesson mobile layout must define the 560px breakpoint");
 });
 
 test("Academy quiz feedback renders explanations for every option", () => {

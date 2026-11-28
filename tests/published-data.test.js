@@ -202,9 +202,9 @@ test("document index only omits external URLs for explicitly manual contribution
       continue;
     }
 
-    assert.match(item.url_publication, /^https?:\\/\\//i, `${item.id} must use an HTTP(S) publication URL`);
+    assert.ok(["http:", "https:"].includes(new URL(item.url_publication).protocol), `${item.id} must use an HTTP(S) publication URL`);
     if (item.pdf_direct) {
-      assert.match(item.pdf_direct, /^https?:\\/\\//i, `${item.id} must use an HTTP(S) PDF URL`);
+      assert.ok(["http:", "https:"].includes(new URL(item.pdf_direct).protocol), `${item.id} must use an HTTP(S) PDF URL`);
     }
   }
 });

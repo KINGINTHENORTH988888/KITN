@@ -268,6 +268,8 @@ def _is_valid_statistics_series(series: dict) -> bool:
                 return False
         elif re.fullmatch(r"(?:19|20)\d{2}-T[1-4]", period, re.IGNORECASE):
             pass
+        elif re.fullmatch(r"(?:19|20)\d{2}-S[12]", period, re.IGNORECASE):
+            pass
         else:
             return False
 
@@ -294,6 +296,10 @@ def _statistics_period_sort_key(period: str, collected_at: str) -> tuple:
             except ValueError:
                 parsed = None
             break
+
+    semester = re.fullmatch(r"((?:19|20)\d{2})-S([12])", raw, re.IGNORECASE)
+    if semester:
+        parsed = datetime(int(semester.group(1)), 1 if semester.group(2) == "1" else 7, 1)
 
     quarter = re.fullmatch(r"((?:19|20)\d{2})-T([1-4])", raw, re.IGNORECASE)
     if quarter:

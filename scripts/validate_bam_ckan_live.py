@@ -57,6 +57,8 @@ def main() -> int:
                     "dataset_name": series.get("dataset_name"),
                     "resource_name": series.get("resource_name"),
                     "sheet_name": series.get("sheet_name"),
+                    "source_position": series.get("source_position"),
+                    "context_fr": series.get("context_fr"),
                     "label_fr": series.get("label_fr"),
                     "unit_fr": series.get("unit_fr"),
                     "periods": [str(point.get("year")) for point in (series.get("history") or []) if isinstance(point, dict)],

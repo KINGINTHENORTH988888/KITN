@@ -1229,8 +1229,16 @@ function renderWatchDashboard() {
   const enabledSources = sourceRows.filter((source) => source.enabled !== false);
   const sourceOk = enabledSources.filter((source) => source.status === "ok").length;
   const sourceAttention = enabledSources.filter((source) => source.status === "warning" || source.status === "error").length;
-  const sourceDate = sourceHealthData?.updated_at && !Number.isNaN(Date.parse(sourceHealthData.updated_at))
-    ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceHealthData.updated_at))
+  const sourceTimestamp = sourceHealthData?.updated_at ? Date.parse(sourceHealthData.updated_at) : Number.NaN;
+  const sourceDate = Number.isFinite(sourceTimestamp)
+    ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceTimestamp))
+    : "";
+  const sourceReportIsStale = Number.isFinite(sourceTimestamp)
+    && Date.now() - sourceTimestamp > 24 * 60 * 60 * 1000;
+  const sourceStaleNotice = sourceReportIsStale
+    ? '<p class="watch-source-stale" role="status">' + (isAr
+      ? "تنبيه: تقرير المصادر أقدم من 24 ساعة؛ تحقق من آخر تشغيل لعملية الجمع قبل اعتبار هذه الحالة حديثة."
+      : "Attention : ce rapport date de plus de 24 heures. Vérifiez la dernière exécution du pipeline avant de considérer cet état comme récent.") + '</p>'
     : "";
   const sourceAttentionItems = enabledSources.filter((source) =>
     source.status === "warning" || source.status === "error"
@@ -1258,7 +1266,7 @@ function renderWatchDashboard() {
     ? '<section class="watch-source-health" aria-label="' + (isAr ? "حالة مصادر الرصد" : "État des sources de veille") + '">' +
       '<div class="watch-source-heading"><div><span class="mini-label">' + (isAr ? "شفافية الجمع" : "TRANSPARENCE DE LA COLLECTE") + '</span><h4>' + (isAr ? "حالة مصادر المعلومات" : "État des sources d’information") + '</h4></div><span class="watch-source-updated">' + (isAr ? "آخر تحديث" : "Dernière mise à jour") + (sourceDate ? " · " + escapeHtml(sourceDate) : "") + '</span></div>' +
       '<div class="watch-source-metrics"><div><strong>' + sourceOk + '/' + enabledSources.length + '</strong><span>' + (isAr ? "مصادر تعمل" : "sources opérationnelles") + '</span></div><div><strong>' + sourceAttention + '</strong><span>' + (isAr ? "مصادر تحتاج إلى متابعة" : "sources à surveiller") + '</span></div><div><strong>' + Number(sourceHealthData.total_fetched || 0).toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "عناصر جرى فحصها" : "éléments examinés") + '</span></div></div>' +
-      '<p>' + (isAr ? "تعكس هذه الحالة آخر تقرير آلي متاح، ولا تعني أن جميع المصادر الخارجية متاحة في الوقت الفعلي." : "Cet état reflète le dernier rapport automatisé disponible ; il ne garantit pas la disponibilité en temps réel de chaque site externe.") + '</p>' + sourceAttentionMarkup + '</section>'
+      '<p>' + (isAr ? "تعكس هذه الحالة آخر تقرير آلي متاح، ولا تعني أن جميع المصادر الخارجية متاحة في الوقت الفعلي." : "Cet état reflète le dernier rapport automatisé disponible ; il ne garantit pas la disponibilité en temps réel de chaque site externe.") + '</p>' + sourceStaleNotice + sourceAttentionMarkup + '</section>'
     : '<p class="watch-source-unavailable">' + (isAr ? "تقرير حالة المصادر غير متاح حالياً." : "Le rapport d’état des sources n’est pas disponible pour le moment.") + '</p>';
   return '<section class="watch-dashboard">' +
     '<div class="watch-intro"><div><span class="mini-label">' + (isAr ? "رصد متعدد المجالات" : "VEILLE MULTITHÉMATIQUE") + '</span>' +

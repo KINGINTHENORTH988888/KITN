@@ -44,3 +44,22 @@ export function getAcademyProgressSummary(tracks, answers) {
     tracks: byTrack
   };
 }
+
+export function mergeAcademyProgress(current, incoming, tracks) {
+  const merged = normalizeAcademyProgress(current);
+  const candidates = normalizeAcademyProgress(incoming);
+  const trackMap = new Map((Array.isArray(tracks) ? tracks : []).map((track) => [String(track?.id || ""), track]));
+  for (const [key, answer] of Object.entries(candidates)) {
+    const separator = key.lastIndexOf(":");
+    const trackId = key.slice(0, separator);
+    const questionIndex = Number(key.slice(separator + 1));
+    const track = trackMap.get(trackId);
+    if (!track || !Number.isInteger(questionIndex)) continue;
+    const questions = Array.isArray(track.questions) && track.questions.length ? track.questions : [track];
+    const question = questions[questionIndex];
+    const options = Array.isArray(question?.options) ? question.options : [];
+    if (!question || answer >= options.length) continue;
+    merged[key] = answer;
+  }
+  return merged;
+}

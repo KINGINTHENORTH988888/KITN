@@ -2466,7 +2466,8 @@ def _bam_ckan_series_from_rows(
     if header_candidates:
         _, header_index, period_columns = max(header_candidates, key=lambda item: item[0])
         first_period_col = period_columns[0][0]
-        for row in rows[header_index + 1:]:
+        section_context: list[str] = []
+        for row_index, row in enumerate(rows[header_index + 1:], start=header_index + 1):
             if not row:
                 continue
             labels = [clean_text(cell) for cell in row[:first_period_col] if clean_text(cell)]
@@ -2481,7 +2482,17 @@ def _bam_ckan_series_from_rows(
                 if value is not None:
                     points.append({"year": period, "value": value})
             if len(points) >= 2:
-                _append_bam_ckan_series(output, label, points, title, f"{notes} {unit_hint}", resource_url, resource_name, sheet_name)
+                context_fr = " / ".join(section_context[-3:])
+                _append_bam_ckan_series(
+                    output, label, points, title, f"{notes} {unit_hint}",
+                    resource_url, resource_name, sheet_name,
+                    source_position=f"L{row_index + 1}", context_fr=context_fr,
+                )
+            elif not points and len(labels) == 1:
+                # Keep nearby non-numeric section headings to disambiguate repeated labels.
+                if label.casefold() not in {"indicateur", "indicators", "libellé", "libelle", "source", "unité", "unite"}:
+                    section_context.append(label)
+                    section_context = section_context[-3:]
 
     if output:
         return output
@@ -2527,7 +2538,11 @@ def _bam_ckan_series_from_rows(
                     if value is not None:
                         points.append({"year": period, "value": value})
                 if len(points) >= 2:
-                    _append_bam_ckan_series(output, header, points, title, f"{notes} {unit_hint}", resource_url, resource_name, sheet_name)
+                    _append_bam_ckan_series(
+                        output, header, points, title, f"{notes} {unit_hint}",
+                        resource_url, resource_name, sheet_name,
+                        source_position=f"L{header_index + 1}C{col + 1}",
+                    )
             if output:
                 break
         if output:
@@ -2544,12 +2559,15 @@ def _append_bam_ckan_series(
     resource_url: str,
     resource_name: str,
     sheet_name: str,
+    source_position: str,
+    context_fr: str = "",
 ) -> None:
     unique = {str(point["year"]): point for point in points}
     history = sorted(unique.values(), key=lambda point: str(point["year"]))
     if len(history) < 2:
         return
-    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(sheet_name)}_{_bam_ckan_slug(label)}"
+    context_slug = _bam_ckan_slug(context_fr) if context_fr else _bam_ckan_slug(source_position)
+    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(sheet_name)}_{context_slug}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"[(\[]([^()\[\]]{1,40})[)\]]", label)
     unit_match_global = re.search(r"(MMDH|MDH|KDH|Nombre|%)", notes, re.IGNORECASE)
     label_unit = clean_text(unit_match.group(1)) if unit_match else ""
@@ -2574,6 +2592,8 @@ def _append_bam_ckan_series(
         "dataset_name": dataset_title,
         "resource_name": resource_name,
         "sheet_name": sheet_name,
+        "source_position": source_position,
+        "context_fr": context_fr,
         "reference_period": history[-1]["year"],
         "last_updated": None,
     }

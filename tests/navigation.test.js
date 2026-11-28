@@ -298,13 +298,10 @@ test("all document search fields use accent-insensitive normalized matching", ()
 });
 
 
-test("homepage highlights recent content from distinct KITN spaces", () => {
-  assert.match(source, /function getHomeFeaturedItems\(items, limit = 5\)/);
-  assert.match(source, /const homeFeaturedItems = getHomeFeaturedItems\(visibleItems, 5\)/);
-  assert.match(source, /homeFeaturedItems\.map\(\(item\) =>/);
+test("homepage uses the independently tested balanced discovery selector", () => {
+  assert.match(source, /import \{ getHomeFeaturedItems \} from "\.\/home-discovery\.js"/);
+  assert.match(source, /getHomeFeaturedItems\(visibleItems, \{ getSpace: resolveItemSpace, getKey: getItemKey, limit: 5 \}\)/);
   assert.match(source, /spaces\.find\(\(space\) => space\.id === resolveItemSpace\(item\)\)\?\.label/);
-  assert.match(source, /selectedSpaces\.has\(space\)/);
-  assert.match(source, /String\(b\.date_publication \|\| ""\)\.localeCompare\(String\(a\.date_publication \|\| ""\)\)/);
 });
 
 test("publication pages recommend related knowledge across KITN spaces", () => {

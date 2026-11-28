@@ -39,7 +39,7 @@ export function safeExternalUrl(value: unknown): string | null {
   try {
     const parsed = new URL(value.trim());
     if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
-    if (!parsed.hostname) return null;
+    if (!parsed.hostname || parsed.username || parsed.password) return null;
     return parsed.toString();
   } catch {
     return null;
@@ -126,8 +126,22 @@ export function loadSearchIndex(): SearchIndexPayload {
     return { updated_at: null, total: 0, new_or_updated_this_run: 0, items: [] };
   }
 
-  const parsed = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
-  const rawItems: PublicationItem[] = Array.isArray(parsed.items) ? parsed.items : [];
+  let parsed: Record<string, unknown>;
+  try {
+    const value = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return { updated_at: null, total: 0, new_or_updated_this_run: 0, items: [] };
+    }
+    parsed = value as Record<string, unknown>;
+  } catch {
+    // A damaged index must not prevent the entire Astro site from building.
+    return { updated_at: null, total: 0, new_or_updated_this_run: 0, items: [] };
+  }
+  const rawItems: PublicationItem[] = Array.isArray(parsed.items)
+    ? parsed.items.filter((item): item is PublicationItem =>
+        Boolean(item && typeof item === 'object' && !Array.isArray(item) && typeof (item as PublicationItem).id === 'string')
+      )
+    : [];
 
   const enrichedItems = rawItems.map((item) => {
     const full = fullRecordsMap.get(item.id) || {};
@@ -155,12 +169,16 @@ export function loadSearchIndex(): SearchIndexPayload {
 
   return {
     updated_at: updatedAt,
-    total: typeof parsed.total === 'number' ? parsed.total : enrichedItems.length,
+    // The complete index is present in this file; its actual array length is
+    // the reliable count if a stale or malformed metadata total disagrees.
+    total: enrichedItems.length,
     // Support both the legacy field and the current collector schema.
     new_or_updated_this_run:
-      Number.isFinite(parsed.new_or_updated_this_run)
+      typeof parsed.new_or_updated_this_run === 'number' &&
+      Number.isFinite(parsed.new_or_updated_this_run) &&
+      parsed.new_or_updated_this_run >= 0
         ? parsed.new_or_updated_this_run
-        : addedInRun + updatedInRun,
+        : Math.max(0, addedInRun) + Math.max(0, updatedInRun),
     items: enrichedItems
   };
 }

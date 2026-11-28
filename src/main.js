@@ -1187,7 +1187,7 @@ function renderRegionalStatisticsDashboard() {
   const latestRanking = model.rows
     .filter((row) => row.geographyCode !== "MAR")
     .map((row) => ({ ...row, latestPoint: row.points[latestPeriodIndex] }))
-    .filter((row) => row.latestPoint && row.latestPoint.value !== null && row.latestPoint.value !== undefined && Number.isFinite(Number(row.latestPoint.value)))
+    .filter((row) => row.latestPoint && isFiniteStatisticValue(row.latestPoint.value))
     .sort((a, b) => Number(b.latestPoint.value) - Number(a.latestPoint.value));
   const rankingMax = Math.max(0, ...latestRanking.map((row) => Number(row.latestPoint.value)));
   const rankingMarkup = latestRanking.length
@@ -1203,7 +1203,7 @@ function renderRegionalStatisticsDashboard() {
   const rows = model.rows.map((row) => {
     const cells = row.points.map((point) => {
       if (!point) return "<td>—</td>";
-      if (point.value === null || point.value === undefined) {
+      if (!isFiniteStatisticValue(point.value)) {
         const missing = point.quality_flag === "insufficient_significance" ? "ps"
           : point.quality_flag === "not_available" ? "."
           : point.quality_flag === "unrecognized" ? "?"

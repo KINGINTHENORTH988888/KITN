@@ -271,3 +271,7 @@ Le snapshot de la branche est daté du 27 novembre à 16:33:58 UTC (662 récupé
 - Test supplémentaire : un historique antérieur contenant `True` et une chaîne invalide est fusionné avec de nouvelles observations ; seules les observations valides sont conservées.
 - Commits complémentaires : `4fc9ae9b8168e714c4f0e3a6d76390c301089dc7` (assainissement de l'historique) et `cef26fd796488fb132905e26064b4a082d8ea50f` (test).
 
+- Troisième défaut identifié : si l'historique existant était valide mais que la nouvelle collecte ne contenait aucune observation exploitable (période vide ou points mal formés), la fonction pouvait conserver l'ancien historique et marquer à tort la collecte comme réussie.
+- Correction : au moins une observation entrante valide est désormais obligatoire pour déclarer la fusion réussie.
+- Test ajouté : un historique antérieur valide ne doit pas transformer une collecte entrante vide/inexploitable en succès.
+- Commits : `12be926de8be0868a899b9911c292d1a003f2ca8` (correction) et `2553f1adb3458a4fbc7eada3816d583153bbaf8b` (test).

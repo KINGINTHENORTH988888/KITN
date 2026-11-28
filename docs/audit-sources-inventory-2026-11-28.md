@@ -160,3 +160,19 @@ Aucune modification de configuration Cloudflare, aucun lancement de collecte, au
 - Le rapport source lui-même reste daté du 27 novembre 2026 à 16:33:58 UTC ; ce correctif améliore la transparence de l'interface et ne remplace pas une nouvelle collecte.
 - Les tests Python du commit `e5d510f` ont réussi. La validation complète frontend et les contrôles live HCP/BAM étaient encore en cours lors de cette note. Le déploiement Cloudflare Pages de prévisualisation a réussi.
 - Aucun changement dans `main`, aucune fusion et aucun déploiement de production.
+
+
+## Résultats de la validation live des statistiques — 28 novembre 2026
+
+Exécution réussie du workflow de validation live sur le commit `ec2c957` (artefact conservé 7 jours dans GitHub Actions) :
+
+- **BAM CKAN** : 1 048 séries candidates extraites de 42 jeux de données ; 1 048 passent les contrôles structurels et de périodes actuels ; 0 rejet ; 0 code dupliqué. Répartition des unités détectées : 1 030 MDH et 18 Nombre. Une ressource « Détail implantation bancaire » est correctement signalée comme référence géographique et non comme série temporelle.
+- **BAM MONIA** : réponse officielle HTTP 403. Le rapport de prévisualisation marque la source comme bloquée ; aucune tentative de contournement et aucune donnée inventée.
+- **HCP Emploi** : 8 indicateurs nationaux et 234 séries régionales extraits du PDF T3 2026 ; 6 indicateurs, 13 géographies et les trois périmètres (ensemble, urbain, rural) ; aucune alerte d'extraction. Exemple de contrôle : chômage strict à Dakhla-Oued Ed-Dahab, T3 2026, 4,6 %, avec le drapeau de qualité « medium_significance ».
+- **HCP Indicateurs sociaux 2026** : 8 indicateurs nationaux et 108 séries régionales extraits ; les valeurs nationales attendues ont été retrouvées (population 36 828, urbanisation 62,8 %, fécondité 1,97, chômage 13,3 %, etc.).
+- **Artefact** : `morocco-statistics-quality-preview`, environ 3,18 Mo, comprenant les jeux de données de prévisualisation. Ces résultats ne sont pas automatiquement publiés sur le site public.
+- Exécution : https://github.com/KINGINTHENORTH988888/KITN/actions/runs/46102279074
+
+Le correctif de reprise BAM a ensuite été couvert par deux tests unitaires. Le premier passage de ces tests a révélé un problème dans l'affichage du chemin de sortie lorsque le fichier était placé dans un dossier temporaire ; ce problème a été corrigé en commit `50795da`. Les tests Python sont maintenant verts sur ce commit. Les workflows de validation HCP et de build associés à ce dernier commit sont encore en cours.
+
+Aucun merge, aucune modification de `main` et aucun déploiement en production.

@@ -1,7 +1,7 @@
 import unittest
 
 from pipeline.run_pipeline import _merge_statistics_series, _merge_valid_statistics_series, _statistics_period_sort_key
-from pipeline.collectors import _bam_ckan_series_from_rows, _split_xlsx_sheets
+from pipeline.collectors import _bam_ckan_number, _bam_ckan_series_from_rows, _split_xlsx_sheets
 
 
 class TestStatisticsSeriesMerge(unittest.TestCase):
@@ -187,6 +187,23 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         )
         self.assertEqual(merged["latest"], {"year": "Aujourd'hui", "value": 10.5})
         self.assertEqual(merged["previous"], {"year": "Veille", "value": 10.4})
+
+    def test_bam_ckan_number_parser_respects_french_and_english_decimal_conventions(self):
+        cases = {
+            "1.234,56": 1234.56,
+            "1,234.56": 1234.56,
+            "1 234,56": 1234.56,
+            "1\\u202f234,56": 1234.56,
+            "(1.234,56)": -1234.56,
+            "5,25 %": 5.25,
+            "1,23": 1.23,
+            "1.234": 1.234,
+            "—": None,
+            "n.d.": None,
+        }
+        for raw, expected in cases.items():
+            with self.subTest(raw=raw):
+                self.assertEqual(_bam_ckan_number(raw), expected)
 
     def test_bam_ckan_keeps_worksheet_units_separate(self):
         combined_rows = [

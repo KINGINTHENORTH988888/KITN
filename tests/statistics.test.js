@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import {
   filterStatisticsHistory,
   isFiniteStatisticValue,
+  normalizeStatisticFormatting,
+  countValidStatisticObservations,
   getStatisticsCategory,
   getLocalizedStatisticField,
   parseStatisticsPeriod,
@@ -124,4 +126,22 @@ test("statistic values reject blanks, nulls and booleans instead of coercing the
   assert.equal(isFiniteStatisticValue(0), true);
   assert.equal(isFiniteStatisticValue("0"), true);
   assert.equal(isFiniteStatisticValue("-2.5"), true);
+});
+
+
+test("statistic formatting safely normalizes malformed divisors and precision", () => {
+  assert.deepEqual(normalizeStatisticFormatting({ scale_divisor: 1000, precision: 2 }), { divisor: 1000, precision: 2 });
+  assert.deepEqual(normalizeStatisticFormatting({ scale_divisor: 0, precision: -1 }), { divisor: 1, precision: 1 });
+  assert.deepEqual(normalizeStatisticFormatting({ scale_divisor: "NaN", precision: 99 }), { divisor: 1, precision: 1 });
+  assert.deepEqual(normalizeStatisticFormatting({ scale_divisor: -5, precision: 0 }), { divisor: 1, precision: 0 });
+});
+
+test("statistics overview counts only valid numeric observations", () => {
+  const indicators = [
+    { history: [{ value: 1 }, { value: "" }, { value: null }, { value: "2.5" }] },
+    { history: [{ value: false }, { value: 0 }] },
+    { history: "invalid" },
+  ];
+  assert.equal(countValidStatisticObservations(indicators), 3);
+  assert.equal(countValidStatisticObservations(null), 0);
 });

@@ -164,8 +164,14 @@ export function loadSearchIndex(): SearchIndexPayload {
       : typeof parsed.generated_at === 'string'
         ? parsed.generated_at
         : null;
-  const addedInRun = Number.isFinite(parsed.added_in_run) ? parsed.added_in_run : 0;
-  const updatedInRun = Number.isFinite(parsed.updated_in_run) ? parsed.updated_in_run : 0;
+  const addedInRun =
+    typeof parsed.added_in_run === 'number' && Number.isFinite(parsed.added_in_run)
+      ? Math.max(0, parsed.added_in_run)
+      : 0;
+  const updatedInRun =
+    typeof parsed.updated_in_run === 'number' && Number.isFinite(parsed.updated_in_run)
+      ? Math.max(0, parsed.updated_in_run)
+      : 0;
 
   return {
     updated_at: updatedAt,

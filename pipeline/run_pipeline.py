@@ -432,8 +432,18 @@ def _merge_regional_statistics_series(
     existing_history = (existing or {}).get("history")
     if isinstance(existing_history, list):
         for point in existing_history:
-            if isinstance(point, dict) and point.get("year"):
-                points_by_period[str(point["year"])] = dict(point)
+            if not isinstance(point, dict) or not point.get("year"):
+                continue
+            value = point.get("value")
+            # Sanitize carried-forward history too: old snapshots may predate
+            # the incoming-value guard and can contain booleans or invalid numbers.
+            if isinstance(value, bool):
+                continue
+            if value is not None and not isinstance(value, (int, float)):
+                continue
+            if isinstance(value, (int, float)) and not math.isfinite(float(value)):
+                continue
+            points_by_period[str(point["year"])] = dict(point)
     for point in history:
         if isinstance(point, dict) and point.get("year"):
             value = point.get("value")

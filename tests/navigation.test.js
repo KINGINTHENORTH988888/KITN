@@ -303,6 +303,8 @@ test("Academy displays a cross-track learning progress overview", () => {
   assert.match(source, /academy-progress-overview/);
   assert.match(source, /academyProgressSummary\.tracks\.map/);
   assert.match(source, /data-academy-progress-idx=/);
+  assert.match(source, /querySelectorAll\("\\[data-academy-progress-idx\\]"\)/);
+  assert.match(source, /selectedAcademyIndex = Number\(btn\.getAttribute\("data-academy-progress-idx"\)\)/);
   assert.match(styles, /\.academy-progress-overview\s*\{/);
   assert.match(styles, /\.academy-progress-track\s*>\s*span\s*\{/);
 });

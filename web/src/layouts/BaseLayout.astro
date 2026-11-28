@@ -32,7 +32,12 @@ const tAr = UI_TEXT.ar;
     />
     <script is:inline>
       (() => {
-        const saved = localStorage.getItem('kitn_lang');
+        let saved = null;
+        try {
+          saved = window.localStorage.getItem('kitn_lang');
+        } catch {
+          // Language switching still works for the current page without storage.
+        }
         const lang = saved === 'ar' ? 'ar' : 'fr';
         document.documentElement.setAttribute('lang', lang);
         document.documentElement.setAttribute('data-lang', lang);
@@ -91,7 +96,11 @@ const tAr = UI_TEXT.ar;
         document.documentElement.setAttribute('lang', cleanLang);
         document.documentElement.setAttribute('data-lang', cleanLang);
         document.documentElement.setAttribute('dir', cleanLang === 'ar' ? 'rtl' : 'ltr');
-        localStorage.setItem('kitn_lang', cleanLang);
+        try {
+          window.localStorage.setItem('kitn_lang', cleanLang);
+        } catch {
+          // Keep the selected language for this page even when storage is blocked.
+        }
 
         if (toggleBtn) {
           toggleBtn.textContent = dict[cleanLang].switchLang;
@@ -125,7 +134,13 @@ const tAr = UI_TEXT.ar;
         });
       }
 
-      const initialLang = localStorage.getItem('kitn_lang') === 'ar' ? 'ar' : 'fr';
+      let savedLang = 'fr';
+      try {
+        savedLang = window.localStorage.getItem('kitn_lang') === 'ar' ? 'ar' : 'fr';
+      } catch {
+        // Default to French when browser storage is unavailable.
+      }
+      const initialLang = savedLang;
       applyLanguage(initialLang);
     </script>
   </body>

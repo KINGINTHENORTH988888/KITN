@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/hcp-live-validation.yml"
       - "scripts/validate_hcp_emo_regional_live.py"
+      - "scripts/validate_bam_ckan_live.py"
       - "pipeline/collectors.py"
       - "pipeline/hcp_regional.py"
       - "pipeline/hcp_social.py"
@@ -37,19 +38,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
+      - name: Validate live BAM CKAN XLSX datasets and build review preview
+        run: PYTHONPATH=. python scripts/validate_bam_ckan_live.py
       - name: Validate live HCP EMO PDF extraction and build preview dataset
         run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py
       - name: Extract and publish HCP 2026 social indicators to review preview
         run: PYTHONPATH=. python scripts/publish_hcp_social_preview.py
-      - name: Upload HCP statistics preview
+      - name: Upload Morocco statistics quality preview
         uses: actions/upload-artifact@v4
         with:
-          name: hcp-statistics-preview
+          name: morocco-statistics-quality-preview
           path: |
             data/regional-statistics.json
             public/data/regional-statistics.json
             data/statistics.json
             public/data/statistics.json
+            data/bam-ckan-preview.json
           if-no-files-found: error
           retention-days: 7
       - name: Verify frontend with live regional dataset

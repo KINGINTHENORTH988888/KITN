@@ -2491,8 +2491,7 @@ def _bam_ckan_series_from_rows(
             elif not points and len(labels) == 1:
                 # Keep nearby non-numeric section headings to disambiguate repeated labels.
                 if label.casefold() not in {"indicateur", "indicators", "libellé", "libelle", "source", "unité", "unite"}:
-                    section_context.append(label)
-                    section_context = section_context[-3:]
+                    section_context = [label]
 
     if output:
         return output

@@ -18,11 +18,11 @@ def _work(title):
 
 
 class TestOpenAlexPagination(unittest.TestCase):
-    def test_cursor_url_uses_api_key_query_parameter_without_duplicates(self):
+    def test_cursor_url_never_places_api_key_in_query_string(self):
         url = "https://api.openalex.org/works?search=Morocco&api_key=old&per-page=5"
         result = _openalex_cursor_url(url, "*", 10, api_key="new-secret")
         query = parse_qs(urlsplit(result).query)
-        self.assertEqual(query["api_key"], ["new-secret"])
+        self.assertNotIn("api_key", query)
         self.assertEqual(query["per-page"], ["10"])
         self.assertEqual(query["cursor"], ["*"])
         self.assertEqual(query["search"], ["Morocco"])
@@ -61,8 +61,11 @@ class TestOpenAlexPagination(unittest.TestCase):
         self.assertEqual(first_query["per-page"], ["1"])
         self.assertEqual(second_query["cursor"], ["cursor-page-2"])
         self.assertEqual(second_query["filter"], ["type:article"])
-        self.assertEqual(first_query["api_key"], ["test-openalex-key"])
-        self.assertNotIn("extra_headers", fetch.call_args_list[0].kwargs)
+        self.assertNotIn("api_key", first_query)
+        self.assertEqual(
+            fetch.call_args_list[0].kwargs["extra_headers"],
+            {"Authorization": "Bearer test-openalex-key"},
+        )
 
     def test_source_limit_stops_pagination_without_losing_existing_cap(self):
         page = {
@@ -140,4 +143,4 @@ class TestOpenAlexPagination(unittest.TestCase):
 
         self.assertEqual(len(items), 1)
         fetch.assert_called_once()
-        self.assertNotIn("extra_headers", fetch.call_args.kwargs)
+        self.assertIsNone(fetch.call_args.kwargs["extra_headers"])

@@ -139,3 +139,10 @@ export function filterStatisticsHistory(history, range, referenceDate = null) {
     })
     .map((entry) => entry.point);
 }
+
+
+export function isFiniteStatisticValue(value) {
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value !== "string" || !value.trim()) return false;
+  return Number.isFinite(Number(value));
+}

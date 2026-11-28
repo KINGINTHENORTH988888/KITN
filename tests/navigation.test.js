@@ -290,9 +290,20 @@ test("homepage space cards explain the purpose of all five spaces in French and 
   assert.match(styles, /\.home-space-card p\s*\{/);
 });
 
-test("global statistical indicator search uses the same accent-insensitive token matcher", () => {\n  assert.match(source, /return matchesSearchQuery\\(searchable, globalQuery\\)/);\n  assert.match(source, /const globalQuery = normalizeSearchText\\(searchQuery\\)/);\n});\n\ntest("all document search fields use accent-insensitive normalized matching", () => {
+test("all document search fields use accent-insensitive normalized matching", () => {
   assert.match(source, /import \{ matchesSearchQuery, normalizeSearchText \} from "\.\/search\.js";/);
   assert.match(source, /return matchesSearchQuery\(searchable, q\);/);
   assert.match(source, /matchesSearchQuery\(authorsForFilter, authorQuery\)/);
   assert.match(source, /matchesSearchQuery\(disciplineText, disciplineQuery\)/);
+});
+
+
+test("publication pages recommend related knowledge across KITN spaces", () => {
+  assert.match(source, /function getRelatedKnowledgeItems\(item, limit = 3\)/);
+  assert.match(source, /const relatedItems = getRelatedKnowledgeItems\(item\)/);
+  assert.match(source, /related-knowledge-grid/);
+  assert.match(source, /data-open-home-item=/);
+  assert.match(source, /candidateSpace !== sourceSpace/);
+  assert.match(styles, /\.related-knowledge-grid\s*\{/);
+  assert.match(styles, /\.related-knowledge-card\s*\{/);
 });

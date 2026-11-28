@@ -1,5 +1,5 @@
 import "./style.css";
-import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
+import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory, isFiniteStatisticValue } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { safeExternalUrl } from "./url-safety.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
@@ -952,6 +952,7 @@ function exportJsonPayload(items, filename) {
 
 
 function formatStatisticValue(indicator, value) {
+  if (!isFiniteStatisticValue(value)) return "—";
   const divisor = Number(indicator.scale_divisor) || 1;
   const precision = Number.isInteger(indicator.precision) ? indicator.precision : 1;
   const scaled = Number(value) / divisor;
@@ -1041,15 +1042,19 @@ function renderStatisticsDashboard() {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
     const referenceDate = statisticsData?.generated_at;
     const validHistory = filterStatisticsHistory(allHistory, "all", referenceDate);
+    const numericHistory = validHistory.filter((point) => isFiniteStatisticValue(point?.value));
     const history = filterStatisticsHistory(validHistory, statisticsRange, referenceDate);
-    const validLatest = filterStatisticsHistory(indicator.latest ? [indicator.latest] : [], "all", referenceDate)[0] || null;
-    const validPrevious = filterStatisticsHistory(indicator.previous ? [indicator.previous] : [], "all", referenceDate)[0] || null;
-    const latest = validHistory[validHistory.length - 1] || validLatest;
-    const previous = validHistory.length > 1 ? validHistory[validHistory.length - 2] : validPrevious;
+    const numericRangeHistory = history.filter((point) => isFiniteStatisticValue(point?.value));
+    const validLatest = filterStatisticsHistory(indicator.latest ? [indicator.latest] : [], "all", referenceDate)
+      .find((point) => isFiniteStatisticValue(point?.value)) || null;
+    const validPrevious = filterStatisticsHistory(indicator.previous ? [indicator.previous] : [], "all", referenceDate)
+      .find((point) => isFiniteStatisticValue(point?.value)) || null;
+    const latest = numericHistory.at(-1) || validLatest;
+    const previous = numericHistory.length > 1 ? numericHistory.at(-2) : validPrevious;
     const latestNumeric = Number(latest?.value);
     const previousNumeric = Number(previous?.value);
     const hasComparableValues = Boolean(
-      latest && previous && Number.isFinite(latestNumeric) && Number.isFinite(previousNumeric)
+      latest && previous && isFiniteStatisticValue(latest.value) && isFiniteStatisticValue(previous.value)
     );
     const delta = hasComparableValues
       ? (indicator.change_mode === "absolute"
@@ -1058,12 +1063,12 @@ function renderStatisticsDashboard() {
               ? ((latestNumeric - previousNumeric) / Math.abs(previousNumeric)) * 100
               : null))
       : null;
-    const numericValues = history.map((point) => Number(point.value)).filter(Number.isFinite);
+    const numericValues = numericRangeHistory.map((point) => Number(point.value));
     const min = numericValues.length ? Math.min(...numericValues) : 0;
     const max = numericValues.length ? Math.max(...numericValues) : 1;
     const range = max - min || Math.max(Math.abs(max) * 0.08, 1);
-    const coords = history.map((point, index) => {
-      const x = history.length <= 1 ? 50 : 6 + (index / (history.length - 1)) * 88;
+    const coords = numericRangeHistory.map((point, index) => {
+      const x = numericRangeHistory.length <= 1 ? 50 : 6 + (index / (numericRangeHistory.length - 1)) * 88;
       const y = 49 - ((Number(point.value) - min) / range) * 38;
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");

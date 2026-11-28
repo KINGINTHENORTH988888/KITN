@@ -2567,7 +2567,8 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
             and resource.get("url")
         ]
         if not resources:
-            return [], None
+            title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
+            return [], f"{title}: aucune ressource XLSX active dans le catalogue CKAN."
         resources.sort(key=lambda item: str(item.get("last_modified") or item.get("created") or ""), reverse=True)
         resource = resources[0]
         try:

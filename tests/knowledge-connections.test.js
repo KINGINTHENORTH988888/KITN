@@ -15,6 +15,12 @@ test("related knowledge ignores years and generic words as thematic connections"
   assert.deepEqual(related([source, candidate], source), []);
 });
 
+test("institutional wording does not create a false environmental topic link", () => {
+  const source = { id: "a", espace: "bibliotheque", titre_original: "Conseil économique, social et environnemental" };
+  const candidate = { id: "b", espace: "science", titre_original: "Étude environnementale sur la démographie" };
+  assert.deepEqual(related([source, candidate], source), []);
+});
+
 test("one incidental context word cannot create a recommendation", () => {
   const source = { id: "a", espace: "bibliotheque", titre_original: "Rencontre institutionnelle", resume: "Le président Ahmed présente un rapport" };
   const candidate = { id: "b", espace: "veille", titre_original: "Actualité locale", resume: "Ahmed participe à un événement" };

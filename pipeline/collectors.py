@@ -1707,7 +1707,17 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
         if not page_url or kind not in ("monthly_indicators", "monia"):
             continue
         parser = _BAMPageExtractor()
-        if kind == "monia":
+        csv_rows = []
+        if kind == "monia" and page.get("csv_url"):
+            try:
+                csv_rows = _bam_monia_csv_rows(_fetch_text(str(page["csv_url"]), referer=page_url))
+            except Exception:
+                # The official HTML table remains the supported fallback when CSV export is blocked.
+                csv_rows = []
+        if kind == "monia" and csv_rows:
+            parser.rows = csv_rows
+            visible_text = ""
+        elif kind == "monia":
             block_id = str(page.get("block_id") or "").strip()
             offsets = page.get("page_offsets") or [0]
             if not isinstance(offsets, list):

@@ -286,6 +286,6 @@ test("homepage space cards explain the purpose of all five spaces in French and 
     assert.match(arabic, new RegExp(`${id}:`), `Arabic description missing for ${id}`);
   }
   assert.match(source, /SPACE_DESCRIPTIONS\[lang\]\[sp\.id\]/);
-  assert.match(source, /<p>\\\$\\\{escapeHtml\(SPACE_DESCRIPTIONS/);
+  assert.ok(source.includes('<p>${escapeHtml(SPACE_DESCRIPTIONS[lang][sp.id] || "")}</p>'));
   assert.match(styles, /\.home-space-card p\s*\{/);
 });

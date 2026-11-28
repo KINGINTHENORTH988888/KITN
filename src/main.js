@@ -3,12 +3,14 @@ import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCateg
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getHomeFeaturedItems } from "./home-discovery.js";
+import { normalizeAcademyProgress } from "./academy-progress.js";
 import { getPageSlice } from "./pagination.js";
 import { getSourceHealthFreshness } from "./source-health.js";
 import { getLibraryQualitySummary } from "./library-quality.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
+const ACADEMY_PROGRESS_KEY = "kitn_academy_progress_v1";
 
 function getDynamicReferenceDate() {
   const now = new Date();
@@ -601,6 +603,15 @@ function loadJsonStorage(key, fallback) {
   }
 }
 
+function loadAcademyProgress() {
+  try {
+    const raw = localStorage.getItem(ACADEMY_PROGRESS_KEY);
+    return normalizeAcademyProgress(raw ? JSON.parse(raw) : {});
+  } catch {
+    return {};
+  }
+}
+
 function saveJsonStorage(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -676,7 +687,7 @@ let dateToFilter = "";
 let sortOrder = "newest";
 let selectedPrincipleIndex = 0;
 let selectedAcademyIndex = 0;
-let quizAnswers = {};
+let quizAnswers = loadAcademyProgress();
 let selectedQuizQuestionIndex = 0;
 let searchQuery = "";
 let scienceAuthorFilter = "";
@@ -2340,6 +2351,7 @@ function render() {
     btn.addEventListener("click", () => {
       const trackId = ACADEMY_TRACKS[lang][selectedAcademyIndex]?.id || "default";
       quizAnswers[`${trackId}:${selectedQuizQuestionIndex}`] = Number(btn.getAttribute("data-quiz-opt"));
+      saveJsonStorage(ACADEMY_PROGRESS_KEY, quizAnswers);
       render();
     });
   });

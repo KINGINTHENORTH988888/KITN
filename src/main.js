@@ -4,6 +4,7 @@ import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { normalizeSearchText } from "./search.js";
 import { getPageSlice } from "./pagination.js";
 import { getSourceHealthFreshness } from "./source-health.js";
+import { getLibraryQualitySummary } from "./library-quality.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
@@ -1295,8 +1296,9 @@ function renderLibraryDirectory() {
   ];
   const docs = indexItems.filter((item) => matchesSpace(item, "bibliotheque") && !isFutureDate(item));
   const sourceCount = new Set(docs.map((item) => item.source_id).filter(Boolean)).size;
-  const withPdf = docs.filter((item) => isSafeHttpUrl(item.pdf_direct)).length;
-  const withAbstract = docs.filter((item) => String(item.resume || "").trim()).length;
+  const libraryQuality = getLibraryQualitySummary(docs);
+  const withPdf = libraryQuality.withPdf;
+  const withAbstract = libraryQuality.withAbstract;
   const countFor = (id) => docs.filter((item) => item.source_id === id).length;
   const latest = [...docs].sort((a,b) => String(b.date_publication || "").localeCompare(String(a.date_publication || ""))).slice(0,4);
   const typeCounts = new Map();
@@ -1319,7 +1321,8 @@ function renderLibraryDirectory() {
   ).join("") : '<p class="empty-results">' + (isAr ? "لا توجد وثائق متاحة حالياً." : "Aucun document disponible pour le moment.") + '</p>';
   return '<section class="library-directory">' +
     '<div class="library-overview"><div><span class="mini-label">' + (isAr ? "مركز الوثائق" : "CENTRE DOCUMENTAIRE") + '</span><h3>' + (isAr ? "المعرفة والتقارير والمراجع" : "Connaissances, rapports et références") + '</h3><p>' + (isAr ? "استكشف الوثائق المفهرسة والمصادر المؤسسية الأصلية. الأرقام تعكس المحتوى المتاح حالياً في KITN." : "Explorez les documents indexés et les portails institutionnels d’origine. Les chiffres décrivent uniquement le contenu actuellement disponible dans KITN.") + '</p></div></div>' +
-    '<div class="library-metrics"><div><strong>' + docs.length + '</strong><span>' + (isAr ? "وثيقة مفهرسة" : "documents indexés") + '</span></div><div><strong>' + sourceCount + '</strong><span>' + (isAr ? "مصادر ممثلة" : "sources représentées") + '</span></div><div><strong>' + withPdf + '</strong><span>' + (isAr ? "رابط PDF" : "liens PDF renseignés") + '</span></div><div><strong>' + withAbstract + '</strong><span>' + (isAr ? "ملخص متاح" : "résumés disponibles") + '</span></div></div>' +
+    '<div class="library-metrics"><div><strong>' + libraryQuality.total + '</strong><span>' + (isAr ? "وثيقة مفهرسة" : "documents indexés") + '</span></div><div><strong>' + sourceCount + '</strong><span>' + (isAr ? "مصادر ممثلة" : "sources représentées") + '</span></div><div><strong>' + withPdf + '</strong><span>' + (isAr ? "روابط PDF مباشرة" : "liens PDF directs") + '</span></div><div><strong>' + withAbstract + '</strong><span>' + (isAr ? "ملخص متاح" : "résumés disponibles") + '</span></div><div><strong>' + libraryQuality.needsReview + '</strong><span>' + (isAr ? "وثائق تحتاج إلى التحقق" : "documents à vérifier") + '</span></div></div>' +
+    (libraryQuality.missingDate ? '<p class="library-scope-note">' + (isAr ? "تنبيه: " + libraryQuality.missingDate + " وثيقة دون تاريخ نشر محدد." : "Transparence : " + libraryQuality.missingDate + " document(s) sans date de publication renseignée.") + '</p>' : "") +
     '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "أنواع الوثائق" : "Collections documentaires") + '</h4><span>' + typeCounts.size + ' ' + (isAr ? "أنواع" : "types") + '</span></div><div class="library-type-list">' + typeChips + '</div></div>' +
     '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "أحدث الوثائق المفهرسة" : "Derniers documents indexés") + '</h4><span>' + (isAr ? "حسب تاريخ النشر" : "Par date de publication") + '</span></div><div class="library-recent-list">' + recentMarkup + '</div></div>' +
     '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "مصادر ومؤسسات مرجعية" : "Institutions & fonds documentaires") + '</h4><span>' + (isAr ? "الوصول إلى المصادر الأصلية" : "Accès aux sources originales") + '</span></div><div class="library-source-grid">' + sourceCards + '</div></div>' +

@@ -307,3 +307,9 @@ test("publication pages recommend related knowledge across KITN spaces", () => {
   assert.match(styles, /\.related-knowledge-grid\s*\{/);
   assert.match(styles, /\.related-knowledge-card\s*\{/);
 });
+
+
+test("global statistical indicator search uses accent-insensitive token matching", () => {
+  assert.match(source, /return matchesSearchQuery\\(searchable, globalQuery\\)/);
+  assert.match(source, /const globalQuery = normalizeSearchText\\(searchQuery\\)/);
+});

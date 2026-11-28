@@ -258,7 +258,8 @@ test("sorts annual, monthly, daily and quarterly labels in calendar order", () =
     { year: "2026-09-15", value: 8 },
     { year: "2026-01", value: 1 },
     { year: "2025", value: 0 },
+    { year: "2026-02-31", value: 99 },
   ];
   const model = buildRegionalStatisticsModel(mixedPayload, "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT", "all");
-  assert.deepEqual(model.periods, ["2025", "2026-01", "2026-09-15", "T3/2026", "2026-10"]);
+  assert.deepEqual(model.periods, ["2025", "2026-01", "2026-09-15", "T3/2026", "2026-10", "2026-02-31"]);
 });

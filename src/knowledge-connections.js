@@ -27,7 +27,6 @@ function getMeaningfulTerms(item, normalizeText) {
     item?.titre_original || "",
     item?.resume || "",
     item?.analyse_strategique || "",
-    item?.pole || "",
     ...(Array.isArray(item?.mots_cles) ? item.mots_cles : [])
   ].join(" "));
   return new Set(text.split(" ").filter((term) =>

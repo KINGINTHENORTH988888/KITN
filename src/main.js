@@ -2683,6 +2683,9 @@ function render() {
   document.getElementById("search-input")?.addEventListener("input", (e) => {
     searchQuery = e.target.value || "";
     renderResults();
+    if (activeSpace === "all" && searchQuery.trim() && !statisticsLoaded && !statisticsLoading) {
+      initStatistics({ renderOnStart: false });
+    }
   });
 
   document.getElementById("science-author-input")?.addEventListener("input", (e) => {
@@ -2785,11 +2788,11 @@ async function initAcademy() {
 }
 
 
-async function initStatistics() {
+async function initStatistics({ renderOnStart = true } = {}) {
   if (statisticsLoading || statisticsLoaded) return;
   statisticsLoading = true;
   statisticsLoadFailed = false;
-  render();
+  if (renderOnStart) render();
   try {
     const res = await fetch("/data/statistics.json", { cache: "no-store" });
     if (!res.ok) throw new Error(`Statistics request failed: ${res.status}`);
@@ -2804,7 +2807,8 @@ async function initStatistics() {
   } finally {
     statisticsLoading = false;
     statisticsLoaded = true;
-    render();
+    if (renderOnStart || activeSpace === "chiffres") render();
+    else renderResults();
   }
 }
 

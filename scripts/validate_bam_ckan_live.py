@@ -56,6 +56,7 @@ def main() -> int:
                 {
                     "dataset_name": series.get("dataset_name"),
                     "resource_name": series.get("resource_name"),
+                    "sheet_name": series.get("sheet_name"),
                     "label_fr": series.get("label_fr"),
                     "unit_fr": series.get("unit_fr"),
                     "periods": [str(point.get("year")) for point in (series.get("history") or []) if isinstance(point, dict)],
@@ -128,7 +129,7 @@ def main() -> int:
     print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))
 
     if duplicate_codes:
-        print("BAM CKAN REVIEW REQUIRED: duplicate codes need semantic comparison before publication.")
+        raise RuntimeError("Codes BAM CKAN encore dupliqués après l'ajout du nom de feuille.")
     if not valid:
         raise RuntimeError("Aucune série BAM CKAN valide après contrôle qualité.")
     return 0

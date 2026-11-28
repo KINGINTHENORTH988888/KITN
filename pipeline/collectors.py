@@ -413,15 +413,29 @@ def collect_hal_api(source: dict) -> list[dict]:
     return items
 
 
-def _openalex_cursor_url(url: str, cursor: str, page_size: int) -> str:
-    """Build an OpenAlex cursor-paginated URL without discarding source filters."""
+def _openalex_cursor_url(url: str, cursor: str, page_size: int, api_key: str = "") -> str:
+    """Build an OpenAlex cursor URL using its documented api_key query parameter."""
     parts = urlsplit(url)
     query = [
         (key, value)
         for key, value in parse_qsl(parts.query, keep_blank_values=True)
-        if key not in {"cursor", "per-page"}
+        if key not in {"cursor", "per-page", "api_key"}
     ]
     query.extend((("per-page", str(page_size)), ("cursor", cursor)))
+    if api_key:
+        query.append(("api_key", api_key))
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
+
+
+def _bam_monia_page_url(page_url: str, block_id: str, offset: int) -> str:
+    """Build a paginated MONIA table URL from Bank Al-Maghrib's public page block."""
+    parts = urlsplit(page_url)
+    query = [
+        (key, value)
+        for key, value in parse_qsl(parts.query, keep_blank_values=True)
+        if key not in {"limit", "block", "offset"}
+    ]
+    query.extend((("limit", "0"), ("block", block_id), ("offset", str(max(0, offset)))))
     return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
 
 
@@ -444,7 +458,6 @@ def collect_openalex(source: dict) -> list[dict]:
         configured_page_size = min(max_items, 25)
     page_size = min(200, max(1, configured_page_size))
     api_key = os.environ.get("OPENALEX_API_KEY", "").strip()
-    request_headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
 
     # OpenAlex allows a small keyless first page, but cursor paging beyond it
     # requires an activated API key. Keep collection healthy when the secret is
@@ -457,9 +470,9 @@ def collect_openalex(source: dict) -> list[dict]:
     cursor = "*"
     seen_cursors = {cursor}
     while len(works) < max_items:
-        page_url = _openalex_cursor_url(url, cursor, page_size)
+        page_url = _openalex_cursor_url(url, cursor, page_size, api_key=api_key)
         try:
-            response_text = _fetch_text(page_url, extra_headers=request_headers)
+            response_text = _fetch_text(page_url)
         except HTTPError as exc:
             if exc.code == 429:
                 payload = getattr(exc, "openalex_payload", {})
@@ -1694,29 +1707,25 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
         if not page_url or kind not in ("monthly_indicators", "monia"):
             continue
         parser = _BAMPageExtractor()
-        csv_rows = []
-        csv_error = None
-        if kind == "monia" and page.get("csv_url"):
-            try:
-                csv_payload = _fetch_text(str(page["csv_url"]), referer=page_url)
-                csv_rows = _bam_monia_csv_rows(csv_payload)
-            except Exception as exc:
-                # Keep the primary export failure so a blocked page fallback does
-                # not hide the reason why MONIA could not be collected.
-                csv_error = exc
-        if csv_rows:
-            parser.rows = csv_rows
-            visible_text = ""
+        if kind == "monia":
+            block_id = str(page.get("block_id") or "").strip()
+            offsets = page.get("page_offsets") or [0]
+            if not isinstance(offsets, list):
+                offsets = [0]
+            all_text_parts: list[str] = []
+            for offset in offsets:
+                try:
+                    table_url = _bam_monia_page_url(page_url, block_id, int(offset)) if block_id else page_url
+                    html_body = _fetch_text(table_url, referer=page_url)
+                except (TypeError, ValueError):
+                    continue
+                page_parser = _BAMPageExtractor()
+                page_parser.feed(html_body)
+                parser.rows.extend(page_parser.rows)
+                all_text_parts.extend(page_parser.text_parts)
+            visible_text = clean_text(" ".join(all_text_parts))
         else:
-            try:
-                html_body = _fetch_text(page_url, referer=page_url)
-            except Exception as page_error:
-                if kind == "monia" and csv_error is not None:
-                    raise RuntimeError(
-                        "Collecte MONIA impossible : export CSV "
-                        f"({csv_error}) ; page officielle ({page_error})."
-                    ) from page_error
-                raise
+            html_body = _fetch_text(page_url, referer=page_url)
             parser.feed(html_body)
             visible_text = clean_text(" ".join(parser.text_parts))
 

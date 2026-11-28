@@ -23,7 +23,7 @@ from pipeline.run_pipeline import _content_fingerprint, _doi_key, _merge_preserv
 
 class TestPipelineProcessors(unittest.TestCase):
     def test_hcp_labour_statistics_extracts_latest_official_indicators(self):
-        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>'
+        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Lire la suite</a>'
         article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
         <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
         <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>

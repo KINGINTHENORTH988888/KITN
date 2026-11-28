@@ -423,6 +423,42 @@ textarea {
   line-height: 1.55;
 }
 
+.quiz-explanations {
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+
+.quiz-explanations > strong {
+  display: block;
+  margin-bottom: 0.55rem;
+}
+
+.quiz-explanations ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.quiz-explanations li {
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  gap: 0.45rem;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.quiz-explanations li.is-correct span {
+  color: var(--success, #16834a);
+  font-weight: 800;
+}
+
+.quiz-explanations li.is-distractor span {
+  color: var(--muted);
+}
+
 .theme-tags {
   display: flex;
   flex-wrap: wrap;

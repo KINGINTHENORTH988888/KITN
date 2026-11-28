@@ -5,7 +5,7 @@ import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getHomeFeaturedItems } from "./home-discovery.js";
 import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "./academy-progress.js";
 import { getPageSlice } from "./pagination.js";
-import { getSourceHealthFreshness, reconcileSourceHealth } from "./source-health.js";
+import { getEffectiveSourceStatus, getSourceHealthFreshness, reconcileSourceHealth } from "./source-health.js";
 import configuredSources from "../data/sources.json";
 import { getLibraryQualitySummary } from "./library-quality.js";
 import { findRelatedKnowledgeItems } from "./knowledge-connections.js";
@@ -1305,13 +1305,14 @@ function renderWatchDashboard() {
   const typeLabels = topTypes.map(([type, count]) => '<span class="watch-type-chip">' + escapeHtml(formatDocType(type) || (isAr ? "غير مصنف" : "Non classé")) + ' <strong>' + count + '</strong></span>').join("");
   const sourceRows = Array.isArray(sourceHealthData?.sources) ? sourceHealthData.sources : [];
   const enabledSources = reconcileSourceHealth(configuredSources, sourceRows);
-  const sourceOk = enabledSources.filter((source) => source.status === "ok").length;
-  const sourceAttention = enabledSources.filter((source) => source.status !== "ok").length;
+  const sourceFreshness = getSourceHealthFreshness(sourceHealthData?.updated_at);
+  const getDisplayedSourceStatus = (source) => getEffectiveSourceStatus(source.status, sourceFreshness);
+  const sourceOk = enabledSources.filter((source) => getDisplayedSourceStatus(source) === "ok").length;
+  const sourceAttention = enabledSources.length - sourceOk;
   const sourceTimestamp = sourceHealthData?.updated_at ? Date.parse(sourceHealthData.updated_at) : Number.NaN;
   const sourceDate = Number.isFinite(sourceTimestamp)
     ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceTimestamp))
     : "";
-  const sourceFreshness = getSourceHealthFreshness(sourceHealthData?.updated_at);
   const sourceStaleNotice = sourceFreshness === "stale"
     ? '<p class="watch-source-stale" role="status">' + (isAr
       ? "تنبيه: تقرير المصادر أقدم من 24 ساعة؛ تحقق من آخر تشغيل لعملية الجمع قبل اعتبار هذه الحالة حديثة."
@@ -1321,19 +1322,22 @@ function renderWatchDashboard() {
         ? "تعذر التحقق من تاريخ التقرير؛ قد تكون حالة المصادر غير محدثة."
         : "Date du rapport absente ou invalide : impossible de confirmer la fraîcheur de l’état des sources.") + '</p>'
       : "";
-  const sourceAttentionItems = enabledSources.filter((source) => source.status !== "ok");
+  const sourceAttentionItems = enabledSources.filter((source) => getDisplayedSourceStatus(source) !== "ok");
   const sourceAttentionMarkup = sourceAttentionItems.length
     ? '<div class="watch-source-issues"><h5>' + (isAr ? "مصادر تحتاج إلى متابعة" : "Sources à examiner") + '</h5><ul>' +
       sourceAttentionItems.map((source) => {
-        const failed = source.status === "error";
-        const unverified = source.status === "unknown";
+        const displayedStatus = getDisplayedSourceStatus(source);
+        const failed = displayedStatus === "error";
+        const unverified = displayedStatus === "unknown";
         const statusLabel = failed
           ? (isAr ? "فشل الجمع" : "Échec de collecte")
           : unverified
             ? (isAr ? "غير متحقق منه" : "Non vérifiée")
             : (isAr ? "نتيجة جزئية" : "Résultat partiel");
         const detail = unverified
-          ? (isAr ? "لا يوجد سجل لهذا المصدر في آخر تقرير؛ لم يتم إثبات تنفيذ الجمع." : "Aucune ligne pour cette source dans le dernier rapport : son exécution n’est pas démontrée.")
+          ? (source.status === "ok"
+            ? (isAr ? "تقرير الحالة قديم أو تاريخه غير صالح؛ لا يمكن تأكيد أن المصدر ما زال يعمل." : "Le rapport est périmé ou sa date est invalide : le fonctionnement actuel de cette source n’est pas confirmé.")
+            : (isAr ? "لا يوجد سجل لهذا المصدر في آخر تقرير؛ لم يتم إثبات تنفيذ الجمع." : "Aucune ligne pour cette source dans le dernier rapport : son exécution n’est pas démontrée."))
           : String(source.error || source.message || "").trim();
         const fetched = Number(source.fetched || 0);
         const accepted = Number(source.accepted || 0);

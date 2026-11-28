@@ -298,6 +298,15 @@ test("all document search fields use accent-insensitive normalized matching", ()
 });
 
 
+test("Academy displays a cross-track learning progress overview", () => {
+  assert.match(source, /getAcademyProgressSummary\(tracks, quizAnswers\)/);
+  assert.match(source, /academy-progress-overview/);
+  assert.match(source, /academyProgressSummary\.tracks\.map/);
+  assert.match(source, /data-academy-progress-idx=/);
+  assert.match(styles, /\.academy-progress-overview\s*\{/);
+  assert.match(styles, /\.academy-progress-track\s*>\s*span\s*\{/);
+});
+
 test("Academy quiz progress persists locally and can be reset per track", () => {
   assert.match(source, /const ACADEMY_PROGRESS_KEY = "kitn_academy_progress_v1"/);
   assert.match(source, /let quizAnswers = loadAcademyProgress\(\)/);

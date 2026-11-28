@@ -89,7 +89,7 @@ class TestCollectorRetries(unittest.TestCase):
 
         self.assertEqual(result, '{"ok": true}')
         self.assertEqual(mocked.call_count, 2)
-        sleep.assert_called_once_with(1.0)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [1.0, 3.0])
 
     def test_openalex_429_opens_circuit_and_skips_later_sources(self):
         error = HTTPError(

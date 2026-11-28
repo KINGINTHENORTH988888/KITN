@@ -127,6 +127,26 @@ def _openalex_record_rate_limit() -> None:
         )
 
 
+def _openalex_rate_limit_payload(exc: HTTPError) -> dict:
+    """Read the provider's 429 response once so its reason and retry hints are not lost."""
+    try:
+        payload = json.loads(exc.read().decode("utf-8", errors="replace"))
+    except (AttributeError, OSError, UnicodeDecodeError, json.JSONDecodeError):
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    exc.openalex_payload = payload
+    return payload
+
+
+def _openalex_rate_limit_reason(payload: dict) -> str:
+    """Normalize the documented OpenAlex rate-limit reason when it is present."""
+    reason = payload.get("reason")
+    if not reason and isinstance(payload.get("error"), dict):
+        reason = payload["error"].get("reason")
+    return str(reason or "").strip().lower()
+
+
 def _retry_delay_seconds(retry_after: str | None, attempt: int, now: datetime | None = None) -> float | None:
     """Parse Retry-After seconds or HTTP-date; return None when the wait is too long."""
     delay = None
@@ -184,8 +204,22 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None, extra_h
                 return raw.decode(charset, errors="replace")
         except HTTPError as exc:
             if host.lower() == "api.openalex.org" and exc.code == 429:
-                # One rejected OpenAlex request is enough evidence to stop querying
-                # the remaining thematic endpoints in this pipeline execution.
+                payload = _openalex_rate_limit_payload(exc)
+                reason = _openalex_rate_limit_reason(payload)
+                retryable_reasons = {
+                    "requests_per_second",
+                    "broad_boolean_query",
+                    "wide_or_filter",
+                    "semantic_search",
+                }
+                if reason in retryable_reasons and attempt < 3:
+                    retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                    delay = _retry_delay_seconds(retry_after, attempt)
+                    if delay is not None:
+                        time.sleep(delay)
+                        continue
+                # Daily-budget and unknown 429s should stop the remaining
+                # thematic queries instead of repeatedly hitting the provider.
                 _openalex_record_rate_limit()
                 raise
             if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
@@ -427,13 +461,28 @@ def collect_openalex(source: dict) -> list[dict]:
             response_text = _fetch_text(page_url, extra_headers=request_headers)
         except HTTPError as exc:
             if exc.code == 429:
+                payload = getattr(exc, "openalex_payload", {})
+                reason = _openalex_rate_limit_reason(payload) if isinstance(payload, dict) else ""
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                remaining = exc.headers.get("X-RateLimit-Remaining") if exc.headers else None
+                reset = exc.headers.get("X-RateLimit-Reset") if exc.headers else None
                 key_hint = (
-                    " Vérifier le quota et l'activation de la clé OPENALEX_API_KEY."
+                    " Vérifier la clé OPENALEX_API_KEY, son activation et le budget quotidien."
                     if api_key
-                    else " Ajouter une clé API activée dans le secret GitHub OPENALEX_API_KEY."
+                    else " Ajouter une clé API OpenAlex gratuite et activée dans le secret GitHub OPENALEX_API_KEY."
                 )
+                diagnostics = []
+                if reason:
+                    diagnostics.append(f"motif={reason}")
+                if retry_after:
+                    diagnostics.append(f"Retry-After={retry_after}s")
+                if remaining is not None:
+                    diagnostics.append(f"quota restant={remaining}")
+                if reset:
+                    diagnostics.append(f"réinitialisation dans={reset}s")
+                detail = " (" + ", ".join(diagnostics) + ")" if diagnostics else ""
                 raise RuntimeError(
-                    "OpenAlex a appliqué une limitation de débit (HTTP 429)." + key_hint
+                    "OpenAlex a appliqué une limitation de débit (HTTP 429)" + detail + "." + key_hint
                 ) from exc
             raise
         payload = json.loads(response_text)

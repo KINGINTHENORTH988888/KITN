@@ -1,5 +1,11 @@
 const SCOPE_ORDER = ["all", "urban", "rural"];
 
+function isFiniteObservationValue(value) {
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value !== "string" || !value.trim()) return false;
+  return Number.isFinite(Number(value));
+}
+
 function periodSortKey(value) {
   const match = String(value || "").match(/^T([1-4])\/((?:19|20)\d{2})$/i);
   if (match) return Number(match[2]) * 10 + Number(match[1]);
@@ -61,7 +67,7 @@ export function buildRegionalStatisticsModel(payload, indicatorCode = "", reside
   const selectedIndicator = indicatorOptions.find((item) => item.code === activeIndicatorCode) || null;
   const latestPeriod = periods[periods.length - 1] || "";
   const regionalRows = rows.filter((row) => row.geographyCode !== "MAR");
-  const latestValues = regionalRows.map((row) => row.points[row.points.length - 1]).filter((point) => point && point.value !== null && point.value !== undefined && Number.isFinite(Number(point.value)));
+  const latestValues = regionalRows.map((row) => row.points[row.points.length - 1]).filter((point) => point && isFiniteObservationValue(point.value));
   const latestMissing = regionalRows.length - latestValues.length;
   const firstSeries = selectedSeries[0] || indicatorSeries[0] || null;
   const sourceSeries = selectedSeries.find((item) => item.source_name_ar) ||

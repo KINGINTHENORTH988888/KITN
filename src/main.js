@@ -611,7 +611,7 @@ function loadJsonStorage(key, fallback) {
 function loadAcademyProgress() {
   try {
     const raw = localStorage.getItem(ACADEMY_PROGRESS_KEY);
-    return normalizeAcademyProgress(raw ? JSON.parse(raw) : {});
+    return normalizeAcademyProgress(raw ? JSON.parse(raw) : {}, ACADEMY_TRACKS[lang]);
   } catch {
     return {};
   }
@@ -947,7 +947,7 @@ function exportJsonPayload(items, filename) {
   a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 
@@ -2468,7 +2468,7 @@ function render() {
       link.href = objectUrl;
       link.download = "kitn-academy-progress.json";
       link.click();
-      URL.revokeObjectURL(objectUrl);
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       academyProgressNotice = lang === "ar" ? "تم تجهيز نسخة من تقدمك." : "Sauvegarde téléchargée.";
       render();
     });
@@ -2479,6 +2479,9 @@ function render() {
       const file = input.files?.[0];
       if (!file) return;
       try {
+        if (file.size > 1024 * 1024) {
+          throw new Error("Backup file exceeds the 1 MiB safety limit");
+        }
         const payload = JSON.parse(await file.text());
         if (payload?.format !== "kitn-academy-progress" || payload?.version !== 1) {
           throw new Error("Unsupported backup format");
@@ -2499,6 +2502,7 @@ function render() {
           ? "تعذر قراءة النسخة. تحقق من الملف."
           : "Sauvegarde illisible ou incompatible. Vérifie le fichier.";
       }
+      input.value = "";
       render();
     });
   });

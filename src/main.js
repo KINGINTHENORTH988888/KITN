@@ -1,5 +1,5 @@
 import "./style.css";
-import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory, isFiniteStatisticValue } from "./statistics.js";
+import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory, isFiniteStatisticValue, normalizeStatisticFormatting, countValidStatisticObservations } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { safeExternalUrl } from "./url-safety.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
@@ -953,8 +953,7 @@ function exportJsonPayload(items, filename) {
 
 function formatStatisticValue(indicator, value) {
   if (!isFiniteStatisticValue(value)) return "—";
-  const divisor = Number(indicator.scale_divisor) || 1;
-  const precision = Number.isInteger(indicator.precision) ? indicator.precision : 1;
+  const { divisor, precision } = normalizeStatisticFormatting(indicator);
   const scaled = Number(value) / divisor;
   return new Intl.NumberFormat(lang === "ar" ? "ar-MA" : "fr-MA", {
     minimumFractionDigits: precision,
@@ -969,8 +968,7 @@ function renderStatisticsDashboard() {
     economie_finances_publiques: isAr ? "الاقتصاد والمالية العمومية" : "Économie & finances publiques",
     societe_developpement_humain: isAr ? "المجتمع والتنمية البشرية" : "Société & développement humain"
   };
-  const totalObservations = allIndicators.reduce((sum, indicator) =>
-    sum + (Array.isArray(indicator.history) ? indicator.history.length : 0), 0);
+  const totalObservations = countValidStatisticObservations(allIndicators);
   const sourceCount = new Set(allIndicators.map((item) => item.source_name).filter(Boolean)).size;
   const overview = `
     <div class="stats-overview" aria-label="${isAr ? "ملخص البيانات" : "Aperçu des données"}">

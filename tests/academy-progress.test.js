@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeAcademyProgress } from "../src/academy-progress.js";
+import { getAcademyProgressSummary, normalizeAcademyProgress } from "../src/academy-progress.js";
 
 test("keeps valid answers for each Academy track and question", () => {
   assert.deepEqual(normalizeAcademyProgress({ "dgsn:0": 2, "irat:4": 1, "administrateur:12": 3 }), {
@@ -10,12 +10,7 @@ test("keeps valid answers for each Academy track and question", () => {
 
 test("rejects malformed keys and invalid answer values", () => {
   assert.deepEqual(normalizeAcademyProgress({
-    "dgsn:0": 1,
-    "dgsn:-1": 2,
-    "dgsn:2": "1",
-    "dgsn:3": -1,
-    "dgsn:4": 10,
-    "not a key": 0
+    "dgsn:0": 1, "dgsn:-1": 2, "dgsn:2": "1", "dgsn:3": -1, "dgsn:4": 10, "not a key": 0
   }), { "dgsn:0": 1 });
 });
 
@@ -23,4 +18,35 @@ test("returns an empty progress object for malformed storage", () => {
   assert.deepEqual(normalizeAcademyProgress(null), {});
   assert.deepEqual(normalizeAcademyProgress([]), {});
   assert.deepEqual(normalizeAcademyProgress("invalid"), {});
+});
+
+test("summarizes answered, correct, completed and overall progress across tracks", () => {
+  const tracks = [
+    { id: "dgsn", label: "DGSN", questions: [{ answer: 1 }, { answer: 0 }] },
+    { id: "irat", label: "IRAT", questions: [{ answer: 2 }] },
+    { id: "admin", label: "Administration", answer: 1 }
+  ];
+  const summary = getAcademyProgressSummary(tracks, {
+    "dgsn:0": 1, "dgsn:1": 2, "irat:0": 2, "admin:0": 0
+  });
+  assert.equal(summary.answered, 4);
+  assert.equal(summary.correct, 3);
+  assert.equal(summary.total, 4);
+  assert.equal(summary.percent, 100);
+  assert.equal(summary.completedTracks, 3);
+  assert.deepEqual(summary.tracks.map(({ id, answered, correct, completed }) => ({ id, answered, correct, completed })), [
+    { id: "dgsn", answered: 2, correct: 1, completed: true },
+    { id: "irat", answered: 1, correct: 1, completed: true },
+    { id: "admin", answered: 1, correct: 1, completed: true }
+  ]);
+});
+
+test("ignores answers that do not belong to a track question", () => {
+  const summary = getAcademyProgressSummary([{ id: "dgsn", questions: [{ answer: 0 }] }], {
+    "dgsn:4": 0, "unknown:0": 1
+  });
+  assert.equal(summary.answered, 0);
+  assert.equal(summary.correct, 0);
+  assert.equal(summary.percent, 0);
+  assert.equal(summary.completedTracks, 0);
 });

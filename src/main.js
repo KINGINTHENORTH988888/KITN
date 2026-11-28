@@ -1,7 +1,7 @@
 import "./style.css";
 import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
-import { normalizeSearchText } from "./search.js";
+import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getPageSlice } from "./pagination.js";
 import { getSourceHealthFreshness } from "./source-health.js";
 import { getLibraryQualitySummary } from "./library-quality.js";
@@ -852,22 +852,22 @@ function resetAllFilters() {
 }
 
 function getFilteredItems() {
-  const q = searchQuery.trim().toLowerCase();
-  const authorQuery = scienceAuthorFilter.trim().toLowerCase();
-  const disciplineQuery = scienceDisciplineFilter.trim().toLowerCase();
+  const q = searchQuery.trim();
+  const authorQuery = scienceAuthorFilter.trim();
+  const disciplineQuery = scienceDisciplineFilter.trim();
   const list = indexItems.filter((item) => {
     if (!matchesSpace(item, activeSpace)) return false;
     if (activeSpace === "science") {
-      const authorsForFilter = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
+      const authorsForFilter = Array.isArray(item.auteurs) ? item.auteurs.join(" ") : "";
       const disciplineText = [
         ...(Array.isArray(item.mots_cles) ? item.mots_cles : []),
         item.pole || "",
         item.revue_ou_institution || "",
         item.titre_original || "",
         item.resume || ""
-      ].join(" ").toLowerCase();
-      if (authorQuery && !authorsForFilter.includes(authorQuery)) return false;
-      if (disciplineQuery && !disciplineText.includes(disciplineQuery)) return false;
+      ].join(" ");
+      if (authorQuery && !matchesSearchQuery(authorsForFilter, authorQuery)) return false;
+      if (disciplineQuery && !matchesSearchQuery(disciplineText, disciplineQuery)) return false;
       if (scienceYearFilter && String(item.date_publication || "").slice(0, 4) !== scienceYearFilter) return false;
     }
     const matchesThemePoles = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
@@ -885,31 +885,21 @@ function getFilteredItems() {
     if (favoritesOnly && !favorites.includes(getItemKey(item))) return false;
     if (!q) return true;
 
-    const title = (item.titre_original || "").toLowerCase();
-    const authors = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
-    const venue = (item.revue_ou_institution || item.source_nom || "").toLowerCase();
-    const keywords = Array.isArray(item.mots_cles) ? item.mots_cles.join(" ").toLowerCase() : "";
-    const pole = (item.pole || "").toLowerCase();
-    const poleLabel = formatPole(item.pole).toLowerCase();
-    const docType = (item.type_document || "").toLowerCase();
-    const docTypeLabel = formatDocType(item.type_document).toLowerCase();
-    const resume = (item.resume || "").toLowerCase();
-    const analysis = (item.analyse_strategique || "").toLowerCase();
-    const doi = (item.doi || "").toLowerCase();
-
-    return (
-      title.includes(q) ||
-      authors.includes(q) ||
-      venue.includes(q) ||
-      doi.includes(q) ||
-      keywords.includes(q) ||
-      pole.includes(q) ||
-      poleLabel.includes(q) ||
-      docType.includes(q) ||
-      docTypeLabel.includes(q) ||
-      resume.includes(q) ||
-      analysis.includes(q)
-    );
+    const searchable = [
+      item.titre_original || "",
+      ...(Array.isArray(item.auteurs) ? item.auteurs : []),
+      item.revue_ou_institution || "",
+      item.source_nom || "",
+      item.doi || "",
+      ...(Array.isArray(item.mots_cles) ? item.mots_cles : []),
+      item.pole || "",
+      formatPole(item.pole),
+      item.type_document || "",
+      formatDocType(item.type_document),
+      item.resume || "",
+      item.analyse_strategique || ""
+    ].join(" ");
+    return matchesSearchQuery(searchable, q);
   });
 
   return list.sort((a, b) => {

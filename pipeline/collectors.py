@@ -2269,6 +2269,17 @@ def _bam_ckan_period(value: str) -> str | None:
     text = clean_text(str(value or "")).casefold().replace("_", " ").strip()
     if not text:
         return None
+    semester = re.search(r"(20\d{2})\s*[-/]?\s*s\s*([12])", text)
+    if semester:
+        return f"{semester.group(1)}-S{semester.group(2)}"
+    semester = re.search(r"([12])\s*(?:er|e|ème|eme)?\s*semestre\s*(20\d{2})", text)
+    if not semester:
+        semester = re.search(r"semestre\s*([12])\s*(20\d{2})", text)
+    if not semester:
+        semester = re.search(r"s\s*([12])\s*(20\d{2})", text)
+    if semester:
+        return f"{semester.group(2)}-S{semester.group(1)}"
+
     quarter = re.search(r"(20\d{2})\s*[-/]?\s*(?:t|trimestre|q)\s*([1-4])", text)
     if not quarter:
         quarter = re.search(r"(?:t|trimestre|q)\s*([1-4])\s*[-/]?\s*(20\d{2})", text)

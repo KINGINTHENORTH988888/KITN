@@ -67,3 +67,13 @@ export function mergeAcademyProgress(current, incoming, tracks) {
   }
   return merged;
 }
+
+
+export function parseAcademyProgressStorage(raw, tracks) {
+  try {
+    const parsed = typeof raw === "string" && raw.trim() ? JSON.parse(raw) : {};
+    return normalizeAcademyProgress(parsed, tracks);
+  } catch {
+    return {};
+  }
+}

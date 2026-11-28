@@ -56,7 +56,8 @@ export function findRelatedKnowledgeItems(items, item, {
       const candidateTerms = getMeaningfulTerms(candidate, normalizeText);
       const sharedPrimary = [...sourceTerms.primary].filter((term) => candidateTerms.primary.has(term));
       const sharedContext = [...sourceTerms.primary].filter((term) => candidateTerms.context.has(term))
-        .concat([...sourceTerms.context].filter((term) => candidateTerms.primary.has(term)));
+        .concat([...sourceTerms.context].filter((term) => candidateTerms.primary.has(term)))
+        .concat([...sourceTerms.context].filter((term) => candidateTerms.context.has(term)));
       const sharedTerms = [...new Set([...sharedPrimary, ...sharedContext])];
       const samePole = Boolean(item.pole && candidate.pole === item.pole);
       const crossSpace = Boolean(sourceSpace && candidateSpace && candidateSpace !== sourceSpace);

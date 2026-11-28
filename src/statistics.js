@@ -146,3 +146,22 @@ export function isFiniteStatisticValue(value) {
   if (typeof value !== "string" || !value.trim()) return false;
   return Number.isFinite(Number(value));
 }
+
+
+export function normalizeStatisticFormatting(indicator = {}) {
+  const rawDivisor = Number(indicator.scale_divisor);
+  const divisor = Number.isFinite(rawDivisor) && rawDivisor > 0 ? rawDivisor : 1;
+  const rawPrecision = indicator.precision;
+  const precision = Number.isInteger(rawPrecision) && rawPrecision >= 0 && rawPrecision <= 6
+    ? rawPrecision
+    : 1;
+  return { divisor, precision };
+}
+
+export function countValidStatisticObservations(indicators) {
+  if (!Array.isArray(indicators)) return 0;
+  return indicators.reduce((total, indicator) => {
+    const history = Array.isArray(indicator?.history) ? indicator.history : [];
+    return total + history.filter((point) => isFiniteStatisticValue(point?.value)).length;
+  }, 0);
+}

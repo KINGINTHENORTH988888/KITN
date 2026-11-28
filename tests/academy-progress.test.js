@@ -22,9 +22,9 @@ test("returns an empty progress object for malformed storage", () => {
 
 test("summarizes answered, correct, completed and overall progress across tracks", () => {
   const tracks = [
-    { id: "dgsn", label: "DGSN", questions: [{ answer: 1 }, { answer: 0 }] },
-    { id: "irat", label: "IRAT", questions: [{ answer: 2 }] },
-    { id: "admin", label: "Administration", answer: 1 }
+    { id: "dgsn", label: "DGSN", questions: [{ answer: 1, options: ["a", "b", "c"] }, { answer: 0, options: ["a", "b", "c"] }] },
+    { id: "irat", label: "IRAT", questions: [{ answer: 2, options: ["a", "b", "c"] }] },
+    { id: "admin", label: "Administration", answer: 1, options: ["a", "b"] }
   ];
   const summary = getAcademyProgressSummary(tracks, {
     "dgsn:0": 1, "dgsn:1": 2, "irat:0": 2, "admin:0": 0
@@ -39,6 +39,18 @@ test("summarizes answered, correct, completed and overall progress across tracks
     { id: "irat", answered: 1, correct: 1, completed: true },
     { id: "admin", answered: 1, correct: 0, completed: true }
   ]);
+});
+
+test("summary ignores locally stored answers outside the current question options", () => {
+  const tracks = [{ id: "dgsn", questions: [{ answer: 1, options: ["a", "b"] }] }];
+  const summary = getAcademyProgressSummary(tracks, {
+    "dgsn:0": 9,
+    "dgsn:1": 0,
+    "unknown:0": 1
+  });
+  assert.equal(summary.answered, 0);
+  assert.equal(summary.correct, 0);
+  assert.equal(summary.percent, 0);
 });
 
 test("ignores answers that do not belong to a track question", () => {

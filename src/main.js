@@ -4,7 +4,7 @@ import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { safeExternalUrl } from "./url-safety.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getHomeFeaturedItems } from "./home-discovery.js";
-import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "./academy-progress.js";
+import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress, parseAcademyProgressStorage } from "./academy-progress.js";
 import { getPageSlice } from "./pagination.js";
 import { getEffectiveSourceStatus, getSourceHealthFreshness, reconcileSourceHealth } from "./source-health.js";
 import configuredSources from "../data/sources.json";
@@ -611,7 +611,7 @@ function loadJsonStorage(key, fallback) {
 function loadAcademyProgress() {
   try {
     const raw = localStorage.getItem(ACADEMY_PROGRESS_KEY);
-    return normalizeAcademyProgress(raw ? JSON.parse(raw) : {}, ACADEMY_TRACKS[lang]);
+    return parseAcademyProgressStorage(raw, ACADEMY_TRACKS[lang]);
   } catch {
     return {};
   }

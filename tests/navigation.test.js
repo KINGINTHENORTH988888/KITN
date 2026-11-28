@@ -361,6 +361,7 @@ test("global statistical indicator search uses accent-insensitive token matching
 test("document detail modal lets readers follow a related item into its full page", () => {
   const modal = source.slice(source.indexOf("function renderModal"), source.indexOf("function renderResults"));
   assert.match(modal, /const relatedItems = getRelatedKnowledgeItems\(item\)/);
+  assert.match(modal, /relatedItems\.map\(\(\{ item: related, crossSpace, sharedTerms \}\)/);
   assert.match(modal, /data-related-item=/);
   assert.match(modal, /modal\.querySelectorAll\("\[data-related-item\]"\)/);
   assert.match(modal, /activeArticleId = key/);

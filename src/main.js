@@ -367,6 +367,12 @@ const COPY = {
     academyObjectivesLabel: "Compétences à maîtriser",
     academyPlanLabel: "Parcours de révision conseillé",
     academyExplanationLabel: "Pourquoi chaque réponse ?",
+    academyLessonsLabel: "Cours et mises en pratique",
+    academyConceptsLabel: "Notions essentielles",
+    academyExampleLabel: "Exemple marocain",
+    academyEssayLabel: "Sujet de réflexion",
+    academyExerciseLabel: "Exercice d’application",
+    academyGuidanceLabel: "Pistes de correction",
     academyQuizLabel: "QCM d'entraînement",
     methodEyebrow: "Notre approche",
     methodTitle: "La connaissance commence par une bonne question.",
@@ -486,6 +492,12 @@ const COPY = {
     academyObjectivesLabel: "الكفاءات المطلوب إتقانها",
     academyPlanLabel: "مسار المراجعة المقترح",
     academyExplanationLabel: "تفسير كل اختيار",
+    academyLessonsLabel: "دروس وتطبيقات",
+    academyConceptsLabel: "مفاهيم أساسية",
+    academyExampleLabel: "مثال من السياق المغربي",
+    academyEssayLabel: "موضوع للتفكير",
+    academyExerciseLabel: "تمرين تطبيقي",
+    academyGuidanceLabel: "عناصر للتصحيح",
     academyQuizLabel: "اختبار تفاعلي",
     methodEyebrow: "مقاربتنا",
     methodTitle: "المعرفة تبدأ بسؤال جيد.",
@@ -1914,6 +1926,38 @@ function render() {
             ${Array.isArray(activeTrack.past_topics) && activeTrack.past_topics.length ? `<p>${escapeHtml(activeTrack.past_topics.join(" · "))}</p>` : ""}
             ${Array.isArray(activeTrack.learning_objectives) && activeTrack.learning_objectives.length ? `<div class="academy-learning-block"><h4>${escapeHtml(c.academyObjectivesLabel)}</h4><ul>${activeTrack.learning_objectives.map((objective) => `<li>${escapeHtml(objective)}</li>`).join("")}</ul></div>` : ""}
             ${Array.isArray(activeTrack.study_plan) && activeTrack.study_plan.length ? `<div class="academy-learning-block"><h4>${escapeHtml(c.academyPlanLabel)}</h4><ol>${activeTrack.study_plan.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol></div>` : ""}
+            ${Array.isArray(activeTrack.lessons) && activeTrack.lessons.length ? `
+              <section class="academy-course-section" aria-label="${escapeHtml(c.academyLessonsLabel)}">
+                <h3>${escapeHtml(c.academyLessonsLabel)}</h3>
+                ${activeTrack.lessons.map((lesson, lessonIndex) => `
+                  <article class="academy-lesson">
+                    <span class="mini-label">${lang === "ar" ? "الوحدة" : "Module"} ${lessonIndex + 1}</span>
+                    <h4>${escapeHtml(lesson.title)}</h4>
+                    <p class="academy-lesson-summary">${escapeHtml(lesson.summary)}</p>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyConceptsLabel)}</h5>
+                      <dl>${lesson.concepts.map(([term, definition]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(definition)}</dd></div>`).join("")}</dl>
+                    </div>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyExampleLabel)}</h5>
+                      <p>${escapeHtml(lesson.example)}</p>
+                    </div>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyEssayLabel)}</h5>
+                      <p>${escapeHtml(lesson.essay)}</p>
+                    </div>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyExerciseLabel)}</h5>
+                      <p>${escapeHtml(lesson.exercise)}</p>
+                    </div>
+                    <details class="academy-guidance">
+                      <summary>${escapeHtml(c.academyGuidanceLabel)}</summary>
+                      <p>${escapeHtml(lesson.guidance)}</p>
+                    </details>
+                  </article>
+                `).join("")}
+              </section>
+            ` : ""}
           </div>
           <div>
             <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>

@@ -121,3 +121,16 @@ Cela **ne constitue pas une expertise forensique anti-malware**. Le dépôt suit
 ## Limites de cet audit
 
 Cet inventaire est un audit de configuration, de dispatch du code et du dernier rapport disponible. Il ne prétend pas avoir testé individuellement les 64 endpoints en direct. Les 42 sources désactivées doivent faire l'objet d'une campagne de validation contrôlée avant d'être considérées comme opérationnelles.
+
+
+## Complément de contrôle public — 28 novembre 2026
+
+Les endpoints de données exposés par `https://kitn.pages.dev` ont également été interrogés en lecture seule :
+
+- `/data/index/search-index.json` répond avec un index de **269 notices**, généré le `2026-11-27T16:33:58Z`.
+- `/data/statistics.json` répond avec **845 indicateurs**, générés à la même date.
+- `/data/sources-health.json` ne renvoie pas un document JSON dans la réponse publique contrôlée : l'extraction retourne le contenu HTML de la page d'accueil. Le fichier existe bien dans la branche d'audit sous `public/data/sources-health.json`, mais sa présence dans le dépôt ne prouve pas qu'il est publié sur le domaine public.
+- La page d'accueil publique présente encore une fiche de révision DGSN mise en avant. Cela donne un poids visuel important à un seul concours, alors que le cahier des charges demande une plateforme transversale et que DGSN/IRAT/Administrateur doivent rester des catégories de KITN Academy.
+- Les URL profondes contrôlées (`/maroc-en-chiffres`, `/academy`, `/veille`, `/etudes-recherche`, `/bibliotheque`) ont renvoyé le même texte extrait que la racine. L'automatisation interactive par clic n'a pas pu être lancée dans cette session ; le résultat est donc un signal à confirmer, pas une certification du comportement visuel.
+
+**Écart de version à retenir :** les données publiques reflètent une collecte du 27 novembre, tandis que le rendu des espaces et la publication du rapport de santé doivent encore être validés. Ne pas conclure que le site public sert exactement le dernier build de la branche simplement parce que certains compteurs de données correspondent.

@@ -466,6 +466,7 @@ const COPY = {
     manualAddedMsg: "Contribution enregistrée localement et intégrée dans l'index.",
     manualImportedMsg: "Contributions JSON importées avec succès.",
     manualInvalidJsonMsg: "Fichier JSON invalide : attendu { \"items\": [...] } ou [...].",
+    manualStorageErrorMsg: "Enregistrement impossible : le stockage du navigateur est indisponible ou saturé.",
     footerCopy: "© 2026 KITN — De l'information à la maîtrise."
   },
   ar: {
@@ -591,6 +592,7 @@ const COPY = {
     manualAddedMsg: "تم تسجيل المساهمة محلياً وإدراجها في الفهرس.",
     manualImportedMsg: "تم استيراد المساهمات JSON بنجاح.",
     manualInvalidJsonMsg: "ملف JSON غير صالح: المتوقع { \"items\": [...] } أو [...].",
+    manualStorageErrorMsg: "تعذر الحفظ: تخزين المتصفح غير متاح أو ممتلئ.",
     footerCopy: "© 2026 KITN — من المعلومة إلى التمكن."
   }
 };
@@ -617,8 +619,9 @@ function loadAcademyProgress() {
 function saveJsonStorage(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch {
-    // ignore storage quota errors
+    return false;
   }
 }
 
@@ -797,11 +800,12 @@ function getEffectiveStatus(item) {
 function setItemStatus(item, nextStatus) {
   const k = getItemKey(item);
   if (!k) return;
-  statusOverrides[k] = nextStatus;
   if (item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_")) {
-    manualItems = manualItems.map((m) => (getItemKey(m) === k ? { ...m, statut_validation: nextStatus } : m));
-    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+    const nextManualItems = manualItems.map((m) => (getItemKey(m) === k ? { ...m, statut_validation: nextStatus } : m));
+    if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) return;
+    manualItems = nextManualItems;
   }
+  statusOverrides[k] = nextStatus;
   rebuildCombinedIndex();
   renderResults();
   if (activeModalItem && getItemKey(activeModalItem) === k) {
@@ -812,8 +816,9 @@ function setItemStatus(item, nextStatus) {
 
 function deleteManualItem(item) {
   const k = getItemKey(item);
-  manualItems = manualItems.filter((m) => getItemKey(m) !== k);
-  saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+  const nextManualItems = manualItems.filter((m) => getItemKey(m) !== k);
+  if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) return;
+  manualItems = nextManualItems;
   rebuildCombinedIndex();
   renderResults();
   if (activeModalItem && getItemKey(activeModalItem) === k) {
@@ -845,12 +850,11 @@ function matchesSpace(item, space) {
 function toggleFavorite(item) {
   const key = getItemKey(item);
   if (!key) return;
-  if (favorites.includes(key)) {
-    favorites = favorites.filter((k) => k !== key);
-  } else {
-    favorites = [...favorites, key];
-  }
-  saveJsonStorage(FAVORITES_KEY, favorites);
+  const nextFavorites = favorites.includes(key)
+    ? favorites.filter((k) => k !== key)
+    : [...favorites, key];
+  if (!saveJsonStorage(FAVORITES_KEY, nextFavorites)) return;
+  favorites = nextFavorites;
   renderResults();
 }
 
@@ -2661,8 +2665,13 @@ function render() {
       origine: "manuel"
     };
 
-    manualItems = [newEntry, ...manualItems];
-    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+    const nextManualItems = [newEntry, ...manualItems];
+    if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) {
+      const statusEl = document.getElementById("manual-status");
+      if (statusEl) statusEl.textContent = c.manualStorageErrorMsg;
+      return;
+    }
+    manualItems = nextManualItems;
     rebuildCombinedIndex();
     render();
     const statusEl = document.getElementById("manual-status");
@@ -2695,8 +2704,12 @@ function render() {
           titre_original: x.titre_original || x.title,
           origine: "manuel"
         }));
-      manualItems = [...normalized, ...manualItems];
-      saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+      const nextManualItems = [...normalized, ...manualItems];
+      if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) {
+        if (statusEl) statusEl.textContent = c.manualStorageErrorMsg;
+        return;
+      }
+      manualItems = nextManualItems;
       rebuildCombinedIndex();
       render();
       const afterStatus = document.getElementById("manual-status");
@@ -2707,8 +2720,12 @@ function render() {
   });
 
   document.getElementById("manual-clear")?.addEventListener("click", () => {
+    if (!saveJsonStorage(MANUAL_ITEMS_KEY, [])) {
+      const statusEl = document.getElementById("manual-status");
+      if (statusEl) statusEl.textContent = c.manualStorageErrorMsg;
+      return;
+    }
     manualItems = [];
-    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
     rebuildCombinedIndex();
     render();
   });

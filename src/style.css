@@ -1456,8 +1456,8 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: .85rem;
-  min-height: 148px;
+  gap: .65rem;
+  min-height: 210px;
   padding: 1.05rem;
   border: 1px solid var(--line);
   border-radius: .85rem;
@@ -1473,6 +1473,7 @@ textarea {
   box-shadow: 0 10px 26px rgba(25,55,75,.07);
 }
 .home-space-card strong { font-size: .95rem; line-height: 1.35; }
+.home-space-card p { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.55; }
 .home-space-card > span:last-child { margin-top: auto; color: var(--accent); font-size: .78rem; }
 .home-space-mark {
   display: grid; place-items: center; width: 2rem; height: 2rem;
@@ -1484,7 +1485,7 @@ textarea {
 }
 @media (max-width: 650px) {
   .home-space-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
-  .home-space-card { min-height: 132px; padding: .85rem; }
+  .home-space-card { min-height: 190px; padding: .85rem; }
 }
 
 

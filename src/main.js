@@ -366,6 +366,7 @@ const COPY = {
     academyMethodLabel: "Méthodologie & anciens sujets",
     academyObjectivesLabel: "Compétences à maîtriser",
     academyPlanLabel: "Parcours de révision conseillé",
+    academyExplanationLabel: "Pourquoi chaque réponse ?",
     academyQuizLabel: "QCM d'entraînement",
     methodEyebrow: "Notre approche",
     methodTitle: "La connaissance commence par une bonne question.",
@@ -484,6 +485,7 @@ const COPY = {
     academyMethodLabel: "المنهجية والمواضيع السابقة",
     academyObjectivesLabel: "الكفاءات المطلوب إتقانها",
     academyPlanLabel: "مسار المراجعة المقترح",
+    academyExplanationLabel: "تفسير كل اختيار",
     academyQuizLabel: "اختبار تفاعلي",
     methodEyebrow: "مقاربتنا",
     methodTitle: "المعرفة تبدأ بسؤال جيد.",
@@ -1928,9 +1930,15 @@ function render() {
               `).join("")}
             </div>
             ${selectedQuizOption !== null ? `
-              <p class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
-                ${escapeHtml(activeQuizQuestion.correction)}
-              </p>
+              <div class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
+                <p>${escapeHtml(activeQuizQuestion.correction)}</p>
+                ${Array.isArray(activeQuizQuestion.option_explanations) && activeQuizQuestion.option_explanations.length ? `
+                  <div class="quiz-explanations">
+                    <strong>${escapeHtml(c.academyExplanationLabel)}</strong>
+                    <ul>${activeQuizQuestion.option_explanations.map((explanation, optionIndex) => `<li class="${optionIndex === activeQuizQuestion.answer ? "is-correct" : "is-distractor"}"><span>${optionIndex === activeQuizQuestion.answer ? "✓" : "•"}</span> ${escapeHtml(explanation)}</li>`).join("")}</ul>
+                  </div>
+                ` : ""}
+              </div>
             ` : ""}
           </div>
         </div>

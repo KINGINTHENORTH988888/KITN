@@ -21,6 +21,12 @@ test("related knowledge ignores months, ordinals and generic news wording", () =
   assert.deepEqual(related([source, candidate], source), []);
 });
 
+test("a shared classification pole alone is not enough to create a recommendation", () => {
+  const source = { id: "a", espace: "bibliotheque", pole: "economie_finances_publiques", titre_original: "Rencontre institutionnelle", resume: "Discussion protocolaire" };
+  const candidate = { id: "b", espace: "veille", pole: "economie_finances_publiques", titre_original: "Rapport annuel de conjoncture", resume: "Publication nationale" };
+  assert.deepEqual(related([source, candidate], source), []);
+});
+
 test("related knowledge matches meaningful complete terms across different spaces", () => {
   const source = { id: "a", espace: "bibliotheque", pole: "institutions_gouvernance", titre_original: "Déconcentration administrative et gouvernance locale" };
   const candidate = { id: "b", espace: "veille", titre_original: "La déconcentration administrative au Maroc" };

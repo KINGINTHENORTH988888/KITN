@@ -2100,3 +2100,92 @@ textarea {
     padding: .65rem;
   }
 }
+
+
+.academy-course-section {
+  grid-column: 1 / -1;
+  margin-top: 0.4rem;
+}
+
+.academy-course-section > h3 {
+  margin: 0 0 0.85rem;
+}
+
+.academy-lesson {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--surface);
+  min-width: 0;
+}
+
+.academy-lesson h4 {
+  margin: 0.25rem 0 0.5rem;
+}
+
+.academy-lesson-summary {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.academy-lesson-part {
+  margin-top: 0.85rem;
+}
+
+.academy-lesson-part h5 {
+  margin: 0 0 0.45rem;
+  font-size: 0.92rem;
+}
+
+.academy-lesson-part p {
+  margin: 0;
+  line-height: 1.65;
+}
+
+.academy-lesson-part dl {
+  margin: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.academy-lesson-part dl > div {
+  display: grid;
+  grid-template-columns: minmax(115px, 0.32fr) minmax(0, 1fr);
+  gap: 0.7rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.academy-lesson-part dt {
+  font-weight: 700;
+}
+
+.academy-lesson-part dd {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.academy-guidance {
+  margin-top: 0.9rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.65rem;
+  background: var(--surface-alt);
+}
+
+.academy-guidance summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.academy-guidance p {
+  margin: 0.65rem 0 0;
+  line-height: 1.65;
+}
+
+@media (max-width: 560px) {
+  .academy-lesson-part dl > div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}

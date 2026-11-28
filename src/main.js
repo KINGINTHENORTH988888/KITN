@@ -1453,6 +1453,22 @@ function renderModal() {
   const safePdf = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
   const doiUrl = getDoiUrl(item.doi);
   const isManual = item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_");
+  const relatedItems = getRelatedKnowledgeItems(item);
+  const relatedMarkup = relatedItems.length ? `
+    <section class="related-knowledge related-knowledge-modal">
+      <div class="related-knowledge-heading">
+        <span class="mini-label">${lang === "ar" ? "روابط معرفية" : "CONNEXIONS TRANSVERSALES"}</span>
+        <h4>${lang === "ar" ? "اكتشف مواضيع مرتبطة" : "À explorer également"}</h4>
+      </div>
+      <div class="related-knowledge-grid">
+        ${relatedItems.map(({ item: related, crossSpace }) => `
+          <button type="button" class="related-knowledge-card" data-related-item="${escapeHtml(getItemKey(related))}">
+            <span>${escapeHtml(crossSpace ? (lang === "ar" ? "مجال آخر" : "Autre espace") : (lang === "ar" ? "موضوع مرتبط" : "Même espace"))}</span>
+            <strong>${escapeHtml(related.titre_original || "")}</strong>
+          </button>`).join("")}
+      </div>
+    </section>` : "";
+
 
   const modal = document.createElement("div");
   modal.id = "notice-modal";
@@ -1489,7 +1505,7 @@ function renderModal() {
           <p>${escapeHtml(item.analyse_strategique)}</p>
         </div>
       ` : ""}
-      <div class="result-actions">
+      ${relatedMarkup}\n      <div class="result-actions">
         ${safeUrl ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceLink)}</a>` : ""}
         ${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">DOI ↗</a>` : ""}
         ${safePdf ? `<a href="${escapeHtml(safePdf)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.pdfLink)}</a>` : ""}
@@ -1501,6 +1517,18 @@ function renderModal() {
   `;
 
   document.body.appendChild(modal);
+  modal.querySelectorAll("[data-related-item]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-related-item");
+      if (!key) return;
+      activeModalItem = null;
+      activeArticleId = key;
+      activeSpace = "all";
+      window.history.pushState({ kitnArticle: key }, "", "/publication/" + encodeURIComponent(key));
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
   document.getElementById("close-modal")?.addEventListener("click", () => {
     activeModalItem = null;
     renderModal();

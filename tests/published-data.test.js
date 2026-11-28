@@ -125,6 +125,31 @@ test("Academy has three bilingual tracks with valid answer indexes", () => {
 });
 
 
+test("Academy course modules are complete and aligned in French and Arabic", () => {
+  for (const id of ["dgsn", "irat", "admin"]) {
+    const fr = academy.tracks.fr.find((track) => track.id === id);
+    const ar = academy.tracks.ar.find((track) => track.id === id);
+    assert.equal(fr.lessons?.length, 2, `French ${id} needs two lessons`);
+    assert.equal(ar.lessons?.length, 2, `Arabic ${id} needs two lessons`);
+    for (let index = 0; index < 2; index += 1) {
+      for (const languageTrack of [fr, ar]) {
+        const lesson = languageTrack.lessons[index];
+        assert.ok(lesson.title?.trim().length >= 8);
+        assert.ok(lesson.summary?.trim().length >= 35);
+        assert.equal(lesson.concepts?.length, 4);
+        for (const [term, definition] of lesson.concepts) {
+          assert.ok(term.trim().length >= 2);
+          assert.ok(definition.trim().length >= 20);
+        }
+        for (const field of ["example", "essay", "exercise", "guidance"]) {
+          assert.ok(lesson[field]?.trim().length >= 45, `${languageTrack.id}/${index}/${field} is too short`);
+        }
+      }
+      assert.equal(fr.lessons[index].id, ar.lessons[index].id, `FR/AR lesson order mismatch for ${id}`);
+    }
+  }
+});
+
 test("Academy quiz options all include bilingual pedagogical explanations", () => {
   for (const language of ["fr", "ar"]) {
     for (const track of academy.tracks?.[language] || []) {

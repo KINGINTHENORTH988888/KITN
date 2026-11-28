@@ -64,6 +64,7 @@ export function findRelatedKnowledgeItems(items, item, {
     })
     .filter((entry) => entry.sharedTerms.length > 0)
     .sort((a, b) =>
+      Number(b.crossSpace) - Number(a.crossSpace) ||
       b.score - a.score ||
       String(b.item.date_publication || "").localeCompare(String(a.item.date_publication || ""))
     )

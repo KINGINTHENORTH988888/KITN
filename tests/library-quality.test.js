@@ -50,3 +50,15 @@ test("library quality summary safely handles missing or non-array input", () => 
     withAbstract: 0
   });
 });
+
+
+test("does not count credential-bearing publication or PDF URLs as usable links", () => {
+  const items = [
+    { url_publication: "https://user:secret@example.org/report", pdf_direct: "https://user:secret@example.org/report.pdf" },
+    { url_publication: "https://example.org/report", pdf_direct: "https://example.org/report.pdf" }
+  ];
+  const summary = getLibraryQualitySummary(items);
+  assert.equal(summary.withSourceLink, 1);
+  assert.equal(summary.withPdf, 1);
+  assert.equal(summary.duplicateRecords, 0);
+});

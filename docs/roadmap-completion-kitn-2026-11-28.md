@@ -175,7 +175,7 @@ Ce document est le point de reprise global. Une fonctionnalité codée n'est con
 7. Rester sur des solutions gratuites ; demander avant toute dépense.
 8. À chaque session, mettre à jour ce document et terminer le compte rendu par toutes les phases encore ouvertes.
 
-**Prochaine reprise technique :** commencer par la Phase A et valider la tête `1ab12bf748323ea7a7c6cdd6a04c601a0a6b36a5`. Le dernier commit ajoute un test de tri chronologique ; il faut obtenir la suite frontend complète sur cette tête. La production reste inchangée.
+**Prochaine reprise technique :** repartir de la tête actuelle `03ea82e52bdf1fc0a5002f7ddf8757e859e7cd02`, vérifier le résultat des workflows sur cette tête, puis poursuivre l'audit des données statistiques et de leur schéma. Les commits de correction booléenne régionale sont consignés dans la section 8. La production reste inchangée.
 
 
 ## 6. Mise à jour de l'audit de branche — 28 novembre 2026, après ajout de la feuille de route

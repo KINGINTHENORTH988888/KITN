@@ -1645,17 +1645,28 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
             continue
         parser = _BAMPageExtractor()
         csv_rows = []
+        csv_error = None
         if kind == "monia" and page.get("csv_url"):
             try:
                 csv_payload = _fetch_text(str(page["csv_url"]), referer=page_url)
                 csv_rows = _bam_monia_csv_rows(csv_payload)
-            except Exception:
-                csv_rows = []
+            except Exception as exc:
+                # Keep the primary export failure so a blocked page fallback does
+                # not hide the reason why MONIA could not be collected.
+                csv_error = exc
         if csv_rows:
             parser.rows = csv_rows
             visible_text = ""
         else:
-            html_body = _fetch_text(page_url, referer=page_url)
+            try:
+                html_body = _fetch_text(page_url, referer=page_url)
+            except Exception as page_error:
+                if kind == "monia" and csv_error is not None:
+                    raise RuntimeError(
+                        "Collecte MONIA impossible : export CSV "
+                        f"({csv_error}) ; page officielle ({page_error})."
+                    ) from page_error
+                raise
             parser.feed(html_body)
             visible_text = clean_text(" ".join(parser.text_parts))
 

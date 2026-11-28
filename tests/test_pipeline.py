@@ -1096,7 +1096,7 @@ class TestPipelineProcessors(unittest.TestCase):
         )
         self.assertEqual(len(items), 1)
         series = items[0]["statistics_series"]
-        self.assertEqual(series["indicator_code"], "BAM_CKAN_AGR_GATS_DE_MONNAIE_FEUILLE_1_MASSE_MON_TAIRE_M3_MDH")
+        self.assertEqual(series["indicator_code"], "BAM_CKAN_AGR_GATS_DE_MONNAIE_FEUILLE_1_SECTION_L2_MASSE_MON_TAIRE_M3_MDH")
         self.assertEqual(series["sheet_name"], "Feuille 1")
         self.assertEqual(series["latest"], {"year": "2025-02", "value": 1020.0})
         self.assertEqual(len(series["history"]), 3)
@@ -1173,7 +1173,8 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["statistics_series"]["latest"]["value"], 1020.0)
         self.assertEqual(items[0]["statistics_series"]["sheet_name"], "Feuille monétaire")
-        self.assertIn("FEUILLE_MON_TAIRE", items[0]["statistics_series"]["indicator_code"])
+        self.assertIn("FEUILLE_MON_TAIRE_SECTION_L2", items[0]["statistics_series"]["indicator_code"])
+        self.assertEqual(items[0]["statistics_series"]["source_position"], "L2")
         download.assert_called_once_with(
             "https://data.gov.ma/resource.xlsx", timeout=30, max_bytes=8000000
         )

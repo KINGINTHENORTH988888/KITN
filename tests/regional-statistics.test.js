@@ -211,7 +211,7 @@ test("does not coerce blank or boolean regional observations into numeric zero",
   const regionalSeries = incompletePayload.series.find((item) => item.geography_code !== "MAR" && item.residence_scope === "all");
   const blankSeries = ["", "   ", false].map((value, index) => ({
     ...structuredClone(regionalSeries),
-    geography_code: ["RABAT_SALE_KENITRA", "CASABLANCA_SET TAT", "TANGER_TETOUAN_AL_HOCEIMA"][index],
+    geography_code: ["RABAT_SALE_KENITRA", "CASABLANCA_SETTAT", "TANGER_TETOUAN_AL_HOCEIMA"][index],
     geography_name_fr: ["Rabat-Salé-Kénitra", "Casablanca-Settat", "Tanger-Tétouan-Al Hoceïma"][index],
     history: regionalSeries.history.map((point, pointIndex) => ({
       ...point,

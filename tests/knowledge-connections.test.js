@@ -15,6 +15,21 @@ test("related knowledge ignores years and generic words as thematic connections"
   assert.deepEqual(related([source, candidate], source), []);
 });
 
+test("one incidental context word cannot create a recommendation", () => {
+  const source = { id: "a", espace: "bibliotheque", titre_original: "Rencontre institutionnelle", resume: "Le président Ahmed présente un rapport" };
+  const candidate = { id: "b", espace: "veille", titre_original: "Actualité locale", resume: "Ahmed participe à un événement" };
+  assert.deepEqual(related([source, candidate], source), []);
+});
+
+test("two shared context terms can support a recommendation when titles differ", () => {
+  const source = { id: "a", espace: "bibliotheque", titre_original: "Analyse territoriale", resume: "transition énergétique et efficacité industrielle" };
+  const candidate = { id: "b", espace: "science", titre_original: "Évolution des secteurs", resume: "transition énergétique au Maroc" };
+  const result = related([source, candidate], source);
+  assert.equal(result.length, 1);
+  assert.ok(result[0].sharedTerms.includes("transition"));
+  assert.ok(result[0].sharedTerms.includes("energetique"));
+});
+
 test("related knowledge ignores months, ordinals and generic news wording", () => {
   const source = { id: "a", espace: "bibliotheque", titre_original: "Rapport stratégique novembre 2026" };
   const candidate = { id: "b", espace: "veille", titre_original: "Rencontre du premier novembre 2026" };

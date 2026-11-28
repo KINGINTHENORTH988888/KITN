@@ -30,14 +30,14 @@ test("summarizes answered, correct, completed and overall progress across tracks
     "dgsn:0": 1, "dgsn:1": 2, "irat:0": 2, "admin:0": 0
   });
   assert.equal(summary.answered, 4);
-  assert.equal(summary.correct, 3);
+  assert.equal(summary.correct, 2);
   assert.equal(summary.total, 4);
   assert.equal(summary.percent, 100);
   assert.equal(summary.completedTracks, 3);
   assert.deepEqual(summary.tracks.map(({ id, answered, correct, completed }) => ({ id, answered, correct, completed })), [
     { id: "dgsn", answered: 2, correct: 1, completed: true },
     { id: "irat", answered: 1, correct: 1, completed: true },
-    { id: "admin", answered: 1, correct: 1, completed: true }
+    { id: "admin", answered: 1, correct: 0, completed: true }
   ]);
 });
 

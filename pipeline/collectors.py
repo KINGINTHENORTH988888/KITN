@@ -2329,8 +2329,8 @@ def _bam_ckan_number(value: str) -> float | None:
     negative = text.startswith("(") and text.endswith(")")
     text = text.strip("()")
     text = (
-        text.replace("\\u00a0", "")
-        .replace("\\u202f", "")
+        text.replace("\u00a0", "")
+        .replace("\u202f", "")
         .replace(" ", "")
         .replace("٬", "")
         .replace("٫", ".")
@@ -2359,7 +2359,7 @@ def _bam_ckan_number(value: str) -> float | None:
         else:
             text = "".join(groups[:-1]) + "." + groups[-1]
 
-    if not re.fullmatch(r"[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?", text):
+    if not re.fullmatch(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", text):
         return None
     try:
         number = float(text)

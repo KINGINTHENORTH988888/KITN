@@ -223,10 +223,10 @@ test("mobile navigation stays in the header document flow", () => {
 });
 
 test("search normalization ignores accents and combining diacritics", () => {
-  assert.match(source, /import \{ normalizeSearchText \} from "\.\/search\.js"/);
+  assert.match(source, /import \{ matchesSearchQuery, normalizeSearchText \} from "\.\/search\.js"/);
   assert.match(searchSource, /export function normalizeSearchText\(value\)/);
   assert.match(searchSource, /\.normalize\("NFD"\)/);
-  assert.match(source, /normalizeSearchText\(searchQuery\)/);
+  assert.match(source, /matchesSearchQuery\(searchable, q\)/);
   assert.match(source, /normalizeSearchText\(statisticsSearch\)/);
 });
 

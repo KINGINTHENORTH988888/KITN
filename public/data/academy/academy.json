@@ -32,7 +32,12 @@
               "Concentrer toutes les décisions au niveau central"
             ],
             "answer": 0,
-            "correction": "La police de proximité mise sur le contact avec la population, la prévention et la résolution des problèmes locaux."
+            "correction": "La police de proximité mise sur le contact avec la population, la prévention et la résolution des problèmes locaux.",
+            "option_explanations": [
+              "C'est précisément la finalité préventive et relationnelle de cette approche.",
+              "La police agit dans le cadre de ses missions ; elle ne se substitue pas à la justice.",
+              "La proximité suppose une présence et une écoute territoriales, non une centralisation absolue."
+            ]
           },
           {
             "question": "Face à une rumeur virale pouvant provoquer des tensions, quelle réaction est la plus adaptée ?",
@@ -42,7 +47,12 @@
               "Ignorer systématiquement toute alerte"
             ],
             "answer": 1,
-            "correction": "La vérification des faits et une communication crédible limitent la propagation de la désinformation."
+            "correction": "La vérification des faits et une communication crédible limitent la propagation de la désinformation.",
+            "option_explanations": [
+              "Une diffusion sans vérification peut amplifier la rumeur et aggraver les tensions.",
+              "Une alerte crédible doit être examinée ; l'ignorer systématiquement peut laisser un risque réel sans réponse.",
+              "La vérification précède une communication fiable."
+            ]
           },
           {
             "question": "Quel élément est essentiel dans la sécurisation d'un grand événement ?",
@@ -52,7 +62,12 @@
               "La coordination entre les services concernés"
             ],
             "answer": 2,
-            "correction": "La préparation, le partage d'information et la coordination améliorent la prévention et la réponse opérationnelle."
+            "correction": "La préparation, le partage d'information et la coordination améliorent la prévention et la réponse opérationnelle.",
+            "option_explanations": [
+              "La sécurité d'un événement mobilise plusieurs compétences et nécessite un dispositif coordonné.",
+              "L'absence de préparation réduit l'anticipation des risques et la capacité de réaction.",
+              "La coordination évite les interventions contradictoires et facilite le partage d'information."
+            ]
           },
           {
             "question": "Pourquoi la cybersécurité est-elle devenue un enjeu pour les services publics ?",
@@ -62,7 +77,12 @@
               "Parce qu'elle supprime tous les risques humains"
             ],
             "answer": 0,
-            "correction": "La transformation numérique expose les services à des risques qui touchent la continuité, la confidentialité et l'intégrité des données."
+            "correction": "La transformation numérique expose les services à des risques qui touchent la continuité, la confidentialité et l'intégrité des données.",
+            "option_explanations": [
+              "C'est l'exposition créée par la dépendance aux systèmes et aux données qui rend la cybersécurité essentielle.",
+              "Les administrations sont aussi concernées dès lors qu'elles utilisent des systèmes numériques.",
+              "Aucun dispositif ne supprime tous les risques ; la prévention vise à les réduire et à les gérer."
+            ]
           },
           {
             "question": "Quel principe doit guider une intervention de sécurité publique ?",
@@ -72,7 +92,12 @@
               "L'absence de responsabilité"
             ],
             "answer": 1,
-            "correction": "L'action de sécurité doit répondre à la situation, rester proportionnée et respecter les droits fondamentaux."
+            "correction": "L'action de sécurité doit répondre à la situation, rester proportionnée et respecter les droits fondamentaux.",
+            "option_explanations": [
+              "Une intervention ne peut être improvisée sans cadre ni contrôle.",
+              "La nécessité et la proportionnalité encadrent l'action tout en protégeant les droits.",
+              "L'action publique doit rester encadrée et rendre compte de ses décisions."
+            ]
           }
         ],
         "learning_objectives": [
@@ -118,7 +143,12 @@
               "Transférer toutes les compétences au secteur privé"
             ],
             "answer": 1,
-            "correction": "La déconcentration rapproche les décisions et les moyens de l'échelon territorial pour améliorer la réactivité de l'administration."
+            "correction": "La déconcentration rapproche les décisions et les moyens de l'échelon territorial pour améliorer la réactivité de l'administration.",
+            "option_explanations": [
+              "La déconcentration ne supprime pas les services territoriaux ; elle organise l'exercice de compétences de l'État à proximité.",
+              "Elle vise justement à rapprocher l'administration, et non à privatiser toutes ses missions.",
+              "Le transfert au privé relève d'une autre logique et ne définit pas la déconcentration."
+            ]
           },
           {
             "question": "Que signifie la convergence des politiques publiques territoriales ?",
@@ -128,7 +158,12 @@
               "La concurrence entre les services publics"
             ],
             "answer": 0,
-            "correction": "La convergence vise à coordonner les acteurs, les programmes et les ressources autour des besoins d'un territoire."
+            "correction": "La convergence vise à coordonner les acteurs, les programmes et les ressources autour des besoins d'un territoire.",
+            "option_explanations": [
+              "La convergence organise la complémentarité des interventions plutôt que leur dispersion.",
+              "Des programmes isolés risquent les doublons et les incohérences.",
+              "La coopération est recherchée ; la concurrence entre services n'est pas l'objectif."
+            ]
           },
           {
             "question": "Quel doit être le point de départ d'un diagnostic territorial ?",
@@ -138,7 +173,12 @@
               "L'analyse des besoins, des ressources et des contraintes locales"
             ],
             "answer": 2,
-            "correction": "Un diagnostic pertinent repose sur les réalités locales, les données disponibles et la consultation des acteurs concernés."
+            "correction": "Un diagnostic pertinent repose sur les réalités locales, les données disponibles et la consultation des acteurs concernés.",
+            "option_explanations": [
+              "Un diagnostic doit partir des réalités locales et de données pertinentes.",
+              "Une solution uniforme, décidée sans diagnostic, peut ignorer les besoins territoriaux.",
+              "L'analyse des besoins, ressources et contraintes fonde les choix adaptés."
+            ]
           },
           {
             "question": "Quel est l'intérêt de la régionalisation avancée ?",
@@ -148,7 +188,12 @@
               "Supprimer la coordination avec l'État"
             ],
             "answer": 1,
-            "correction": "La régionalisation renforce le rôle des territoires dans la conception et la mise en œuvre du développement."
+            "correction": "La régionalisation renforce le rôle des territoires dans la conception et la mise en œuvre du développement.",
+            "option_explanations": [
+              "La régionalisation avancée vise à renforcer la contribution des territoires à leur développement.",
+              "Les priorités doivent tenir compte des spécificités régionales, non être uniformisées mécaniquement.",
+              "La coordination avec l'État demeure nécessaire dans le respect des compétences de chacun."
+            ]
           },
           {
             "question": "Comment évaluer une politique publique territoriale ?",
@@ -158,7 +203,12 @@
               "En se limitant au budget annoncé"
             ],
             "answer": 0,
-            "correction": "L'évaluation examine la cohérence entre objectifs, moyens, réalisations et effets concrets sur la population."
+            "correction": "L'évaluation examine la cohérence entre objectifs, moyens, réalisations et effets concrets sur la population.",
+            "option_explanations": [
+              "L'évaluation porte sur la chaîne complète entre objectifs, moyens, réalisations et effets.",
+              "Le nombre de réunions est une activité, pas une mesure suffisante des résultats.",
+              "Le budget annoncé ne démontre ni l'exécution ni l'impact d'une politique."
+            ]
           }
         ],
         "learning_objectives": [
@@ -204,7 +254,12 @@
               "L'efficacité des moyens et la qualité du service rendu"
             ],
             "answer": 2,
-            "correction": "La gestion axée sur les résultats relie les ressources aux objectifs et à l'impact réel pour l'usager."
+            "correction": "La gestion axée sur les résultats relie les ressources aux objectifs et à l'impact réel pour l'usager.",
+            "option_explanations": [
+              "Le nombre de procédures n'est pas en soi un résultat pour l'usager.",
+              "Dépenser sans objectif ne permet ni pilotage ni mesure de performance.",
+              "La performance publique relie les moyens aux résultats et à la qualité du service."
+            ]
           },
           {
             "question": "Quel est l'apport principal de la digitalisation administrative ?",
@@ -214,7 +269,12 @@
               "Remplacer les règles de transparence"
             ],
             "answer": 1,
-            "correction": "La digitalisation peut réduire les délais et faciliter l'accès, à condition d'assurer l'inclusion et la sécurité."
+            "correction": "La digitalisation peut réduire les délais et faciliter l'accès, à condition d'assurer l'inclusion et la sécurité.",
+            "option_explanations": [
+              "La digitalisation ne doit pas exclure les personnes qui ont besoin d'un accompagnement humain.",
+              "La simplification et l'accès sont des bénéfices recherchés, sous réserve d'inclusion et de sécurité.",
+              "Le numérique ne remplace pas les obligations de transparence et de responsabilité."
+            ]
           },
           {
             "question": "Pourquoi la transparence est-elle importante dans la commande publique ?",
@@ -224,7 +284,12 @@
               "Pour favoriser les décisions non documentées"
             ],
             "answer": 0,
-            "correction": "La transparence contribue à l'égalité d'accès, à la traçabilité et à la bonne utilisation des ressources publiques."
+            "correction": "La transparence contribue à l'égalité d'accès, à la traçabilité et à la bonne utilisation des ressources publiques.",
+            "option_explanations": [
+              "La transparence rend les procédures plus traçables et soutient l'égalité d'accès et la concurrence.",
+              "Restreindre l'information affaiblit le contrôle et la confiance.",
+              "Les décisions doivent être justifiables et documentées."
+            ]
           },
           {
             "question": "Quel indicateur mesure le mieux la qualité d'un service administratif ?",
@@ -234,7 +299,12 @@
               "Les délais, l'accessibilité et la satisfaction des usagers"
             ],
             "answer": 2,
-            "correction": "La qualité se mesure à travers l'expérience réelle de l'usager, les délais et l'accessibilité du service."
+            "correction": "La qualité se mesure à travers l'expérience réelle de l'usager, les délais et l'accessibilité du service.",
+            "option_explanations": [
+              "La décoration des locaux ne renseigne pas sur la qualité du service rendu.",
+              "Les circulaires sont des moyens internes, pas une mesure directe de l'expérience de l'usager.",
+              "Les délais, l'accessibilité et la satisfaction éclairent concrètement la qualité."
+            ]
           },
           {
             "question": "Quel est le rôle du suivi budgétaire ?",
@@ -244,7 +314,12 @@
               "Éviter toute évaluation"
             ],
             "answer": 1,
-            "correction": "Le suivi budgétaire permet d'identifier les écarts et d'ajuster la gestion pour atteindre les objectifs."
+            "correction": "Le suivi budgétaire permet d'identifier les écarts et d'ajuster la gestion pour atteindre les objectifs.",
+            "option_explanations": [
+              "Le suivi ne se limite pas au montant initial ; il compare l'exécution aux prévisions.",
+              "Comparer dépenses et objectifs permet de détecter les écarts et d'agir.",
+              "Le suivi est un outil de pilotage, pas un moyen d'éviter l'évaluation."
+            ]
           }
         ],
         "learning_objectives": [
@@ -292,7 +367,12 @@
               "تركيز جميع القرارات مركزياً"
             ],
             "answer": 0,
-            "correction": "تعتمد شرطة القرب على التواصل مع السكان والوقاية والمساهمة في معالجة المشاكل المحلية."
+            "correction": "تعتمد شرطة القرب على التواصل مع السكان والوقاية والمساهمة في معالجة المشاكل المحلية.",
+            "option_explanations": [
+              "هذا هو الهدف الوقائي والتواصلي الأساسي لشرطة القرب.",
+              "تعمل الشرطة في إطار مهامها ولا تحل محل المؤسسات القضائية.",
+              "تقوم المقاربة على الحضور والإنصات محلياً، لا على المركزية المطلقة."
+            ]
           },
           {
             "question": "عند انتشار إشاعة قد تؤدي إلى توتر، ما التصرف الأنسب؟",
@@ -302,7 +382,12 @@
               "تجاهل جميع التنبيهات بشكل تلقائي"
             ],
             "answer": 1,
-            "correction": "يساهم التحقق من المعطيات والتواصل الموثوق في الحد من انتشار الأخبار المضللة."
+            "correction": "يساهم التحقق من المعطيات والتواصل الموثوق في الحد من انتشار الأخبار المضللة.",
+            "option_explanations": [
+              "قد يؤدي نشر معلومات غير مؤكدة إلى تضخيم الإشاعة وزيادة التوتر.",
+              "ينبغي فحص التنبيه الموثوق؛ فتجاهله تلقائياً قد يترك خطراً حقيقياً دون معالجة.",
+              "يسبق التحققُ نشرَ تواصل موثوق."
+            ]
           },
           {
             "question": "ما العنصر الأساسي في تأمين تظاهرة كبرى؟",
@@ -312,7 +397,12 @@
               "التنسيق بين المصالح المعنية"
             ],
             "answer": 2,
-            "correction": "يساعد التخطيط وتقاسم المعلومات والتنسيق على تحسين الوقاية والتدخل الميداني."
+            "correction": "يساعد التخطيط وتقاسم المعلومات والتنسيق على تحسين الوقاية والتدخل الميداني.",
+            "option_explanations": [
+              "يتطلب تأمين التظاهرات تعبئة اختصاصات متعددة وتنسيقاً مسبقاً.",
+              "يضعف غياب التخطيط القدرة على استباق المخاطر والتدخل المناسب.",
+              "يحد التنسيق من تضارب التدخلات ويسهل تقاسم المعلومات."
+            ]
           },
           {
             "question": "لماذا أصبح الأمن السيبراني قضية مهمة للمرافق العمومية؟",
@@ -322,7 +412,12 @@
               "لأنه يلغي جميع المخاطر البشرية"
             ],
             "answer": 0,
-            "correction": "يطرح التحول الرقمي مخاطر تمس استمرارية الخدمات وسرية البيانات وسلامتها."
+            "correction": "يطرح التحول الرقمي مخاطر تمس استمرارية الخدمات وسرية البيانات وسلامتها.",
+            "option_explanations": [
+              "إن الاعتماد المتزايد على الأنظمة والبيانات الرقمية هو ما يجعل الأمن السيبراني ضرورياً.",
+              "تشمل المخاطر الإدارات العمومية أيضاً ما دامت تستعمل أنظمة رقمية.",
+              "لا يوجد إجراء يلغي جميع المخاطر؛ بل تهدف الوقاية إلى تقليصها وتدبيرها."
+            ]
           },
           {
             "question": "ما المبدأ الذي ينبغي أن يؤطر تدخلات الأمن العمومي؟",
@@ -332,7 +427,12 @@
               "غياب المسؤولية"
             ],
             "answer": 1,
-            "correction": "ينبغي أن يكون التدخل الأمني ملائماً للوضعية ومتناسباً معها ويحترم الحقوق الأساسية."
+            "correction": "ينبغي أن يكون التدخل الأمني ملائماً للوضعية ومتناسباً معها ويحترم الحقوق الأساسية.",
+            "option_explanations": [
+              "لا يمكن أن يتم التدخل دون إطار أو مراقبة.",
+              "يؤطر مبدآ الضرورة والتناسب التدخل ويحميان الحقوق.",
+              "يجب أن يظل العمل العمومي مؤطراً وقابلاً للمساءلة."
+            ]
           }
         ],
         "learning_objectives": [
@@ -378,7 +478,12 @@
               "نقل جميع الاختصاصات إلى القطاع الخاص"
             ],
             "answer": 1,
-            "correction": "يساهم اللاتمركز في تقريب القرارات والموارد من المستوى الترابي وتحسين سرعة الاستجابة."
+            "correction": "يساهم اللاتمركز في تقريب القرارات والموارد من المستوى الترابي وتحسين سرعة الاستجابة.",
+            "option_explanations": [
+              "لا يلغي اللاتمركز المصالح الترابية، بل ينظم ممارسة اختصاصات الدولة بالقرب من المواطنين.",
+              "يهدف اللاتمركز إلى تقريب الإدارة، لا إلى خوصصة جميع مهامها.",
+              "نقل الاختصاصات إلى القطاع الخاص منطق مختلف ولا يعرّف اللاتمركز."
+            ]
           },
           {
             "question": "ماذا يعني التقائية السياسات العمومية الترابية؟",
@@ -388,7 +493,12 @@
               "التنافس بين المصالح العمومية"
             ],
             "answer": 0,
-            "correction": "تهدف الالتقائية إلى تنسيق الفاعلين والبرامج والموارد حول حاجيات المجال الترابي."
+            "correction": "تهدف الالتقائية إلى تنسيق الفاعلين والبرامج والموارد حول حاجيات المجال الترابي.",
+            "option_explanations": [
+              "تضمن الالتقائية تكامل التدخلات بدل تشتتها.",
+              "قد تؤدي البرامج المستقلة إلى التكرار والتناقض.",
+              "الهدف هو التعاون والتنسيق لا التنافس بين المصالح."
+            ]
           },
           {
             "question": "ما نقطة الانطلاق في إعداد تشخيص ترابي؟",
@@ -398,7 +508,12 @@
               "تحليل الحاجيات والموارد والإكراهات المحلية"
             ],
             "answer": 2,
-            "correction": "يرتكز التشخيص الجيد على خصوصيات المجال والمعطيات المتاحة واستشارة الفاعلين."
+            "correction": "يرتكز التشخيص الجيد على خصوصيات المجال والمعطيات المتاحة واستشارة الفاعلين.",
+            "option_explanations": [
+              "ينبغي أن ينطلق التشخيص من الواقع المحلي والمعطيات المناسبة.",
+              "قد يتجاهل الحل الموحد حاجيات المجالات المختلفة إذا لم يسبقه تشخيص.",
+              "يشكل تحليل الحاجيات والموارد والإكراهات أساس الاختيارات الملائمة."
+            ]
           },
           {
             "question": "ما أهمية الجهوية المتقدمة؟",
@@ -408,7 +523,12 @@
               "إلغاء التنسيق مع الدولة"
             ],
             "answer": 1,
-            "correction": "تعزز الجهوية دور المجالات الترابية في إعداد وتنفيذ برامج التنمية."
+            "correction": "تعزز الجهوية دور المجالات الترابية في إعداد وتنفيذ برامج التنمية.",
+            "option_explanations": [
+              "تهدف الجهوية المتقدمة إلى تعزيز مساهمة المجالات الترابية في تنميتها.",
+              "ينبغي مراعاة الخصوصيات الجهوية بدل توحيد الأولويات آلياً.",
+              "يظل التنسيق مع الدولة ضرورياً مع احترام اختصاصات كل طرف."
+            ]
           },
           {
             "question": "كيف يمكن تقييم سياسة عمومية ترابية؟",
@@ -418,7 +538,12 @@
               "الاعتماد فقط على الميزانية المعلنة"
             ],
             "answer": 0,
-            "correction": "يقيس التقييم مدى الانسجام بين الأهداف والموارد والإنجازات والآثار الفعلية على السكان."
+            "correction": "يقيس التقييم مدى الانسجام بين الأهداف والموارد والإنجازات والآثار الفعلية على السكان.",
+            "option_explanations": [
+              "يشمل التقييم العلاقة بين الأهداف والموارد والإنجازات والآثار.",
+              "عدد الاجتماعات نشاط إداري وليس مقياساً كافياً للنتائج.",
+              "لا تثبت الميزانية المعلنة وحدها التنفيذ أو الأثر."
+            ]
           }
         ],
         "learning_objectives": [
@@ -464,7 +589,12 @@
               "نجاعة الموارد وجودة الخدمات المقدمة"
             ],
             "answer": 2,
-            "correction": "يربط التدبير القائم على النتائج الموارد بالأهداف والأثر الفعلي على المرتفق."
+            "correction": "يربط التدبير القائم على النتائج الموارد بالأهداف والأثر الفعلي على المرتفق.",
+            "option_explanations": [
+              "عدد المساطر لا يمثل في حد ذاته نتيجة ملموسة للمرتفق.",
+              "الإنفاق دون أهداف لا يسمح بالتوجيه أو قياس النجاعة.",
+              "يربط التدبير القائم على النتائج الموارد بجودة الخدمات والنتائج."
+            ]
           },
           {
             "question": "ما الفائدة الأساسية من رقمنة الإدارة؟",
@@ -474,7 +604,12 @@
               "تعويض قواعد الشفافية"
             ],
             "answer": 1,
-            "correction": "يمكن للرقمنة تقليص الآجال وتسهيل الولوج، شريطة ضمان الإدماج والأمن الرقمي."
+            "correction": "يمكن للرقمنة تقليص الآجال وتسهيل الولوج، شريطة ضمان الإدماج والأمن الرقمي.",
+            "option_explanations": [
+              "ينبغي ألا تؤدي الرقمنة إلى إقصاء من يحتاجون إلى مواكبة بشرية.",
+              "يعد التبسيط وتحسين الولوج من فوائد الرقمنة بشرط الإدماج والأمن.",
+              "لا تعوض الوسائل الرقمية واجبات الشفافية والمساءلة."
+            ]
           },
           {
             "question": "لماذا تعتبر الشفافية مهمة في الصفقات العمومية؟",
@@ -484,7 +619,12 @@
               "تشجيع القرارات غير الموثقة"
             ],
             "answer": 0,
-            "correction": "تساهم الشفافية في تكافؤ الفرص وإمكانية التتبع وحسن استعمال الموارد العمومية."
+            "correction": "تساهم الشفافية في تكافؤ الفرص وإمكانية التتبع وحسن استعمال الموارد العمومية.",
+            "option_explanations": [
+              "تتيح الشفافية تتبع الإجراءات وتعزز تكافؤ الفرص والمنافسة.",
+              "يضعف حجب المعلومات المراقبة والثقة.",
+              "ينبغي أن تكون القرارات موثقة وقابلة للتبرير."
+            ]
           },
           {
             "question": "ما المؤشر الأنسب لقياس جودة خدمة إدارية؟",
@@ -494,7 +634,12 @@
               "الآجال وسهولة الولوج ورضا المرتفقين"
             ],
             "answer": 2,
-            "correction": "تقاس الجودة من خلال تجربة المرتفق والآجال وسهولة الاستفادة من الخدمة."
+            "correction": "تقاس الجودة من خلال تجربة المرتفق والآجال وسهولة الاستفادة من الخدمة.",
+            "option_explanations": [
+              "لا يعكس تزيين المكاتب جودة الخدمة المقدمة.",
+              "المذكرات الداخلية وسائل تنظيمية وليست قياساً مباشراً لتجربة المرتفق.",
+              "تقيس الآجال وسهولة الولوج والرضا جودة الخدمة بصورة عملية."
+            ]
           },
           {
             "question": "ما دور التتبع الميزانياتي؟",
@@ -504,7 +649,12 @@
               "تفادي كل تقييم"
             ],
             "answer": 1,
-            "correction": "يساعد التتبع الميزانياتي على رصد الفوارق وتعديل التدبير لتحقيق الأهداف."
+            "correction": "يساعد التتبع الميزانياتي على رصد الفوارق وتعديل التدبير لتحقيق الأهداف.",
+            "option_explanations": [
+              "لا يقتصر التتبع على المبلغ الأولي، بل يقارن التنفيذ بالتوقعات.",
+              "تسمح مقارنة النفقات بالأهداف برصد الفوارق واتخاذ الإجراءات المناسبة.",
+              "التتبع أداة للتوجيه والتحسين وليس وسيلة لتجنب التقييم."
+            ]
           }
         ],
         "learning_objectives": [

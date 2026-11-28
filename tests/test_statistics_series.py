@@ -210,7 +210,8 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
             },
         }
         self.assertTrue(_is_superseded_legacy_bam_series(legacy, current))
-        self.assertFalse(_is_superseded_legacy_bam_series({**legacy, "sheet_name": "Actif"}, current))
+        self.assertTrue(_is_superseded_legacy_bam_series({**legacy, "sheet_name": "Actif"}, current))
+        self.assertFalse(_is_superseded_legacy_bam_series({**legacy, "source_position": "L2"}, current))
         self.assertFalse(_is_superseded_legacy_bam_series({**legacy, "label_fr": "Banques"}, current))
 
     def test_bam_ckan_parser_recognizes_semester_periods(self):

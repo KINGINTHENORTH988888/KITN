@@ -1,6 +1,7 @@
 import unittest
 
 from pipeline.run_pipeline import _merge_statistics_series, _merge_valid_statistics_series, _statistics_period_sort_key
+from pipeline.collectors import _bam_ckan_series_from_rows, _split_xlsx_sheets
 
 
 class TestStatisticsSeriesMerge(unittest.TestCase):
@@ -186,6 +187,32 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         )
         self.assertEqual(merged["latest"], {"year": "Aujourd'hui", "value": 10.5})
         self.assertEqual(merged["previous"], {"year": "Veille", "value": 10.4})
+
+    def test_bam_ckan_keeps_worksheet_units_separate(self):
+        combined_rows = [
+            ["Encours monétaires — en MDH"],
+            ["Indicateur", "2024", "2025"],
+            ["Crédits à l'économie", "100", "110"],
+            [],
+            ["Taux — en %"],
+            ["Indicateur", "2024", "2025"],
+            ["Taux débiteur", "5.2", "5.3"],
+        ]
+
+        sheets = _split_xlsx_sheets(combined_rows)
+        self.assertEqual(len(sheets), 2)
+
+        dataset = {"title": "Jeu BAM", "notes": ""}
+        resource = {"url": "https://data.gov.ma/resource.xlsx", "name": "resource.xlsx"}
+        monetary = _bam_ckan_series_from_rows(sheets[0], dataset, resource)
+        rates = _bam_ckan_series_from_rows(sheets[1], dataset, resource)
+
+        self.assertEqual(len(monetary), 1)
+        self.assertEqual(len(rates), 1)
+        self.assertEqual(monetary[0]["statistics_series"]["unit_fr"], "MDH")
+        self.assertEqual(rates[0]["statistics_series"]["unit_fr"], "%")
+        self.assertEqual(monetary[0]["statistics_series"]["history"][-1]["value"], 110.0)
+        self.assertEqual(rates[0]["statistics_series"]["history"][-1]["value"], 5.3)
 
     def test_invalid_new_ckan_metadata_does_not_replace_a_valid_published_series(self):
         existing = {

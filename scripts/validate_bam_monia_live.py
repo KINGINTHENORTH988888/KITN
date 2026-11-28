@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 
 from pipeline.collectors import collect_bank_al_maghrib
 from pipeline.run_pipeline import _is_valid_statistics_series
@@ -24,7 +25,27 @@ def main() -> int:
     if not source:
         raise RuntimeError("La source bank_al_maghrib_monia est absente de data/sources.json.")
 
-    items = collect_bank_al_maghrib(source)
+    try:
+        items = collect_bank_al_maghrib(source)
+    except HTTPError as exc:
+        if exc.code not in (401, 403):
+            raise
+        blocked = {
+            "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "source_id": source["id"],
+            "source_name": source.get("name"),
+            "source_url": source.get("statistics_pages", [{}])[0].get("url"),
+            "status": "blocked",
+            "http_status": exc.code,
+            "message": "Bank Al-Maghrib a refusé la requête du collecteur automatisé. Aucune donnée MONIA n'a été collectée ni publiée.",
+            "series": [],
+        }
+        OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        OUTPUT_FILE.write_text(json.dumps(blocked, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+        print(f"BAM MONIA BLOCKED: HTTP {exc.code} — refus du serveur officiel, sans tentative de contournement.")
+        print("BAM MONIA PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))
+        return 0
+
     series = [
         item["statistics_series"]
         for item in items

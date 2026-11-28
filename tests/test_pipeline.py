@@ -1096,7 +1096,8 @@ class TestPipelineProcessors(unittest.TestCase):
         )
         self.assertEqual(len(items), 1)
         series = items[0]["statistics_series"]
-        self.assertEqual(series["indicator_code"], "BAM_CKAN_AGR_GATS_DE_MONNAIE_MASSE_MON_TAIRE_M3_MDH")
+        self.assertEqual(series["indicator_code"], "BAM_CKAN_AGR_GATS_DE_MONNAIE_FEUILLE_MON_TAIRE_MASSE_MON_TAIRE_M3_MDH")
+        self.assertEqual(series["sheet_name"], "Feuille 1")
         self.assertEqual(series["latest"], {"year": "2025-02", "value": 1020.0})
         self.assertEqual(len(series["history"]), 3)
         self.assertEqual(series["unit_fr"], "MDH")
@@ -1122,11 +1123,11 @@ class TestPipelineProcessors(unittest.TestCase):
         with patch("pipeline.collectors._fetch_text", return_value=json.dumps(package_payload)), patch(
             "pipeline.collectors._fetch_bytes", return_value=b"PK-test"
         ) as download, patch(
-            "pipeline.collectors._xlsx_read_rows",
-            return_value=[
+            "pipeline.collectors._xlsx_read_sheets",
+            return_value=[("Feuille monétaire", [
                 ["Indicateur", "Décembre 2024", "Janvier 2025", "Février 2025"],
                 ["Masse monétaire M3 (MDH)", "1000", "1010", "1020"],
-            ],
+            ])],
         ):
             items = collect_bank_al_maghrib_ckan({
                 "api_base": "https://data.gov.ma/data/api/3/action",

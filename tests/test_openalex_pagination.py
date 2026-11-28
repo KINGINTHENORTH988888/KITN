@@ -52,10 +52,8 @@ class TestOpenAlexPagination(unittest.TestCase):
         self.assertEqual(first_query["per-page"], ["1"])
         self.assertEqual(second_query["cursor"], ["cursor-page-2"])
         self.assertEqual(second_query["filter"], ["type:article"])
-        self.assertEqual(
-            fetch.call_args_list[0].kwargs["extra_headers"],
-            {"Authorization": "Bearer test-openalex-key"},
-        )
+        self.assertEqual(first_query["api_key"], ["test-openalex-key"])
+        self.assertNotIn("extra_headers", fetch.call_args_list[0].kwargs)
 
     def test_source_limit_stops_pagination_without_losing_existing_cap(self):
         page = {

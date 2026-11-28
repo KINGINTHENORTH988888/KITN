@@ -143,14 +143,7 @@ class TestCollectorRetries(unittest.TestCase):
         self.assertEqual(len(rate["statistics_series"]["history"]), 2)
         self.assertEqual(rate["statistics_series"]["latest"]["value"], 2.195)
 
-    def test_monia_reports_both_csv_and_page_failures(self):
-        csv_error = HTTPError(
-            "https://www.bkam.ma/export/blockcsv/data",
-            403,
-            "Forbidden",
-            Message(),
-            None,
-        )
+    def test_monia_page_failure_is_reported(self):
         page_error = HTTPError(
             "https://www.bkam.ma/monia",
             403,

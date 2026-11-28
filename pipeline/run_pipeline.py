@@ -444,6 +444,7 @@ def _merge_regional_statistics_series(
             if isinstance(value, (int, float)) and not math.isfinite(float(value)):
                 continue
             points_by_period[str(point["year"])] = dict(point)
+    incoming_valid_count = 0
     for point in history:
         if isinstance(point, dict) and point.get("year"):
             value = point.get("value")
@@ -456,8 +457,11 @@ def _merge_regional_statistics_series(
             if isinstance(value, (int, float)) and not math.isfinite(float(value)):
                 return None
             points_by_period[str(point["year"])] = dict(point)
+            incoming_valid_count += 1
 
-    if not points_by_period:
+    # A pre-existing history must not make an empty or malformed new collection
+    # appear successful.
+    if incoming_valid_count == 0 or not points_by_period:
         return None
     merged_history = sorted(
         points_by_period.values(),

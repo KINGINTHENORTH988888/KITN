@@ -60,7 +60,7 @@ const indexData = loadSearchIndex();
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
 
-      const item = allItems.find((x) => x.id === id) || allItems[0];
+      const item = id ? allItems.find((x) => x.id === id) : undefined;
       if (!item) {
         container.innerHTML = `<p class="muted">${escapeHtml(t.noResults)}</p>`;
         return;

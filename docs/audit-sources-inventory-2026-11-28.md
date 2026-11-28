@@ -134,3 +134,16 @@ Les endpoints de données exposés par `https://kitn.pages.dev` ont également �
 - Les URL profondes contrôlées (`/maroc-en-chiffres`, `/academy`, `/veille`, `/etudes-recherche`, `/bibliotheque`) ont renvoyé le même texte extrait que la racine. L'automatisation interactive par clic n'a pas pu être lancée dans cette session ; le résultat est donc un signal à confirmer, pas une certification du comportement visuel.
 
 **Écart de version à retenir :** les données publiques reflètent une collecte du 27 novembre, tandis que le rendu des espaces et la publication du rapport de santé doivent encore être validés. Ne pas conclure que le site public sert exactement le dernier build de la branche simplement parce que certains compteurs de données correspondent.
+
+
+## Revalidation ciblée production / prévisualisation — 28 novembre 2026
+
+Contrôle en lecture seule des mêmes URL sur les deux environnements :
+
+- **Production** `https://kitn.pages.dev/data/sources-health.json` : la réponse extraite est du HTML de la page d'accueil KITN, pas le JSON du rapport. La route `/veille` renvoie également le contenu de l'ancienne page d'accueil.
+- **Prévisualisation de branche** `https://audit-kitn-quality-review-20.kitn.pages.dev/data/sources-health.json` : le fichier est bien servi comme JSON valide. En revanche, il s'agit toujours du rapport du `2026-11-27T16:33:58Z`, avec 20 sources déclarées et 20 lignes uniques ; les sources `alalam_ar` et `hcp_social_indicators_2026` n'y figurent pas.
+- **Prévisualisation de branche** `/veille` : la route renvoie bien la vue Veille dédiée et non le texte de l'accueil.
+
+Cette comparaison confirme un écart de déploiement entre production et prévisualisation, ainsi qu'un rapport de santé valide mais antérieur à l'état actuel du registre (22 sources activées). Elle ne permet pas d'affirmer que les deux sources absentes ont échoué : leur collecte n'est simplement pas démontrée dans ce rapport.
+
+Aucune modification de configuration Cloudflare, aucun lancement de collecte, aucun merge et aucun déploiement de production n'ont été effectués pendant cette revalidation.

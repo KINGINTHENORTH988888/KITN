@@ -246,3 +246,18 @@ test("does not count null regional observations as available numeric values", ()
   assert.equal(model.latestMissingCount, 1);
   assert.equal(model.latestAverage, null);
 });
+
+
+test("sorts annual, monthly, daily and quarterly labels in calendar order", () => {
+  const mixedPayload = structuredClone(payload);
+  const series = mixedPayload.series.find((item) => item.geography_code === "MAR" && item.residence_scope === "all");
+  series.history = [
+    { year: "2026-10", value: 10 },
+    { year: "T3/2026", value: 9 },
+    { year: "2026-09-15", value: 8 },
+    { year: "2026-01", value: 1 },
+    { year: "2025", value: 0 },
+  ];
+  const model = buildRegionalStatisticsModel(mixedPayload, "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT", "all");
+  assert.deepEqual(model.periods, ["2025", "2026-01", "2026-09-15", "T3/2026", "2026-10"]);
+});

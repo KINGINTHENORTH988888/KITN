@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getAcademyProgressSummary, normalizeAcademyProgress } from "../src/academy-progress.js";
+import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "../src/academy-progress.js";
 
 test("keeps valid answers for each Academy track and question", () => {
   assert.deepEqual(normalizeAcademyProgress({ "dgsn:0": 2, "irat:4": 1, "administrateur:12": 3 }), {
@@ -49,4 +49,26 @@ test("ignores answers that do not belong to a track question", () => {
   assert.equal(summary.correct, 0);
   assert.equal(summary.percent, 0);
   assert.equal(summary.completedTracks, 0);
+});
+
+test("imports only answers that belong to known questions and valid options", () => {
+  const tracks = [
+    { id: "dgsn", questions: [{ options: ["a", "b"] }, { options: ["a", "b", "c"] }] },
+    { id: "irat", options: ["a", "b"] }
+  ];
+  assert.deepEqual(mergeAcademyProgress({ "dgsn:0": 0 }, {
+    "dgsn:0": 1,
+    "dgsn:1": 2,
+    "dgsn:2": 0,
+    "irat:0": 1,
+    "unknown:0": 0,
+    "dgsn:1": 9
+  }, tracks), { "dgsn:0": 1, "dgsn:1": 2, "irat:0": 1 });
+});
+
+test("merging a backup preserves existing answers missing from the imported file", () => {
+  const tracks = [{ id: "dgsn", questions: [{ options: ["a", "b"] }, { options: ["a", "b"] }] }];
+  assert.deepEqual(mergeAcademyProgress({ "dgsn:0": 1, "dgsn:1": 0 }, {
+    "dgsn:0": 0
+  }, tracks), { "dgsn:0": 0, "dgsn:1": 0 });
 });

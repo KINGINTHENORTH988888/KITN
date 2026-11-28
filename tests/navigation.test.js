@@ -290,7 +290,7 @@ test("homepage space cards explain the purpose of all five spaces in French and 
   assert.match(styles, /\.home-space-card p\s*\{/);
 });
 
-test("all document search fields use accent-insensitive normalized matching", () => {
+test("global statistical indicator search uses the same accent-insensitive token matcher", () => {\n  assert.match(source, /return matchesSearchQuery\\(searchable, globalQuery\\)/);\n  assert.match(source, /const globalQuery = normalizeSearchText\\(searchQuery\\)/);\n});\n\ntest("all document search fields use accent-insensitive normalized matching", () => {
   assert.match(source, /import \{ matchesSearchQuery, normalizeSearchText \} from "\.\/search\.js";/);
   assert.match(source, /return matchesSearchQuery\(searchable, q\);/);
   assert.match(source, /matchesSearchQuery\(authorsForFilter, authorQuery\)/);

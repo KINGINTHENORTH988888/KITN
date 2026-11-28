@@ -295,6 +295,22 @@ Les séries d'emploi reposent sur des estimations modélisées de l'OIT diffusé
 
 **Important :** ces huit séries sont configurées et leur disponibilité API a été vérifiée, mais elles ne sont pas encore présentes dans le fichier statistique publié. Leur intégration effective doit être confirmée par une collecte complète après validation de la branche.
 
+
+### 3.12 Banque Al-Maghrib — diagnostic MONIA HTTP 403
+
+Le collecteur MONIA utilise actuellement une URL d'export CSV fournie par la page officielle, puis tente la page officielle comme solution de repli. Les deux accès ont renvoyé HTTP 403 dans le dernier rapport de collecte. Une vérification web indépendante de l'URL de la page MONIA a également renvoyé 403 le 28 novembre 2026.
+
+Le portail officiel des API développeurs de Bank Al-Maghrib indique que les développeurs peuvent souscrire gratuitement à une clé API. Le catalogue public consulté présente notamment les API « Courbe des Taux BDT », « Cours de change » et « Marché des adjudications des bons du Trésor » ; aucune API MONIA n'y est explicitement répertoriée dans le catalogue visible. Il n'est donc pas justifié de remplacer l'export actuel par une route API supposée, ni de contourner le refus HTTP.
+
+La documentation officielle de MONIA précise que l'indice et le volume retenu sont publiés à 10 h le jour ouvrable suivant. Pour rétablir une collecte automatisée fiable, il faut demander à Bank Al-Maghrib si MONIA est disponible via un produit API ou un flux autorisé, et obtenir les modalités d'accès. Le portail indique l'adresse de support développeur `api@bkam.ma`.
+
+Sources officielles consultées :
+- [Page officielle de l'indice MONIA](https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-monetaire/Indice-monia-moroccan-overnight-index-average) — accès HTTP 403 lors du contrôle.
+- [Portail API développeurs Bank Al-Maghrib](https://apihelpdesk.centralbankofmorocco.ma/) et [catalogue des API](https://apihelpdesk.centralbankofmorocco.ma/apis).
+- [Termes de référence MONIA](https://www.bkam.ma/content/download/685023/7858447/Termes_reference_MONIA_17122019.pdf).
+
+Correction applicative effectuée sur la branche : si le CSV et la page échouent, les deux erreurs sont désormais conservées dans le diagnostic. Cette correction améliore l'observabilité mais ne rétablit pas la collecte ; aucune valeur MONIA de remplacement n'a été inventée.
+
 ## 4. État de la couverture de tests
 
 Le workflow exécute `python -m unittest discover -s tests -v`. Le fichier `tests/test_pipeline.py` couvre déjà de nombreux scénarios : pertinence Maroc, DOI, dates, HCP, MEF, MONIA, Banque mondiale, HAL, Crossref, concours, fusion de notices et CKAN.

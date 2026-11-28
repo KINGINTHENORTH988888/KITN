@@ -1374,7 +1374,7 @@ function getRelatedKnowledgeItems(item, limit = 3) {
       const sharedTerms = terms.filter((term) => candidateText.includes(term));
       const samePole = Boolean(item.pole && candidate.pole === item.pole);
       const crossSpace = candidateSpace !== sourceSpace;
-      return { item: candidate, sharedTerms: sharedTerms.length, crossSpace, score: sharedTerms.length + (samePole ? 2 : 0) + (crossSpace ? 3 : 0) };
+      return { item: candidate, sharedTerms, crossSpace, score: sharedTerms.length + (samePole ? 2 : 0) + (crossSpace ? 3 : 0) };
     })
     .filter((entry) => entry.sharedTerms > 0)
     .sort((a, b) => b.score - a.score || String(b.item.date_publication || "").localeCompare(String(a.item.date_publication || "")))
@@ -1390,7 +1390,7 @@ function renderArticlePage(item) {
   const pdfUrl = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
   const doiUrl = getDoiUrl(item.doi);
   const relatedItems = getRelatedKnowledgeItems(item);
-  const relatedMarkup = relatedItems.length ? `<section class="related-knowledge"><div class="related-knowledge-heading"><span class="mini-label">${isAr ? "روابط معرفية" : "CONNEXIONS TRANSVERSALES"}</span><h2>${isAr ? "اكتشف امتدادات هذا الموضوع" : "Prolonger l’exploration"}</h2><p>${isAr ? "مواد من مجالات KITN الأخرى مرتبطة بموضوع هذا المحتوى." : "Des contenus d’autres espaces de KITN qui partagent des thèmes avec cette publication."}</p></div><div class="related-knowledge-grid">${relatedItems.map(({ item: related, crossSpace }) => `<button type="button" class="related-knowledge-card" data-open-home-item="${escapeHtml(getItemKey(related))}"><span>${escapeHtml(crossSpace ? (isAr ? "مجال آخر" : "Autre espace") : (isAr ? "موضوع مرتبط" : "Même espace"))} · ${escapeHtml(formatPole(related.pole) || formatDocType(related.type_document) || "")}</span><strong>${escapeHtml(related.titre_original || (isAr ? "محتوى" : "Contenu sans titre"))}</strong><small>${escapeHtml(related.source_nom || related.revue_ou_institution || "")}</small></button>`).join("")}</div></section>` : "";
+  const relatedMarkup = relatedItems.length ? `<section class="related-knowledge"><div class="related-knowledge-heading"><span class="mini-label">${isAr ? "روابط معرفية" : "CONNEXIONS TRANSVERSALES"}</span><h2>${isAr ? "اكتشف امتدادات هذا الموضوع" : "Prolonger l’exploration"}</h2><p>${isAr ? "مواد من مجالات KITN الأخرى مرتبطة بموضوع هذا المحتوى." : "Des contenus d’autres espaces de KITN qui partagent des thèmes avec cette publication."}</p></div><div class="related-knowledge-grid">${relatedItems.map(({ item: related, crossSpace }) => `<button type="button" class="related-knowledge-card" data-open-home-item="${escapeHtml(getItemKey(related))}"><span>${escapeHtml(crossSpace ? (isAr ? "مجال آخر" : "Autre espace") : (isAr ? "موضوع مرتبط" : "Même espace"))} · ${escapeHtml(formatPole(related.pole) || formatDocType(related.type_document) || "")}</span><strong>${escapeHtml(related.titre_original || (isAr ? "محتوى" : "Contenu sans titre"))}</strong><small>${escapeHtml(related.source_nom || related.revue_ou_institution || "")}</small><small>${escapeHtml(isAr ? "مواضيع مشتركة: " : "Thèmes communs : ")}${escapeHtml(sharedTerms.slice(0, 3).join(" · "))}</small></button>`).join("")}</div></section>` : "";
   const authors = Array.isArray(item.auteurs) && item.auteurs.length
     ? item.auteurs.join(", ")
     : (isAr ? "المؤلف غير محدد" : "Auteur non renseigné");
@@ -1465,6 +1465,7 @@ function renderModal() {
           <button type="button" class="related-knowledge-card" data-related-item="${escapeHtml(getItemKey(related))}">
             <span>${escapeHtml(crossSpace ? (lang === "ar" ? "مجال آخر" : "Autre espace") : (lang === "ar" ? "موضوع مرتبط" : "Même espace"))}</span>
             <strong>${escapeHtml(related.titre_original || "")}</strong>
+            <small>${escapeHtml(sharedTerms.slice(0, 3).join(" · "))}</small>
           </button>`).join("")}
       </div>
     </section>` : "";

@@ -251,6 +251,7 @@ test("does not count null regional observations as available numeric values", ()
 test("sorts annual, monthly, daily and quarterly labels in calendar order", () => {
   const mixedPayload = structuredClone(payload);
   const series = mixedPayload.series.find((item) => item.geography_code === "MAR" && item.residence_scope === "all");
+  mixedPayload.series = [series];
   series.history = [
     { year: "2026-10", value: 10 },
     { year: "T3/2026", value: 9 },

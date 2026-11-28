@@ -132,7 +132,7 @@ jobs:
           npm run test:frontend
           npm run build
 
-      - name: Verify Astro Pages application
+      - name: Verify Astro Worker assets (Astro)
         run: |
           npm --prefix web install --no-package-lock
           npm --prefix web run build

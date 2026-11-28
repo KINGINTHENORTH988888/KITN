@@ -1,3 +1,4 @@
+import { getSourceHealthFreshness, reconcileSourceHealth } from '../../../src/source-health.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -26,6 +27,31 @@ export interface SearchIndexPayload {
   total: number;
   new_or_updated_this_run: number;
   items: PublicationItem[];
+}
+
+export interface SourceHealthRow {
+  source_id: string;
+  source_name: string;
+  status: 'ok' | 'warning' | 'error' | 'unknown';
+  stage: string;
+  fetched: number;
+  accepted: number;
+  error: string | null;
+  reported: boolean;
+}
+
+export interface SourceHealthSnapshot {
+  updatedAt: string | null;
+  freshness: 'fresh' | 'stale' | 'unknown';
+  activeCount: number;
+  reportCount: number;
+  operationalCount: number;
+  warningCount: number;
+  errorCount: number;
+  unverifiedCount: number;
+  totalFetched: number;
+  totalAccepted: number;
+  sources: SourceHealthRow[];
 }
 
 export interface AcademyModule {
@@ -117,6 +143,42 @@ export function loadAcademyModules(): AcademyModule[] {
   } catch {
     return [];
   }
+}
+
+export function loadSourcesHealth(): SourceHealthSnapshot {
+  const dataRoot = resolveDataRoot();
+  let configuredSources: Record<string, unknown>[] = [];
+  let report: Record<string, unknown> = {};
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(path.join(dataRoot, 'sources.json'), 'utf-8'));
+    if (Array.isArray(parsed)) configuredSources = parsed.filter((item) => item && typeof item === 'object');
+  } catch {
+    configuredSources = [];
+  }
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(path.join(dataRoot, 'sources-health.json'), 'utf-8'));
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) report = parsed;
+  } catch {
+    report = {};
+  }
+
+  const reportRows = Array.isArray(report.sources) ? report.sources : [];
+  const sources = reconcileSourceHealth(configuredSources, reportRows) as SourceHealthRow[];
+  return {
+    updatedAt: typeof report.updated_at === 'string' ? report.updated_at : null,
+    freshness: getSourceHealthFreshness(typeof report.updated_at === 'string' ? report.updated_at : null),
+    activeCount: sources.length,
+    reportCount: reportRows.length,
+    operationalCount: sources.filter((source) => source.status === 'ok').length,
+    warningCount: sources.filter((source) => source.status === 'warning').length,
+    errorCount: sources.filter((source) => source.status === 'error').length,
+    unverifiedCount: sources.filter((source) => source.status === 'unknown').length,
+    totalFetched: Number(report.total_fetched || 0),
+    totalAccepted: Number(report.total_accepted || 0),
+    sources
+  };
 }
 
 export function loadSourcesCount(): number {

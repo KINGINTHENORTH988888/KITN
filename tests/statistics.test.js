@@ -145,3 +145,17 @@ test("statistics overview counts only valid numeric observations", () => {
   assert.equal(countValidStatisticObservations(indicators), 3);
   assert.equal(countValidStatisticObservations(null), 0);
 });
+
+
+test("sorts parseable statistical observations chronologically before charting", () => {
+  const history = [
+    { year: "2026-11-27", value: 3 },
+    { year: "2024", value: 1 },
+    { year: "2026-T2", value: 2 },
+    { year: "2026-11-28", value: 4 },
+  ];
+  assert.deepEqual(
+    filterStatisticsHistory(history, "all", "2026-11-28T12:00:00Z"),
+    [history[1], history[2], history[0], history[3]],
+  );
+});

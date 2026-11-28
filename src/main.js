@@ -2191,7 +2191,6 @@ function render() {
   document.querySelectorAll("[data-quiz-question]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedQuizQuestionIndex = Number(btn.getAttribute("data-quiz-question")) || 0;
-      selectedQuizOption = null;
       render();
     });
   });

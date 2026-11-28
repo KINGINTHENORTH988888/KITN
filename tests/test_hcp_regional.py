@@ -290,6 +290,18 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
             _merge_regional_statistics_series(None, incoming, "2026-11-27T14:00:00Z")
         )
 
+    def test_pipeline_merge_rejects_boolean_regional_values(self):
+        for invalid_value in (True, False):
+            incoming = {
+                "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+                "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+                "history": [{"year": "T3/2026", "value": invalid_value}],
+            }
+            with self.subTest(value=invalid_value):
+                self.assertIsNone(
+                    _merge_regional_statistics_series(None, incoming, "2026-11-27T14:00:00Z")
+                )
+
     def test_ignores_pages_without_a_supported_period_header_or_indicator(self):
         self.assertEqual(
             parse_hcp_emo_regional_tables(

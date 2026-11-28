@@ -51,7 +51,7 @@ function nonNegativeCount(value) {
   if (typeof value === "string" && !value.trim()) return 0;
   if (typeof value !== "number" && typeof value !== "string") return 0;
   const count = Number(value);
-  return Number.isFinite(count) && count > 0 ? count : 0;
+  return Number.isSafeInteger(count) && count > 0 ? count : 0;
 }
 
 export function reconcileSourceHealth(configuredSources, reportSources) {

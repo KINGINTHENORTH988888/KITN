@@ -66,7 +66,7 @@ def main() -> int:
             "indicators": [],
         }
         OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-        OUTPUT_FILE.write_text(json.dumps(preview, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+        OUTPUT_FILE.write_text(json.dumps(preview, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print("BAM CKAN LIVE STATUS: unavailable")
         print("BAM CKAN LIVE ERROR:", preview["error"])
         print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))

@@ -1,9 +1,39 @@
 export const SOURCE_HEALTH_STALE_AFTER_MS = 24 * 60 * 60 * 1000;
 export const SOURCE_HEALTH_FUTURE_TOLERANCE_MS = 5 * 60 * 1000;
 
+function parseSourceHealthTimestamp(value) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  const match = normalized.match(/^(\\d{4})-(\\d{2})-(\\d{2})(?:T(\\d{2}):(\\d{2}):(\\d{2})(?:\\.\\d+)?(Z|[+-]\\d{2}:\\d{2}))?$/);
+  if (!match) return null;
+
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText, timezone] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const hour = Number(hourText || 0);
+  const minute = Number(minuteText || 0);
+  const second = Number(secondText || 0);
+  const calendarDate = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    calendarDate.getUTCFullYear() !== year ||
+    calendarDate.getUTCMonth() !== month - 1 ||
+    calendarDate.getUTCDate() !== day ||
+    hour > 23 || minute > 59 || second > 59
+  ) return null;
+
+  if (timezone && timezone !== "Z") {
+    const offset = timezone.slice(1).split(":").map(Number);
+    if (offset[0] > 14 || offset[1] > 59 || (offset[0] === 14 && offset[1] !== 0)) return null;
+  }
+  const timestamp = Date.parse(normalized);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
 export function getSourceHealthFreshness(updatedAt, now = Date.now()) {
-  const timestamp = Date.parse(updatedAt);
-  if (!Number.isFinite(timestamp) || timestamp > now + SOURCE_HEALTH_FUTURE_TOLERANCE_MS) {
+  const timestamp = parseSourceHealthTimestamp(updatedAt);
+  if (timestamp === null || !Number.isFinite(now) || timestamp > now + SOURCE_HEALTH_FUTURE_TOLERANCE_MS) {
     return "unknown";
   }
   return now - timestamp > SOURCE_HEALTH_STALE_AFTER_MS ? "stale" : "fresh";

@@ -20,6 +20,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: kitn-live-statistics-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-hcp-regional-pdf:
     if: github.event_name == 'pull_request' && github.head_ref == 'audit/kitn-quality-review-2026-11' && !contains(github.event.pull_request.head.commit.message, '[skip hcp data refresh]')

@@ -3,7 +3,7 @@ import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCateg
 import { buildRegionalStatisticsModel } from "./regional-statistics.js";
 import { matchesSearchQuery, normalizeSearchText } from "./search.js";
 import { getHomeFeaturedItems } from "./home-discovery.js";
-import { normalizeAcademyProgress } from "./academy-progress.js";
+import { getAcademyProgressSummary, normalizeAcademyProgress } from "./academy-progress.js";
 import { getPageSlice } from "./pagination.js";
 import { getSourceHealthFreshness } from "./source-health.js";
 import { getLibraryQualitySummary } from "./library-quality.js";
@@ -1735,6 +1735,7 @@ function render() {
   const themes = THEMES[lang];
   const principles = PRINCIPLES[lang];
   const tracks = ACADEMY_TRACKS[lang];
+  const academyProgressSummary = getAcademyProgressSummary(tracks, quizAnswers);
   const spaces = SPACES[lang];
   const activeTheme = themes[selectedThemeIndex] || themes[0];
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
@@ -1986,6 +1987,29 @@ function render() {
           </div>
           <p>${c.academyText}</p>
         </div>
+
+        <section class="academy-progress-overview" aria-label="${lang === "ar" ? "ملخص التقدم" : "Résumé de progression"}">
+          <div class="academy-progress-heading">
+            <div>
+              <span class="mini-label">${lang === "ar" ? "تقدمك" : "TA PROGRESSION"}</span>
+              <h3>${lang === "ar" ? "مسارك التعليمي" : "Ton parcours d’apprentissage"}</h3>
+            </div>
+            <strong class="academy-progress-total">${academyProgressSummary.percent}%</strong>
+          </div>
+          <div class="academy-progress-track" role="progressbar" aria-label="${lang === "ar" ? "التقدم الإجمالي" : "Progression globale"}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${academyProgressSummary.percent}">
+            <span style="width: ${academyProgressSummary.percent}%"></span>
+          </div>
+          <p class="academy-progress-meta">${academyProgressSummary.answered} / ${academyProgressSummary.total} ${lang === "ar" ? "إجابات" : "réponses"} · ${academyProgressSummary.correct} ${lang === "ar" ? "صحيحة" : "correctes"} · ${academyProgressSummary.completedTracks} / ${academyProgressSummary.tracks.length} ${lang === "ar" ? "مسارات مكتملة" : "parcours terminés"}</p>
+          <div class="academy-progress-list">
+            ${academyProgressSummary.tracks.map((track) => `
+              <button type="button" class="academy-progress-item ${track.completed ? "is-complete" : ""}" data-academy-progress-idx="${academyProgressSummary.tracks.indexOf(track)}">
+                <span class="academy-progress-item-heading"><strong>${escapeHtml(track.label)}</strong><span>${track.answered}/${track.total}</span></span>
+                <span class="academy-progress-track academy-progress-track-small"><span style="width: ${track.percent}%"></span></span>
+                <span class="academy-progress-item-status">${track.completed ? (lang === "ar" ? "مكتمل" : "Terminé") : (track.answered ? (lang === "ar" ? "قيد التقدم" : "En cours") : (lang === "ar" ? "لم يبدأ" : "À commencer"))}</span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
 
         <div class="academy-tabs">
           ${tracks.map((tr, idx) => `

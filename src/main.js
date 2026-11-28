@@ -1354,6 +1354,33 @@ function renderLibraryDirectory() {
     '</section>';
 }
 
+function getRelatedKnowledgeItems(item, limit = 3) {
+  const sourceSpace = resolveItemSpace(item);
+  const sourceText = normalizeSearchText([
+    item.titre_original || "", item.resume || "", item.analyse_strategique || "",
+    item.pole || "", ...(Array.isArray(item.mots_cles) ? item.mots_cles : [])
+  ].join(" "));
+  const terms = [...new Set(sourceText.split(" ").filter((term) => term.length >= 4))];
+  if (!terms.length) return [];
+  const sourceKey = getItemKey(item);
+  return indexItems
+    .filter((candidate) => getItemKey(candidate) !== sourceKey && !isFutureDate(candidate))
+    .map((candidate) => {
+      const candidateSpace = resolveItemSpace(candidate);
+      const candidateText = normalizeSearchText([
+        candidate.titre_original || "", candidate.resume || "", candidate.analyse_strategique || "",
+        candidate.pole || "", ...(Array.isArray(candidate.mots_cles) ? candidate.mots_cles : [])
+      ].join(" "));
+      const sharedTerms = terms.filter((term) => candidateText.includes(term));
+      const samePole = Boolean(item.pole && candidate.pole === item.pole);
+      const crossSpace = candidateSpace !== sourceSpace;
+      return { item: candidate, sharedTerms: sharedTerms.length, crossSpace, score: sharedTerms.length + (samePole ? 2 : 0) + (crossSpace ? 1 : 0) };
+    })
+    .filter((entry) => entry.sharedTerms > 0)
+    .sort((a, b) => b.score - a.score || String(b.item.date_publication || "").localeCompare(String(a.item.date_publication || "")))
+    .slice(0, limit);
+}
+
 function renderArticlePage(item) {
   const isAr = lang === "ar";
   const title = item.titre_original || (isAr ? "منشور" : "Publication");
@@ -1362,6 +1389,8 @@ function renderArticlePage(item) {
   const sourceUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
   const pdfUrl = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
   const doiUrl = getDoiUrl(item.doi);
+  const relatedItems = getRelatedKnowledgeItems(item);
+  const relatedMarkup = relatedItems.length ? `<section class="related-knowledge"><div class="related-knowledge-heading"><span class="mini-label">${isAr ? "روابط معرفية" : "CONNEXIONS TRANSVERSALES"}</span><h2>${isAr ? "اكتشف امتدادات هذا الموضوع" : "Prolonger l’exploration"}</h2><p>${isAr ? "مواد من مجالات KITN الأخرى مرتبطة بموضوع هذا المحتوى." : "Des contenus d’autres espaces de KITN qui partagent des thèmes avec cette publication."}</p></div><div class="related-knowledge-grid">${relatedItems.map(({ item: related, crossSpace }) => `<button type="button" class="related-knowledge-card" data-open-home-item="${escapeHtml(getItemKey(related))}"><span>${escapeHtml(crossSpace ? (isAr ? "مجال آخر" : "Autre espace") : (isAr ? "موضوع مرتبط" : "Même espace"))} · ${escapeHtml(formatPole(related.pole) || formatDocType(related.type_document) || "")}</span><strong>${escapeHtml(related.titre_original || (isAr ? "محتوى" : "Contenu sans titre"))}</strong><small>${escapeHtml(related.source_nom || related.revue_ou_institution || "")}</small></button>`).join("")}</div></section>` : "";
   const authors = Array.isArray(item.auteurs) && item.auteurs.length
     ? item.auteurs.join(", ")
     : (isAr ? "المؤلف غير محدد" : "Auteur non renseigné");
@@ -1385,6 +1414,7 @@ function renderArticlePage(item) {
             ? "تعرض KITN هنا البيانات الوصفية والملخص المتاح. لا يُنشر النص الكامل إلا إذا كانت حقوق إعادة النشر أو رخصة المصدر تسمح بذلك."
             : "KITN présente ici les métadonnées et le résumé disponible. Le texte intégral ne sera reproduit que si les droits ou la licence de la source l'autorisent."}
         </aside>
+        ${relatedMarkup}
         <section class="article-citation">
           <h2>${isAr ? "المصدر والمراجع" : "Source et références"}</h2>
           <p><strong>${escapeHtml(authors)}</strong>. ${escapeHtml(title)}. ${escapeHtml(item.revue_ou_institution || item.source_nom || "")}. ${escapeHtml(item.date_publication || "")}.</p>

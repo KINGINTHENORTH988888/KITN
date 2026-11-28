@@ -322,7 +322,8 @@ test("Academy displays a cross-track learning progress overview", () => {
 test("Academy quiz progress persists locally and can be reset per track", () => {
   assert.match(source, /const ACADEMY_PROGRESS_KEY = "kitn_academy_progress_v1"/);
   assert.match(source, /let quizAnswers = loadAcademyProgress\(\)/);
-  assert.match(source, /saveJsonStorage\(ACADEMY_PROGRESS_KEY, quizAnswers\)/);
+  assert.match(source, /if \(!saveJsonStorage\(ACADEMY_PROGRESS_KEY, nextAnswers\)\)/);
+  assert.match(source, /quizAnswers = nextAnswers/);
   assert.match(source, /data-quiz-reset/);
   assert.match(source, /!key\.startsWith\(\x60\$\{trackId\}:\x60\)/);
 });

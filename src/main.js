@@ -2278,7 +2278,7 @@ function render() {
       <div class="home-featured-grid">
         ${homeFeaturedItems.map((item) => `
           <article class="home-featured-card">
-            <span class="mini-label">${escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || (lang === "ar" ? "منشور" : "Publication"))}</span>
+            <span class="mini-label">${escapeHtml([spaces.find((space) => space.id === resolveItemSpace(item))?.label, formatDocType(item.type_document) || formatPole(item.pole)].filter(Boolean).join(" · ") || (lang === "ar" ? "منشور" : "Publication"))}</span>
             <h3>${escapeHtml(item.titre_original || "")}</h3>
             <p>${escapeHtml(String(item.resume || "").slice(0, 180))}${String(item.resume || "").length > 180 ? "…" : ""}</p>
             <button type="button" class="link-btn" data-open-home-item="${escapeHtml(getItemKey(item))}">${lang === "ar" ? "قراءة التفاصيل" : "Lire la suite"}</button>

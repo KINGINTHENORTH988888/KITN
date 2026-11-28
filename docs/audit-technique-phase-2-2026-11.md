@@ -311,6 +311,16 @@ Sources officielles consultées :
 
 Correction applicative effectuée sur la branche : si le CSV et la page échouent, les deux erreurs sont désormais conservées dans le diagnostic. Cette correction améliore l'observabilité mais ne rétablit pas la collecte ; aucune valeur MONIA de remplacement n'a été inventée.
 
+
+### 3.13 Fraîcheur du rapport de veille — état inconnu
+
+Le contrôle de fraîcheur distingue désormais trois états :
+- `fresh` : horodatage valide et rapport âgé de 24 heures au plus ;
+- `stale` : rapport âgé de plus de 24 heures ;
+- `unknown` : horodatage absent, invalide ou situé à plus de cinq minutes dans le futur (décalage d'horloge potentiel).
+
+L'interface affiche un avertissement distinct en français et en arabe pour les rapports dont la fraîcheur ne peut pas être vérifiée. Cela évite de présenter silencieusement un état non daté comme fiable. Des tests couvrent les dates absentes, invalides, futures et la tolérance de cinq minutes.
+
 ## 4. État de la couverture de tests
 
 Le workflow exécute `python -m unittest discover -s tests -v`. Le fichier `tests/test_pipeline.py` couvre déjà de nombreux scénarios : pertinence Maroc, DOI, dates, HCP, MEF, MONIA, Banque mondiale, HAL, Crossref, concours, fusion de notices et CKAN.

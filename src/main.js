@@ -1374,7 +1374,7 @@ function getRelatedKnowledgeItems(item, limit = 3) {
       const sharedTerms = terms.filter((term) => candidateText.includes(term));
       const samePole = Boolean(item.pole && candidate.pole === item.pole);
       const crossSpace = candidateSpace !== sourceSpace;
-      return { item: candidate, sharedTerms: sharedTerms.length, crossSpace, score: sharedTerms.length + (samePole ? 2 : 0) + (crossSpace ? 1 : 0) };
+      return { item: candidate, sharedTerms: sharedTerms.length, crossSpace, score: sharedTerms.length + (samePole ? 2 : 0) + (crossSpace ? 3 : 0) };
     })
     .filter((entry) => entry.sharedTerms > 0)
     .sort((a, b) => b.score - a.score || String(b.item.date_publication || "").localeCompare(String(a.item.date_publication || "")))

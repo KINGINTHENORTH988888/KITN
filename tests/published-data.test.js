@@ -125,6 +125,27 @@ test("Academy has three bilingual tracks with valid answer indexes", () => {
 });
 
 
+test("Academy learning paths provide bilingual objectives and actionable revision steps", () => {
+  for (const language of ["fr", "ar"]) {
+    const tracks = academy.tracks?.[language] || [];
+    assert.equal(tracks.length, 3);
+    for (const track of tracks) {
+      assert.equal(track.learning_objectives?.length, 4, `${language}/${track.id} needs four learning objectives`);
+      assert.equal(track.study_plan?.length, 4, `${language}/${track.id} needs four revision steps`);
+      for (const objective of track.learning_objectives) assert.ok(objective.trim().length >= 20);
+      for (const step of track.study_plan) assert.ok(step.trim().length >= 20);
+    }
+  }
+
+  for (const id of ["dgsn", "irat", "admin"]) {
+    const fr = academy.tracks.fr.find((track) => track.id === id);
+    const ar = academy.tracks.ar.find((track) => track.id === id);
+    assert.ok(fr && ar, `missing bilingual track ${id}`);
+    assert.equal(fr.learning_objectives.length, ar.learning_objectives.length);
+    assert.equal(fr.study_plan.length, ar.study_plan.length);
+  }
+});
+
 test("published data mirrors are synchronized with the frontend copies", () => {
   assert.deepEqual(regionalPublic, regional, "regional data in public/ must match the source dataset");
   assert.deepEqual(statisticsPublic, statistics, "national statistics in public/ must match the source dataset");

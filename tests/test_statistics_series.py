@@ -234,11 +234,11 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         combined_rows = [
             ["Encours monétaires — en MDH"],
             ["Indicateur", "2024", "2025"],
-            ["Crédits à l'économie", "100", "110"],
+            ["Autres sociétés financières", "100", "110"],
             [],
             ["Taux — en %"],
             ["Indicateur", "2024", "2025"],
-            ["Taux débiteur", "5.2", "5.3"],
+            ["Autres sociétés financières", "5.2", "5.3"],
         ]
 
         sheets = _split_xlsx_sheets(combined_rows)
@@ -246,12 +246,15 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
 
         dataset = {"title": "Jeu BAM", "notes": ""}
         resource = {"url": "https://data.gov.ma/resource.xlsx", "name": "resource.xlsx"}
-        monetary = _bam_ckan_series_from_rows(sheets[0], dataset, resource)
-        rates = _bam_ckan_series_from_rows(sheets[1], dataset, resource)
+        monetary = _bam_ckan_series_from_rows(sheets[0], dataset, resource, sheet_name="Encours")
+        rates = _bam_ckan_series_from_rows(sheets[1], dataset, resource, sheet_name="Taux")
 
         self.assertEqual(len(monetary), 1)
         self.assertEqual(len(rates), 1)
         self.assertEqual(monetary[0]["statistics_series"]["unit_fr"], "MDH")
+        self.assertNotEqual(monetary[0]["statistics_series"]["indicator_code"], rates[0]["statistics_series"]["indicator_code"])
+        self.assertEqual(monetary[0]["statistics_series"]["sheet_name"], "Encours")
+        self.assertEqual(rates[0]["statistics_series"]["sheet_name"], "Taux")
         self.assertEqual(rates[0]["statistics_series"]["unit_fr"], "%")
         self.assertEqual(monetary[0]["statistics_series"]["history"][-1]["value"], 110.0)
         self.assertEqual(rates[0]["statistics_series"]["history"][-1]["value"], 5.3)

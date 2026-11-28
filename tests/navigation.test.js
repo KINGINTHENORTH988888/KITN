@@ -7,6 +7,13 @@ const styles = await readFile(new URL("../src/style.css", import.meta.url), "utf
 const searchSource = await readFile(new URL("../src/search.js", import.meta.url), "utf8");
 const spacesMatch = source.match(/const SPACES = \{([\s\S]*?)\n\};/);
 
+test("Academy quiz feedback renders explanations for every option", () => {
+  assert.match(source, /activeQuizQuestion\.option_explanations/);
+  assert.match(source, /academyExplanationLabel/);
+  assert.match(source, /quiz-explanations/);
+  assert.match(styles, /\.quiz-explanations/);
+});
+
 test("Academy renders structured learning objectives and revision plans", () => {
   assert.match(source, /activeTrack\.learning_objectives/);
   assert.match(source, /activeTrack\.study_plan/);

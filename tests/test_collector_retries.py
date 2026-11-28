@@ -117,6 +117,32 @@ class TestCollectorRetries(unittest.TestCase):
 
         self.assertEqual(mocked.call_count, 1)
 
+    def test_monia_reads_public_html_table_without_blocked_csv_export(self):
+        source = {
+            "statistics_pages": [{
+                "kind": "monia",
+                "url": "https://www.bkam.ma/monia",
+                "block_id": "block-123",
+                "page_offsets": [0, 10],
+            }]
+        }
+        first_page = """
+        <table><tr><th>Indice MONIA</th><th>Volume JJ</th><th>Date de référence</th><th>Date de publication</th></tr>
+        <tr><td>2,088 %</td><td>14661</td><td>26/11/2026</td><td>27/11/2026</td></tr></table>
+        """
+        second_page = """
+        <table><tr><td>2,195 %</td><td>12709</td><td>25/11/2026</td><td>26/11/2026</td></tr></table>
+        """
+        with patch("pipeline.collectors._fetch_text", side_effect=[first_page, second_page]) as fetch:
+            items = collectors.collect_bank_al_maghrib(source)
+        self.assertEqual(fetch.call_count, 2)
+        self.assertIn("offset=0", fetch.call_args_list[0].args[0])
+        self.assertIn("offset=10", fetch.call_args_list[1].args[0])
+        self.assertEqual(len(items), 2)
+        rate = next(item for item in items if item["statistics_series"]["indicator_code"] == "BAM_MONIA_RATE")
+        self.assertEqual(len(rate["statistics_series"]["history"]), 2)
+        self.assertEqual(rate["statistics_series"]["latest"]["value"], 2.195)
+
     def test_monia_reports_both_csv_and_page_failures(self):
         csv_error = HTTPError(
             "https://www.bkam.ma/export/blockcsv/data",
@@ -139,8 +165,8 @@ class TestCollectorRetries(unittest.TestCase):
                 "csv_url": "https://www.bkam.ma/export/blockcsv/data",
             }]
         }
-        with patch("pipeline.collectors._fetch_text", side_effect=[csv_error, page_error]):
-            with self.assertRaisesRegex(RuntimeError, "export CSV.*page officielle"):
+        with patch("pipeline.collectors._fetch_text", side_effect=page_error):
+            with self.assertRaises(HTTPError):
                 collectors.collect_bank_al_maghrib(source)
 
     def test_excessive_retry_after_is_not_retried_early(self):

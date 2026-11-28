@@ -54,7 +54,8 @@ test("ignores answers that do not belong to a track question", () => {
 test("imports only answers that belong to known questions and valid options", () => {
   const tracks = [
     { id: "dgsn", questions: [{ options: ["a", "b"] }, { options: ["a", "b", "c"] }] },
-    { id: "irat", options: ["a", "b"] }
+    { id: "irat", options: ["a", "b"] },
+    { id: "other", options: ["a", "b"] }
   ];
   assert.deepEqual(mergeAcademyProgress({ "dgsn:0": 0 }, {
     "dgsn:0": 1,
@@ -62,7 +63,7 @@ test("imports only answers that belong to known questions and valid options", ()
     "dgsn:2": 0,
     "irat:0": 1,
     "unknown:0": 0,
-    "dgsn:1": 9
+    "other:0": 9
   }, tracks), { "dgsn:0": 1, "dgsn:1": 2, "irat:0": 1 });
 });
 

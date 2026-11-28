@@ -1,7 +1,8 @@
 import unittest
 
 from pipeline.run_pipeline import _merge_statistics_series, _merge_valid_statistics_series, _statistics_period_sort_key
-from pipeline.collectors import _bam_ckan_number, _bam_ckan_series_from_rows, _split_xlsx_sheets
+from pipeline.collectors import _bam_ckan_number, _bam_ckan_period, _bam_ckan_series_from_rows, _split_xlsx_sheets
+from pipeline.run_pipeline import _is_valid_statistics_series
 
 
 class TestStatisticsSeriesMerge(unittest.TestCase):
@@ -187,6 +188,30 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         )
         self.assertEqual(merged["latest"], {"year": "Aujourd'hui", "value": 10.5})
         self.assertEqual(merged["previous"], {"year": "Veille", "value": 10.4})
+
+    def test_bam_ckan_parser_recognizes_semester_periods(self):
+        self.assertEqual(_bam_ckan_period("1er semestre 2023"), "2023-S1")
+        self.assertEqual(_bam_ckan_period("2e semestre 2023"), "2023-S2")
+        self.assertEqual(_bam_ckan_period("S1 2024"), "2024-S1")
+        rows = [
+            ["Encours en MDH"],
+            ["Indicateur", "1er semestre 2023", "2e semestre 2023"],
+            ["Actif", "100", "110"],
+        ]
+        items = _bam_ckan_series_from_rows(
+            rows,
+            {"title": "Compte de patrimoine OPCI", "notes": ""},
+            {"url": "https://data.gov.ma/opci.xlsx", "name": "opci.xlsx"},
+        )
+        self.assertEqual(len(items), 1)
+        series = items[0]["statistics_series"]
+        self.assertEqual([point["year"] for point in series["history"]], ["2023-S1", "2023-S2"])
+        self.assertTrue(_is_valid_statistics_series(series))
+
+    def test_semester_periods_sort_chronologically(self):
+        periods = ["2024-S2", "2023-S2", "2024-S1", "2023-S1"]
+        ordered = sorted(periods, key=lambda value: _statistics_period_sort_key(value, "2026-11-28T00:00:00Z"))
+        self.assertEqual(ordered, ["2023-S1", "2023-S2", "2024-S1", "2024-S2"])
 
     def test_bam_ckan_number_parser_respects_french_and_english_decimal_conventions(self):
         cases = {

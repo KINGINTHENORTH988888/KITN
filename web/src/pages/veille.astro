@@ -1,9 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { loadSearchIndex } from '../lib/data';
+import { loadSearchIndex, loadSourcesHealth } from '../lib/data';
 import { DOC_TYPE_LABELS, POLE_LABELS, UI_TEXT } from '../lib/i18n';
 
 const indexData = loadSearchIndex();
+const sourceHealth = loadSourcesHealth();
+const healthAttentionCount = sourceHealth.warningCount + sourceHealth.errorCount + sourceHealth.unverifiedCount;
+const healthUpdatedAt = sourceHealth.updatedAt
+  ? sourceHealth.updatedAt.slice(0, 19).replace('T', ' ') + ' UTC'
+  : '—';
+const healthFreshnessLabel = {
+  fresh: { fr: UI_TEXT.fr.healthReportFresh, ar: UI_TEXT.ar.healthReportFresh },
+  stale: { fr: UI_TEXT.fr.healthReportStale, ar: UI_TEXT.ar.healthReportStale },
+  unknown: { fr: UI_TEXT.fr.healthReportUnknown, ar: UI_TEXT.ar.healthReportUnknown }
+}[sourceHealth.freshness];
+const healthStatusLabels = {
+  ok: { fr: UI_TEXT.fr.healthStatusOk, ar: UI_TEXT.ar.healthStatusOk },
+  warning: { fr: UI_TEXT.fr.healthStatusWarning, ar: UI_TEXT.ar.healthStatusWarning },
+  error: { fr: UI_TEXT.fr.healthStatusError, ar: UI_TEXT.ar.healthStatusError },
+  unknown: { fr: UI_TEXT.fr.healthStatusUnknown, ar: UI_TEXT.ar.healthStatusUnknown }
+};
 const items = indexData.items;
 
 const uniqueLangs = [...new Set(items.map((i) => i.langue_originale).filter(Boolean))].sort();
@@ -20,6 +36,73 @@ const uniqueMonths = [
 ---
 
 <BaseLayout title="Veille" activeNav="watch">
+  <section class="health-panel card" aria-labelledby="source-health-title">
+    <div class="health-heading">
+      <div>
+        <h2 id="source-health-title" data-i18n="healthTitle">{UI_TEXT.fr.healthTitle}</h2>
+        <p class="muted" data-i18n="healthDesc">{UI_TEXT.fr.healthDesc}</p>
+      </div>
+      <span
+        class={`health-freshness freshness-${sourceHealth.freshness}`}
+        data-fr={healthFreshnessLabel.fr}
+        data-ar={healthFreshnessLabel.ar}
+      >{healthFreshnessLabel.fr}</span>
+    </div>
+
+    <div class="health-metrics">
+      <div class="health-metric">
+        <strong>{sourceHealth.activeCount}</strong>
+        <span data-i18n="healthActive">{UI_TEXT.fr.healthActive}</span>
+      </div>
+      <div class="health-metric">
+        <strong>{sourceHealth.operationalCount}</strong>
+        <span data-i18n="healthOperational">{UI_TEXT.fr.healthOperational}</span>
+      </div>
+      <div class="health-metric">
+        <strong>{healthAttentionCount}</strong>
+        <span data-i18n="healthAttention">{UI_TEXT.fr.healthAttention}</span>
+      </div>
+      <div class="health-metric">
+        <strong>{sourceHealth.unverifiedCount}</strong>
+        <span data-i18n="healthUnverified">{UI_TEXT.fr.healthUnverified}</span>
+      </div>
+    </div>
+
+    <div class="health-meta">
+      <span><strong data-i18n="healthReportDate">{UI_TEXT.fr.healthReportDate}</strong> : {healthUpdatedAt}</span>
+      <span>
+        <span data-i18n="healthFetched">{UI_TEXT.fr.healthFetched}</span> : {sourceHealth.totalFetched.toLocaleString('fr-MA')}
+        · <span data-i18n="healthAccepted">{UI_TEXT.fr.healthAccepted}</span> : {sourceHealth.totalAccepted.toLocaleString('fr-MA')}
+      </span>
+    </div>
+
+    <details class="health-details">
+      <summary data-i18n="healthShowSources">{UI_TEXT.fr.healthShowSources}</summary>
+      <ul class="health-source-list">
+        {sourceHealth.sources.map((source) => {
+          const labels = healthStatusLabels[source.status] || healthStatusLabels.unknown;
+          return (
+            <li class={`health-source-row status-${source.status}`}>
+              <div class="health-source-heading">
+                <strong>{source.source_name}</strong>
+                <span class="health-status" data-fr={labels.fr} data-ar={labels.ar}>{labels.fr}</span>
+              </div>
+              {source.status === 'unknown' ? (
+                <p class="health-source-detail" data-i18n="healthNoReportDetail">{UI_TEXT.fr.healthNoReportDetail}</p>
+              ) : source.error ? (
+                <p class="health-source-detail">{source.error}</p>
+              ) : null}
+              <div class="health-source-counts">
+                <span><span data-i18n="healthFetched">{UI_TEXT.fr.healthFetched}</span> : {source.fetched}</span>
+                <span><span data-i18n="healthAccepted">{UI_TEXT.fr.healthAccepted}</span> : {source.accepted}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
+  </section>
+
   <section class="page-head">
     <div>
       <h1 data-i18n="navWatch">{UI_TEXT.fr.navWatch}</h1>
@@ -172,7 +255,11 @@ const uniqueMonths = [
       const favs = getFavs();
       if (favs.has(id)) favs.delete(id);
       else favs.add(id);
-      localStorage.setItem('kitn_favorites', JSON.stringify([...favs]));
+      try {
+        localStorage.setItem('kitn_favorites', JSON.stringify([...favs]));
+      } catch {
+        return;
+      }
       render();
     }
 
@@ -323,6 +410,154 @@ const uniqueMonths = [
 </BaseLayout>
 
 <style>
+  .health-panel {
+    margin-bottom: 1.5rem;
+  }
+
+  .health-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .health-heading h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .health-freshness,
+  .health-status {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.22rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #eff6ff;
+    color: #1e40af;
+    white-space: nowrap;
+  }
+
+  .freshness-stale,
+  .status-warning {
+    background: #fff7ed;
+    color: #9a3412;
+  }
+
+  .freshness-unknown,
+  .status-unknown {
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  .status-error {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  .health-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .health-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    border-radius: 10px;
+    background: var(--surface-alt);
+    padding: 0.85rem;
+  }
+
+  .health-metric strong {
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+
+  .health-metric span {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .health-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.9rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .health-details {
+    margin-top: 1rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.8rem;
+  }
+
+  .health-details summary {
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .health-source-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+  }
+
+  .health-source-row {
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+  }
+
+  .health-source-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .health-source-heading strong {
+    font-size: 0.84rem;
+    overflow-wrap: anywhere;
+  }
+
+  .health-source-detail {
+    margin: 0.45rem 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+  }
+
+  .health-source-counts {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.74rem;
+  }
+
+  @media (max-width: 700px) {
+    .health-metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .health-source-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .page-head {
     display: flex;
     align-items: center;

@@ -8,6 +8,20 @@ on:
   pull_request:
     branches:
       - main
+    # Les publications automatiques de fichiers JSON générés ne doivent pas
+    # relancer une validation complète ni annuler un build déjà en cours.
+    paths:
+      - ".github/workflows/**"
+      - "pipeline/**"
+      - "scripts/**"
+      - "tests/**"
+      - "src/**"
+      - "web/**"
+      - "data/sources.json"
+      - "data/academy/**"
+      - "requirements.txt"
+      - "package.json"
+      - "package-lock.json"
   push:
     branches:
       - main
@@ -18,6 +32,7 @@ on:
       - "data/sources.json"
       - "package.json"
       - "package-lock.json"
+      - "requirements.txt"
       - "src/**"
 
 # Les vérifications de pull request sont strictement en lecture seule.
@@ -25,12 +40,16 @@ permissions:
   contents: read
 
 concurrency:
-  group: kitn-veille-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Isoler chaque SHA évite qu'une publication de données sur la branche
+  # annule une validation de code encore en cours.
+  group: kitn-veille-${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
 
 jobs:
   validate-pull-request:
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    # Le workflow HCP pousse un commit de données marqué ; ne pas relancer
+    # toute la validation pour ce seul commit généré.
+    if: (github.event_name == 'pull_request' && !contains(github.event.pull_request.head.commit.message, '[skip hcp data refresh]')) || github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout pull request
@@ -51,6 +70,54 @@ jobs:
       - name: Run unit tests
         run: PYTHONPATH=. python -m unittest discover -s tests -v
 
+      - name: Validate current HCP regional PDF (read-only)
+        run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py
+
+      - name: Validate HCP 2026 social indicators PDF (read-only)
+        run: PYTHONPATH=. python scripts/validate_hcp_social_live.py
+
+      - name: Report statistical dataset distribution
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from datetime import date
+          from pathlib import Path
+
+          path = Path("data/statistics.json")
+          if not path.exists():
+              print("STATISTICS DATASET: missing")
+              raise SystemExit(0)
+          data = json.loads(path.read_text(encoding="utf-8"))
+          indicators = data.get("indicators", [])
+          print("STATISTICS TOTAL:", data.get("indicator_count"), "| actual array length:", len(indicators))
+          print("STATISTICS BY POLE:", json.dumps(Counter(x.get("pole") or "(missing)" for x in indicators), ensure_ascii=False, sort_keys=True))
+          print("STATISTICS BY CATEGORY:", json.dumps(Counter(x.get("category") or "(missing)" for x in indicators), ensure_ascii=False, sort_keys=True))
+          print("STATISTICS BY SOURCE:", json.dumps(Counter(x.get("source_name") or "(missing)" for x in indicators), ensure_ascii=False, sort_keys=True))
+          print("STATISTICS WITHOUT POLE:", sum(not x.get("pole") for x in indicators))
+          social = [
+              {"key": x.get("indicator_code") or x.get("id"), "label": x.get("label_fr"), "source": x.get("source_name"), "unit": x.get("unit_fr")}
+              for x in indicators if x.get("pole") == "societe_developpement_humain"
+          ]
+          print("SOCIAL SERIES DETAILS:", json.dumps(social, ensure_ascii=False))
+          index_path = Path("data/index/search-index.json")
+          if index_path.exists():
+              index = json.loads(index_path.read_text(encoding="utf-8"))
+              items = index.get("items", [])
+              today = date.today().isoformat()
+              future = [
+                  x for x in items
+                  if x.get("date_anomalie")
+                  or x.get("date_statut") == "date_future_a_verifier"
+                  or (
+                      len(str(x.get("date_publication") or "")[:10]) == 10
+                      and str(x.get("date_publication") or "")[:10][4:5] == "-"
+                      and str(x.get("date_publication") or "")[:10] > today
+                  )
+              ]
+              print("DOCUMENT INDEX:", index.get("total"), "| visible after future-date exclusion:", len(items) - len(future), "| future-dated to verify:", len(future), "| reference date:", today)
+          PY
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -60,7 +127,15 @@ jobs:
       - name: Verify root Vite build
         run: |
           npm ci
+          npm audit --json > /tmp/kitn-npm-audit.json || true
+          node -e 'const a=require("/tmp/kitn-npm-audit.json"); for (const [name,v] of Object.entries(a.vulnerabilities||{})) console.log("NPM AUDIT:", name, "| severity:", v.severity, "| direct:", v.isDirect, "| fix:", JSON.stringify(v.fixAvailable), "| via:", (v.via||[]).map(x => typeof x === "string" ? x : x.name).join(", "))'
+          npm run test:frontend
           npm run build
+
+      - name: Verify Astro Worker assets (Astro)
+        run: |
+          npm --prefix web install --no-package-lock
+          npm --prefix web run build
 
   collect-and-update:
     timeout-minutes: 20
@@ -92,6 +167,7 @@ jobs:
       - name: Run KITN pipeline
         env:
           BKAM_API_KEY: ${{ secrets.BKAM_API_KEY }}
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}
         run: PYTHONPATH=. python -m pipeline.run_pipeline
 
       - name: Sync Academy content to public for Vite production build
@@ -110,13 +186,14 @@ jobs:
       - name: Verify root Vite build
         run: |
           npm ci
+          npm run test:frontend
           npm run build
 
       - name: Commit and push generated data only
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/index/search-index.json data/sources-health.json data/statistics.json public/data/index/search-index.json public/data/statistics.json public/data/academy/academy.json
+          git add -- data/index/search-index.json data/sources-health.json data/statistics.json data/regional-statistics.json public/data/index/search-index.json public/data/sources-health.json public/data/statistics.json public/data/regional-statistics.json public/data/academy/academy.json
           if ! git diff --staged --quiet; then
             git commit -m "chore(data): mise à jour automatique de la veille KITN"
             branch="$GITHUB_REF_NAME"

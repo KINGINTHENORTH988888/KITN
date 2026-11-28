@@ -1,66 +1,100 @@
 # KITN — Centre de veille & de connaissances
 
-Plateforme bilingue (FR / AR, avec prise en charge RTL) dédiée à la veille, à l'indexation et à l'analyse structurée des dynamiques, politiques publiques, enjeux économiques, sécuritaires et travaux de recherche liés au Maroc.
+Plateforme bilingue français/arabe (avec prise en charge RTL) consacrée à la veille, à l'indexation documentaire, aux données publiques, à la recherche et à la préparation aux concours liés au Maroc.
 
 ## Architecture du dépôt
 
-- **Racine (`index.html`, `src/main.js`, `src/style.css`, `package.json`)** : application web **Vite** active en production sur Cloudflare Pages (`kitn.pages.dev`), commandée par `npm run build` avec sortie `dist`.
-- **`pipeline/`** : moteur Python de collecte, normalisation, scoring de pertinence, classification sur les 6 pôles, vérification d'URL et fusion incrémentale (`run_pipeline.py`, `processors.py`, `collectors.py`, `config.py`).
-- **`data/`** : configuration des sources (`sources.json`), archives mensuelles (`publications/YYYY-MM.json`), index de recherche (`index/search-index.json`) et suivi de santé (`index/sources-health.json`).
-- **`public/data/`** : copie synchronisée de l'index consommé par le build Vite de production.
-- **`web/`** : prototype/interface alternative sous Astro (non déployée par le projet Cloudflare Pages principal).
+- **Application web active** — index.html, src/, package.json : application Vite construite avec npm run build, sortie dist/. Le dépôt identifie cette application comme celle utilisée par le projet Cloudflare Pages kitn.pages.dev.
+- **Pipeline Python** — pipeline/ : collecte, extraction, normalisation, contrôle de pertinence, classification, fusion des historiques et génération des fichiers publiés.
+- **Configuration des sources** — data/sources.json.
+- **Données générées** — data/index/search-index.json, data/statistics.json, data/regional-statistics.json (lorsqu'une collecte régionale a pu être produite), data/sources-health.json et archives mensuelles dans data/publications/.
+- **Données consommées par Vite** — copies synchronisées dans public/data/.
+- **Prototype Astro** — web/ : interface alternative expérimentale. Elle est distincte de l'application Vite racine et n'est pas construite par le workflow principal décrit ci-dessous.
 
-## Les 6 pôles de classification
+Les six pôles de classification sont des catégories de données. Ils ne doivent pas être confondus avec les espaces de navigation de l'application.
 
-1. `institutions_gouvernance` — Institutions & gouvernance
-2. `economie_finances_publiques` — Économie & finances publiques
-3. `societe_developpement_humain` — Société & développement humain
-4. `relations_internationales_geopolitique` — Relations internationales & géopolitique
-5. `securite_affaires_interieures` — Sécurité & affaires intérieures
-6. `recherche_scientifique` — Recherche scientifique
+## Les six pôles de classification
 
-## Automatisation (GitHub Actions)
+1. institutions_gouvernance — Institutions & gouvernance
+2. economie_finances_publiques — Économie & finances publiques
+3. societe_developpement_humain — Société & développement humain
+4. relations_internationales_geopolitique — Relations internationales & géopolitique
+5. securite_affaires_interieures — Sécurité & affaires intérieures
+6. recherche_scientifique — Recherche scientifique
 
-Le workflow `.github/workflows/main.yml` s'exécute deux fois par jour (`03:30` et `15:30` UTC) ainsi qu'à la demande (`workflow_dispatch`) :
+## Données et provenance
 
-1. Exécute `python -m pipeline.run_pipeline`.
-2. Synchronise `data/index/search-index.json` vers `public/data/index/search-index.json`.
-3. Vérifie le build Vite à la racine (`npm run build`).
-4. Commit et push uniquement si des changements réels sont détectés dans `data/` ou `public/data/`.
+### Index documentaire
 
-## Lancer le pipeline et les tests en local
+data/index/search-index.json contient les notices documentaires collectées et normalisées. Les archives mensuelles sont conservées dans data/publications/YYYY-MM.json. Les notices peuvent contenir notamment un titre, une source, une URL canonique, une date de publication, un résumé, un type documentaire, un pôle et des métadonnées de collecte.
+
+Une notice indexée n'implique pas que le texte intégral soit hébergé par KITN. Les pages de l'éditeur, les résumés, les DOI et les fichiers PDF doivent être distingués.
+
+### Séries statistiques nationales
+
+data/statistics.json regroupe les séries statistiques nationales provenant des sources institutionnelles configurées, notamment Bank Al-Maghrib, la Banque mondiale et le Ministère de l'Économie et des Finances. Le nombre de séries varie selon les collectes et les contrôles de validation : il ne doit donc pas être considéré comme un chiffre fixe.
+
+Chaque série doit conserver, dans la mesure où la source les fournit, son code, son libellé, son unité, son historique, sa période de référence, sa provenance et ses informations de collecte. La date de génération du fichier n'est pas nécessairement la date de la dernière observation de chaque indicateur.
+
+### Séries régionales HCP — EMO
+
+data/regional-statistics.json est un flux distinct consacré aux tableaux régionaux de l'Enquête sur la main-d'œuvre du HCP. Il ne doit pas être mélangé aux indicateurs nationaux de statistics.json.
+
+Les valeurs supprimées, non disponibles ou insuffisamment significatives doivent conserver leur statut de qualité. Elles ne doivent jamais être transformées en zéros. Les résultats EMO 2026 doivent également porter l'avertissement de rupture méthodologique avec les anciennes séries ENE.
+
+Le fichier régional est généré par le pipeline. Son existence et sa fraîcheur doivent être vérifiées après une collecte complète ; la présence du parseur ou la réussite d'un test sur PDF ne prouvent pas, à elles seules, que le fichier publié a été actualisé.
+
+### Santé des sources
+
+data/sources-health.json décrit le résultat des collectes. Il faut distinguer les ressources découvertes, les documents acceptés, les séries statistiques extraites, les séries validées et les données conservées depuis une collecte antérieure.
+
+## Automatisation GitHub Actions
+
+Le workflow principal est défini dans .github/workflows/main.yml.
+
+- Il est planifié à 03:30 et 15:30 UTC et peut être lancé manuellement depuis GitHub Actions.
+- Les événements de pull request exécutent les tests Python, les contrôles de données et les tests/build frontend sans lancer la collecte ni pousser de données.
+- Les exécutions planifiées ou manuelles lancent le pipeline Python, synchronisent les fichiers générés vers public/data/, vérifient les tests frontend et le build Vite, puis ne poussent que les fichiers de données explicitement autorisés lorsqu'ils ont changé.
+- Les tests Python indépendants sont également définis dans .github/workflows/tests.yml.
+- Le contrôle réseau spécifique du PDF régional HCP est séparé dans .github/workflows/hcp-live-validation.yml et doit être lancé manuellement.
+
+Une exécution réussie des tests ne signifie pas nécessairement que les collecteurs externes ont été exécutés : il faut vérifier le type de déclenchement et les jobs réellement lancés.
+
+## Lancer les vérifications en local
+
+Installer les dépendances Python de requirements.txt, puis les dépendances Node avec npm ci.
 
 ```bash
-# Lancer la veille
+# Tests Python
+PYTHONPATH=. python -m unittest discover -s tests -v
+
+# Tests frontend
+npm run test:frontend
+
+# Build de l'application Vite
+npm run build
+
+# Exécution complète du pipeline (peut interroger des sources externes
+# et modifier les fichiers de données générés)
 PYTHONPATH=. python -m pipeline.run_pipeline
+```
 
-# Lancer les tests unitaires
-python -m unittest discover -s tests -v
+## Connecteur Bank Al-Maghrib
 
-
-## Données statistiques et bibliothèque documentaire
-
-Le pipeline alimente également :
-
-- `data/statistics.json` : six séries historiques marocaines issues de l'API World Development Indicators de la Banque mondiale (PIB nominal, croissance, inflation, chômage estimé OIT, population et IDE).
-- `data/index/search-index.json` : notices institutionnelles et documentaires provenant notamment du HCP, de la Cour des comptes, du CESE et de l'IRES.
-- `public/data/` : copies publiées consommées par l'application Vite.
-
-Les séries statistiques conservent leur code d'indicateur, leur unité, leurs valeurs historiques, leur année de référence et leur URL source. Les valeurs sont actualisées par le pipeline automatisé ; l'indisponibilité d'une série isolée ne bloque pas les autres indicateurs.
-
-Les collecteurs institutionnels visitent les pages de détail lorsqu'elles sont accessibles afin de récupérer les titres normalisés, dates de publication et résumés éditoriaux. Les notices sont dédoublonnées à partir de leur URL canonique pour éviter de conserver une version générique et une version enrichie du même rapport.
-
-
-### Bank Al-Maghrib API
-
-Le connecteur officiel `bank_al_maghrib_api` récupère les cours de virement EUR, USD et CAD via l'API de Bank Al-Maghrib. Il attend la clé dans la variable d'environnement `BKAM_API_KEY`, transmise uniquement via le secret GitHub Actions du même nom. La source reste désactivée tant que la clé n'a pas été configurée. Ne jamais placer cette clé dans un fichier du dépôt.
-
+Le connecteur bank_al_maghrib_api utilise la variable d'environnement BKAM_API_KEY, transmise au workflow par le secret GitHub Actions du même nom. Ne jamais inscrire cette clé dans le dépôt, dans un fichier versionné ou dans les journaux.
 
 ## Enrichissement académique par DOI
 
-Les notices scientifiques incomplètes disposant d'un DOI sont enrichies progressivement à partir de la fiche Crossref correspondante. Le traitement est limité à 12 tentatives par exécution (maximum configurable avec `KITN_DOI_ENRICHMENT_LIMIT`) et une même notice n'est pas retentée pendant 7 jours. Les champs existants sont conservés lorsqu'ils sont déjà renseignés ; les dates futures ou incohérentes restent signalées au lieu d'écraser une date fiable. Les résumés ne sont jamais générés artificiellement.
-
+Les notices scientifiques incomplètes disposant d'un DOI peuvent être enrichies à partir de la fiche Crossref correspondante. Le traitement est limité à 12 tentatives par exécution (paramétrable avec KITN_DOI_ENRICHMENT_LIMIT) et une même notice n'est pas retentée pendant sept jours. Les champs déjà renseignés sont préservés ; les dates incohérentes restent signalées et les résumés ne sont pas générés artificiellement.
 
 ## Couverture des publications scientifiques
 
-La veille académique combine désormais HAL, Crossref et OpenAlex. OpenAlex est interrogé avec des recherches thématiques distinctes : gouvernance et administration, économie et finances publiques, sécurité, développement humain, relations internationales et géopolitique. Les résultats restent soumis au contrôle de pertinence Maroc ; les mots génériques comme « recherche » ou « étude » ne suffisent pas à eux seuls. Les notices sont dédoublonnées par DOI canonique, puis par titre/date et URL lorsque le DOI manque.
+La veille académique combine HAL, Crossref et OpenAlex, avec des recherches thématiques distinctes : gouvernance et administration, économie et finances publiques, sécurité, développement humain, relations internationales et géopolitique. Les résultats restent soumis aux contrôles de pertinence Maroc et de dédoublonnage (DOI canonique, puis titre/date et URL lorsque le DOI manque).
+
+Pour l'indice MONIA, le collecteur privilégie le tableau HTML officiel de Bank Al-Maghrib et sait lire les cinq premières pages (50 observations récentes). Toutefois, le runner GitHub Actions a reçu un HTTP 403 lors du test direct du tableau : la source est donc signalée comme bloquée dans l'artefact de validation, sans proxy ni contournement, et aucune observation MONIA n'est publiée sur la seule base d'un test de navigateur. La reprise de la collecte automatisée dépend d'un accès autorisé par Bank Al-Maghrib ou d'un flux officiel alternatif.
+
+La collecte OpenAlex utilise une pagination par curseur avec un plafond par source. Le workflow doit disposer du secret GitHub Actions `OPENALEX_API_KEY` (clé gratuite OpenAlex activée), à configurer dans Settings → Secrets and variables → Actions du dépôt. La clé est transmise dans le paramètre documenté `api_key` des requêtes, jamais dans les fichiers suivis par Git. Sans secret, le collecteur limite volontairement chaque source à sa première page. OpenAlex indique que les requêtes sans clé partagent un budget quotidien de 0,10 $ par adresse IP, tandis qu'une clé gratuite dispose de son propre budget de 1 $/jour ; une erreur 429 sans clé peut donc venir de l'épuisement du quota partagé, même si KITN émet peu de requêtes. La clé reste facultative pour un test ponctuel, mais recommandée pour l'automatisation.
+
+## Environnements et déploiement
+
+La branche main est la branche de référence de production. Les audits et corrections doivent être réalisés sur une branche isolée, puis validés par tests et prévisualisation avant toute fusion. Le dépôt contient à la fois une application Vite et un prototype Astro : toute modification de la configuration Cloudflare doit donc préciser explicitement le projet, la branche, la commande de build et le répertoire de sortie concernés.

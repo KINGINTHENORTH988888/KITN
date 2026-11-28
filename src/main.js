@@ -1,7 +1,19 @@
 import "./style.css";
+import { filterStatisticsHistory, getLocalizedStatisticField, getStatisticsCategory } from "./statistics.js";
+import { buildRegionalStatisticsModel } from "./regional-statistics.js";
+import { safeExternalUrl } from "./url-safety.js";
+import { matchesSearchQuery, normalizeSearchText } from "./search.js";
+import { getHomeFeaturedItems } from "./home-discovery.js";
+import { getAcademyProgressSummary, mergeAcademyProgress, normalizeAcademyProgress } from "./academy-progress.js";
+import { getPageSlice } from "./pagination.js";
+import { getEffectiveSourceStatus, getSourceHealthFreshness, reconcileSourceHealth } from "./source-health.js";
+import configuredSources from "../data/sources.json";
+import { getLibraryQualitySummary } from "./library-quality.js";
+import { findRelatedKnowledgeItems } from "./knowledge-connections.js";
 
 const FAVORITES_KEY = "kitn_favorites_v1";
 const MANUAL_ITEMS_KEY = "kitn_manual_items_v1";
+const ACADEMY_PROGRESS_KEY = "kitn_academy_progress_v1";
 
 function getDynamicReferenceDate() {
   const now = new Date();
@@ -15,25 +27,39 @@ const REFERENCE_DATE = getDynamicReferenceDate();
 
 const SPACES = {
   fr: [
-    { id: "all", label: "Portail & Vue globale" },
+    { id: "all", label: "Accueil" },
     { id: "veille", label: "Actualité & veille" },
-    { id: "science", label: "Articles scientifiques" },
+    { id: "science", label: "Études & recherche" },
     { id: "chiffres", label: "Maroc en chiffres" },
-    { id: "academy", label: "Concours & Academy" },
-    { id: "bibliotheque", label: "Bibliothèque" },
-    { id: "contribuer", label: "Administration & contributions" }
+    { id: "academy", label: "KITN Academy" },
+    { id: "bibliotheque", label: "Bibliothèque" }
   ],
   ar: [
-    { id: "all", label: "البوابة والنظرة العامة" },
+    { id: "all", label: "الرئيسية" },
     { id: "veille", label: "الأخبار والرصد" },
-    { id: "science", label: "المقالات العلمية" },
+    { id: "science", label: "الدراسات والبحث" },
     { id: "chiffres", label: "المغرب بالأرقام" },
-    { id: "academy", label: "المباريات والأكاديمية" },
-    { id: "bibliotheque", label: "المكتبة الوثائقية" },
-    { id: "contribuer", label: "الإدارة والمساهمات" }
+    { id: "academy", label: "أكاديمية KITN" },
+    { id: "bibliotheque", label: "المكتبة الوثائقية" }
   ]
 };
 
+const SPACE_DESCRIPTIONS = {
+  fr: {
+    chiffres: "Explorer les indicateurs nationaux, suivre leur évolution et comparer les régions à partir de données documentées.",
+    veille: "Suivre les actualités et les institutions, repérer les évolutions importantes et contrôler la fraîcheur des sources.",
+    science: "Retrouver des publications, consulter leurs résumés et DOI, puis explorer les travaux par thème et discipline.",
+    bibliotheque: "Consulter rapports, études et documents de référence avec des repères sur leur date, leur source et leur qualité.",
+    academy: "Suivre des parcours de préparation, étudier des leçons structurées et s'entraîner avec des QCM expliqués."
+  },
+  ar: {
+    chiffres: "استكشاف المؤشرات الوطنية وتتبع تطورها ومقارنة الجهات انطلاقاً من بيانات موثقة.",
+    veille: "متابعة الأخبار والمؤسسات ورصد التحولات المهمة والتحقق من حداثة المصادر.",
+    science: "البحث عن المنشورات العلمية وقراءة ملخصاتها ومعرفات DOI واستكشاف الدراسات حسب الموضوع والتخصص.",
+    bibliotheque: "الاطلاع على التقارير والدراسات والوثائق المرجعية مع معلومات عن التاريخ والمصدر والجودة.",
+    academy: "اتباع مسارات للتحضير ودراسة دروس منظمة والتدرب عبر أسئلة متعددة الخيارات مع شروحات."
+  }
+};
 const THEMES = {
   fr: [
     {
@@ -360,6 +386,15 @@ const COPY = {
     academyDeadlineLabel: "Échéance / Repère",
     academySheetLabel: "Fiche de révision",
     academyMethodLabel: "Méthodologie & anciens sujets",
+    academyObjectivesLabel: "Compétences à maîtriser",
+    academyPlanLabel: "Parcours de révision conseillé",
+    academyExplanationLabel: "Pourquoi chaque réponse ?",
+    academyLessonsLabel: "Cours et mises en pratique",
+    academyConceptsLabel: "Notions essentielles",
+    academyExampleLabel: "Exemple marocain",
+    academyEssayLabel: "Sujet de réflexion",
+    academyExerciseLabel: "Exercice d’application",
+    academyGuidanceLabel: "Pistes de correction",
     academyQuizLabel: "QCM d'entraînement",
     methodEyebrow: "Notre approche",
     methodTitle: "La connaissance commence par une bonne question.",
@@ -432,6 +467,7 @@ const COPY = {
     manualAddedMsg: "Contribution enregistrée localement et intégrée dans l'index.",
     manualImportedMsg: "Contributions JSON importées avec succès.",
     manualInvalidJsonMsg: "Fichier JSON invalide : attendu { \"items\": [...] } ou [...].",
+    manualStorageErrorMsg: "Enregistrement impossible : le stockage du navigateur est indisponible ou saturé.",
     footerCopy: "© 2026 KITN — De l'information à la maîtrise."
   },
   ar: {
@@ -476,6 +512,15 @@ const COPY = {
     academyDeadlineLabel: "الآجال / معلم",
     academySheetLabel: "بطاقة مراجعة",
     academyMethodLabel: "المنهجية والمواضيع السابقة",
+    academyObjectivesLabel: "الكفاءات المطلوب إتقانها",
+    academyPlanLabel: "مسار المراجعة المقترح",
+    academyExplanationLabel: "تفسير كل اختيار",
+    academyLessonsLabel: "دروس وتطبيقات",
+    academyConceptsLabel: "مفاهيم أساسية",
+    academyExampleLabel: "مثال من السياق المغربي",
+    academyEssayLabel: "موضوع للتفكير",
+    academyExerciseLabel: "تمرين تطبيقي",
+    academyGuidanceLabel: "عناصر للتصحيح",
     academyQuizLabel: "اختبار تفاعلي",
     methodEyebrow: "مقاربتنا",
     methodTitle: "المعرفة تبدأ بسؤال جيد.",
@@ -548,6 +593,7 @@ const COPY = {
     manualAddedMsg: "تم تسجيل المساهمة محلياً وإدراجها في الفهرس.",
     manualImportedMsg: "تم استيراد المساهمات JSON بنجاح.",
     manualInvalidJsonMsg: "ملف JSON غير صالح: المتوقع { \"items\": [...] } أو [...].",
+    manualStorageErrorMsg: "تعذر الحفظ: تخزين المتصفح غير متاح أو ممتلئ.",
     footerCopy: "© 2026 KITN — من المعلومة إلى التمكن."
   }
 };
@@ -562,11 +608,21 @@ function loadJsonStorage(key, fallback) {
   }
 }
 
+function loadAcademyProgress() {
+  try {
+    const raw = localStorage.getItem(ACADEMY_PROGRESS_KEY);
+    return normalizeAcademyProgress(raw ? JSON.parse(raw) : {});
+  } catch {
+    return {};
+  }
+}
+
 function saveJsonStorage(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch {
-    // ignore storage quota errors
+    return false;
   }
 }
 
@@ -624,6 +680,7 @@ function resolveItemSpace(item) {
 let lang = "fr";
 let activeSpace = "all";
 let mobileMenuOpen = false;
+let mobileOpenSubmenu = "";
 let selectedThemeIndex = 0;
 let selectedPolesFilter = null;
 let activePoleLabel = "";
@@ -636,7 +693,8 @@ let dateToFilter = "";
 let sortOrder = "newest";
 let selectedPrincipleIndex = 0;
 let selectedAcademyIndex = 0;
-let selectedQuizOption = null;
+let quizAnswers = loadAcademyProgress();
+let academyProgressNotice = "";
 let selectedQuizQuestionIndex = 0;
 let searchQuery = "";
 let scienceAuthorFilter = "";
@@ -644,15 +702,34 @@ let scienceDisciplineFilter = "";
 let scienceYearFilter = "";
 let futureDatesOnly = false;
 let favoritesOnly = false;
+let resultsPage = 1;
+let lastResultsFilterKey = "";
+const RESULTS_PAGE_SIZE = 24;
 let favorites = loadJsonStorage(FAVORITES_KEY, []);
 let manualItems = loadJsonStorage(MANUAL_ITEMS_KEY, []);
 let statusOverrides = {};
 let activeModalItem = null;
+let modalReturnFocus = null;
+let activeArticleId = null;
 let remoteItems = [];
 let indexItems = [];
 let statisticsData = null;
+let regionalStatisticsData = null;
+let statisticsLoading = false;
+let statisticsLoaded = false;
+let statisticsLoadFailed = false;
+let regionalStatisticsLoading = false;
+let regionalStatisticsLoaded = false;
+let regionalStatisticsLoadFailed = false;
+let sourceHealthData = null;
+let regionalIndicatorCode = "HCP_EMO_REGIONAL_STRICT_UNEMPLOYMENT";
+let regionalResidenceScope = "all";
 let statisticsCategory = "all";
+let statisticsSearch = "";
 let statisticsRange = "all";
+let statisticsView = "national";
+let statisticsPage = 1;
+const STATISTICS_PAGE_SIZE = 24;
 
 function escapeHtml(str = "") {
   return String(str)
@@ -663,13 +740,7 @@ function escapeHtml(str = "") {
 }
 
 function isSafeHttpUrl(url) {
-  if (!url || typeof url !== "string") return false;
-  try {
-    const parsed = new URL(url.trim());
-    return parsed.protocol === "https:" || parsed.protocol === "http:";
-  } catch {
-    return false;
-  }
+  return Boolean(safeExternalUrl(url));
 }
 
 function getDoiUrl(doi) {
@@ -725,11 +796,12 @@ function getEffectiveStatus(item) {
 function setItemStatus(item, nextStatus) {
   const k = getItemKey(item);
   if (!k) return;
-  statusOverrides[k] = nextStatus;
   if (item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_")) {
-    manualItems = manualItems.map((m) => (getItemKey(m) === k ? { ...m, statut_validation: nextStatus } : m));
-    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+    const nextManualItems = manualItems.map((m) => (getItemKey(m) === k ? { ...m, statut_validation: nextStatus } : m));
+    if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) return;
+    manualItems = nextManualItems;
   }
+  statusOverrides[k] = nextStatus;
   rebuildCombinedIndex();
   renderResults();
   if (activeModalItem && getItemKey(activeModalItem) === k) {
@@ -740,8 +812,9 @@ function setItemStatus(item, nextStatus) {
 
 function deleteManualItem(item) {
   const k = getItemKey(item);
-  manualItems = manualItems.filter((m) => getItemKey(m) !== k);
-  saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+  const nextManualItems = manualItems.filter((m) => getItemKey(m) !== k);
+  if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) return;
+  manualItems = nextManualItems;
   rebuildCombinedIndex();
   renderResults();
   if (activeModalItem && getItemKey(activeModalItem) === k) {
@@ -773,12 +846,11 @@ function matchesSpace(item, space) {
 function toggleFavorite(item) {
   const key = getItemKey(item);
   if (!key) return;
-  if (favorites.includes(key)) {
-    favorites = favorites.filter((k) => k !== key);
-  } else {
-    favorites = [...favorites, key];
-  }
-  saveJsonStorage(FAVORITES_KEY, favorites);
+  const nextFavorites = favorites.includes(key)
+    ? favorites.filter((k) => k !== key)
+    : [...favorites, key];
+  if (!saveJsonStorage(FAVORITES_KEY, nextFavorites)) return;
+  favorites = nextFavorites;
   renderResults();
 }
 
@@ -803,22 +875,22 @@ function resetAllFilters() {
 }
 
 function getFilteredItems() {
-  const q = searchQuery.trim().toLowerCase();
-  const authorQuery = scienceAuthorFilter.trim().toLowerCase();
-  const disciplineQuery = scienceDisciplineFilter.trim().toLowerCase();
+  const q = searchQuery.trim();
+  const authorQuery = scienceAuthorFilter.trim();
+  const disciplineQuery = scienceDisciplineFilter.trim();
   const list = indexItems.filter((item) => {
     if (!matchesSpace(item, activeSpace)) return false;
     if (activeSpace === "science") {
-      const authorsForFilter = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
+      const authorsForFilter = Array.isArray(item.auteurs) ? item.auteurs.join(" ") : "";
       const disciplineText = [
         ...(Array.isArray(item.mots_cles) ? item.mots_cles : []),
         item.pole || "",
         item.revue_ou_institution || "",
         item.titre_original || "",
         item.resume || ""
-      ].join(" ").toLowerCase();
-      if (authorQuery && !authorsForFilter.includes(authorQuery)) return false;
-      if (disciplineQuery && !disciplineText.includes(disciplineQuery)) return false;
+      ].join(" ");
+      if (authorQuery && !matchesSearchQuery(authorsForFilter, authorQuery)) return false;
+      if (disciplineQuery && !matchesSearchQuery(disciplineText, disciplineQuery)) return false;
       if (scienceYearFilter && String(item.date_publication || "").slice(0, 4) !== scienceYearFilter) return false;
     }
     const matchesThemePoles = !selectedPolesFilter || selectedPolesFilter.includes(item.pole);
@@ -836,31 +908,21 @@ function getFilteredItems() {
     if (favoritesOnly && !favorites.includes(getItemKey(item))) return false;
     if (!q) return true;
 
-    const title = (item.titre_original || "").toLowerCase();
-    const authors = Array.isArray(item.auteurs) ? item.auteurs.join(" ").toLowerCase() : "";
-    const venue = (item.revue_ou_institution || item.source_nom || "").toLowerCase();
-    const keywords = Array.isArray(item.mots_cles) ? item.mots_cles.join(" ").toLowerCase() : "";
-    const pole = (item.pole || "").toLowerCase();
-    const poleLabel = formatPole(item.pole).toLowerCase();
-    const docType = (item.type_document || "").toLowerCase();
-    const docTypeLabel = formatDocType(item.type_document).toLowerCase();
-    const resume = (item.resume || "").toLowerCase();
-    const analysis = (item.analyse_strategique || "").toLowerCase();
-    const doi = (item.doi || "").toLowerCase();
-
-    return (
-      title.includes(q) ||
-      authors.includes(q) ||
-      venue.includes(q) ||
-      doi.includes(q) ||
-      keywords.includes(q) ||
-      pole.includes(q) ||
-      poleLabel.includes(q) ||
-      docType.includes(q) ||
-      docTypeLabel.includes(q) ||
-      resume.includes(q) ||
-      analysis.includes(q)
-    );
+    const searchable = [
+      item.titre_original || "",
+      ...(Array.isArray(item.auteurs) ? item.auteurs : []),
+      item.revue_ou_institution || "",
+      item.source_nom || "",
+      item.doi || "",
+      ...(Array.isArray(item.mots_cles) ? item.mots_cles : []),
+      item.pole || "",
+      formatPole(item.pole),
+      item.type_document || "",
+      formatDocType(item.type_document),
+      item.resume || "",
+      item.analyse_strategique || ""
+    ].join(" ");
+    return matchesSearchQuery(searchable, q);
   });
 
   return list.sort((a, b) => {
@@ -906,18 +968,41 @@ function renderStatisticsDashboard() {
     economie_finances_publiques: isAr ? "الاقتصاد والمالية العمومية" : "Économie & finances publiques",
     societe_developpement_humain: isAr ? "المجتمع والتنمية البشرية" : "Société & développement humain"
   };
+  const totalObservations = allIndicators.reduce((sum, indicator) =>
+    sum + (Array.isArray(indicator.history) ? indicator.history.length : 0), 0);
+  const sourceCount = new Set(allIndicators.map((item) => item.source_name).filter(Boolean)).size;
+  const overview = `
+    <div class="stats-overview" aria-label="${isAr ? "ملخص البيانات" : "Aperçu des données"}">
+      <article class="stats-overview-card"><span>${isAr ? "مؤشرات متاحة" : "Indicateurs disponibles"}</span><strong>${allIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong></article>
+      <article class="stats-overview-card"><span>${isAr ? "ملاحظات تاريخية" : "Observations historiques"}</span><strong>${totalObservations.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong></article>
+      <article class="stats-overview-card"><span>${isAr ? "مصادر مسماة" : "Sources identifiées"}</span><strong>${sourceCount.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong></article>
+    </div>`;
   const heading = isAr ? "المؤشرات الاقتصادية والاجتماعية للمغرب" : "Indicateurs économiques et sociaux du Maroc";
   const intro = isAr
     ? "سلاسل تاريخية موثقة، مع سنة القياس والوحدة والمصدر."
     : "Séries historiques documentées, avec année de référence, unité et source.";
+  const viewTabs = `
+    <div class="stats-view-tabs" role="tablist" aria-label="${isAr ? "نوع البيانات الإحصائية" : "Vue des données statistiques"}">
+      <button type="button" class="stats-view-tab ${statisticsView === "national" ? "is-active" : ""}" data-stat-view="national" aria-pressed="${statisticsView === "national"}">${isAr ? "المؤشرات الوطنية" : "Indicateurs nationaux"}</button>
+      <button type="button" class="stats-view-tab ${statisticsView === "regional" ? "is-active" : ""}" data-stat-view="regional" aria-pressed="${statisticsView === "regional"}">${isAr ? "المقارنة الجهوية" : "Comparaison régionale"}</button>
+    </div>`;
+  if (statisticsView === "regional") {
+    return `${viewTabs}${renderRegionalStatisticsDashboard()}`;
+  }
   const empty = isAr ? "ستظهر البيانات الإحصائية بعد عملية الجمع القادمة." : "Les données statistiques seront disponibles après la prochaine collecte.";
-  const filteredIndicators = allIndicators.filter((indicator) =>
-    statisticsCategory === "all" || indicator.category === statisticsCategory
-  );
+  const normalizedSearch = normalizeSearchText(statisticsSearch);
+  const filteredIndicators = allIndicators.filter((indicator) => {
+    const category = getStatisticsCategory(indicator);
+    if (statisticsCategory === "unclassified" ? Boolean(category) : statisticsCategory !== "all" && category !== statisticsCategory) return false;
+    if (!normalizedSearch) return true;
+    const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, getLocalizedStatisticField(indicator, "label", "ar"), indicator.description_fr, indicator.description_ar, getLocalizedStatisticField(indicator, "description", "ar"), indicator.source_name, indicator.unit_fr, indicator.unit_ar, getLocalizedStatisticField(indicator, "unit", "ar"), indicator.indicator_code].filter(Boolean).join(" "));
+    return searchable.includes(normalizedSearch);
+  });
   const categoryControls = [
     { id: "all", label: isAr ? "جميع المؤشرات" : "Tous les indicateurs" },
     { id: "economie_finances_publiques", label: categoryLabels.economie_finances_publiques },
-    { id: "societe_developpement_humain", label: categoryLabels.societe_developpement_humain }
+    { id: "societe_developpement_humain", label: categoryLabels.societe_developpement_humain },
+    { id: "unclassified", label: isAr ? "غير مصنفة" : "À classer" }
   ];
   const rangeControls = [
     { id: "5", label: isAr ? "5 سنوات" : "5 ans" },
@@ -926,6 +1011,7 @@ function renderStatisticsDashboard() {
   ];
   const controls = `
     <div class="stats-controls">
+      <label class="stats-search-wrap"><span>${isAr ? "البحث في المؤشرات" : "Rechercher un indicateur"}</span><input type="search" data-stat-search value="${escapeHtml(statisticsSearch)}" placeholder="${isAr ? "مثلاً: البطالة، السكان، التضخم..." : "Ex. : chômage, population, inflation…"}" autocomplete="off"></label>
       <div class="stats-filter-group" role="group" aria-label="${isAr ? "تصنيف المؤشرات" : "Filtrer les indicateurs"}">
         ${categoryControls.map((item) => `<button type="button" class="stats-filter-btn ${statisticsCategory === item.id ? "is-active" : ""}" data-stat-category="${item.id}" aria-pressed="${statisticsCategory === item.id}">${escapeHtml(item.label)}</button>`).join("")}
       </div>
@@ -934,18 +1020,42 @@ function renderStatisticsDashboard() {
       </div>
     </div>`;
   if (!allIndicators.length) {
-    return `<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${empty}</p></section>`;
+    const emptyState = statisticsLoading
+      ? (isAr ? "جارٍ تحميل المؤشرات والبيانات التاريخية..." : "Chargement des indicateurs et des séries historiques…")
+      : statisticsLoadFailed
+        ? (isAr ? "تعذر تحميل ملف المؤشرات. تحقق من الاتصال ثم أعد المحاولة." : "Le fichier des indicateurs n’a pas pu être chargé. Vérifiez la connexion puis réessayez.")
+        : empty;
+    const retry = statisticsLoadFailed
+      ? `<button type="button" class="stats-filter-btn" data-stat-retry>${isAr ? "إعادة المحاولة" : "Réessayer"}</button>`
+      : "";
+    return `${viewTabs}<section class="stats-dashboard"><div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div></div><p class="empty-results">${emptyState}</p>${retry}</section>`;
   }
-  const cards = filteredIndicators.map((indicator) => {
+  const statisticsPageCount = Math.ceil(filteredIndicators.length / STATISTICS_PAGE_SIZE);
+  statisticsPage = statisticsPageCount
+    ? Math.min(Math.max(1, statisticsPage), statisticsPageCount)
+    : 1;
+  const pageStart = filteredIndicators.length ? (statisticsPage - 1) * STATISTICS_PAGE_SIZE + 1 : 0;
+  const pageEnd = Math.min(statisticsPage * STATISTICS_PAGE_SIZE, filteredIndicators.length);
+  const visibleIndicators = filteredIndicators.slice(pageStart - 1, pageEnd);
+  const cards = visibleIndicators.map((indicator) => {
     const allHistory = Array.isArray(indicator.history) ? indicator.history : [];
-    const history = statisticsRange === "all" ? allHistory : allHistory.slice(-Number(statisticsRange));
-    const latest = indicator.latest || allHistory[allHistory.length - 1];
-    const previous = indicator.previous;
-    const delta = previous && latest
+    const referenceDate = statisticsData?.generated_at;
+    const validHistory = filterStatisticsHistory(allHistory, "all", referenceDate);
+    const history = filterStatisticsHistory(validHistory, statisticsRange, referenceDate);
+    const validLatest = filterStatisticsHistory(indicator.latest ? [indicator.latest] : [], "all", referenceDate)[0] || null;
+    const validPrevious = filterStatisticsHistory(indicator.previous ? [indicator.previous] : [], "all", referenceDate)[0] || null;
+    const latest = validHistory[validHistory.length - 1] || validLatest;
+    const previous = validHistory.length > 1 ? validHistory[validHistory.length - 2] : validPrevious;
+    const latestNumeric = Number(latest?.value);
+    const previousNumeric = Number(previous?.value);
+    const hasComparableValues = Boolean(
+      latest && previous && Number.isFinite(latestNumeric) && Number.isFinite(previousNumeric)
+    );
+    const delta = hasComparableValues
       ? (indicator.change_mode === "absolute"
-          ? Number(latest.value) - Number(previous.value)
-          : (Number(previous.value) !== 0
-              ? ((Number(latest.value) - Number(previous.value)) / Math.abs(Number(previous.value))) * 100
+          ? latestNumeric - previousNumeric
+          : (previousNumeric !== 0
+              ? ((latestNumeric - previousNumeric) / Math.abs(previousNumeric)) * 100
               : null))
       : null;
     const numericValues = history.map((point) => Number(point.value)).filter(Number.isFinite);
@@ -958,9 +1068,12 @@ function renderStatisticsDashboard() {
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");
     const lastPoint = coords ? coords.split(" ").at(-1).split(",") : ["50","49"];
-    const label = isAr ? (indicator.label_ar || indicator.label_fr) : indicator.label_fr;
-    const description = isAr ? (indicator.description_ar || indicator.description_fr) : indicator.description_fr;
-    const unit = isAr ? (indicator.unit_ar || indicator.unit_fr) : indicator.unit_fr;
+    const label = isAr ? getLocalizedStatisticField(indicator, "label", "ar") : indicator.label_fr;
+    const description = isAr ? getLocalizedStatisticField(indicator, "description", "ar") : indicator.description_fr;
+    const methodologyNote = isAr
+      ? (indicator.methodology_note_ar || indicator.methodology_note_fr)
+      : indicator.methodology_note_fr;
+    const unit = isAr ? getLocalizedStatisticField(indicator, "unit", "ar") : indicator.unit_fr;
     const deltaPrecision = Number.isInteger(indicator.precision) ? indicator.precision : 1;
     const formattedDelta = delta === null ? "" : new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", {maximumFractionDigits:deltaPrecision}).format(delta);
     const comparisonLabel = isAr
@@ -971,6 +1084,14 @@ function renderStatisticsDashboard() {
       : `${delta > 0 ? "+" : ""}${formattedDelta}${changeUnit ? ` ${changeUnit}` : ""} ${comparisonLabel}`;
     const sourceUrl = isSafeHttpUrl(indicator.source_url) ? indicator.source_url : "";
     const sourceLabel = indicator.source_name || (isAr ? "مصدر مؤسساتي غير محدد" : "Source institutionnelle non précisée");
+    const collectionDate = indicator.last_successful_collection_at
+      ? String(indicator.last_successful_collection_at).slice(0, 10)
+      : "";
+    const collectionLabel = collectionDate
+      ? (isAr
+          ? (indicator.collection_status === "carried_forward" ? "آخر جمع معروف" : "تاريخ الجمع")
+          : (indicator.collection_status === "carried_forward" ? "dernière collecte connue" : "collectée le"))
+      : "";
     const historyRows = history.map((point) => `
       <tr><th scope="row">${escapeHtml(String(point.year))}</th><td>${escapeHtml(formatStatisticValue(indicator, point.value))} ${escapeHtml(unit || "")}</td></tr>
     `).join("");
@@ -978,8 +1099,9 @@ function renderStatisticsDashboard() {
     return `
       <article class="stat-card">
         <div class="stat-card-top"><span>${escapeHtml(label)}</span><span class="stat-year">${escapeHtml(String(latest?.year || "—"))}</span></div>
-        <div class="stat-value">${escapeHtml(formatStatisticValue(indicator, latest?.value ?? 0))}<small>${escapeHtml(unit || "")}</small></div>
+        <div class="stat-value">${escapeHtml(latest ? formatStatisticValue(indicator, latest.value) : "—")}<small>${escapeHtml(unit || "")}</small></div>
         <p class="stat-description">${escapeHtml(description || "")}</p>
+        ${methodologyNote ? `<p class="stat-methodology-note">${escapeHtml(methodologyNote)}</p>` : ""}
         <div class="stat-trend"><span>${escapeHtml(changeText)}</span></div>
         <svg class="stat-sparkline" viewBox="0 0 100 64" role="img" aria-label="${escapeHtml(chartTitle)}">
           <line x1="5" y1="11" x2="95" y2="11" class="stat-chart-grid"></line>
@@ -992,45 +1114,372 @@ function renderStatisticsDashboard() {
           <summary>${isAr ? "عرض البيانات التاريخية" : "Voir les valeurs historiques"}</summary>
           <div class="stat-history-table-wrap"><table class="stat-history-table"><tbody>${historyRows}</tbody></table></div>
         </details>
-        <div class="stat-card-foot"><span>${escapeHtml(sourceLabel)}${indicator.last_updated ? ` · ${isAr ? "تحديث" : "mise à jour"} ${escapeHtml(indicator.last_updated)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "السلسلة الأصلية" : "Série originale"} ↗</a>` : ""}</div>
+        <div class="stat-card-foot"><span>${escapeHtml(sourceLabel)}${indicator.last_updated ? ` · ${isAr ? "تحديث المصدر" : "date indiquée par la source"} ${escapeHtml(indicator.last_updated)}` : ""}${collectionDate ? ` · ${collectionLabel} ${escapeHtml(collectionDate)}` : ""}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "السلسلة الأصلية" : "Série originale"} ↗</a>` : ""}</div>
       </article>`;
   }).join("");
   const updateDate = statisticsData.generated_at ? String(statisticsData.generated_at).slice(0,10) : "";
   const emptyFiltered = isAr ? "لا توجد مؤشرات في هذا التصنيف." : "Aucun indicateur dans cette catégorie.";
+  const statisticsPagination = statisticsPageCount > 1
+    ? `<nav class="stats-pagination" aria-label="${isAr ? "التنقل بين المؤشرات" : "Pagination des indicateurs"}">
+        <button type="button" class="stats-filter-btn" data-stat-page="${statisticsPage - 1}" ${statisticsPage <= 1 ? "disabled" : ""}>${isAr ? "السابق" : "Précédent"}</button>
+        <span aria-live="polite">${isAr ? "صفحة" : "Page"} <strong>${statisticsPage}</strong> / ${statisticsPageCount}</span>
+        <button type="button" class="stats-filter-btn" data-stat-page="${statisticsPage + 1}" ${statisticsPage >= statisticsPageCount ? "disabled" : ""}>${isAr ? "التالي" : "Suivant"}</button>
+      </nav>`
+    : "";
   return `
+    ${viewTabs}
     <section class="stats-dashboard">
-      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "آخر تحديث للوحة" : "Actualisation du tableau"} : ${escapeHtml(updateDate)}</span></div>
+      ${overview}
+      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات رسمية" : "DONNÉES OFFICIELLES"}</span><h3>${heading}</h3><p>${intro}</p></div><span class="stats-updated">${isAr ? "تاريخ إنشاء ملف البيانات" : "Fichier statistique généré le"} : ${escapeHtml(updateDate)}</span></div>
       ${controls}
+      <div class="stats-results-meta">${isAr ? "المؤشرات المعروضة" : "Indicateurs affichés"} : <strong>${pageStart.toLocaleString(isAr ? "ar-MA" : "fr-MA")}–${pageEnd.toLocaleString(isAr ? "ar-MA" : "fr-MA")}</strong> / ${filteredIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")} (${allIndicators.length.toLocaleString(isAr ? "ar-MA" : "fr-MA")} ${isAr ? "إجمالاً" : "au total"})</div>
       <div class="stats-grid">${cards || `<p class="empty-results">${emptyFiltered}</p>`}</div>
-      <p class="stats-source-note">${isAr ? "تُذكر الجهة المصدرة وتاريخ تحديث البيانات بجانب كل مؤشر، مع رابط المصدر الأصلي." : "Chaque indicateur précise son institution source, la date de mise à jour et un lien vers la série originale."}</p>
+      ${statisticsPagination}
+      <p class="stats-source-note">${isAr ? "تاريخ إنشاء الملف لا يعني بالضرورة أن كل مؤشر قد حُيّن. الفترات المعروضة هي الفترات الفعلية للقيم المتاحة." : "La date de génération du fichier ne correspond pas nécessairement à la date de la dernière observation. Les périodes affichées correspondent aux valeurs réellement disponibles."}</p>
     </section>`;
+}
+
+function renderRegionalStatisticsDashboard() {
+  const isAr = lang === "ar";
+  const model = buildRegionalStatisticsModel(
+    regionalStatisticsData,
+    regionalIndicatorCode,
+    regionalResidenceScope
+  );
+  const title = isAr ? "المقارنة الإحصائية بين الجهات" : "Comparaison statistique entre les régions";
+  const intro = isAr
+    ? "استكشف المؤشرات الاجتماعية والاقتصادية حسب الجهة والفترة، مع التمييز بين الوسط الحضري والقروي عند توفر البيانات."
+    : "Explorez les indicateurs sociaux et économiques par région et par période, avec distinction urbain/rural lorsque les données le permettent.";
+  if (!model.available) {
+    const emptyState = regionalStatisticsLoading
+      ? (isAr ? "جارٍ تحميل السلاسل الجهوية والمقارنات..." : "Chargement des séries régionales et des comparaisons…")
+      : regionalStatisticsLoadFailed
+        ? (isAr ? "تعذر تحميل ملف البيانات الجهوية. تحقق من الاتصال ثم أعد المحاولة." : "Le fichier des données régionales n’a pas pu être chargé. Vérifiez la connexion puis réessayez.")
+        : (isAr ? "لا توجد سلسلة جهوية متاحة في الملف المنشور." : "Aucune série régionale disponible dans le fichier publié.");
+    const retry = regionalStatisticsLoadFailed
+      ? `<button type="button" class="stats-filter-btn" data-regional-stat-retry>${isAr ? "إعادة المحاولة" : "Réessayer"}</button>`
+      : "";
+    return `<section class="regional-stats-dashboard">
+      <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div></div>
+      <p class="regional-empty">${emptyState}</p>${retry}
+    </section>`;
+  }
+
+  regionalIndicatorCode = model.activeIndicatorCode;
+  regionalResidenceScope = model.activeScope;
+  const indicatorOptions = model.indicatorOptions.map((item) =>
+    `<option value="${escapeHtml(item.code)}" ${item.code === model.activeIndicatorCode ? "selected" : ""}>${escapeHtml(isAr ? item.labelAr : item.labelFr)}</option>`
+  ).join("");
+  const scopeLabels = {
+    all: isAr ? "المجموع" : "Ensemble",
+    urban: isAr ? "حضري" : "Urbain",
+    rural: isAr ? "قروي" : "Rural"
+  };
+  const scopeButtons = model.availableScopes.map((scope) =>
+    `<button type="button" class="stats-filter-btn ${scope === model.activeScope ? "is-active" : ""}" data-regional-scope="${scope}" aria-pressed="${scope === model.activeScope}">${scopeLabels[scope] || scope}</button>`
+  ).join("");
+  const latestPeriodIndex = model.periods.length - 1;
+  const latestRanking = model.rows
+    .filter((row) => row.geographyCode !== "MAR")
+    .map((row) => ({ ...row, latestPoint: row.points[latestPeriodIndex] }))
+    .filter((row) => row.latestPoint && row.latestPoint.value !== null && row.latestPoint.value !== undefined && Number.isFinite(Number(row.latestPoint.value)))
+    .sort((a, b) => Number(b.latestPoint.value) - Number(a.latestPoint.value));
+  const rankingMax = Math.max(0, ...latestRanking.map((row) => Number(row.latestPoint.value)));
+  const rankingMarkup = latestRanking.length
+    ? '<div class="regional-ranking" aria-label="' + (isAr ? "ترتيب الجهات حسب آخر قيمة متاحة" : "Classement régional pour la dernière période") + '">' +
+      '<div class="regional-ranking-heading"><h4>' + (isAr ? "ترتيب الجهات" : "Classement des régions") + '</h4><span>' + escapeHtml(model.latestPeriod) + '</span></div>' +
+      '<ol>' + latestRanking.map((row) => {
+        const value = Number(row.latestPoint.value);
+        const width = rankingMax > 0 ? Math.max(2, value / rankingMax * 100) : 0;
+        const formatted = new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", { maximumFractionDigits: 1 }).format(value);
+        return '<li><span class="regional-ranking-name">' + escapeHtml(isAr ? row.nameAr : row.nameFr) + '</span><span class="regional-ranking-track"><span style="width:' + width.toFixed(2) + '%"></span></span><strong>' + escapeHtml(formatted) + '</strong></li>';
+      }).join("") + '</ol></div>'
+    : "";
+  const rows = model.rows.map((row) => {
+    const cells = row.points.map((point) => {
+      if (!point) return "<td>—</td>";
+      if (point.value === null || point.value === undefined) {
+        const missing = point.quality_flag === "insufficient_significance" ? "ps"
+          : point.quality_flag === "not_available" ? "."
+          : point.quality_flag === "unrecognized" ? "?"
+          : "—";
+        const label = point.quality_flag === "insufficient_significance"
+          ? (isAr ? "غير دال إحصائياً بما يكفي" : "Insuffisamment significatif")
+          : point.quality_flag === "not_available"
+            ? (isAr ? "غير متاح" : "Non disponible")
+            : (isAr ? "قيد التحقق" : "À vérifier");
+        return `<td><span class="regional-quality" title="${label}">${missing}</span></td>`;
+      }
+      const value = new Intl.NumberFormat(isAr ? "ar-MA" : "fr-MA", { maximumFractionDigits: 1 }).format(Number(point.value));
+      const marker = point.quality_flag === "medium_significance"
+        ? `<sup class="regional-quality" title="${isAr ? "دلالة إحصائية متوسطة" : "Significativité moyenne"}">ms</sup>`
+        : point.quality_flag === "estimated"
+          ? `<sup class="regional-quality" title="${isAr ? "قيمة مقدّرة" : "Valeur estimée"}">*</sup>`
+          : "";
+      return `<td>${escapeHtml(value)}${marker}</td>`;
+    }).join("");
+    return `<tr><th scope="row">${escapeHtml(isAr ? row.nameAr : row.nameFr)}</th>${cells}</tr>`;
+  }).join("");
+  const sourceUrl = isSafeHttpUrl(model.sourceUrl) ? model.sourceUrl : "";
+  const regionalUnit = isAr ? model.unitAr : model.unitFr;
+  const updateDate = model.lastSuccessfulCollectionAt
+    ? String(model.lastSuccessfulCollectionAt).slice(0, 10)
+    : (model.generatedAt ? String(model.generatedAt).slice(0, 10) : "");
+  const collectionLabel = model.collectionStatus === "carried_forward"
+    ? (isAr ? "بيانات محفوظة منذ آخر جمع ناجح" : "Données conservées depuis la dernière collecte réussie")
+    : model.collectionStatus === "manual_verified"
+      ? (isAr ? "بيانات موثقة من المصدر" : "Données vérifiées dans la source")
+      : model.collectionStatus === "partial"
+        ? (isAr ? "تحديث جزئي للسلاسل" : "Mise à jour partielle des séries")
+        : (isAr ? "آخر جمع ناجح" : "Dernière collecte réussie");
+  const methodologyNote = isAr ? model.methodologyNoteAr : model.methodologyNoteFr;
+  const methodologyText = methodologyNote || (isAr
+    ? "تنبيه منهجي: لا ينبغي وصل نتائج EMO 2026 مباشرة بالسلاسل القديمة للبحث الوطني حول التشغيل."
+    : "Précaution méthodologique : les résultats EMO 2026 ne doivent pas être raccordés directement aux anciennes séries ENE.");
+  return `<section class="regional-stats-dashboard">
+    <div class="stats-heading"><div><span class="mini-label">${isAr ? "بيانات جهوية" : "DONNÉES TERRITORIALES"}</span><h3>${title}</h3><p>${intro}</p></div><span class="stats-updated">${escapeHtml(collectionLabel)} : ${escapeHtml(updateDate || "—")}</span></div>
+    <div class="regional-controls">
+      <label><span>${isAr ? "المؤشر" : "Indicateur"}</span><select data-regional-indicator aria-label="${isAr ? "اختيار المؤشر" : "Choisir un indicateur"}">${indicatorOptions}</select></label>
+      <div class="stats-filter-group" role="group" aria-label="${isAr ? "مجال الإقامة" : "Milieu de résidence"}">${scopeButtons}</div>
+    </div>
+    <div class="regional-coverage" aria-live="polite">
+      <div><span>${isAr ? "الجهات المغطاة" : "Régions couvertes"}</span><strong>${model.regionalCount}/12</strong></div>
+      <div><span>${isAr ? "قيم الفترة الأخيرة" : "Valeurs disponibles"}</span><strong>${model.latestAvailableCount}/${model.regionalCount}</strong></div>
+      <div><span>${isAr ? "قيم غير متاحة" : "Valeurs manquantes"}</span><strong>${model.latestMissingCount}</strong></div>
+      <p>${isAr ? "الفترة الأخيرة" : "Dernière période"} : <strong>${escapeHtml(model.latestPeriod || "—")}</strong></p>
+    </div>
+    ${rankingMarkup}
+    <div class="regional-table-wrap"><table class="regional-table">
+      <thead><tr><th scope="col">${isAr ? "الجهة" : "Région"}</th>${model.periods.map((period) => `<th scope="col">${escapeHtml(period)}${regionalUnit ? ` (${escapeHtml(regionalUnit)})` : ""}</th>`).join("")}</tr></thead>
+      <tbody>${rows || `<tr><td colspan="${model.periods.length + 1}">${isAr ? "لا توجد بيانات متاحة." : "Aucune observation disponible."}</td></tr>`}</tbody>
+    </table></div>
+    <p class="regional-legend">${isAr
+      ? "ms: دلالة إحصائية متوسطة · *: قيمة مقدّرة · ps: غير دال إحصائياً بما يكفي · .: غير متاح."
+      : "ms : significativité moyenne · * : valeur estimée · ps : résultat insuffisamment significatif · . : valeur non disponible."}</p>
+    <p class="regional-methodology-note">${escapeHtml(methodologyText)}</p>
+    <div class="stat-card-foot"><span>${escapeHtml(isAr ? model.sourceNameAr : model.sourceName)} · ${model.rows.length} ${isAr ? (model.rows.some((row) => row.geographyCode === "MAR") ? "جهة ومجموع وطني" : "جهة") : "lignes géographiques"}</span>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المصدر الأصلي" : "Document HCP original"}${model.sourcePage ? (isAr ? " · الصفحة " : " · p. ") + model.sourcePage : ""} ↗</a>` : ""}</div>
+  </section>`;
+}
+
+function renderGlobalSearchOverview() {
+  const isAr = lang === "ar";
+  const spaces = [
+    {id:"chiffres",label:isAr ? "المغرب بالأرقام" : "Maroc en chiffres"},
+    {id:"veille",label:isAr ? "الرصد" : "Veille"},
+    {id:"science",label:isAr ? "الدراسات والبحث" : "Études & recherche"},
+    {id:"bibliotheque",label:isAr ? "المكتبة" : "Bibliothèque"},
+    {id:"academy",label:isAr ? "الأكاديمية" : "Academy"}
+  ];
+  const visible = indexItems.filter((item) => !isFutureDate(item));
+  const cards = spaces.map((space) => {
+    const count = visible.filter((item) => matchesSpace(item,space.id)).length;
+    return '<button type="button" class="global-search-space" data-space-id="' + space.id + '"><strong>' + count.toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + escapeHtml(space.label) + '</span></button>';
+  }).join("");
+  return '<section class="global-search-overview"><div class="global-search-copy"><span class="mini-label">' + (isAr ? "بحث موحد" : "EXPLORATION TRANSVERSALE") + '</span><h3>' + (isAr ? "ابحث عبر جميع مجالات KITN" : "Une recherche à travers tout KITN") + '</h3><p>' + (isAr ? "ابحث في العناوين والملخصات والمؤلفين والمؤسسات والكلمات المفتاحية والمراجع. يمكنك تضييق النتائج حسب المجال." : "Interrogez les titres, résumés, auteurs, institutions, mots-clés et références, puis affinez par espace.") + '</p></div><div class="global-search-spaces">' + cards + '</div><p class="global-search-note">' + (isAr ? "الأعداد تخص المواد المفهرسة والمتاحة حالياً، قبل تطبيق كلمات البحث." : "Volumes des notices actuellement indexées et non exclues, avant application de votre recherche.") + '</p></section>';
+}
+function renderWatchDashboard() {
+  const isAr = lang === "ar";
+  const watchItems = indexItems.filter((item) => matchesSpace(item, "veille") && !isFutureDate(item));
+  const reviewedItems = watchItems.filter((item) => getEffectiveStatus(item) === "valide");
+  const reviewItems = watchItems.filter((item) => getEffectiveStatus(item) === "a_verifier");
+  const poleCards = [
+    { id: "institutions_gouvernance", title: isAr ? "المؤسسات والحكامة" : "Institutions & gouvernance", desc: isAr ? "الإصلاحات والسياسات العمومية والعمل المؤسساتي." : "Réformes, politiques publiques et action institutionnelle." },
+    { id: "economie_finances_publiques", title: isAr ? "الاقتصاد والمالية العمومية" : "Économie & finances publiques", desc: isAr ? "الميزانية والاقتصاد والأسواق والمالية العمومية." : "Budget, conjoncture, marchés et finances publiques." },
+    { id: "societe_developpement_humain", title: isAr ? "المجتمع والتنمية البشرية" : "Société & développement humain", desc: isAr ? "التشغيل والتعليم والصحة والتحولات الاجتماعية." : "Emploi, éducation, santé et mutations sociales." },
+    { id: "securite_affaires_interieures", title: isAr ? "الأمن والشؤون الداخلية" : "Sécurité & affaires intérieures", desc: isAr ? "الأمن والوقاية والشؤون الترابية." : "Sécurité, prévention et affaires territoriales." },
+    { id: "relations_internationales_geopolitique", title: isAr ? "العلاقات الدولية والجيوسياسة" : "Relations internationales & géopolitique", desc: isAr ? "العلاقات الخارجية والتوازنات الإقليمية." : "Relations extérieures et équilibres régionaux." }
+  ];
+  const cards = poleCards.map((pole) => {
+    const count = watchItems.filter((item) => item.pole === pole.id || (Array.isArray(item.poles_secondaires) && item.poles_secondaires.includes(pole.id))).length;
+    return '<button type="button" class="watch-topic-card" data-pole-shortcut="' + pole.id + '">' +
+      '<span class="watch-topic-count">' + count.toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</span>' +
+      '<strong>' + escapeHtml(pole.title) + '</strong><span>' + escapeHtml(pole.desc) + '</span>' +
+      '<span class="watch-topic-link">' + (isAr ? "استكشف الملفات" : "Explorer les notices") + ' ↗</span></button>';
+  }).join("");
+  const types = new Map();
+  watchItems.forEach((item) => {
+    const key = item.type_document || "non_classe";
+    types.set(key, (types.get(key) || 0) + 1);
+  });
+  const topTypes = [...types.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+  const typeLabels = topTypes.map(([type, count]) => '<span class="watch-type-chip">' + escapeHtml(formatDocType(type) || (isAr ? "غير مصنف" : "Non classé")) + ' <strong>' + count + '</strong></span>').join("");
+  const sourceRows = Array.isArray(sourceHealthData?.sources) ? sourceHealthData.sources : [];
+  const enabledSources = reconcileSourceHealth(configuredSources, sourceRows);
+  const sourceFreshness = getSourceHealthFreshness(sourceHealthData?.updated_at);
+  const getDisplayedSourceStatus = (source) => getEffectiveSourceStatus(source.status, sourceFreshness);
+  const sourceOk = enabledSources.filter((source) => getDisplayedSourceStatus(source) === "ok").length;
+  const sourceAttention = enabledSources.length - sourceOk;
+  const sourceTimestamp = sourceHealthData?.updated_at ? Date.parse(sourceHealthData.updated_at) : Number.NaN;
+  const sourceDate = Number.isFinite(sourceTimestamp)
+    ? new Intl.DateTimeFormat(isAr ? "ar-MA" : "fr-MA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sourceTimestamp))
+    : "";
+  const sourceStaleNotice = sourceFreshness === "stale"
+    ? '<p class="watch-source-stale" role="status">' + (isAr
+      ? "تنبيه: تقرير المصادر أقدم من 24 ساعة؛ تحقق من آخر تشغيل لعملية الجمع قبل اعتبار هذه الحالة حديثة."
+      : "Attention : ce rapport date de plus de 24 heures. Vérifiez la dernière exécution du pipeline avant de considérer cet état comme récent.") + '</p>'
+    : sourceFreshness === "unknown"
+      ? '<p class="watch-source-stale" role="status">' + (isAr
+        ? "تعذر التحقق من تاريخ التقرير؛ قد تكون حالة المصادر غير محدثة."
+        : "Date du rapport absente ou invalide : impossible de confirmer la fraîcheur de l’état des sources.") + '</p>'
+      : "";
+  const sourceAttentionItems = enabledSources.filter((source) => getDisplayedSourceStatus(source) !== "ok");
+  const sourceAttentionMarkup = sourceAttentionItems.length
+    ? '<div class="watch-source-issues"><h5>' + (isAr ? "مصادر تحتاج إلى متابعة" : "Sources à examiner") + '</h5><ul>' +
+      sourceAttentionItems.map((source) => {
+        const displayedStatus = getDisplayedSourceStatus(source);
+        const failed = displayedStatus === "error";
+        const unverified = displayedStatus === "unknown";
+        const statusLabel = failed
+          ? (isAr ? "فشل الجمع" : "Échec de collecte")
+          : unverified
+            ? (isAr ? "غير متحقق منه" : "Non vérifiée")
+            : (isAr ? "نتيجة جزئية" : "Résultat partiel");
+        const detail = unverified
+          ? (source.status === "ok"
+            ? (isAr ? "تقرير الحالة قديم أو تاريخه غير صالح؛ لا يمكن تأكيد أن المصدر ما زال يعمل." : "Le rapport est périmé ou sa date est invalide : le fonctionnement actuel de cette source n’est pas confirmé.")
+            : (isAr ? "لا يوجد سجل لهذا المصدر في آخر تقرير؛ لم يتم إثبات تنفيذ الجمع." : "Aucune ligne pour cette source dans le dernier rapport : son exécution n’est pas démontrée."))
+          : String(source.error || source.message || "").trim();
+        const fetched = Number(source.fetched || 0);
+        const accepted = Number(source.accepted || 0);
+        const counts = unverified
+          ? (isAr ? "لا توجد بيانات تنفيذ في التقرير" : "Aucune donnée d’exécution dans le rapport")
+          : (isAr ? "تم فحص " : "Examinés : ") + fetched + (isAr ? " · مقبولة " : " · retenus : ") + accepted;
+        return '<li class="watch-source-issue ' + (failed ? "is-error" : "is-warning") + '">' +
+          '<div class="watch-source-issue-heading"><strong>' + escapeHtml(source.source_name || source.source_id || (isAr ? "مصدر غير معروف" : "Source inconnue")) + '</strong><span>' + statusLabel + '</span></div>' +
+          '<small>' + escapeHtml(counts) + '</small>' +
+          (detail ? '<p>' + escapeHtml(detail.slice(0, 220)) + '</p>' : "") +
+          '</li>';
+      }).join("") +
+      '</ul></div>'
+    : '<p class="watch-source-all-ok">' + (isAr ? "لا توجد مصادر مفعلة تحتاج إلى متابعة في آخر تقرير." : "Aucune source activée en anomalie dans le dernier rapport.") + '</p>';
+  const sourceHealthMarkup = enabledSources.length
+    ? '<section class="watch-source-health" aria-label="' + (isAr ? "حالة مصادر الرصد" : "État des sources de veille") + '">' +
+      '<div class="watch-source-heading"><div><span class="mini-label">' + (isAr ? "شفافية الجمع" : "TRANSPARENCE DE LA COLLECTE") + '</span><h4>' + (isAr ? "حالة مصادر المعلومات" : "État des sources d’information") + '</h4></div><span class="watch-source-updated">' + (isAr ? "آخر تحديث" : "Dernière mise à jour") + (sourceDate ? " · " + escapeHtml(sourceDate) : "") + '</span></div>' +
+      '<div class="watch-source-metrics"><div><strong>' + sourceOk + '/' + enabledSources.length + '</strong><span>' + (isAr ? "مصادر تعمل" : "sources opérationnelles") + '</span></div><div><strong>' + sourceAttention + '</strong><span>' + (isAr ? "مصادر تحتاج إلى متابعة" : "sources à surveiller") + '</span></div><div><strong>' + Number(sourceHealthData?.total_fetched || 0).toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "عناصر جرى فحصها" : "éléments examinés") + '</span></div></div>' +
+      '<p>' + (isAr ? "تعكس هذه الحالة آخر تقرير آلي متاح، ولا تعني أن جميع المصادر الخارجية متاحة في الوقت الفعلي." : "Cet état reflète le dernier rapport automatisé disponible ; il ne garantit pas la disponibilité en temps réel de chaque site externe.") + '</p>' + sourceStaleNotice + sourceAttentionMarkup + '</section>'
+    : '<p class="watch-source-unavailable">' + (isAr ? "تقرير حالة المصادر غير متاح حالياً." : "Le rapport d’état des sources n’est pas disponible pour le moment.") + '</p>';
+  return '<section class="watch-dashboard">' +
+    '<div class="watch-intro"><div><span class="mini-label">' + (isAr ? "رصد متعدد المجالات" : "VEILLE MULTITHÉMATIQUE") + '</span>' +
+    '<h3>' + (isAr ? "متابعة المستجدات وفهمها" : "Suivre les évolutions, comprendre les enjeux") + '</h3>' +
+    '<p>' + (isAr ? "استكشف المحتوى المفهرس حسب المجالات. كل بطاقة تفتح notices المطابقة ويمكنك مواصلة التصفية والبحث." : "Parcourez les notices indexées par grand domaine. Chaque rubrique ouvre les contenus correspondants, avec les filtres et la recherche documentaire.") + '</p></div>' +
+    '<div class="watch-total"><strong>' + watchItems.length.toLocaleString(isAr ? "ar-MA" : "fr-MA") + '</strong><span>' + (isAr ? "مادة مفهرسة" : "notices indexées") + '</span></div></div>' +
+    '<div class="watch-quality-row"><span>' + (isAr ? "تم التحقق" : "Validées") + ' <strong>' + reviewedItems.length + '</strong></span><span>' + (isAr ? "تحتاج إلى المراجعة" : "À vérifier") + ' <strong>' + reviewItems.length + '</strong></span><span>' + (isAr ? "أنواع الوثائق الأكثر حضوراً" : "Types documentaires les plus présents") + '</span>' + typeLabels + '</div>' +
+    '<div class="watch-topic-grid">' + cards + '</div>' +
+    sourceHealthMarkup +
+    '<p class="watch-footnote">' + (isAr ? "الأعداد تمثل les notices actuellement indexées dans KITN، وليست قياساً شاملاً لكل الأخبار المنشورة." : "Les volumes correspondent aux notices actuellement indexées dans KITN ; ils ne représentent pas un recensement exhaustif de toute l’actualité.") + '</p>' +
+    '</section>';
 }
 
 function renderLibraryDirectory() {
   const isAr = lang === "ar";
-  const items = [
+  const sourceDefinitions = [
     {name:"Cour des comptes",desc:isAr ? "تقارير الرقابة وتقييم السياسات العمومية والمالية." : "Rapports de contrôle, audits et évaluations des politiques publiques.",url:"https://www.courdescomptes.ma/publications/",id:"cour_des_comptes_maroc"},
     {name:"CESE",desc:isAr ? "آراء ودراسات وتقارير اقتصادية واجتماعية وبيئية." : "Avis, études et rapports économiques, sociaux et environnementaux.",url:"https://www.cese.ma/",id:"cese_maroc"},
     {name:"IRES",desc:isAr ? "دراسات استراتيجية وتقارير موضوعاتية واستشرافية." : "Études stratégiques, rapports thématiques et prospectifs.",url:"https://www.ires.ma/fr/publications",id:"ires_maroc"},
     {name:"HCP",desc:isAr ? "دراسات وتقارير ومنشورات إحصائية رسمية." : "Études, rapports et publications statistiques officielles.",url:"https://www.hcp.ma/",id:"hcp_maroc"},
-    {name:isAr ? "البنك الدولي" : "Banque mondiale",desc:isAr ? "تقارير قطرية وبيانات اقتصادية واجتماعية." : "Rapports pays, données économiques et sociales.",url:"https://data.worldbank.org/country/morocco",id:"world_bank_maroc"}
+    {name:isAr ? "مساهمة KITN" : "Contribution KITN",desc:isAr ? "وثائق ومساهمات أضيفت يدوياً إلى الفهرس." : "Documents et contributions ajoutés manuellement à l’index.",url:"",id:"manual_studio"}
   ];
-  const title = isAr ? "مؤسسات ومصادر وثائقية" : "Institutions & fonds documentaires";
-  const subtitle = isAr ? "بوابات رسمية للوصول إلى التقارير والدراسات الأصلية." : "Accès direct aux portails institutionnels et aux documents originaux.";
-  const countFor = (id) => indexItems.filter((item) => item.source_id === id && !isFutureDate(item)).length;
+  const docs = indexItems.filter((item) => matchesSpace(item, "bibliotheque") && !isFutureDate(item));
+  const sourceCount = new Set(docs.map((item) => item.source_id).filter(Boolean)).size;
+  const libraryQuality = getLibraryQualitySummary(docs);
+  const withPdf = libraryQuality.withPdf;
+  const withAbstract = libraryQuality.withAbstract;
+  const countFor = (id) => docs.filter((item) => item.source_id === id).length;
+  const latest = [...docs].sort((a,b) => String(b.date_publication || "").localeCompare(String(a.date_publication || ""))).slice(0,4);
+  const typeCounts = new Map();
+  docs.forEach((item) => {
+    const type = item.type_document || "non_classe";
+    typeCounts.set(type,(typeCounts.get(type)||0)+1);
+  });
+  const typeChips = [...typeCounts.entries()].sort((a,b)=>b[1]-a[1]).map(([type,count]) =>
+    '<span class="library-type-chip">' + escapeHtml(formatDocType(type) || type) + '<strong>' + count + '</strong></span>'
+  ).join("");
+  const sourceCards = sourceDefinitions.map((item) => {
+    const count = countFor(item.id);
+    return '<article class="library-source-card"><div class="library-source-meta"><span>' + escapeHtml(item.name) + '</span><span>' + count + ' ' + (isAr ? "مفهرس" : "indexé(s)") + '</span></div><p>' + escapeHtml(item.desc) + '</p>' + (item.url ? '<a href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">' + (isAr ? "فتح المصدر الرسمي" : "Ouvrir le portail officiel") + ' ↗</a>' : '<span class="library-internal-source">' + (isAr ? "مصدر داخلي" : "Source interne KITN") + '</span>') + '</article>';
+  }).join("");
+  const recentMarkup = latest.length ? latest.map((item) =>
+    '<button type="button" class="library-recent-item" data-open-home-item="' + escapeHtml(getItemKey(item)) + '">' +
+    '<span>' + escapeHtml(item.date_publication || "—") + ' · ' + escapeHtml(formatDocType(item.type_document) || "") + '</span>' +
+    '<strong>' + escapeHtml(item.titre_original || (isAr ? "وثيقة" : "Document sans titre")) + '</strong>' +
+    '<small>' + escapeHtml(item.source_nom || "") + '</small></button>'
+  ).join("") : '<p class="empty-results">' + (isAr ? "لا توجد وثائق متاحة حالياً." : "Aucun document disponible pour le moment.") + '</p>';
+  return '<section class="library-directory">' +
+    '<div class="library-overview"><div><span class="mini-label">' + (isAr ? "مركز الوثائق" : "CENTRE DOCUMENTAIRE") + '</span><h3>' + (isAr ? "المعرفة والتقارير والمراجع" : "Connaissances, rapports et références") + '</h3><p>' + (isAr ? "استكشف الوثائق المفهرسة والمصادر المؤسسية الأصلية. الأرقام تعكس المحتوى المتاح حالياً في KITN." : "Explorez les documents indexés et les portails institutionnels d’origine. Les chiffres décrivent uniquement le contenu actuellement disponible dans KITN.") + '</p></div></div>' +
+    '<div class="library-metrics"><div><strong>' + libraryQuality.total + '</strong><span>' + (isAr ? "وثيقة مفهرسة" : "documents indexés") + '</span></div><div><strong>' + sourceCount + '</strong><span>' + (isAr ? "مصادر ممثلة" : "sources représentées") + '</span></div><div><strong>' + withPdf + '</strong><span>' + (isAr ? "روابط PDF مباشرة" : "liens PDF directs") + '</span></div><div><strong>' + withAbstract + '</strong><span>' + (isAr ? "ملخص متاح" : "résumés disponibles") + '</span></div><div><strong>' + libraryQuality.needsReview + '</strong><span>' + (isAr ? "وثائق تحتاج إلى التحقق" : "documents à vérifier") + '</span></div><div><strong>' + libraryQuality.missingTitle + '</strong><span>' + (isAr ? "وثائق دون عنوان" : "titres manquants") + '</span></div><div><strong>' + libraryQuality.missingSource + '</strong><span>' + (isAr ? "وثائق دون مصدر" : "sources manquantes") + '</span></div><div><strong>' + libraryQuality.duplicateRecords + '</strong><span>' + (isAr ? "تكرارات محتملة" : "doublons potentiels") + '</span></div></div>' +
+    (libraryQuality.missingDate ? '<p class="library-scope-note">' + (isAr ? "تنبيه: " + libraryQuality.missingDate + " وثيقة دون تاريخ نشر محدد." : "Transparence : " + libraryQuality.missingDate + " document(s) sans date de publication renseignée.") + '</p>' : "") +
+    '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "أنواع الوثائق" : "Collections documentaires") + '</h4><span>' + typeCounts.size + ' ' + (isAr ? "أنواع" : "types") + '</span></div><div class="library-type-list">' + typeChips + '</div></div>' +
+    '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "أحدث الوثائق المفهرسة" : "Derniers documents indexés") + '</h4><span>' + (isAr ? "حسب تاريخ النشر" : "Par date de publication") + '</span></div><div class="library-recent-list">' + recentMarkup + '</div></div>' +
+    '<div class="library-shelf"><div class="library-section-heading"><h4>' + (isAr ? "مصادر ومؤسسات مرجعية" : "Institutions & fonds documentaires") + '</h4><span>' + (isAr ? "الوصول إلى المصادر الأصلية" : "Accès aux sources originales") + '</span></div><div class="library-source-grid">' + sourceCards + '</div></div>' +
+    '<p class="library-scope-note">' + (isAr ? "قد تحتوي بوابات المؤسسات على وثائق إضافية غير مفهرسة في KITN. يظل المصدر الأصلي مرجع النشر." : "Les portails institutionnels peuvent proposer d’autres documents qui ne sont pas encore indexés dans KITN. La source originale reste la référence de publication.") + '</p>' +
+    '</section>';
+}
+
+function getRelatedKnowledgeItems(item, limit = 3) {
+  return findRelatedKnowledgeItems(indexItems, item, {
+    getSpace: resolveItemSpace,
+    getKey: getItemKey,
+    isFutureDate,
+    normalizeText: normalizeSearchText,
+    limit
+  });
+}
+
+function renderArticlePage(item) {
+  const isAr = lang === "ar";
+  const title = item.titre_original || (isAr ? "منشور" : "Publication");
+  const abstract = String(item.resume || "").trim();
+  const analysis = String(item.analyse_strategique || "").trim();
+  const sourceUrl = isSafeHttpUrl(item.url_publication) ? item.url_publication.trim() : "";
+  const pdfUrl = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
+  const doiUrl = getDoiUrl(item.doi);
+  const relatedItems = getRelatedKnowledgeItems(item);
+  const relatedMarkup = relatedItems.length ? `<section class="related-knowledge"><div class="related-knowledge-heading"><span class="mini-label">${isAr ? "روابط معرفية" : "CONTENUS ASSOCIÉS"}</span><h2>${isAr ? "اكتشف امتدادات هذا الموضوع" : "Prolonger l’exploration"}</h2><p>${isAr ? "محتويات من KITN ترتبط بهذه المادة موضوعياً، مع إعطاء الأولوية للمجالات الأخرى عند توفر روابط موثوقة." : "Des contenus de KITN liés par leurs thèmes, avec priorité aux autres espaces lorsque des correspondances fiables existent."}</p></div><div class="related-knowledge-grid">${relatedItems.map(({ item: related, crossSpace, sharedTerms }) => `<button type="button" class="related-knowledge-card" data-open-home-item="${escapeHtml(getItemKey(related))}"><span>${escapeHtml(crossSpace ? (isAr ? "مجال آخر" : "Autre espace") : (isAr ? "موضوع مرتبط" : "Même espace"))} · ${escapeHtml(formatPole(related.pole) || formatDocType(related.type_document) || "")}</span><strong>${escapeHtml(related.titre_original || (isAr ? "محتوى" : "Contenu sans titre"))}</strong><small>${escapeHtml(related.source_nom || related.revue_ou_institution || "")}</small><small>${escapeHtml(isAr ? "مواضيع مشتركة: " : "Thèmes communs : ")}${escapeHtml(sharedTerms.slice(0, 3).join(" · "))}</small></button>`).join("")}</div></section>` : "";
+  const authors = Array.isArray(item.auteurs) && item.auteurs.length
+    ? item.auteurs.join(", ")
+    : (isAr ? "المؤلف غير محدد" : "Auteur non renseigné");
   return `
-    <section class="library-directory">
-      <div class="stats-heading"><div><span class="mini-label">${isAr ? "مراجع موثوقة" : "SOURCES DE RÉFÉRENCE"}</span><h3>${title}</h3><p>${subtitle}</p></div></div>
-      <div class="library-source-grid">${items.map((item) => `
-        <article class="library-source-card"><div class="library-source-meta"><span>${escapeHtml(item.name)}</span><span>${countFor(item.id)} ${isAr ? "مفهرس" : "indexé(s)"}</span></div><p>${escapeHtml(item.desc)}</p><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${isAr ? "فتح المصدر الرسمي" : "Ouvrir le portail officiel"} ↗</a></article>
-      `).join("")}</div>
-    </section>`;
+    <article class="article-reading section">
+      <button type="button" class="article-back link-btn" data-space-id="all">← ${isAr ? "العودة إلى KITN" : "Retour à KITN"}</button>
+      <div class="article-reading-header">
+        <span class="mini-label">${escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || (isAr ? "منشور" : "Publication"))}</span>
+        <h1>${escapeHtml(title)}</h1>
+        <p class="article-reading-lead">${escapeHtml(authors)} · ${escapeHtml(item.date_publication || "—")}</p>
+        <p class="article-reading-source">${escapeHtml(item.revue_ou_institution || item.source_nom || (isAr ? "المصدر غير محدد" : "Source non précisée"))}</p>
+      </div>
+      <div class="article-reading-body">
+        <section>
+          <h2>${isAr ? "الملخص المتاح" : "Résumé disponible"}</h2>
+          <p>${escapeHtml(abstract || (isAr ? "لم تقدم قاعدة البيانات ملخصاً لهذا المنشور بعد." : "Aucun résumé n'est actuellement disponible dans les données de KITN pour cette publication."))}</p>
+        </section>
+        ${analysis ? `<section><h2>${isAr ? "قراءة تحليلية" : "Éclairage analytique"}</h2><p>${escapeHtml(analysis)}</p></section>` : ""}
+        <aside class="article-rights-note">
+          ${isAr
+            ? "تعرض KITN هنا البيانات الوصفية والملخص المتاح. لا يُنشر النص الكامل إلا إذا كانت حقوق إعادة النشر أو رخصة المصدر تسمح بذلك."
+            : "KITN présente ici les métadonnées et le résumé disponible. Le texte intégral ne sera reproduit que si les droits ou la licence de la source l'autorisent."}
+        </aside>
+        ${relatedMarkup}
+        <section class="article-citation">
+          <h2>${isAr ? "المصدر والمراجع" : "Source et références"}</h2>
+          <p><strong>${escapeHtml(authors)}</strong>. ${escapeHtml(title)}. ${escapeHtml(item.revue_ou_institution || item.source_nom || "")}. ${escapeHtml(item.date_publication || "")}.</p>
+          ${item.doi ? `<p>DOI : ${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.doi)}</a>` : escapeHtml(item.doi)}</p>` : ""}
+          <div class="result-actions">
+            ${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "المنشور الأصلي" : "Publication originale"} ↗</a>` : ""}
+            ${pdfUrl ? `<a href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener noreferrer">${isAr ? "وثيقة PDF" : "Document PDF"} ↗</a>` : ""}
+          </div>
+        </section>
+      </div>
+    </article>`;
 }
 
 function renderModal() {
   const existing = document.getElementById("notice-modal");
   if (existing) existing.remove();
-  if (!activeModalItem) return;
+  if (!activeModalItem) {
+    if (modalReturnFocus?.isConnected) modalReturnFocus.focus();
+    modalReturnFocus = null;
+    return;
+  }
 
   const c = COPY[lang];
   const item = activeModalItem;
@@ -1052,17 +1501,34 @@ function renderModal() {
   const safePdf = isSafeHttpUrl(item.pdf_direct) ? item.pdf_direct.trim() : "";
   const doiUrl = getDoiUrl(item.doi);
   const isManual = item.origine === "manuel" || String(item.id || "").startsWith("kitn_manual_");
+  const relatedItems = getRelatedKnowledgeItems(item);
+  const relatedMarkup = relatedItems.length ? `
+    <section class="related-knowledge related-knowledge-modal">
+      <div class="related-knowledge-heading">
+        <span class="mini-label">${lang === "ar" ? "روابط معرفية" : "CONNEXIONS TRANSVERSALES"}</span>
+        <h4>${lang === "ar" ? "اكتشف مواضيع مرتبطة" : "À explorer également"}</h4>
+      </div>
+      <div class="related-knowledge-grid">
+        ${relatedItems.map(({ item: related, crossSpace, sharedTerms }) => `
+          <button type="button" class="related-knowledge-card" data-related-item="${escapeHtml(getItemKey(related))}">
+            <span>${escapeHtml(crossSpace ? (lang === "ar" ? "مجال آخر" : "Autre espace") : (lang === "ar" ? "موضوع مرتبط" : "Même espace"))}</span>
+            <strong>${escapeHtml(related.titre_original || "")}</strong>
+            <small>${escapeHtml(sharedTerms.slice(0, 3).join(" · "))}</small>
+          </button>`).join("")}
+      </div>
+    </section>` : "";
+
 
   const modal = document.createElement("div");
   modal.id = "notice-modal";
   modal.className = "modal-backdrop";
   modal.innerHTML = `
-    <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="notice-modal-title">
       <div class="modal-head">
         <span>${escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || "")}</span>
         <button type="button" class="modal-close" id="close-modal">${escapeHtml(c.closeBtn)} ✕</button>
       </div>
-      <h3>${escapeHtml(item.titre_original || "")}</h3>
+      <h3 id="notice-modal-title">${escapeHtml(item.titre_original || "")}</h3>
       ${isFutureDate(item) ? `<span class="flag-warn">${escapeHtml(c.futureBadge)}</span>` : ""}
       <dl class="modal-meta">
         <div><dt>${escapeHtml(c.labelAuthor)}</dt><dd>${escapeHtml(authorsText)}</dd></div>
@@ -1088,7 +1554,7 @@ function renderModal() {
           <p>${escapeHtml(item.analyse_strategique)}</p>
         </div>
       ` : ""}
-      <div class="result-actions">
+      ${relatedMarkup}\n      <div class="result-actions">
         ${safeUrl ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.sourceLink)}</a>` : ""}
         ${doiUrl ? `<a href="${escapeHtml(doiUrl)}" target="_blank" rel="noopener noreferrer">DOI ↗</a>` : ""}
         ${safePdf ? `<a href="${escapeHtml(safePdf)}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.pdfLink)}</a>` : ""}
@@ -1100,6 +1566,25 @@ function renderModal() {
   `;
 
   document.body.appendChild(modal);
+  document.getElementById("close-modal")?.focus();
+  modal.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    activeModalItem = null;
+    renderModal();
+  });
+  modal.querySelectorAll("[data-related-item]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-related-item");
+      if (!key) return;
+      activeModalItem = null;
+      activeArticleId = key;
+      activeSpace = "all";
+      window.history.pushState({ kitnArticle: key }, "", "/publication/" + encodeURIComponent(key));
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
   document.getElementById("close-modal")?.addEventListener("click", () => {
     activeModalItem = null;
     renderModal();
@@ -1121,9 +1606,52 @@ function renderResults() {
   const poleBanner = document.getElementById("active-pole-banner");
   if (!container || !countBadge) return;
 
+  if (activeSpace === "chiffres") {
+    if (statisticsView === "regional") {
+      countBadge.textContent = regionalStatisticsLoading
+        ? (lang === "ar" ? "جارٍ التحميل…" : "Chargement…")
+        : regionalStatisticsData?.series_count
+          ? `${regionalStatisticsData.series_count.toLocaleString(lang === "ar" ? "ar-MA" : "fr-MA")} ${lang === "ar" ? "سلسلة جهوية" : "séries régionales"}`
+          : (regionalStatisticsLoadFailed ? (lang === "ar" ? "تعذر التحميل" : "Chargement impossible") : "—");
+    } else {
+      countBadge.textContent = statisticsLoading
+        ? (lang === "ar" ? "جارٍ التحميل…" : "Chargement…")
+        : statisticsData?.indicators?.length
+          ? `${statisticsData.indicators.length.toLocaleString(lang === "ar" ? "ar-MA" : "fr-MA")} ${lang === "ar" ? "مؤشر" : "indicateurs"}`
+          : (statisticsLoadFailed ? (lang === "ar" ? "تعذر التحميل" : "Chargement impossible") : "—");
+    }
+    if (poleBanner) {
+      poleBanner.style.display = "none";
+      poleBanner.innerHTML = "";
+    }
+    container.innerHTML = "";
+    return;
+  }
+
+  const filterKey = JSON.stringify([
+    activeSpace, searchQuery, selectedPolesFilter, selectedSinglePoleFilter,
+    selectedTypeFilter, selectedConfidenceFilter, selectedDocLangFilter,
+    dateFromFilter, dateToFilter, sortOrder, futureDatesOnly, favoritesOnly,
+    favoritesOnly ? favorites : []
+  ]);
+  if (filterKey !== lastResultsFilterKey) {
+    resultsPage = 1;
+    lastResultsFilterKey = filterKey;
+  }
   const filtered = getFilteredItems();
-  const suffix = lang === "ar" ? " مادة" : filtered.length > 1 ? " notices" : " notice";
-  countBadge.textContent = `${filtered.length}${suffix}`;
+  const pagination = getPageSlice(filtered, resultsPage, RESULTS_PAGE_SIZE);
+  resultsPage = pagination.page;
+  const pageItems = pagination.items;
+  const globalQuery = normalizeSearchText(searchQuery);
+  const globalStatisticMatches = activeSpace === "all" && globalQuery
+    ? (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).filter((indicator) => {
+        const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, getLocalizedStatisticField(indicator, "label", "ar"), indicator.description_fr, indicator.description_ar, getLocalizedStatisticField(indicator, "description", "ar"), indicator.source_name, indicator.unit_fr, indicator.unit_ar, getLocalizedStatisticField(indicator, "unit", "ar"), indicator.indicator_code].filter(Boolean).join(" "));
+        return matchesSearchQuery(searchable, globalQuery);
+      }).slice(0, 12)
+    : [];
+  const combinedCount = filtered.length + globalStatisticMatches.length;
+  const suffix = lang === "ar" ? " نتيجة" : combinedCount > 1 ? " résultats" : " résultat";
+  countBadge.textContent = `${combinedCount}${suffix}`;
 
   if (poleBanner) {
     if (selectedPolesFilter && activePoleLabel) {
@@ -1143,12 +1671,12 @@ function renderResults() {
     }
   }
 
-  if (!filtered.length) {
+  if (!filtered.length && !globalStatisticMatches.length) {
     container.innerHTML = `<p class="empty-results">${escapeHtml(COPY[lang].noResults)}</p>`;
     return;
   }
 
-  container.innerHTML = filtered
+  const documentResultsHtml = pageItems
     .map((item, idx) => {
       const isSaved = favorites.includes(getItemKey(item));
       const st = getEffectiveStatus(item);
@@ -1157,7 +1685,9 @@ function renderResults() {
         : (lang === "ar" ? "مؤلف غير مذكور" : "Auteur non renseigné");
       const venueText = item.revue_ou_institution || item.source_nom || "";
       const metaLeft = escapeHtml(item.date_publication || "");
-      const metaRight = escapeHtml(formatDocType(item.type_document) || formatPole(item.pole) || "");
+      const spaceLabels = { chiffres: lang === "ar" ? "المغرب بالأرقام" : "Maroc en chiffres", veille: lang === "ar" ? "الرصد" : "Veille", science: lang === "ar" ? "الدراسات والبحث" : "Études & recherche", bibliotheque: lang === "ar" ? "المكتبة" : "Bibliothèque", academy: "Academy" };
+      const itemSpaceLabel = spaceLabels[resolveItemSpace(item)] || "";
+      const metaRight = escapeHtml(activeSpace === "all" ? itemSpaceLabel + " · " + (formatDocType(item.type_document) || formatPole(item.pole) || "") : (formatDocType(item.type_document) || formatPole(item.pole) || ""));
       const statusFlag = st === "archive"
         ? `<span class="flag-warn">${escapeHtml(COPY[lang].archivedBadge)}</span>`
         : (isFutureDate(item)
@@ -1202,11 +1732,56 @@ function renderResults() {
       `;
     })
     .join("");
+  const statisticResultsHtml = globalStatisticMatches.length
+    ? `<section class="global-stat-results"><div class="global-stat-results-heading"><span class="mini-label">${lang === "ar" ? "نتائج إحصائية" : "INDICATEURS STATISTIQUES"}</span><strong>${lang === "ar" ? "بيانات المغرب" : "Les données du Maroc"}</strong></div>${globalStatisticMatches.map((indicator) => {
+        const label = lang === "ar" ? (getLocalizedStatisticField(indicator, "label", "ar") || indicator.indicator_code) : (indicator.label_fr || indicator.label_ar || indicator.indicator_code);
+        const description = lang === "ar" ? getLocalizedStatisticField(indicator, "description", "ar") : (indicator.description_fr || indicator.description_ar || "");
+        const unit = lang === "ar" ? getLocalizedStatisticField(indicator, "unit", "ar") : (indicator.unit_fr || indicator.unit_ar || "");
+        const latest = indicator.latest && indicator.latest.value !== null && indicator.latest.value !== undefined
+          ? formatStatisticValue(indicator, indicator.latest.value) + (unit ? " " + unit : "")
+          : "";
+        return `<button type="button" class="global-stat-result" data-global-stat="${escapeHtml(indicator.indicator_code || "")}"><span class="global-stat-result-type">${lang === "ar" ? "مؤشر إحصائي" : "Indicateur statistique"} · ${escapeHtml(indicator.indicator_code || "")}</span><strong>${escapeHtml(label)}</strong>${description ? `<span>${escapeHtml(description)}</span>` : ""}<small>${escapeHtml(indicator.source_name || "")}${latest ? " · " + escapeHtml(latest) : ""}</small></button>`;
+      }).join("")}</section>`
+    : "";
+  const paginationHtml = pagination.pageCount > 1
+    ? `<nav class="results-pagination" aria-label="${lang === "ar" ? "التنقل بين صفحات النتائج" : "Pagination des résultats"}">
+        <button type="button" class="link-btn" data-results-page="${pagination.page - 1}" ${pagination.page <= 1 ? "disabled" : ""}>${lang === "ar" ? "السابق" : "Précédent"}</button>
+        <span aria-live="polite">${lang === "ar" ? "صفحة" : "Page"} <strong>${pagination.page}</strong> / ${pagination.pageCount} <small>· ${pagination.startIndex + 1}–${pagination.endIndex} / ${pagination.total}</small></span>
+        <button type="button" class="link-btn" data-results-page="${pagination.page + 1}" ${pagination.page >= pagination.pageCount ? "disabled" : ""}>${lang === "ar" ? "التالي" : "Suivant"}</button>
+      </nav>`
+    : "";
+  container.innerHTML = documentResultsHtml + statisticResultsHtml + paginationHtml;
+
+  container.querySelectorAll("[data-results-page]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const requestedPage = Number(btn.getAttribute("data-results-page"));
+      if (!Number.isInteger(requestedPage)) return;
+      resultsPage = requestedPage;
+      renderResults();
+      container.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  });
+
+  container.querySelectorAll("[data-global-stat]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const code = btn.getAttribute("data-global-stat") || "";
+      const indicator = (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).find((item) => item.indicator_code === code);
+      if (!indicator) return;
+      activeSpace = "chiffres";
+      statisticsView = "national";
+      statisticsCategory = "all";
+      statisticsSearch = code;
+      window.history.pushState({ kitnSpace: "chiffres" }, "", SPACE_PATHS.chiffres);
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
 
   container.querySelectorAll("[data-open-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const i = Number(btn.getAttribute("data-open-index"));
-      activeModalItem = filtered[i] || null;
+      modalReturnFocus = btn;
+      activeModalItem = pageItems[i] || null;
       renderModal();
     });
   });
@@ -1214,16 +1789,19 @@ function renderResults() {
   container.querySelectorAll("[data-fav-index]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const i = Number(btn.getAttribute("data-fav-index"));
-      if (filtered[i]) toggleFavorite(filtered[i]);
+      if (pageItems[i]) toggleFavorite(pageItems[i]);
     });
   });
 }
 
 function render() {
+  // Local contribution tools are not a public navigation space; keep old sessions safe.
+  if (activeSpace === "contribuer") activeSpace = "all";
   const c = COPY[lang];
   const themes = THEMES[lang];
   const principles = PRINCIPLES[lang];
   const tracks = ACADEMY_TRACKS[lang];
+  const academyProgressSummary = getAcademyProgressSummary(tracks, quizAnswers);
   const spaces = SPACES[lang];
   const activeTheme = themes[selectedThemeIndex] || themes[0];
   const activeTrack = tracks[selectedAcademyIndex] || tracks[0];
@@ -1231,7 +1809,24 @@ function render() {
     ? activeTrack.questions
     : [{ question: activeTrack.question, options: activeTrack.options, answer: activeTrack.answer, correction: activeTrack.correction }];
   const activeQuizQuestion = quizQuestions[Math.min(selectedQuizQuestionIndex, quizQuestions.length - 1)];
+  const quizAnswerKey = `${activeTrack.id}:${selectedQuizQuestionIndex}`;
+  const selectedQuizOption = Object.prototype.hasOwnProperty.call(quizAnswers, quizAnswerKey)
+    ? quizAnswers[quizAnswerKey]
+    : null;
+  const quizAnsweredCount = quizQuestions.filter((_, qIdx) =>
+    Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`)
+  ).length;
+  const quizCorrectCount = quizQuestions.filter((question, qIdx) =>
+    Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`)
+    && quizAnswers[`${activeTrack.id}:${qIdx}`] === question.answer
+  ).length;
   const activeSpaceObj = spaces.find((s) => s.id === activeSpace) || spaces[0];
+  const activeArticleItem = activeArticleId ? indexItems.find((item) => getItemKey(item) === activeArticleId) || null : null;
+  document.title = activeArticleItem
+    ? `${activeArticleItem.titre_original || "Publication"} | KITN`
+    : activeSpace === "all"
+      ? "KITN — De l'information à la maîtrise"
+      : `${activeSpaceObj.label} | KITN`;
   const isDedicatedSpace = activeSpace !== "all";
   const allPoleKeys = Object.keys(POLE_LABELS[lang]);
   const availableTypes = [...new Set(indexItems.map((it) => it.type_document).filter(Boolean))];
@@ -1248,6 +1843,7 @@ function render() {
   const scienceFutureDateCount = scienceItems.filter((it) => isFutureDate(it)).length;
 
   const visibleItems = indexItems.filter((it) => !isFutureDate(it));
+  const homeFeaturedItems = getHomeFeaturedItems(visibleItems, { getSpace: resolveItemSpace, getKey: getItemKey, limit: 5 });
   const scienceVisibleCount = visibleItems.filter((it) => resolveItemSpace(it) === "science").length;
   const scienceCount = scienceVisibleCount;
   const statsCount = visibleItems.filter((it) => resolveItemSpace(it) === "chiffres").length;
@@ -1269,19 +1865,43 @@ function render() {
         <span class="brand-mark">K</span>
         <span>KITN<span class="brand-dot">.</span></span>
       </a>
-      <nav class="nav ${mobileMenuOpen ? "is-open" : ""}" id="main-nav">
-        <a href="#themes">${c.navThemes}</a>
-        <a href="#academy">${c.navAcademy}</a>
-        <a href="#method">${c.navMethod}</a>
-        <a href="#research">${c.navResearch}</a>
+      <nav class="nav ${mobileMenuOpen ? "is-open" : ""}" id="main-nav" aria-label="${lang === "ar" ? "التنقل الرئيسي" : "Navigation principale"}">
+        <button type="button" class="nav-link ${activeSpace === "all" ? "is-active" : ""}" data-space-id="all">${lang === "ar" ? "الرئيسية" : "Accueil"}</button>
+        <div class="nav-group ${mobileOpenSubmenu === "chiffres" ? "is-open" : ""}">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "chiffres" ? "is-active" : ""}" data-space-id="chiffres" data-mobile-submenu="chiffres" aria-expanded="${mobileOpenSubmenu === "chiffres"}" aria-controls="nav-submenu-chiffres">${lang === "ar" ? "المغرب بالأرقام" : "Maroc en chiffres"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown" id="nav-submenu-chiffres">
+            <button type="button" data-space-id="chiffres">${lang === "ar" ? "المؤشرات الوطنية" : "Indicateurs nationaux"}</button>
+            <button type="button" data-space-id="chiffres" data-stat-view-shortcut="regional">${lang === "ar" ? "المقارنة الجهوية" : "Comparaison régionale"}</button>
+            <button type="button" data-space-id="chiffres" data-stat-category-shortcut="economie_finances_publiques">${lang === "ar" ? "الاقتصاد والمالية" : "Économie & finances publiques"}</button>
+            <button type="button" data-space-id="chiffres" data-stat-category-shortcut="societe_developpement_humain">${lang === "ar" ? "المجتمع والتنمية" : "Société & développement humain"}</button>
+          </div>
+        </div>
+        <div class="nav-group ${mobileOpenSubmenu === "veille" ? "is-open" : ""}">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "veille" ? "is-active" : ""}" data-space-id="veille" data-mobile-submenu="veille" aria-expanded="${mobileOpenSubmenu === "veille"}" aria-controls="nav-submenu-veille">${lang === "ar" ? "الرصد" : "Veille"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown" id="nav-submenu-veille">
+            <button type="button" data-space-id="veille">${lang === "ar" ? "الأخبار والمؤسسات" : "Actualités & institutions"}</button>
+            <button type="button" data-space-id="veille" data-pole-shortcut="institutions_gouvernance">${lang === "ar" ? "المؤسسات والحكامة" : "Institutions & gouvernance"}</button>
+            <button type="button" data-space-id="veille" data-pole-shortcut="securite_affaires_interieures">${lang === "ar" ? "الأمن والشؤون الداخلية" : "Sécurité & affaires intérieures"}</button>
+          </div>
+        </div>
+        <div class="nav-group ${mobileOpenSubmenu === "science" ? "is-open" : ""}">
+          <button type="button" class="nav-link nav-parent ${activeSpace === "science" ? "is-active" : ""}" data-space-id="science" data-mobile-submenu="science" aria-expanded="${mobileOpenSubmenu === "science"}" aria-controls="nav-submenu-science">${lang === "ar" ? "الدراسات والبحث" : "Études & recherche"} <span aria-hidden="true">⌄</span></button>
+          <div class="nav-dropdown" id="nav-submenu-science">
+            <button type="button" data-space-id="science">${lang === "ar" ? "المنشورات العلمية" : "Publications scientifiques"}</button>
+            <button type="button" data-space-id="science" data-pole-shortcut="recherche_scientifique">${lang === "ar" ? "البحث العلمي" : "Recherche scientifique"}</button>
+          </div>
+        </div>
+        <button type="button" class="nav-link ${activeSpace === "bibliotheque" ? "is-active" : ""}" data-space-id="bibliotheque">${lang === "ar" ? "المكتبة" : "Bibliothèque"}</button>
+        <button type="button" class="nav-link ${activeSpace === "academy" ? "is-active" : ""}" data-space-id="academy">KITN Academy</button>
       </nav>
       <div class="topbar-actions">
         ${isDedicatedSpace ? `<button type="button" class="lang" id="back-portal-top">${escapeHtml(c.backPortalBtn)}</button>` : ""}
-        <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="${mobileMenuOpen}">${c.menuBtn}</button>
+        <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="${mobileMenuOpen}" aria-controls="main-nav">${c.menuBtn}</button>
         <button type="button" class="lang" id="lang-toggle">${c.langBtn}</button>
       </div>
     </header>
 
+    ${activeArticleItem ? renderArticlePage(activeArticleItem) : ""}
     ${!isDedicatedSpace ? `
       <section class="hero">
         <div class="hero-orb orb-one"></div>
@@ -1290,8 +1910,8 @@ function render() {
           <h1>${c.heroTitle}</h1>
           <p class="hero-intro">${c.heroIntro}</p>
           <div class="hero-actions">
-            <a href="#research" class="btn primary">${c.heroPrimary}</a>
-            <a href="#method" class="text-link">${c.heroSecondary}</a>
+            <button type="button" class="btn primary" data-space-id="chiffres">${c.heroPrimary}</button>
+            <button type="button" class="text-link" data-space-id="veille">${c.heroSecondary}</button>
           </div>
           <div class="hero-note">
             <span class="note-line"></span>
@@ -1406,7 +2026,25 @@ function render() {
       </section>
     ` : ""}
 
-    ${(!isDedicatedSpace || activeSpace === "academy") ? `
+    ${activeSpace === "all" ? `
+      <section class="section home-spaces">
+        <div class="section-head">
+          <div><span class="eyebrow">${lang === "ar" ? "استكشف KITN" : "EXPLORER KITN"}</span><h2>${lang === "ar" ? "خمسة فضاءات موضوعاتية لاستكشاف المغرب" : "Cinq espaces thématiques pour explorer le Maroc"}</h2></div>
+          <p>${lang === "ar" ? "كل مساحة لها محتواها وأدواتها الخاصة." : "Des espaces indépendants, chacun organisé autour d'un besoin précis."}</p>
+        </div>
+        <div class="home-space-grid">
+          ${spaces.filter((sp) => !["all", "contribuer"].includes(sp.id)).map((sp) => `
+            <button type="button" class="home-space-card" data-space-id="${sp.id}">
+              <span class="home-space-mark">${({ chiffres: "01", veille: "02", science: "03", bibliotheque: "04", academy: "05" })[sp.id] || "•"}</span>
+              <strong>${escapeHtml(sp.label)}</strong>
+              <p>${escapeHtml(SPACE_DESCRIPTIONS[lang][sp.id] || "")}</p>
+              <span>${lang === "ar" ? "اكتشف المساحة" : "Explorer cet espace"} ↗</span>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+    ` : ""}
+    ${activeSpace === "academy" ? `
       <section class="section" id="academy">
         <div class="section-head">
           <div>
@@ -1415,6 +2053,37 @@ function render() {
           </div>
           <p>${c.academyText}</p>
         </div>
+
+        <section class="academy-progress-overview" aria-label="${lang === "ar" ? "ملخص التقدم" : "Résumé de progression"}">
+          <div class="academy-progress-heading">
+            <div>
+              <span class="mini-label">${lang === "ar" ? "تقدمك" : "TA PROGRESSION"}</span>
+              <h3>${lang === "ar" ? "مسارك التعليمي" : "Ton parcours d’apprentissage"}</h3>
+            </div>
+            <strong class="academy-progress-total">${academyProgressSummary.percent}%</strong>
+          </div>
+          <div class="academy-progress-track" role="progressbar" aria-label="${lang === "ar" ? "التقدم الإجمالي" : "Progression globale"}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${academyProgressSummary.percent}">
+            <span style="width: ${academyProgressSummary.percent}%"></span>
+          </div>
+          <p class="academy-progress-meta">${academyProgressSummary.answered} / ${academyProgressSummary.total} ${lang === "ar" ? "إجابات" : "réponses"} · ${academyProgressSummary.correct} ${lang === "ar" ? "صحيحة" : "correctes"} · ${academyProgressSummary.completedTracks} / ${academyProgressSummary.tracks.length} ${lang === "ar" ? "مسارات مكتملة" : "parcours terminés"}</p>
+          <div class="academy-progress-actions">
+            <button type="button" class="tab-btn" data-academy-export>${lang === "ar" ? "تصدير التقدم" : "Exporter ma progression"}</button>
+            <label class="tab-btn academy-import-label">${lang === "ar" ? "استيراد نسخة" : "Importer une sauvegarde"}
+              <input type="file" accept="application/json,.json" data-academy-import>
+            </label>
+          </div>
+          ${academyProgressNotice ? `<p class="academy-progress-notice" role="status">${escapeHtml(academyProgressNotice)}</p>` : ""}
+
+          <div class="academy-progress-list">
+            ${academyProgressSummary.tracks.map((track, trackIndex) => `
+              <button type="button" class="academy-progress-item ${track.completed ? "is-complete" : ""}" data-academy-progress-idx="${trackIndex}">
+                <span class="academy-progress-item-heading"><strong>${escapeHtml(track.label)}</strong><span>${track.answered}/${track.total}</span></span>
+                <span class="academy-progress-track academy-progress-track-small"><span style="width: ${track.percent}%"></span></span>
+                <span class="academy-progress-item-status">${track.completed ? (lang === "ar" ? "مكتمل" : "Terminé") : (track.answered ? (lang === "ar" ? "قيد التقدم" : "En cours") : (lang === "ar" ? "لم يبدأ" : "À commencer"))}</span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
 
         <div class="academy-tabs">
           ${tracks.map((tr, idx) => `
@@ -1432,32 +2101,73 @@ function render() {
             ${activeTrack.deadline ? `<p><strong>${escapeHtml(c.academyDeadlineLabel)} :</strong> ${escapeHtml(activeTrack.deadline)}</p>` : ""}
             ${activeTrack.methodology ? `<p><strong>${escapeHtml(c.academyMethodLabel)} :</strong> ${escapeHtml(activeTrack.methodology)}</p>` : ""}
             ${Array.isArray(activeTrack.past_topics) && activeTrack.past_topics.length ? `<p>${escapeHtml(activeTrack.past_topics.join(" · "))}</p>` : ""}
+            ${Array.isArray(activeTrack.learning_objectives) && activeTrack.learning_objectives.length ? `<div class="academy-learning-block"><h4>${escapeHtml(c.academyObjectivesLabel)}</h4><ul>${activeTrack.learning_objectives.map((objective) => `<li>${escapeHtml(objective)}</li>`).join("")}</ul></div>` : ""}
+            ${Array.isArray(activeTrack.study_plan) && activeTrack.study_plan.length ? `<div class="academy-learning-block"><h4>${escapeHtml(c.academyPlanLabel)}</h4><ol>${activeTrack.study_plan.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol></div>` : ""}
+            ${Array.isArray(activeTrack.lessons) && activeTrack.lessons.length ? `
+              <section class="academy-course-section" aria-label="${escapeHtml(c.academyLessonsLabel)}">
+                <h3>${escapeHtml(c.academyLessonsLabel)}</h3>
+                ${activeTrack.lessons.map((lesson, lessonIndex) => `
+                  <article class="academy-lesson">
+                    <span class="mini-label">${lang === "ar" ? "الوحدة" : "Module"} ${lessonIndex + 1}</span>
+                    <h4>${escapeHtml(lesson.title)}</h4>
+                    <p class="academy-lesson-summary">${escapeHtml(lesson.summary)}</p>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyConceptsLabel)}</h5>
+                      <dl>${lesson.concepts.map(([term, definition]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(definition)}</dd></div>`).join("")}</dl>
+                    </div>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyExampleLabel)}</h5>
+                      <p>${escapeHtml(lesson.example)}</p>
+                    </div>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyEssayLabel)}</h5>
+                      <p>${escapeHtml(lesson.essay)}</p>
+                    </div>
+                    <div class="academy-lesson-part">
+                      <h5>${escapeHtml(c.academyExerciseLabel)}</h5>
+                      <p>${escapeHtml(lesson.exercise)}</p>
+                    </div>
+                    <details class="academy-guidance">
+                      <summary>${escapeHtml(c.academyGuidanceLabel)}</summary>
+                      <p>${escapeHtml(lesson.guidance)}</p>
+                    </details>
+                  </article>
+                `).join("")}
+              </section>
+            ` : ""}
           </div>
           <div>
             <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>
             <div class="quiz-question-nav" aria-label="${lang === "ar" ? "اختيار السؤال" : "Choisir une question"}">
               ${quizQuestions.map((question, qIdx) => `
-                <button type="button" class="quiz-step ${qIdx === selectedQuizQuestionIndex ? "is-active" : ""}" data-quiz-question="${qIdx}" aria-label="${lang === "ar" ? "السؤال" : "Question"} ${qIdx + 1}">${qIdx + 1}</button>
+                <button type="button" class="quiz-step ${qIdx === selectedQuizQuestionIndex ? "is-active" : ""} ${Object.prototype.hasOwnProperty.call(quizAnswers, `${activeTrack.id}:${qIdx}`) ? "is-answered" : ""}" data-quiz-question="${qIdx}" aria-current="${qIdx === selectedQuizQuestionIndex ? "step" : "false"}" aria-label="${lang === "ar" ? "السؤال" : "Question"} ${qIdx + 1}">${qIdx + 1}</button>
               `).join("")}
             </div>
-            <p class="quiz-progress">${lang === "ar" ? "السؤال" : "Question"} ${Math.min(selectedQuizQuestionIndex + 1, quizQuestions.length)} / ${quizQuestions.length}</p>
+            <p class="quiz-progress">${lang === "ar" ? "السؤال" : "Question"} ${Math.min(selectedQuizQuestionIndex + 1, quizQuestions.length)} / ${quizQuestions.length} · ${lang === "ar" ? "الإجابات" : "Réponses"} ${quizAnsweredCount} / ${quizQuestions.length} · ${lang === "ar" ? "الصحيحة" : "Bonnes réponses"} ${quizCorrectCount}</p>
+            ${quizAnsweredCount ? `<button type="button" class="tab-btn quiz-reset" data-quiz-reset>${lang === "ar" ? "إعادة ضبط هذا المسار" : "Réinitialiser ce parcours"}</button>` : ""}
             <p class="quiz-question">${escapeHtml(activeQuizQuestion.question)}</p>
             <div class="quiz-options">
               ${activeQuizQuestion.options.map((opt, oIdx) => `
-                <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}">${escapeHtml(opt)}</button>
+                <button type="button" class="quiz-opt ${selectedQuizOption === oIdx ? "is-selected" : ""}" data-quiz-opt="${oIdx}" aria-pressed="${selectedQuizOption === oIdx}">${escapeHtml(opt)}</button>
               `).join("")}
             </div>
             ${selectedQuizOption !== null ? `
-              <p class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
-                ${escapeHtml(activeQuizQuestion.correction)}
-              </p>
+              <div class="quiz-feedback ${isCorrect ? "is-ok" : "is-ko"}">
+                <p>${escapeHtml(activeQuizQuestion.correction)}</p>
+                ${Array.isArray(activeQuizQuestion.option_explanations) && activeQuizQuestion.option_explanations.length ? `
+                  <div class="quiz-explanations">
+                    <strong>${escapeHtml(c.academyExplanationLabel)}</strong>
+                    <ul>${activeQuizQuestion.option_explanations.map((explanation, optionIndex) => `<li class="${optionIndex === activeQuizQuestion.answer ? "is-correct" : "is-distractor"}"><span>${optionIndex === activeQuizQuestion.answer ? "✓" : "•"}</span> ${escapeHtml(explanation)}</li>`).join("")}</ul>
+                  </div>
+                ` : ""}
+              </div>
             ` : ""}
           </div>
         </div>
       </section>
     ` : ""}
 
-    ${!isDedicatedSpace ? `
+    ${false ? `
       <section class="section" id="method">
         <div class="section-head">
           <div>
@@ -1479,6 +2189,7 @@ function render() {
       </section>
     ` : ""}
 
+    ${isDedicatedSpace ? `
     <section class="section" id="research">
       <div class="section-head">
         <div>
@@ -1489,13 +2200,9 @@ function render() {
       </div>
 
       ${activeSpace === "chiffres" ? renderStatisticsDashboard() : ""}
+      ${activeSpace === "all" ? renderGlobalSearchOverview() : ""}
       ${activeSpace === "bibliotheque" ? renderLibraryDirectory() : ""}
-
-      <div class="spaces-bar" role="tablist">
-        ${spaces.map((sp) => `
-          <button type="button" class="space-tab ${activeSpace === sp.id ? "is-active" : ""}" data-space-id="${sp.id}">${escapeHtml(sp.label)}</button>
-        `).join("")}
-      </div>
+      ${activeSpace === "veille" ? renderWatchDashboard() : ""}
 
       ${activeSpace === "contribuer" ? `
         <form class="manual-form" id="manual-form">
@@ -1646,21 +2353,44 @@ function render() {
 
       <div id="results-grid" class="results-grid"></div>
     </section>
+    ` : `
+    <section class="section home-discovery">
+      <div class="section-head">
+        <div><span class="eyebrow">${lang === "ar" ? "آخر المستجدات" : "À LA UNE"}</span><h2>${lang === "ar" ? "مختارات من الرصد" : "Une sélection pour commencer"}</h2></div>
+        <p>${lang === "ar" ? "اكتشف أحدث الموارد داخل فضاءات KITN." : "Quelques publications récentes, sans surcharger votre espace d'accueil."}</p>
+      </div>
+      <div class="home-featured-grid">
+        ${homeFeaturedItems.map((item) => `
+          <article class="home-featured-card">
+            <span class="mini-label">${escapeHtml([spaces.find((space) => space.id === resolveItemSpace(item))?.label, formatDocType(item.type_document) || formatPole(item.pole)].filter(Boolean).join(" · ") || (lang === "ar" ? "منشور" : "Publication"))}</span>
+            <h3>${escapeHtml(item.titre_original || "")}</h3>
+            <p>${escapeHtml(String(item.resume || "").slice(0, 180))}${String(item.resume || "").length > 180 ? "…" : ""}</p>
+            <button type="button" class="link-btn" data-open-home-item="${escapeHtml(getItemKey(item))}">${lang === "ar" ? "قراءة التفاصيل" : "Lire la suite"}</button>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+    `}
 
     <footer class="footer">
       <span>${escapeHtml(c.footerCopy)}</span>
     </footer>
   `;
+  document.body.classList.toggle("is-article-view", Boolean(activeArticleItem));
 
   document.getElementById("brand-home")?.addEventListener("click", (e) => {
     e.preventDefault();
     activeSpace = "all";
+    activeArticleId = null;
+    window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all);
     render();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   document.getElementById("back-portal-top")?.addEventListener("click", () => {
     activeSpace = "all";
+    activeArticleId = null;
+    window.history.pushState({ kitnSpace: "all" }, "", SPACE_PATHS.all);
     render();
   });
 
@@ -1672,15 +2402,11 @@ function render() {
   document.getElementById("menu-toggle")?.addEventListener("click", () => {
     mobileMenuOpen = !mobileMenuOpen;
     render();
+    // render() rebuilds the header; return keyboard focus to the replacement button.
+    document.getElementById("menu-toggle")?.focus();
   });
 
-  document.querySelectorAll("#main-nav a").forEach((a) => {
-    a.addEventListener("click", () => {
-      mobileMenuOpen = false;
-      if (activeSpace !== "all") activeSpace = "all";
-      render();
-    });
-  });
+  
 
   document.querySelectorAll("[data-jump-space]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1705,11 +2431,68 @@ function render() {
     document.getElementById("research")?.scrollIntoView({ behavior: "smooth" });
   });
 
+  document.querySelectorAll("[data-academy-export]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const payload = {
+        format: "kitn-academy-progress",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        answers: mergeAcademyProgress({}, quizAnswers, ACADEMY_TRACKS[lang])
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = "kitn-academy-progress.json";
+      link.click();
+      URL.revokeObjectURL(objectUrl);
+      academyProgressNotice = lang === "ar" ? "تم تجهيز نسخة من تقدمك." : "Sauvegarde téléchargée.";
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-academy-import]").forEach((input) => {
+    input.addEventListener("change", async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const payload = JSON.parse(await file.text());
+        if (payload?.format !== "kitn-academy-progress" || payload?.version !== 1) {
+          throw new Error("Unsupported backup format");
+        }
+        const imported = mergeAcademyProgress({}, payload.answers, ACADEMY_TRACKS[lang]);
+        const importedCount = Object.keys(imported).length;
+        const nextAnswers = mergeAcademyProgress(quizAnswers, imported, ACADEMY_TRACKS[lang]);
+        if (!saveJsonStorage(ACADEMY_PROGRESS_KEY, nextAnswers)) {
+          academyProgressNotice = c.manualStorageErrorMsg;
+        } else {
+          quizAnswers = nextAnswers;
+          academyProgressNotice = lang === "ar"
+            ? `تم استيراد ${importedCount} إجابة.`
+            : `${importedCount} réponse(s) récupérée(s) depuis la sauvegarde.`;
+        }
+      } catch {
+        academyProgressNotice = lang === "ar"
+          ? "تعذر قراءة النسخة. تحقق من الملف."
+          : "Sauvegarde illisible ou incompatible. Vérifie le fichier.";
+      }
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-academy-progress-idx]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectedAcademyIndex = Number(btn.getAttribute("data-academy-progress-idx")) || 0;
+      selectedQuizQuestionIndex = 0;
+      render();
+      document.getElementById("academy")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
   document.querySelectorAll("[data-academy-idx]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedAcademyIndex = Number(btn.getAttribute("data-academy-idx")) || 0;
       selectedQuizQuestionIndex = 0;
-      selectedQuizOption = null;
       render();
     });
   });
@@ -1717,14 +2500,40 @@ function render() {
   document.querySelectorAll("[data-quiz-question]").forEach((btn) => {
     btn.addEventListener("click", () => {
       selectedQuizQuestionIndex = Number(btn.getAttribute("data-quiz-question")) || 0;
-      selectedQuizOption = null;
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-quiz-reset]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const trackId = ACADEMY_TRACKS[lang][selectedAcademyIndex]?.id || "default";
+      const nextAnswers = Object.fromEntries(
+        Object.entries(quizAnswers).filter(([key]) => !key.startsWith(`${trackId}:`))
+      );
+      if (!saveJsonStorage(ACADEMY_PROGRESS_KEY, nextAnswers)) {
+        academyProgressNotice = c.manualStorageErrorMsg;
+      } else {
+        quizAnswers = nextAnswers;
+        academyProgressNotice = "";
+        selectedQuizQuestionIndex = 0;
+      }
       render();
     });
   });
 
   document.querySelectorAll("[data-quiz-opt]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      selectedQuizOption = Number(btn.getAttribute("data-quiz-opt"));
+      const trackId = ACADEMY_TRACKS[lang][selectedAcademyIndex]?.id || "default";
+      const nextAnswers = {
+        ...quizAnswers,
+        [`${trackId}:${selectedQuizQuestionIndex}`]: Number(btn.getAttribute("data-quiz-opt"))
+      };
+      if (!saveJsonStorage(ACADEMY_PROGRESS_KEY, nextAnswers)) {
+        academyProgressNotice = c.manualStorageErrorMsg;
+      } else {
+        quizAnswers = nextAnswers;
+        academyProgressNotice = "";
+      }
       render();
     });
   });
@@ -1738,13 +2547,68 @@ function render() {
 
   document.querySelectorAll("[data-space-id]").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const mobileSubmenu = btn.getAttribute("data-mobile-submenu");
+      if (mobileSubmenu && window.matchMedia("(max-width: 820px)").matches) {
+        mobileOpenSubmenu = mobileOpenSubmenu === mobileSubmenu ? "" : mobileSubmenu;
+        render();
+        document.querySelectorAll("[data-mobile-submenu]").forEach((item) => {
+          if (item.getAttribute("data-mobile-submenu") === mobileSubmenu) item.focus();
+        });
+        return;
+      }
       activeSpace = btn.getAttribute("data-space-id") || "all";
+      activeArticleId = null;
+      if (btn.hasAttribute("data-stat-view-shortcut")) statisticsView = "regional";
+      if (btn.hasAttribute("data-stat-category-shortcut")) statisticsCategory = btn.getAttribute("data-stat-category-shortcut");
+      if (btn.hasAttribute("data-pole-shortcut")) {
+        selectedSinglePoleFilter = btn.getAttribute("data-pole-shortcut");
+        selectedPolesFilter = null;
+        activePoleLabel = "";
+      }
+      window.history.pushState({ kitnSpace: activeSpace }, "", SPACE_PATHS[activeSpace] || "/");
+      mobileMenuOpen = false;
+      mobileOpenSubmenu = "";
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+  document.querySelectorAll("[data-open-home-item]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-open-home-item");
+      activeArticleId = key;
+      activeSpace = "all";
+      window.history.pushState({ kitnArticle: key }, "", "/publication/" + encodeURIComponent(key));
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+  document.querySelectorAll("[data-stat-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      statisticsView = btn.getAttribute("data-stat-view") === "regional" ? "regional" : "national";
       render();
     });
   });
+  document.querySelector("[data-stat-retry]")?.addEventListener("click", () => {
+    statisticsLoaded = false;
+    statisticsLoadFailed = false;
+    initStatistics();
+  });
+  document.querySelector("[data-regional-stat-retry]")?.addEventListener("click", () => {
+    regionalStatisticsLoaded = false;
+    regionalStatisticsLoadFailed = false;
+    initRegionalStatistics();
+  });
+
+  document.querySelector("[data-stat-search]")?.addEventListener("change", (event) => {
+    statisticsSearch = event.target.value || "";
+    statisticsPage = 1;
+    render();
+  });
+
   document.querySelectorAll("[data-stat-category]").forEach((btn) => {
     btn.addEventListener("click", () => {
       statisticsCategory = btn.getAttribute("data-stat-category") || "all";
+      statisticsPage = 1;
       render();
     });
   });
@@ -1752,6 +2616,27 @@ function render() {
   document.querySelectorAll("[data-stat-range]").forEach((btn) => {
     btn.addEventListener("click", () => {
       statisticsRange = btn.getAttribute("data-stat-range") || "all";
+      statisticsPage = 1;
+      render();
+    });
+  });
+  document.querySelectorAll("[data-stat-page]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const requestedPage = Number(btn.getAttribute("data-stat-page"));
+      if (!Number.isInteger(requestedPage) || requestedPage < 1) return;
+      statisticsPage = requestedPage;
+      render();
+      document.querySelector(".stats-heading")?.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  });
+
+  document.querySelector("[data-regional-indicator]")?.addEventListener("change", (event) => {
+    regionalIndicatorCode = event.target.value || "";
+    render();
+  });
+  document.querySelectorAll("[data-regional-scope]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      regionalResidenceScope = btn.getAttribute("data-regional-scope") || "all";
       render();
     });
   });
@@ -1805,8 +2690,13 @@ function render() {
       origine: "manuel"
     };
 
-    manualItems = [newEntry, ...manualItems];
-    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+    const nextManualItems = [newEntry, ...manualItems];
+    if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) {
+      const statusEl = document.getElementById("manual-status");
+      if (statusEl) statusEl.textContent = c.manualStorageErrorMsg;
+      return;
+    }
+    manualItems = nextManualItems;
     rebuildCombinedIndex();
     render();
     const statusEl = document.getElementById("manual-status");
@@ -1839,8 +2729,12 @@ function render() {
           titre_original: x.titre_original || x.title,
           origine: "manuel"
         }));
-      manualItems = [...normalized, ...manualItems];
-      saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
+      const nextManualItems = [...normalized, ...manualItems];
+      if (!saveJsonStorage(MANUAL_ITEMS_KEY, nextManualItems)) {
+        if (statusEl) statusEl.textContent = c.manualStorageErrorMsg;
+        return;
+      }
+      manualItems = nextManualItems;
       rebuildCombinedIndex();
       render();
       const afterStatus = document.getElementById("manual-status");
@@ -1851,8 +2745,12 @@ function render() {
   });
 
   document.getElementById("manual-clear")?.addEventListener("click", () => {
+    if (!saveJsonStorage(MANUAL_ITEMS_KEY, [])) {
+      const statusEl = document.getElementById("manual-status");
+      if (statusEl) statusEl.textContent = c.manualStorageErrorMsg;
+      return;
+    }
     manualItems = [];
-    saveJsonStorage(MANUAL_ITEMS_KEY, manualItems);
     rebuildCombinedIndex();
     render();
   });
@@ -1860,6 +2758,9 @@ function render() {
   document.getElementById("search-input")?.addEventListener("input", (e) => {
     searchQuery = e.target.value || "";
     renderResults();
+    if (activeSpace === "all" && searchQuery.trim() && !statisticsLoaded && !statisticsLoading) {
+      initStatistics({ renderOnStart: false });
+    }
   });
 
   document.getElementById("science-author-input")?.addEventListener("input", (e) => {
@@ -1931,6 +2832,15 @@ function render() {
 
   renderResults();
   renderModal();
+
+  // Statistical datasets are large: fetch them only when the user opens this space.
+  if (activeSpace === "chiffres") {
+    if (statisticsView === "regional") {
+      if (!regionalStatisticsLoaded && !regionalStatisticsLoading) initRegionalStatistics();
+    } else if (!statisticsLoaded && !statisticsLoading) {
+      initStatistics();
+    }
+  }
 }
 
 async function initAcademy() {
@@ -1953,14 +2863,63 @@ async function initAcademy() {
 }
 
 
-async function initStatistics() {
+async function initStatistics({ renderOnStart = true } = {}) {
+  if (statisticsLoading || statisticsLoaded) return;
+  statisticsLoading = true;
+  statisticsLoadFailed = false;
+  if (renderOnStart) render();
   try {
     const res = await fetch("/data/statistics.json", { cache: "no-store" });
-    if (res.ok) statisticsData = await res.json();
+    if (!res.ok) throw new Error(`Statistics request failed: ${res.status}`);
+    const payload = await res.json();
+    if (!Array.isArray(payload?.indicators) || !payload.indicators.length) {
+      throw new Error("Statistics payload is empty or invalid");
+    }
+    statisticsData = payload;
   } catch {
     statisticsData = null;
+    statisticsLoadFailed = true;
+  } finally {
+    statisticsLoading = false;
+    statisticsLoaded = true;
+    if (renderOnStart || activeSpace === "chiffres") render();
+    else renderResults();
   }
+}
+
+async function initRegionalStatistics() {
+  if (regionalStatisticsLoading || regionalStatisticsLoaded) return;
+  regionalStatisticsLoading = true;
+  regionalStatisticsLoadFailed = false;
   render();
+  try {
+    const res = await fetch("/data/regional-statistics.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`Regional statistics request failed: ${res.status}`);
+    const payload = await res.json();
+    if (!Array.isArray(payload?.series) || !payload.series.length) {
+      throw new Error("Regional statistics payload is empty or invalid");
+    }
+    regionalStatisticsData = payload;
+  } catch {
+    regionalStatisticsData = null;
+    regionalStatisticsLoadFailed = true;
+  } finally {
+    regionalStatisticsLoading = false;
+    regionalStatisticsLoaded = true;
+    render();
+  }
+}
+
+async function initSourceHealth() {
+  try {
+    const res = await fetch("/data/sources-health.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("Source health report unavailable");
+    const data = await res.json();
+    sourceHealthData = data && Array.isArray(data.sources) ? data : null;
+  } catch {
+    sourceHealthData = null;
+  }
+  if (activeSpace === "veille") render();
 }
 
 async function initIndex() {
@@ -1979,7 +2938,44 @@ async function initIndex() {
   render();
 }
 
+const SPACE_PATHS = {
+  all: "/",
+  chiffres: "/maroc-en-chiffres",
+  veille: "/veille",
+  science: "/etudes-recherche",
+  bibliotheque: "/bibliotheque",
+  academy: "/academy"
+};
+function getArticleIdFromLocation() {
+  const prefix = "/publication/";
+  const pathname = window.location.pathname;
+  if (!pathname.startsWith(prefix)) return null;
+  try { return decodeURIComponent(pathname.slice(prefix.length)) || null; }
+  catch { return null; }
+}
+
+function getSpaceFromLocation() {
+  const currentPath = window.location.pathname;
+  const pathname = currentPath.length > 1 && currentPath.endsWith("/")
+    ? currentPath.slice(0, -1)
+    : currentPath;
+  const match = Object.entries(SPACE_PATHS).find(([, path]) => path === pathname);
+  if (match) return match[0];
+  const legacyHash = window.location.hash.startsWith("#/")
+    ? window.location.hash.slice(2)
+    : "";
+  return ["all", "veille", "science", "chiffres", "academy", "bibliotheque"].includes(legacyHash)
+    ? legacyHash
+    : "all";
+}
+activeSpace = getSpaceFromLocation();
+activeArticleId = getArticleIdFromLocation();
+window.addEventListener("popstate", () => {
+  activeSpace = getSpaceFromLocation();
+  activeArticleId = getArticleIdFromLocation();
+  render();
+});
 render();
+initSourceHealth();
 initAcademy();
 initIndex();
-initStatistics();

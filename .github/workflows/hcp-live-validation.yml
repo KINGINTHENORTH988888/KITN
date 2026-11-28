@@ -1,0 +1,80 @@
+name: HCP EMO Live Validation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/hcp-live-validation.yml"
+      - "scripts/validate_hcp_emo_regional_live.py"
+      - "scripts/validate_bam_ckan_live.py"
+      - "scripts/validate_bam_monia_live.py"
+      - "pipeline/collectors.py"
+      - "pipeline/hcp_regional.py"
+      - "pipeline/hcp_social.py"
+      - "scripts/publish_hcp_social_preview.py"
+      - "tests/test_hcp_regional.py"
+      - "tests/test_hcp_social.py"
+      - "data/sources.json"
+      - "requirements.txt"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kitn-live-statistics-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-hcp-regional-pdf:
+    if: github.event_name == 'pull_request' && github.head_ref == 'audit/kitn-quality-review-2026-11' && !contains(github.event.pull_request.head.commit.message, '[skip hcp data refresh]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout review branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Validate live BAM CKAN XLSX datasets and build review preview
+        run: PYTHONPATH=. python scripts/validate_bam_ckan_live.py
+      - name: Validate live MONIA HTML table and build preview dataset
+        run: PYTHONPATH=. python scripts/validate_bam_monia_live.py
+      - name: Validate live HCP EMO PDF extraction and build preview dataset
+        run: PYTHONPATH=. python scripts/validate_hcp_emo_regional_live.py
+      - name: Extract and publish HCP 2026 social indicators to review preview
+        run: PYTHONPATH=. python scripts/publish_hcp_social_preview.py
+      - name: Upload Morocco statistics quality preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: morocco-statistics-quality-preview
+          path: |
+            data/regional-statistics.json
+            public/data/regional-statistics.json
+            data/statistics.json
+            public/data/statistics.json
+            data/bam-ckan-preview.json
+            data/bam-monia-preview.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Verify frontend with live regional dataset
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Test and build frontend with HCP regional data
+        run: |
+          npm ci
+          npm run test:frontend
+          npm run build
+      - name: Keep generated datasets in the workflow artifact
+        run: |
+          echo "HCP datasets validated and retained in the hcp-statistics-preview artifact."
+          echo "No bot commit is pushed to the pull-request branch, avoiding recursive synchronize events."

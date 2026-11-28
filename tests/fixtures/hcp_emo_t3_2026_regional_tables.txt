@@ -1,0 +1,587 @@
+Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble 
+Population en âge de travailler (milliers) 27 775 27 886 28 000
+Main-d’œuvre (milliers) 11 617 11 764 11 694
+Taux de féminité (%) 21,0 21,5 21,7
+Personnes en emploi contre revenu (milliers) 10 364 10 643 10 470
+Personnes au chômage strict (milliers) 1 253 1 121 1 224
+Personnes hors de la main-d’œuvre (milliers) 16 158 16 122 16 306
+Main-d’œuvre potentielle (milliers) 884 711 729
+Taux de participation à la main-d’œuvre (%) 41,8 42,2 41,8
+Selon le sexe 
+Hommes 66,4 66,5 65,6
+Femmes 17,5 18,1 18,1
+Selon l’âge
+15-24 ans 23,4 22,9 23,3
+25-34 ans 56,7 56,8 56,6
+35-44 ans 56,5 57,7 56,6
+45 ans et plus 38,0 38,7 38,1
+Selon le diplôme 
+Aucun diplôme 37,3 38,1 37,3
+Diplôme de base 39,4 39,2 40,2
+Diplôme intermédiaire 46,1 46,3 43,3
+Diplôme avancé 68,7 69,4 68,5Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble 
+Taux d’emploi contre revenu (%) 37,3 38,2 37,4
+Selon le sexe
+Hommes 60,1 61,1 59,9
+Femmes 14,7 15,4 15,0
+Selon l’âge 
+15-24 ans 16,6 16,6 16,2
+25-34 ans 47,6 48,6 47,5
+35-44 ans 52,8 54,4 53,3
+45 ans et plus 36,4 37,3 36,8
+Selon le diplôme 
+Aucun diplôme 35,4 36,7 35,5
+Diplôme de base 34,6 34,7 35,5
+Diplôme intermédiaire 37,7 38,9 35,4
+Diplôme avancé 56,6 57,8 56,1
+Répartition de l’emploi contre revenu selon le secteur d’activité (%)
+Agriculture, sylviculture et pêche 24,5 24,1 23,2
+Industrie 13,6 13,7 14,6
+Construction 12,7 12,7 12,9
+Services 49,1 49,3 49,2
+Activités non déterminées 0,1 0,1 0,1
+Ensemble 100,0 100,0 100,0Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble 
+Taux composite de la sous-utilisation de la main-d’œuvre (%) 22,5 18,9 19,6
+Selon le sexe    
+Hommes 19,9 16,6 17,0
+Femmes 31,1 26,7 28,5
+Selon l’âge    
+15-24 ans 45,3 41,7 44,5
+25-34 ans 28,2 25,4 26,3
+35-44 ans 18,2 14,3 13,9
+45 ans et plus 13,1 9,7 9,9
+Selon le diplôme    
+Aucun diplôme 16,5 12,2 13,2
+Diplôme de base 25,5 23,0 22,0
+Diplôme intermédiaire 30,6 26,4 28,8
+Diplôme avancé 25,2 22,7 24,4Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble 
+Taux de chômage strict (%) 10,8 9,5 10,5
+Selon le sexe    
+Hommes 9,4 8,1 8,7
+Femmes 16,1 14,8 16,7
+Selon l’âge    
+15-24 ans 29,2 27,2 30,5
+25-34 ans 16,1 14,5 16,0
+35-44 ans 6,5 5,7 5,8
+45 ans et plus 4,2 3,4 3,5
+Selon le diplôme    
+Aucun diplôme 5,2 3,8 4,7
+Diplôme de base 12,0 11,4 11,6
+Diplôme intermédiaire 18,2 16,0 18,1
+Diplôme avancé 17,6 16,7 18,1Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble 
+Taux combiné du chômage strict et de la main-d’œuvre potentielle (%) 17,1 14,7 15,7
+Selon le sexe    
+Hommes 13,9 11,9 12,5
+Femmes 27,9 24,2 26,5
+Selon l’âge    
+15-24 ans 40,4 37,6 40,8
+25-34 ans 22,6 20,5 21,8
+35-44 ans 11,8 9,4 9,5
+45 ans et plus 8,3 6,3 6,7
+Selon le diplôme    
+Aucun diplôme 10,0 7,2 8,3
+Diplôme de base 19,4 18,2 17,9
+Diplôme intermédiaire 27,3 23,2 25,7
+Diplôme avancé 22,7 21,0 22,9Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble 
+Taux combiné du chômage strict et du sous-emploi lié à la durée de travail (%) 16,6 14,0 14,6
+Selon le sexe    
+Hommes 15,7 13,0 13,4
+Femmes 19,8 17,6 19,0
+Selon l’âge    
+15-24 ans 35,0 32,0 34,8
+25-34 ans 22,1 19,7 20,9
+35-44 ans 13,2 10,7 10,4
+45 ans et plus 9,2 6,9 6,8
+Selon le diplôme    
+Aucun diplôme 12,1 9,0 9,8
+Diplôme de base 18,7 16,5 16,0
+Diplôme intermédiaire 21,9 19,6 21,5
+Diplôme avancé 20,3 18,5 19,6Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Population en âge de travailler (milliers) 18 022 18 123 18 226
+Main-d’œuvre (milliers) 7 394 7 472 7 493
+Taux de féminité (%) 23,1 23,6 24,2
+Personnes en emploi contre revenu (milliers) 6 397 6 583 6 558
+Personnes au chômage strict (milliers) 997 889 935
+Personnes hors de la main-d’œuvre (milliers) 10 628 10 651 10 733
+Main-d’œuvre potentielle (milliers) 640 490 521
+Taux de participation à la main-d’œuvre (%) 41,0 41,2 41,1
+Selon le sexe    
+Hommes 64,4 64,3 63,6
+Femmes 18,6 19,1 19,5
+Selon l’âge    
+15-24 ans 21,6 20,9 22,0
+25-34 ans 57,2 57,3 57,6
+35-44 ans 57,0 58,6 57,7
+45 ans et plus 35,9 36,1 35,5
+Selon le diplôme    
+Aucun diplôme 33,2 33,5 32,9
+Diplôme de base 37,9 37,7 39,1
+Diplôme intermédiaire 45,7 46,0 43,4
+Diplôme avancé 67,8 69,1 68,6Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux d’emploi contre revenu (%) 35,5 36,3 36,0
+Selon le sexe    
+Hommes 56,9 58,0 57,3
+Femmes 14,9 15,6 15,5
+Selon l’âge    
+15-24 ans 13,4 13,5 13,4
+25-34 ans 45,5 46,9 46,7
+35-44 ans 52,6 54,5 53,9
+45 ans et plus 34,1 34,6 34,2
+Selon le diplôme    
+Aucun diplôme 30,9 31,8 31,1
+Diplôme de base 32,3 32,7 34,1
+Diplôme intermédiaire 37,1 38,4 35,4
+Diplôme avancé 56,1 58,0 56,8
+Répartition de l’emploi contre revenu selon le secteur d'activité (%)    
+Agriculture, sylviculture et pêche 5,5 5,4 4,7
+Industrie 17,7 17,6 18,9
+Construction 12,2 12,3 12,0
+Services 64,3 64,5 64,2
+Activités non déterminées 0,2 0,2 0,2
+Ensemble 100,0 100,0 100,0Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux composite de la sous-utilisation de la main-d’œuvre (%) 24,8 21,0 21,3
+Selon le sexe    
+Hommes 21,1 17,9 17,4
+Femmes 35,6 30,5 32,3
+Selon l’âge    
+15-24 ans 52,7 48,0 51,3
+25-34 ans 31,7 28,3 28,4
+35-44 ans 18,6 15,3 14,2
+45 ans et plus 14,1 10,8 10,2
+Selon le diplôme    
+Aucun diplôme 18,6 14,5 14,7
+Diplôme de base 27,3 24,3 22,7
+Diplôme intermédiaire 31,0 25,9 28,4
+Diplôme avancé 24,7 21,7 22,9Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux de chômage strict (%) 13,5 11,9 12,5
+Selon le sexe    
+Hommes 11,6 9,9 9,9
+Femmes 19,8 18,3 20,4
+Selon l’âge    
+15-24 ans 38,0 35,4 39,2
+25-34 ans 20,5 18,2 18,9
+35-44 ans 7,7 7,0 6,6
+45 ans et plus 5,1 4,1 3,7
+Selon le diplôme    
+Aucun diplôme 6,9 5,3 5,5
+Diplôme de base 14,6 13,3 13,0
+Diplôme intermédiaire 18,9 16,4 18,5
+Diplôme avancé 17,3 16,2 17,2Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux combiné du chômage strict et de la main-d’œuvre potentielle (%) 20,4 17,3 18,2
+Selon le sexe    
+Hommes 16,4 13,9 14,0
+Femmes 32,2 27,5 30,1
+Selon l’âge    
+15-24 ans 49,6 45,3 49,3
+25-34 ans 27,6 24,6 25,1
+35-44 ans 13,5 10,7 10,5
+45 ans et plus 9,5 7,4 7,2
+Selon le diplôme    
+Aucun diplôme 12,3 9,0 9,8
+Diplôme de base 22,5 20,2 19,7
+Diplôme intermédiaire 28,1 23,2 25,8
+Diplôme avancé 22,4 20,3 21,6Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux combiné du chômage strict et du sous-emploi lié à la durée de travail (%) 18,3 15,9 15,8
+Selon le sexe    
+Hommes 16,6 14,0 13,5
+Femmes 23,9 21,7 22,9
+Selon l’âge    
+15-24 ans 41,8 38,6 41,5
+25-34 ans 25,0 22,2 22,4
+35-44 ans 13,2 11,7 10,4
+45 ans et plus 9,9 7,7 6,9
+Selon le diplôme    
+Aucun diplôme 13,7 11,0 10,7
+Diplôme de base 19,9 17,7 16,1
+Diplôme intermédiaire 22,1 19,4 21,3
+Diplôme avancé 19,8 17,6 18,5Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Population en âge de travailler (milliers) 9 753 9 763 9 774
+Main-d’œuvre (milliers) 4 224 4 292 4 201
+Taux de féminité (%) 17,3 18,0 17,2
+Personnes en emploi contre revenu (milliers) 3 967 4 060 3 912
+Personnes au chômage strict (milliers) 256 232 289
+Personnes hors de la main-d’œuvre (milliers) 5 530 5 472 5 573
+Main-d’œuvre potentielle (milliers) 244 221 208
+Taux de participation à la main-d’œuvre (%) 43,3 44,0 43,0
+Selon le sexe    
+Hommes 69,8 70,2 69,2
+Femmes 15,4 16,2 15,2
+Selon l’âge    
+15-24 ans 26,5 26,2 25,3
+25-34 ans 55,7 56,0 54,4
+35-44 ans 55,5 56,1 54,7
+45 ans et plus 41,9 43,4 43,0
+Selon le diplôme    
+Aucun diplôme 41,8 43,3 42,3
+Diplôme de base 42,7 42,3 42,3
+Diplôme intermédiaire 48,5 48,3 42,7
+Diplôme avancé 75,8 71,3 67,2Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux d’emploi contre revenu (%) 40,7 41,6 40,0
+Selon le sexe    
+Hommes 65,7 66,6 64,5
+Femmes 14,2 15,1 14,1
+Selon l’âge    
+15-24 ans 21,9 21,9 20,8
+25-34 ans 51,8 52,2 49,1
+35-44 ans 53,2 54,4 52,3
+45 ans et plus 40,8 42,4 41,6
+Selon le diplôme    
+Aucun diplôme 40,3 42,2 40,6
+Diplôme de base 39,7 39,0 38,6
+Diplôme intermédiaire 41,5 41,7 35,9
+Diplôme avancé 60,7 56,2 50,0
+Répartition de l’emploi contre revenu selon le secteur d'activité (%)    
+Agriculture, sylviculture et pêche 55,2 54,5 54,1
+Industrie 7,0 7,3 7,3
+Construction 13,4 13,5 14,5
+Services 24,4 24,7 24,1
+Activités non déterminées 0,0 0,0 0,0
+Ensemble 100,0 100,0 100,0Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux composite de la sous-utilisation de la main-d’œuvre (%) 18,3 15,2 16,7
+Selon le sexe    
+Hommes 17,9 14,5 16,2
+Femmes 20,0 18,0 18,6
+Selon l’âge    
+15-24 ans 34,4 33,0 34,2
+25-34 ans 20,5 19,3 21,7
+35-44 ans 17,3 12,3 13,3
+45 ans et plus 11,3 7,8 9,4
+Selon le diplôme    
+Aucun diplôme 14,6 10,2 11,9
+Diplôme de base 22,1 20,4 20,7
+Diplôme intermédiaire 28,5 29,3 31,5
+Diplôme avancé 28,8 31,0 36,3Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux de chômage strict (%) 6,1 5,4 6,9
+Selon le sexe    
+Hommes 5,8 5,1 6,8
+Femmes 7,3 6,7 7,4
+Selon l’âge    
+15-24 ans 17,2 16,4 17,9
+25-34 ans 6,9 6,7 9,8
+35-44 ans 4,1 3,1 4,4
+45 ans et plus 2,8 2,3 3,1
+Selon le diplôme    
+Aucun diplôme 3,7 2,5 3,9
+Diplôme de base 7,1 7,8 8,8
+Diplôme intermédiaire 14,4 13,7 15,9
+Diplôme avancé 20,0 21,3 25,7Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux combiné du chômage strict et de la main-d’œuvre potentielle (%) 11,2 10,0 11,3
+Selon le sexe    
+Hommes 9,8 8,5 10,0
+Femmes 17,4 16,5 17,0
+Selon l’âge    
+15-24 ans 26,9 27,1 27,9
+25-34 ans 11,8 11,9 14,2
+35-44 ans 8,6 6,8 7,3
+45 ans et plus 6,4 4,5 5,9
+Selon le diplôme    
+Aucun diplôme 8,0 5,6 7,0
+Diplôme de base 13,4 14,3 14,2
+Diplôme intermédiaire 22,4 23,0 25,4
+Diplôme avancé 25,1 26,7 33,0Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux combiné du chômage strict et du sous-emploi lié à la durée de travail (%) 13,6 10,8 12,5
+Selon le sexe    
+Hommes 14,3 11,4 13,2
+Femmes 10,2 8,3 9,1
+Selon l’âge    
+15-24 ans 25,7 23,1 25,1
+25-34 ans 16,1 14,5 17,7
+35-44 ans 13,3 8,8 10,5
+45 ans et plus 7,9 5,7 6,7
+Selon le diplôme    
+Aucun diplôme 10,7 7,3 9,0
+Diplôme de base 16,5 14,3 15,7
+Diplôme intermédiaire 21,1 20,7 22,7
+Diplôme avancé 23,9 25,9 29,4
+Source : HCP (EMO)Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble    
+Taux de participation à la main-d’œuvre (%)    
+Tanger-Tétouan-Al Hoceima 46,4 46,8 45,5
+Oriental 37,0 36,6 35,7
+Fès-Meknès 38,5 40,0 39,3
+Rabat-Salé-Kénitra 42,6 42,2 40,9
+Béni Mellal-Khénifra 39,3 40,2 40,7
+Casablanca-Settat 45,6 46,7 47,0
+Marrakech-Safi 42,2 43,1 42,4
+Drâa-Tafilalet 31,1 30,5 30,2
+Souss-Massa 38,8 37,6 37,5
+Guelmim-Oued Noun 37,2 40,8 38,6
+Laâyoune-Sakia El Hamra 43,1 39,7 41,7
+Dakhla-Oued Ed-Dahab 63,9 59,2 64,7
+Ensemble 41,8 42,2 41,8
+Tableau 2 
+Indicateurs trimestriels régionaux du marché du travail par milieu de résidenceIndicateurs T1/2026 T2/2026 T3/2026
+Ensemble    
+Taux d’emploi contre revenu (%)    
+Tanger-Tétouan-Al Hoceima 43,0 43,9 42,4
+Oriental 31,5 31,9 30,8
+Fès-Meknès 33,1 35,6 34,4
+Rabat-Salé-Kénitra 37,9 38,4 37,3
+Béni Mellal-Khénifra 35,2 37,0 37,6
+Casablanca-Settat 39,8 40,7 40,9
+Marrakech-Safi 39,2 39,7 38,6
+Drâa-Tafilalet 28,2 28,0 25,7
+Souss-Massa 35,6 34,9 34,3
+Guelmim-Oued Noun 31,7 35,2 31,9
+Laâyoune-Sakia El Hamra 34,4 36,0 36,5
+Dakhla-Oued Ed-Dahab 60,2 57,8 61,8
+Ensemble 37,3 38,2 37,4Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble    
+Taux composite de la sous-utilisation de la main-d’œuvre (%)    
+Tanger-Tétouan-Al Hoceima 17,6 15,6 17,4
+Oriental 29,5 26,2 28,3
+Fès-Meknès 31,5 23,4 25,9
+Rabat-Salé-Kénitra 19,1 14,7 15,5
+Béni Mellal-Khénifra 21,5 16,6 16,1
+Casablanca-Settat 25,1 20,7 20,1
+Marrakech-Safi 17,0 16,9 16,4
+Drâa-Tafilalet 22,2 16,2 23,6
+Souss-Massa 16,1 17,6 16,8
+Guelmim-Oued Noun 38,6 33,7 38,7
+Laâyoune-Sakia El Hamra 32,1 28,2 27,4ᵐˢ
+Dakhla-Oued Ed-Dahab 12,7ᵐˢ 8,6ᵐˢ 9,2ᵐˢ
+Ensemble 22,5 18,9 19,6Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble    
+Taux de chômage strict (%)    
+Tanger-Tétouan-Al Hoceima 7,3 6,1 6,8
+Oriental 14,9 12,7 13,7
+Fès-Meknès 14,2 10,9 12,4
+Rabat-Salé-Kénitra 10,9 8,8 9,0
+Béni Mellal-Khénifra 10,3 7,9 7,6
+Casablanca-Settat 12,7 12,8 13,0
+Marrakech-Safi 7,0 7,9 9,0
+Drâa-Tafilalet 9,4 8,3 14,7
+Souss-Massa 8,2 7,1 8,5
+Guelmim-Oued Noun 14,8 13,8 17,2
+Laâyoune-Sakia El Hamra 20,3ᵐˢ 9,2ᵐˢ 12,5ᵐˢ
+Dakhla-Oued Ed-Dahab ps ps 4,6ᵐˢ
+Ensemble 10,8 9,5 10,5Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble    
+Taux combiné du chômage strict et de la main-d’œuvre potentielle (%)    
+Tanger-Tétouan-Al Hoceima 11,8 9,4 12,3
+Oriental 22,2 20,1 22,3
+Fès-Meknès 25,1 18,8 20,5
+Rabat-Salé-Kénitra 16,9 13,1 13,9
+Béni Mellal-Khénifra 15,0 11,6 10,4
+Casablanca-Settat 18,4 16,7 16,0
+Marrakech-Safi 11,7 12,0 12,8
+Drâa-Tafilalet 15,3 12,5 20,3
+Souss-Massa 13,2 14,6 15,0
+Guelmim-Oued Noun 31,7 24,9 30,9
+Laâyoune-Sakia El Hamra 30,5 26,2 27,4ᵐˢ
+Dakhla-Oued Ed-Dahab 9,6ᵐˢ 7,1ᵐˢ 9,1ᵐˢ
+Ensemble 17,1 14,7 15,7Indicateurs T1/2026 T2/2026 T3/2026
+Ensemble    
+Taux combiné du chômage strict et du sous-emploi lié à la durée de travail (%)    
+Tanger-Tétouan-Al Hoceima 13,5 12,5 12,2
+Oriental 22,9 19,5 20,4
+Fès-Meknès 21,6 16,0 18,4
+Rabat-Salé-Kénitra 13,3 10,5 10,7
+Béni Mellal-Khénifra 17,1 13,1 13,5
+Casablanca-Settat 19,8 17,0 17,2
+Marrakech-Safi 12,6 13,0 12,7
+Drâa-Tafilalet 16,7 12,2 18,3
+Souss-Massa 11,3 10,3 10,4
+Guelmim-Oued Noun 23,4 23,9 26,5
+Laâyoune-Sakia El Hamra 22,2ᵐˢ 11,6ᵐˢ 12,5ᵐˢ
+Dakhla-Oued Ed-Dahab 9,0ᵐˢ 3,9ᵐˢ 4,7ᵐˢ
+Ensemble 16,6 14,0 14,6Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux de participation à la main-d’œuvre (%)    
+Tanger-Tétouan-Al Hoceima 42,1 41,9 41,7
+Oriental 35,2 34,8 35,2
+Fès-Meknès 38,7 39,8 39,8
+Rabat-Salé-Kénitra 41,7 40,9 40,0
+Béni Mellal-Khénifra 36,2 36,0 36,0
+Casablanca-Settat 44,1 45,3 45,6
+Marrakech-Safi 41,3 41,8 41,7
+Drâa-Tafilalet 35,1 35,1 35,9
+Souss-Massa 41,7 41,3 40,4
+Guelmim-Oued Noun 35,8 37,2 36,8
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 41,0 41,2 41,1Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux d’emploi contre revenu (%)    
+Tanger-Tétouan-Al Hoceima 38,1 38,2 37,8
+Oriental 28,8 29,7 29,9
+Fès-Meknès 32,0 34,0 34,6
+Rabat-Salé-Kénitra 36,2 36,5 35,5
+Béni Mellal-Khénifra 31,1 32,0 31,7
+Casablanca-Settat 37,5 38,7 38,7
+Marrakech-Safi 37,0 37,5 36,9
+Drâa-Tafilalet 31,1 31,0 30,1
+Souss-Massa 38,0 38,2 37,4
+Guelmim-Oued Noun 29,7 32,5 30,1
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 35,5 36,3 36,0Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux composite de la sous-utilisation de la main-d’œuvre (%)    
+Tanger-Tétouan-Al Hoceima 20,1 19,2 21,2
+Oriental 33,2 28,8 29,3
+Fès-Meknès 32,0 25,0 23,5
+Rabat-Salé-Kénitra 21,0 16,5 17,6
+Béni Mellal-Khénifra 25,5 20,9 20,5
+Casablanca-Settat 26,7 22,2 21,9
+Marrakech-Safi 20,7 17,9 18,6
+Drâa-Tafilalet 22,3 19,9 22,9
+Souss-Massa 16,8 17,6 15,8
+Guelmim-Oued Noun 41,9 34,5 39,4
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 24,8 21,0 21,3Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux de chômage strict (%)    
+Tanger-Tétouan-Al Hoceima 9,7 8,9 9,3
+Oriental 18,0 14,4 15,1
+Fès-Meknès 17,2 14,5 13,2
+Rabat-Salé-Kénitra 13,2 10,9 11,1
+Béni Mellal-Khénifra 14,0 11,1 11,7
+Casablanca-Settat 14,9 14,5 15,2
+Marrakech-Safi 10,3 10,3 11,5
+Drâa-Tafilalet 11,4 11,5 16,1
+Souss-Massa 9,0 7,6 7,5
+Guelmim-Oued Noun 17,0 12,6 18,1
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 13,5 11,9 12,5Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux combiné du chômage strict et de la main-d’œuvre potentielle (%)    
+Tanger-Tétouan-Al Hoceima 15,2 13,2 16,6
+Oriental 26,5 22,3 23,9
+Fès-Meknès 27,2 20,7 19,4
+Rabat-Salé-Kénitra 19,5 15,7 16,7
+Béni Mellal-Khénifra 19,8 15,8 15,8
+Casablanca-Settat 21,1 18,8 18,7
+Marrakech-Safi 16,0 13,9 15,2
+Drâa-Tafilalet 17,3 16,0ᵐˢ 20,7
+Souss-Massa 14,3 14,9 14,7
+Guelmim-Oued Noun 35,3 26,7 31,7
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 20,4 17,3 18,2Indicateurs T1/2026 T2/2026 T3/2026
+Urbain    
+Taux combiné du chômage strict et du sous-emploi lié à la durée de travail (%)    
+Tanger-Tétouan-Al Hoceima 14,9 15,2 14,2
+Oriental 25,4 21,6 21,0
+Fès-Meknès 22,7 19,1 17,5
+Rabat-Salé-Kénitra 14,8 11,8 12,1
+Béni Mellal-Khénifra 20,1 16,5 16,6
+Casablanca-Settat 21,0 18,1 18,6
+Marrakech-Safi 15,3 14,5 15,0
+Drâa-Tafilalet 16,9 15,6 18,4
+Souss-Massa 11,7 10,5 8,7
+Guelmim-Oued Noun 25,5 22,0 27,3
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 18,3 15,9 15,8Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux de participation à la main-d’œuvre (%)    
+Tanger-Tétouan-Al Hoceima 55,3 57,0 53,5
+Oriental 40,9 40,3 36,6
+Fès-Meknès 38,2 40,3 38,2
+Rabat-Salé-Kénitra 45,0 45,6 43,7
+Béni Mellal-Khénifra 42,7 44,9 46,1
+Casablanca-Settat 50,5 51,1 51,5
+Marrakech-Safi 43,1 44,3 43,0
+Drâa-Tafilalet 28,7 27,7 26,7
+Souss-Massa 34,3 31,7 32,9
+Guelmim-Oued Noun 40,1 47,6 42,0
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 43,3 44,0 43,0Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux d’emploi contre revenu (%)    
+Tanger-Tétouan-Al Hoceima 53,3 56,0 52,0
+Oriental 37,1 36,4 32,6
+Fès-Meknès 35,0 38,7 34,0
+Rabat-Salé-Kénitra 42,6 43,9 42,1
+Béni Mellal-Khénifra 39,8 42,6 44,3
+Casablanca-Settat 47,0 47,0 47,9
+Marrakech-Safi 41,3 41,8 40,1
+Drâa-Tafilalet 26,5 26,1 23,1
+Souss-Massa 32,0 29,7 29,5
+Guelmim-Oued Noun 35,7 40,3 35,4
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 40,7 41,6 40,0Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux composite de la sous-utilisation de la main-d’œuvre (%)    
+Tanger-Tétouan-Al Hoceima 13,6 9,8 10,9
+Oriental 22,7 21,5 26,2
+Fès-Meknès 30,6 20,5 30,6
+Rabat-Salé-Kénitra 14,1ᵐˢ 10,1ᵐˢ 10,0
+Béni Mellal-Khénifra 17,5 12,6 12,2
+Casablanca-Settat 20,5 16,5 14,7
+Marrakech-Safi 13,5 16,0 14,3
+Drâa-Tafilalet 22,0 13,3ᵐˢ 24,3ᵐˢ
+Souss-Massa 14,6ᵐˢ 17,4 18,7
+Guelmim-Oued Noun 32,6ᵐˢ 32,4ᵐˢ 37,6ᵐˢ
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 18,3 15,2 16,7Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux de chômage strict (%)    
+Tanger-Tétouan-Al Hoceima 3,6ᵐˢ 1,8ᵐˢ 2,7ᵐˢ
+Oriental 9,4 9,7 11,1
+Fès-Meknès 8,2 4,0 10,8
+Rabat-Salé-Kénitra 5,2ᵐˢ ps 3,6ᵐˢ
+Béni Mellal-Khénifra 6,8ᵐˢ 5,0ᵐˢ ps
+Casablanca-Settat 6,8 8,0 7,0
+Marrakech-Safi 4,1ᵐˢ 5,6 6,7
+Drâa-Tafilalet ps ps 13,5ᵐˢ
+Souss-Massa 6,8ᵐˢ 6,2ᵐˢ 10,5
+Guelmim-Oued Noun ps 15,4ᵐˢ 15,7ᵐˢ
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 6,1 5,4 6,9Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux combiné du chômage strict et de la main-d’œuvre potentielle (%)    
+Tanger-Tétouan-Al Hoceima 6,2ᵐˢ 3,4ᵐˢ 4,9ᵐˢ
+Oriental 14,1 16,0 18,9
+Fès-Meknès 21,0 15,2 22,5
+Rabat-Salé-Kénitra 10,2ᵐˢ 6,8ᵐˢ 6,6ᵐˢ
+Béni Mellal-Khénifra 10,3 7,7 5,6ᵐˢ
+Casablanca-Settat 11,1 10,9 8,4
+Marrakech-Safi 7,7 10,3 10,6ᵐˢ
+Drâa-Tafilalet 13,9 9,7ᵐˢ 19,8ᵐˢ
+Souss-Massa 11,2ᵐˢ 13,9 15,5
+Guelmim-Oued Noun 25,1ᵐˢ 21,9ᵐˢ 29,6ᵐˢ
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 11,2 10,0 11,3Indicateurs T1/2026 T2/2026 T3/2026
+Rural    
+Taux combiné du chômage strict et du sous-emploi lié à la durée de travail (%)    
+Tanger-Tétouan-Al Hoceima 11,2 8,3ᵐˢ 8,9
+Oriental 18,5 15,7 19,1
+Fès-Meknès 19,3 10,0 20,1
+Rabat-Salé-Kénitra 9,4ᵐˢ 7,2ᵐˢ 7,2ᵐˢ
+Béni Mellal-Khénifra 14,3 10,0 10,7
+Casablanca-Settat 16,7 13,8 13,4
+Marrakech-Safi 10,2 11,6 10,6
+Drâa-Tafilalet 16,6ᵐˢ 9,5ᵐˢ 18,3
+Souss-Massa 10,5ᵐˢ 10,0ᵐˢ 13,8
+Guelmim-Oued Noun 19,9ᵐˢ 26,8ᵐˢ 25,3ᵐˢ
+Laâyoune-Sakia El Hamra . . .
+Dakhla-Oued Ed-Dahab . . .
+Ensemble 13,6 10,8 12,5
+Source : HCP (EMO)

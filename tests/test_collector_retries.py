@@ -1,0 +1,169 @@
+import unittest
+from datetime import datetime, timezone
+from email.message import Message
+from unittest.mock import patch
+from urllib.error import HTTPError
+
+import pipeline.collectors as collectors
+from pipeline.collectors import _fetch_text, _retry_delay_seconds
+
+
+class FakeResponse:
+    def __init__(self, payload=b'{"ok": true}'):
+        self.payload = payload
+        self.headers = Message()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        return False
+
+    def read(self):
+        return self.payload
+
+
+class TestCollectorRetries(unittest.TestCase):
+    def _http_error(self, code, headers=None):
+        return HTTPError(
+            "https://example.org/data",
+            code,
+            "temporary failure",
+            headers or Message(),
+            None,
+        )
+
+    def test_retry_after_seconds_is_respected(self):
+        headers = Message()
+        headers["Retry-After"] = "3"
+        with (
+            patch("pipeline.collectors.urlopen", side_effect=[self._http_error(429, headers), FakeResponse()]) as mocked,
+            patch("pipeline.collectors.time.sleep") as sleep,
+            patch("pipeline.collectors.random.uniform", return_value=0),
+        ):
+            result = _fetch_text("https://example.org/data")
+
+        self.assertEqual(result, '{"ok": true}')
+        self.assertEqual(mocked.call_count, 2)
+        sleep.assert_called_once_with(3.0)
+
+    def test_retry_after_http_date_is_parsed(self):
+        now = datetime(2026, 11, 27, 12, 0, 0, tzinfo=timezone.utc)
+        with patch("pipeline.collectors.random.uniform", return_value=0):
+            delay = _retry_delay_seconds("Fri, 27 Nov 2026 12:00:12 GMT", 0, now=now)
+        self.assertEqual(delay, 12.0)
+
+    def test_transient_errors_use_exponential_backoff(self):
+        errors = [self._http_error(503), self._http_error(503), self._http_error(503), FakeResponse()]
+        with (
+            patch("pipeline.collectors.urlopen", side_effect=errors) as mocked,
+            patch("pipeline.collectors.time.sleep") as sleep,
+            patch("pipeline.collectors.random.uniform", return_value=0),
+        ):
+            result = _fetch_text("https://example.org/data")
+
+        self.assertEqual(result, '{"ok": true}')
+        self.assertEqual(mocked.call_count, 4)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [2.0, 4.0, 8.0])
+
+
+    def test_openalex_per_second_429_respects_retry_after_and_retries(self):
+        headers = Message()
+        headers["Retry-After"] = "1"
+        error = HTTPError(
+            "https://api.openalex.org/works",
+            429,
+            "Too Many Requests",
+            headers,
+            __import__("io").BytesIO(b'{"reason":"requests_per_second"}'),
+        )
+        with (
+            patch.object(collectors, "_OPENALEX_RATE_LIMITED_UNTIL", 0),
+            patch.object(collectors, "_OPENALEX_LAST_REQUEST_AT", 0),
+            patch("pipeline.collectors.time.monotonic", return_value=100.0),
+            patch("pipeline.collectors.urlopen", side_effect=[error, FakeResponse()]) as mocked,
+            patch("pipeline.collectors.time.sleep") as sleep,
+            patch("pipeline.collectors.random.uniform", return_value=0),
+        ):
+            result = _fetch_text("https://api.openalex.org/works?search=Morocco")
+
+        self.assertEqual(result, '{"ok": true}')
+        self.assertEqual(mocked.call_count, 2)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [1.0, 3.0])
+
+    def test_openalex_429_opens_circuit_and_skips_later_sources(self):
+        error = HTTPError(
+            "https://api.openalex.org/works",
+            429,
+            "Too Many Requests",
+            Message(),
+            None,
+        )
+        with (
+            patch.object(collectors, "_OPENALEX_RATE_LIMITED_UNTIL", 0),
+            patch.object(collectors, "_OPENALEX_LAST_REQUEST_AT", 0),
+            patch("pipeline.collectors.time.monotonic", return_value=100.0),
+            patch("pipeline.collectors.urlopen", side_effect=error) as mocked,
+        ):
+            with self.assertRaises(HTTPError):
+                _fetch_text("https://api.openalex.org/works?search=Morocco")
+            with self.assertRaisesRegex(HTTPError, "circuit is open"):
+                _fetch_text("https://api.openalex.org/works?search=Morocco%20governance")
+
+            self.assertEqual(
+                collectors._OPENALEX_RATE_LIMITED_UNTIL,
+                100.0 + collectors._OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS,
+            )
+
+        self.assertEqual(mocked.call_count, 1)
+
+    def test_monia_reads_public_html_table_without_blocked_csv_export(self):
+        source = {
+            "statistics_pages": [{
+                "kind": "monia",
+                "url": "https://www.bkam.ma/monia",
+                "block_id": "block-123",
+                "page_offsets": [0, 10],
+            }]
+        }
+        first_page = """
+        <table><tr><th>Indice MONIA</th><th>Volume JJ</th><th>Date de référence</th><th>Date de publication</th></tr>
+        <tr><td>2,088 %</td><td>14661</td><td>26/11/2026</td><td>27/11/2026</td></tr></table>
+        """
+        second_page = """
+        <table><tr><td>2,195 %</td><td>12709</td><td>25/11/2026</td><td>26/11/2026</td></tr></table>
+        """
+        with patch("pipeline.collectors._fetch_text", side_effect=[first_page, second_page]) as fetch:
+            items = collectors.collect_bank_al_maghrib(source)
+        self.assertEqual(fetch.call_count, 2)
+        self.assertIn("offset=0", fetch.call_args_list[0].args[0])
+        self.assertIn("offset=10", fetch.call_args_list[1].args[0])
+        self.assertEqual(len(items), 2)
+        rate = next(item for item in items if item["statistics_series"]["indicator_code"] == "BAM_MONIA_RATE")
+        self.assertEqual(len(rate["statistics_series"]["history"]), 2)
+        self.assertEqual(rate["statistics_series"]["latest"]["value"], 2.088)
+
+    def test_monia_page_failure_is_reported(self):
+        page_error = HTTPError(
+            "https://www.bkam.ma/monia",
+            403,
+            "Forbidden",
+            Message(),
+            None,
+        )
+        source = {
+            "statistics_pages": [{
+                "kind": "monia",
+                "url": "https://www.bkam.ma/monia",
+            }]
+        }
+        with patch("pipeline.collectors._fetch_text", side_effect=page_error):
+            with self.assertRaises(HTTPError):
+                collectors.collect_bank_al_maghrib(source)
+
+    def test_excessive_retry_after_is_not_retried_early(self):
+        self.assertIsNone(_retry_delay_seconds("300", 0))
+
+
+if __name__ == "__main__":
+    unittest.main()

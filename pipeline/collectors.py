@@ -1,9 +1,12 @@
 import json
 import csv
+import math
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 import os
+import random
 import re
+import threading
 import time
 import io
 import posixpath
@@ -12,10 +15,13 @@ from email.utils import parsedate_to_datetime
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from urllib.error import HTTPError
-from urllib.parse import quote, unquote, urlencode, urljoin, urlsplit
+from urllib.parse import parse_qsl, quote, unquote, urlencode, urljoin, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
 from pipeline.processors import clean_text, normalize_doi, sanitize_url
+from pipeline.hcp_regional import HCP_EMO_REGIONS, HCP_EMO_REGIONAL_INDICATORS, parse_hcp_emo_regional_tables
+from pipeline.hcp_social import parse_hcp_social_indicators, parse_hcp_social_regional_indicators
+from pypdf import PdfReader
 
 _USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -83,9 +89,99 @@ _HCP_RELEVANT_TOKENS = (
 )
 
 
-def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
+_OPENALEX_MIN_REQUEST_INTERVAL = 3.0
+_OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS = 300.0
+_OPENALEX_LAST_REQUEST_AT = 0.0
+_OPENALEX_RATE_LIMITED_UNTIL = 0.0
+_OPENALEX_REQUEST_LOCK = threading.Lock()
+
+
+def _wait_for_openalex_slot(host: str) -> None:
+    """Space OpenAlex requests and stop a run from hammering an endpoint after HTTP 429."""
+    global _OPENALEX_LAST_REQUEST_AT
+    if host.lower() != "api.openalex.org":
+        return
+    with _OPENALEX_REQUEST_LOCK:
+        now = time.monotonic()
+        if now < _OPENALEX_RATE_LIMITED_UNTIL:
+            raise HTTPError(
+                "https://api.openalex.org/",
+                429,
+                "OpenAlex rate-limit circuit is open; remaining sources were skipped for this run",
+                None,
+                None,
+            )
+        elapsed = now - _OPENALEX_LAST_REQUEST_AT
+        wait = _OPENALEX_MIN_REQUEST_INTERVAL - elapsed
+        if wait > 0:
+            time.sleep(wait)
+        _OPENALEX_LAST_REQUEST_AT = time.monotonic()
+
+
+def _openalex_record_rate_limit() -> None:
+    """Open a short per-run circuit after a provider 429 to protect the API and CI runtime."""
+    global _OPENALEX_RATE_LIMITED_UNTIL
+    with _OPENALEX_REQUEST_LOCK:
+        _OPENALEX_RATE_LIMITED_UNTIL = max(
+            _OPENALEX_RATE_LIMITED_UNTIL,
+            time.monotonic() + _OPENALEX_RATE_LIMIT_COOLDOWN_SECONDS,
+        )
+
+
+def _openalex_rate_limit_payload(exc: HTTPError) -> dict:
+    """Read the provider's 429 response once so its reason and retry hints are not lost."""
+    try:
+        payload = json.loads(exc.read().decode("utf-8", errors="replace"))
+    except (AttributeError, OSError, UnicodeDecodeError, json.JSONDecodeError):
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    exc.openalex_payload = payload
+    return payload
+
+
+def _openalex_rate_limit_reason(payload: dict) -> str:
+    """Normalize the documented OpenAlex rate-limit reason when it is present."""
+    reason = payload.get("reason")
+    if not reason and isinstance(payload.get("error"), dict):
+        reason = payload["error"].get("reason")
+    return str(reason or "").strip().lower()
+
+
+def _retry_delay_seconds(retry_after: str | None, attempt: int, now: datetime | None = None) -> float | None:
+    """Parse Retry-After seconds or HTTP-date; return None when the wait is too long."""
+    delay = None
+    if retry_after:
+        try:
+            delay = float(retry_after.strip())
+        except (TypeError, ValueError):
+            try:
+                retry_at = parsedate_to_datetime(retry_after)
+                if retry_at.tzinfo is None:
+                    retry_at = retry_at.replace(tzinfo=timezone.utc)
+                current = now or datetime.now(timezone.utc)
+                if current.tzinfo is None:
+                    current = current.replace(tzinfo=timezone.utc)
+                delay = (retry_at - current).total_seconds()
+            except (TypeError, ValueError, OverflowError):
+                delay = None
+
+    if delay is None:
+        delay = min(60.0, float(2 ** (attempt + 1)))
+
+    delay = max(1.0, delay)
+    # Do not occupy a scheduled collection job for several minutes because a
+    # provider has imposed a long cooldown; report the source as unavailable.
+    if delay > 120:
+        return None
+
+    return delay + random.uniform(0, min(1.0, delay * 0.2))
+
+
+def _fetch_text(url: str, timeout: int = 20, referer: str | None = None, extra_headers: dict | None = None) -> str:
     parsed = urlsplit(url)
     origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "https://www.bkam.ma/"
+    host = parsed.hostname or ""
     headers = {
         "User-Agent": _USER_AGENT,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8",
@@ -98,21 +194,88 @@ def _fetch_text(url: str, timeout: int = 20, referer: str | None = None) -> str:
         "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-Site": "same-origin" if referer else "none",
     }
+    headers.update(extra_headers or {})
     req = Request(url, headers=headers)
-    for attempt in range(3):
+    for attempt in range(4):
+        _wait_for_openalex_slot(host)
         try:
             with urlopen(req, timeout=timeout) as resp:
                 raw = resp.read()
                 charset = resp.headers.get_content_charset() or "utf-8"
                 return raw.decode(charset, errors="replace")
         except HTTPError as exc:
-            if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
+            if host.lower() == "api.openalex.org" and exc.code == 403:
+                payload = _openalex_rate_limit_payload(exc)
+                error_code = payload.get("code") or payload.get("error")
+                if isinstance(error_code, dict):
+                    error_code = error_code.get("code")
+                if error_code == "key_not_activated":
+                    raise RuntimeError(
+                        "La clé OPENALEX_API_KEY existe mais n'est pas activée : "
+                        "son propriétaire doit confirmer l'adresse e-mail reçue d'OpenAlex."
+                    ) from exc
+                detail = payload.get("message") or (
+                    error_code if isinstance(error_code, str) else ""
+                )
+                suffix = f" Détail fournisseur : {detail}" if detail else ""
+                raise RuntimeError(
+                    "OpenAlex a refusé l'accès (HTTP 403). Vérifier les droits et l'état de la clé."
+                    + suffix
+                ) from exc
+            if host.lower() == "api.openalex.org" and exc.code == 429:
+                payload = _openalex_rate_limit_payload(exc)
+                reason = _openalex_rate_limit_reason(payload)
+                retryable_reasons = {
+                    "requests_per_second",
+                    "broad_boolean_query",
+                    "wide_or_filter",
+                    "semantic_search",
+                }
+                if reason in retryable_reasons and attempt < 3:
+                    retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                    delay = _retry_delay_seconds(retry_after, attempt)
+                    if delay is not None:
+                        time.sleep(delay)
+                        continue
+                # Daily-budget and unknown 429s should stop the remaining
+                # thematic queries instead of repeatedly hitting the provider.
+                _openalex_record_rate_limit()
+                raise
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
                 raise
             retry_after = exc.headers.get("Retry-After") if exc.headers else None
-            try:
-                delay = min(20, max(1, int(retry_after))) if retry_after else 2 ** attempt
-            except (TypeError, ValueError):
-                delay = 2 ** attempt
+            delay = _retry_delay_seconds(retry_after, attempt)
+            if delay is None:
+                raise
+            time.sleep(delay)
+
+
+
+def _fetch_pdf_bytes(url: str, timeout: int = 30, referer: str | None = None) -> bytes:
+    """Download a binary source document with the same bounded retry policy as HTML requests."""
+    parsed = urlsplit(url)
+    origin = f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme and parsed.netloc else "https://www.hcp.ma/"
+    host = parsed.hostname or ""
+    headers = {
+        "User-Agent": _USER_AGENT,
+        "Accept": "application/pdf,application/octet-stream,*/*;q=0.8",
+        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Referer": referer or f"{origin}/",
+    }
+    req = Request(url, headers=headers)
+    for attempt in range(4):
+        _wait_for_openalex_slot(host)
+        try:
+            with urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except HTTPError as exc:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == 3:
+                raise
+            retry_after = exc.headers.get("Retry-After") if exc.headers else None
+            delay = _retry_delay_seconds(retry_after, attempt)
+            if delay is None:
+                raise
             time.sleep(delay)
 
 
@@ -268,18 +431,110 @@ def collect_hal_api(source: dict) -> list[dict]:
     return items
 
 
+def _openalex_cursor_url(url: str, cursor: str, page_size: int, api_key: str = "") -> str:
+    """Build an OpenAlex cursor URL using its documented api_key query parameter."""
+    parts = urlsplit(url)
+    # Keep credentials out of URLs: query strings can be captured in proxy and CI logs.
+    # OpenAlex supports the same API key through an Authorization bearer header.
+    query = [
+        (key, value)
+        for key, value in parse_qsl(parts.query, keep_blank_values=True)
+        if key not in {"cursor", "per-page", "api_key"}
+    ]
+    query.extend((("per-page", str(page_size)), ("cursor", cursor)))
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
+
+
+def _bam_monia_page_url(page_url: str, block_id: str, offset: int) -> str:
+    """Build a paginated MONIA table URL from Bank Al-Maghrib's public page block."""
+    parts = urlsplit(page_url)
+    query = [
+        (key, value)
+        for key, value in parse_qsl(parts.query, keep_blank_values=True)
+        if key not in {"limit", "block", "offset"}
+    ]
+    query.extend((("limit", "0"), ("block", block_id), ("offset", str(max(0, offset)))))
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment))
+
+
 def collect_openalex(source: dict) -> list[dict]:
     url = source.get("url")
     if not url:
         return []
-    max_items = int(source.get("max_items", 20))
-    payload = json.loads(_fetch_text(url))
-    results = payload.get("results") or []
-    items: list[dict] = []
 
-    for work in results[:max_items]:
-        if not isinstance(work, dict):
-            continue
+    max_items = max(0, int(source.get("max_items", 20)))
+    if max_items == 0:
+        return []
+
+    query_page_size = next(
+        (value for key, value in parse_qsl(urlsplit(url).query) if key == "per-page"),
+        str(min(max_items, 25)),
+    )
+    try:
+        configured_page_size = int(source.get("page_size", query_page_size))
+    except (TypeError, ValueError):
+        configured_page_size = min(max_items, 25)
+    page_size = min(200, max(1, configured_page_size))
+    api_key = os.environ.get("OPENALEX_API_KEY", "").strip()
+
+    # OpenAlex allows a small keyless first page, but cursor paging beyond it
+    # requires an activated API key. Keep collection healthy when the secret is
+    # absent instead of turning every source into an authentication error.
+    if not api_key:
+        max_items = min(max_items, page_size)
+
+    # Keep max_items as a hard per-source cap to bound runtime and API usage.
+    works: list[dict] = []
+    cursor = "*"
+    seen_cursors = {cursor}
+    while len(works) < max_items:
+        page_url = _openalex_cursor_url(url, cursor, page_size, api_key=api_key)
+        try:
+            response_text = _fetch_text(
+                page_url,
+                extra_headers={"Authorization": f"Bearer {api_key}"} if api_key else None,
+            )
+        except HTTPError as exc:
+            if exc.code == 429:
+                payload = getattr(exc, "openalex_payload", {})
+                reason = _openalex_rate_limit_reason(payload) if isinstance(payload, dict) else ""
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                remaining = exc.headers.get("X-RateLimit-Remaining") if exc.headers else None
+                reset = exc.headers.get("X-RateLimit-Reset") if exc.headers else None
+                key_hint = (
+                    " Vérifier la clé OPENALEX_API_KEY, son activation et le budget quotidien."
+                    if api_key
+                    else " Ajouter une clé API OpenAlex gratuite et activée dans le secret GitHub OPENALEX_API_KEY."
+                )
+                diagnostics = []
+                if reason:
+                    diagnostics.append(f"motif={reason}")
+                if retry_after:
+                    diagnostics.append(f"Retry-After={retry_after}s")
+                if remaining is not None:
+                    diagnostics.append(f"quota restant={remaining}")
+                if reset:
+                    diagnostics.append(f"réinitialisation dans={reset}s")
+                detail = " (" + ", ".join(diagnostics) + ")" if diagnostics else ""
+                raise RuntimeError(
+                    "OpenAlex a appliqué une limitation de débit (HTTP 429)" + detail + "." + key_hint
+                ) from exc
+            raise
+        payload = json.loads(response_text)
+        page_results = payload.get("results") or []
+        if not isinstance(page_results, list) or not page_results:
+            break
+
+        remaining = max_items - len(works)
+        works.extend(work for work in page_results[:remaining] if isinstance(work, dict))
+        next_cursor = ((payload.get("meta") or {}).get("next_cursor"))
+        if len(works) >= max_items or not next_cursor or next_cursor in seen_cursors:
+            break
+        seen_cursors.add(next_cursor)
+        cursor = next_cursor
+
+    items: list[dict] = []
+    for work in works:
         title = clean_text(work.get("display_name") or work.get("title"))
         if not title:
             continue
@@ -378,6 +633,8 @@ class _HCPDetailExtractor(HTMLParser):
         self.heading = ""
         self.published_time = ""
         self.paragraphs: list[str] = []
+        self.all_text: list[str] = []
+        self.links: list[str] = []
         self._active_tag = ""
         self._active_parts: list[str] = []
 
@@ -390,11 +647,15 @@ class _HCPDetailExtractor(HTMLParser):
                 self.meta[key] = clean_text(value)
         elif tag.lower() == "time" and attr.get("datetime"):
             self.published_time = attr["datetime"]
+        elif tag.lower() == "a" and attr.get("href"):
+            self.links.append(attr["href"])
         elif tag.lower() in ("title", "h1", "p"):
             self._active_tag = tag.lower()
             self._active_parts = []
 
     def handle_data(self, data: str) -> None:
+        if data and data.strip():
+            self.all_text.append(data)
         if self._active_tag:
             self._active_parts.append(data)
 
@@ -514,7 +775,7 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
         if not is_doc_file and not is_article_page:
             continue
 
-        combined_probe = f"{anchor_text.lower()} {path_lower}"
+        combined_probe = re.sub(r"[-_]+", " ", f"{anchor_text.lower()} {path_lower}")
         if strict_tokens and not is_doc_file:
             if not any(tok in combined_probe for tok in _HCP_RELEVANT_TOKENS):
                 continue
@@ -543,11 +804,113 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
 
 
 
+
+def _extract_hcp_emo_regional_statistics(
+    attachment_links: list[str],
+    article_url: str,
+    published_date: str | None,
+) -> tuple[list[dict], list[str]]:
+    """Read the French HCP EMO PDF attachment and parse its regional tables."""
+    attachment_urls: list[str] = []
+    for href in attachment_links:
+        absolute = sanitize_url(urljoin(article_url, href))
+        if not absolute:
+            continue
+        path = urlsplit(absolute).path.lower()
+        if "/attachment/" in path and absolute not in attachment_urls:
+            attachment_urls.append(absolute)
+
+    if not attachment_urls:
+        return [], ["Aucune pièce jointe HCP détectée pour les tableaux régionaux EMO."]
+
+    errors: list[str] = []
+    page_diagnostics: list[str] = []
+    best_series: list[dict] = []
+    for attachment_url in attachment_urls[:4]:
+        try:
+            payload = _fetch_pdf_bytes(attachment_url, referer=article_url)
+            reader = PdfReader(io.BytesIO(payload))
+            pages: list[str] = []
+            for page in reader.pages:
+                try:
+                    page_text = page.extract_text(extraction_mode="layout") or ""
+                except TypeError:
+                    page_text = page.extract_text() or ""
+                pages.append(page_text)
+                compact_page = re.sub(r"\\s+", " ", page_text).strip()
+                if "indicateur" in compact_page.casefold() or "taux de" in compact_page.casefold():
+                    page_diagnostics.append(
+                        f"p{len(pages)} ({len(page_text)} caractères): {compact_page[:220]}"
+                    )
+            extracted_text = "\f".join(pages)
+            if "taux de participation" not in extracted_text.casefold():
+                continue
+            parsed = parse_hcp_emo_regional_tables(
+                extracted_text,
+                source_url=attachment_url,
+                published_date=published_date,
+            )
+            expected_geographies = {code for _name, code in HCP_EMO_REGIONS} | {"MAR"}
+            expected_keys = {
+                f"{indicator_code}:{scope}:{geography_code}"
+                for indicator_code, _label, _pattern in HCP_EMO_REGIONAL_INDICATORS
+                for scope in ("all", "urban", "rural")
+                for geography_code in expected_geographies
+            }
+            parsed_keys = {
+                str(item.get("series_key") or item.get("id") or "")
+                for item in parsed if isinstance(item, dict)
+            }
+            if parsed_keys == expected_keys and len(parsed) == len(expected_keys):
+                # Prefer a complete extraction even when an earlier attachment
+                # produced the same number of rows with a different/malformed key set.
+                best_series = parsed
+                break
+            if len(parsed) > len(best_series):
+                best_series = parsed
+        except Exception as exc:
+            errors.append(f"{attachment_url}: {type(exc).__name__}: {exc}")
+
+    expected_geographies = {code for _name, code in HCP_EMO_REGIONS} | {"MAR"}
+    expected_keys = {
+        f"{indicator_code}:{scope}:{geography_code}"
+        for indicator_code, _label, _pattern in HCP_EMO_REGIONAL_INDICATORS
+        for scope in ("all", "urban", "rural")
+        for geography_code in expected_geographies
+    }
+    if best_series:
+        parsed_keys = {
+            str(item.get("series_key") or item.get("id") or "")
+            for item in best_series if isinstance(item, dict)
+        }
+        missing_keys = sorted(expected_keys - parsed_keys)
+        unexpected_keys = sorted(parsed_keys - expected_keys)
+        if not missing_keys and not unexpected_keys and len(best_series) == len(expected_keys):
+            return best_series, []
+        diagnostics = " | ".join(page_diagnostics[-20:])
+        detail = (
+            f"Extraction régionale HCP partielle ({len(best_series)} séries uniques sur "
+            f"{len(expected_keys)} attendues ; {len(missing_keys)} combinaisons manquantes"
+        )
+        if unexpected_keys:
+            detail += f" ; {len(unexpected_keys)} combinaisons inattendues"
+        detail += ")."
+        if missing_keys:
+            detail += " Exemples manquants : " + ", ".join(missing_keys[:8]) + "."
+        return best_series, [f"{detail} Pages reconnues : {diagnostics or 'aucune page de tableau identifiée'}."]
+    detail = " | ".join(errors[:2]) if errors else "aucun tableau régional français reconnu"
+    diagnostics = " | ".join(page_diagnostics[:8])
+    if diagnostics:
+        detail = f"{detail} | pages : {diagnostics}"
+    return [], [f"Extraction des tableaux régionaux HCP EMO impossible : {detail}"]
+
+
 def collect_hcp_labour_statistics(source: dict) -> list[dict]:
     """Extract a small set of headline labour-market indicators from the latest HCP release."""
     base_url = str(source.get("url") or "https://www.hcp.ma/").rstrip("/") + "/"
     listing_urls = source.get("listing_urls") or ["/Actualite-marche-du-travail_r424.html"]
     candidates: list[dict] = []
+    listing_errors: list[str] = []
     seen: set[str] = set()
     for listing in listing_urls:
         listing_url = urljoin(base_url, str(listing))
@@ -572,9 +935,12 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                         candidate["title"] = clean_text(url_slug.replace("-", " ").replace("_", " "))
                     seen.add(url)
                     candidates.append(candidate)
-        except Exception:
+        except Exception as exc:
+            listing_errors.append(f"{listing_url}: {type(exc).__name__}: {exc}")
             continue
     if not candidates:
+        if listing_errors:
+            raise RuntimeError("Impossible de lire les pages de veille HCP EMO : " + " | ".join(listing_errors[:2]))
         return []
 
     def period_key(candidate: dict) -> tuple[int, int]:
@@ -589,20 +955,32 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
     candidates.sort(key=period_key, reverse=True)
     max_pages = max(1, min(3, int(source.get("max_pages", 1))))
     items: list[dict] = []
+    article_errors: list[str] = []
     for candidate in candidates[:max_pages]:
         page_url = str(candidate.get("url") or "")
         try:
             parser = _HCPDetailExtractor()
             parser.feed(_fetch_text(page_url))
-        except Exception:
+        except Exception as exc:
+            article_errors.append(f"{page_url}: {type(exc).__name__}: {exc}")
             continue
         title = clean_text(parser.meta.get("og:title") or parser.heading or parser.title or candidate.get("title"))
         body = clean_text(" ".join(parser.paragraphs))
-        period = period_key({"title": title})
+        if len(body) < 80:
+            # Some HCP releases place the article body in generic divs instead of <p> tags.
+            body = clean_text(" ".join(parser.all_text))
+        period_probe = " ".join(
+            str(value or "") for value in (title, candidate.get("title"), page_url)
+        )
+        period = period_key({"title": period_probe})
         if not body or not period[0] or not period[1]:
+            article_errors.append(f"{page_url}: contenu ou période trimestrielle non reconnu (texte={len(body)} caractères, période={period}, titre={title[:100]!r})")
             continue
         period_label = f"T{period[1]}/{period[0]}"
         published = parser.meta.get("article:published_time") or parser.published_time or candidate.get("published_date")
+        regional_statistics, regional_warnings = _extract_hcp_emo_regional_statistics(
+            parser.links, page_url, published
+        )
 
         def number(pattern: str) -> float | None:
             match = re.search(pattern, body, re.IGNORECASE)
@@ -627,32 +1005,65 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
              number(r"nombre de personnes en emploi contre revenu atteint\s*([0-9]+(?:[,.][0-9]+)?)\s*millions"),
              "Effectif des personnes en emploi contre revenu, en millions."),
         ]
-        pair = re.search(
-            r"taux de chômage strict.{0,100}?respectivement à\s*([0-9]+(?:[,.][0-9]+)?)\s*%\s*et\s*([0-9]+(?:[,.][0-9]+)?)\s*%",
+        population_pair = re.search(
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les\s+(jeunes|femmes)"
+            r"(?:\s+de\s+15\s*[-–]\s*24\s*ans)?\s+et\s+"
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les\s+(jeunes|femmes)",
             body, re.IGNORECASE,
         )
-        if pair:
+        unemployment_pair = re.search(
+            r"taux de chômage strict s['’]élève respectivement à\s*"
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*et\s*"
+            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*(?:pour ces deux catégories)?",
+            body, re.IGNORECASE,
+        )
+        category_order: list[str] = []
+        if population_pair:
+            first_group = population_pair.group(2).casefold()
+            second_group = population_pair.group(4).casefold()
+            if {first_group, second_group} == {"jeunes", "femmes"}:
+                category_order = [first_group, second_group]
+                underutilization_values = {
+                    first_group: float(population_pair.group(1).replace(",", ".")),
+                    second_group: float(population_pair.group(3).replace(",", ".")),
+                }
+                metrics.extend([
+                    ("HCP_EMO_YOUTH_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les jeunes (15-24 ans)", "%",
+                     underutilization_values["jeunes"],
+                     "Taux composite de sous-utilisation de la main-d’œuvre des jeunes de 15 à 24 ans."),
+                    ("HCP_EMO_WOMEN_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les femmes", "%",
+                     underutilization_values["femmes"],
+                     "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
+                ])
+
+        if population_pair and unemployment_pair and category_order:
+            unemployment_values = {
+                category_order[0]: float(unemployment_pair.group(1).replace(",", ".")),
+                category_order[1]: float(unemployment_pair.group(2).replace(",", ".")),
+            }
             metrics.extend([
                 ("HCP_EMO_YOUTH_UNEMPLOYMENT", "Taux de chômage strict des jeunes (15-24 ans)", "%",
-                 float(pair.group(1).replace(",", ".")),
+                 unemployment_values["jeunes"],
                  "Taux de chômage strict des jeunes de 15 à 24 ans selon l'EMO."),
                 ("HCP_EMO_WOMEN_UNEMPLOYMENT", "Taux de chômage strict des femmes", "%",
-                 float(pair.group(2).replace(",", ".")),
+                 unemployment_values["femmes"],
                  "Taux de chômage strict des femmes selon l'EMO."),
             ])
-        underutilization_pair = re.search(
-            r"([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les jeunes.{0,100}?([0-9]+(?:[,.][0-9]+)?)\s*%\s*chez les femmes",
-            body, re.IGNORECASE,
-        )
-        if underutilization_pair:
-            metrics.extend([
-                ("HCP_EMO_YOUTH_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les jeunes (15-24 ans)", "%",
-                 float(underutilization_pair.group(1).replace(",", ".")),
-                 "Taux composite de sous-utilisation de la main-d’œuvre des jeunes de 15 à 24 ans."),
-                ("HCP_EMO_WOMEN_UNDERUTILIZATION", "Sous-utilisation de la main-d’œuvre chez les femmes", "%",
-                 float(underutilization_pair.group(2).replace(",", ".")),
-                 "Taux composite de sous-utilisation de la main-d’œuvre des femmes."),
-            ])
+        expected_codes = {
+            "HCP_EMO_UNEMPLOYMENT", "HCP_EMO_UNDERUTILIZATION",
+            "HCP_EMO_LABOUR_FORCE", "HCP_EMO_EMPLOYMENT",
+            "HCP_EMO_YOUTH_UNEMPLOYMENT", "HCP_EMO_WOMEN_UNEMPLOYMENT",
+            "HCP_EMO_YOUTH_UNDERUTILIZATION", "HCP_EMO_WOMEN_UNDERUTILIZATION",
+        }
+        detected_codes = {code for code, _label, _unit, value, _description in metrics if value is not None}
+        statistics_warnings = [
+            f"Indicateur HCP EMO absent ou non reconnu : {code}"
+            for code in sorted(expected_codes - detected_codes)
+        ]
+        if listing_errors:
+            statistics_warnings.extend(f"Page de liste indisponible : {error}" for error in listing_errors[:2])
+        statistics_warnings.extend(regional_warnings)
+
         for code, label, unit, value, description in metrics:
             if value is None:
                 continue
@@ -666,6 +1077,18 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 "history": [{"year": period_label, "value": value}],
                 "source_name": "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
                 "source_url": page_url, "last_updated": published or period_label,
+                "comparability_group": "HCP_EMO_2026",
+                "methodology_break": True,
+                "methodology_note_fr": (
+                    "Rupture méthodologique : l'EMO 2026 remplace l'ENE et adopte de nouvelles définitions "
+                    "du chômage strict et de l'emploi contre revenu. Ne pas raccorder directement cette série "
+                    "aux anciennes séries ENE sans harmonisation méthodologique."
+                ),
+                "methodology_note_ar": (
+                    "انقطاع منهجي: حلّ مسح اليد العاملة EMO 2026 محلّ المسح الوطني للتشغيل ENE واعتمد "
+                    "تعريفات جديدة للبطالة الصارمة والتشغيل مقابل دخل. لا تُقارن هذه السلسلة مباشرة بالسلاسل "
+                    "القديمة دون مواءمة منهجية."
+                ),
             }
             items.append({
                 "title": f"{label} — {period_label}", "abstract": description,
@@ -675,10 +1098,18 @@ def collect_hcp_labour_statistics(source: dict) -> list[dict]:
                 "url": page_url, "doi": None, "espace": "chiffres",
                 "pole": "societe_developpement_humain", "default_doc_type": "statistique",
                 "statistics_series": series, "source_lang_hint": "fr",
+                "statistics_collection_warnings": statistics_warnings,
             })
+        if items and regional_statistics:
+            # Attach the regional dataset once; the pipeline stores it separately from national series.
+            items[0]["regional_statistics"] = regional_statistics
+
         # Avoid mixing multiple quarters into one run; only the latest release is authoritative.
         if items:
             break
+    if not items:
+        details = " | ".join(article_errors[:2]) if article_errors else "aucun des huit indicateurs attendus n'a été extrait"
+        raise RuntimeError("Publication HCP EMO détectée, mais extraction statistique impossible : " + details)
     return items
 
 
@@ -1300,13 +1731,30 @@ def collect_bank_al_maghrib(source: dict) -> list[dict]:
         csv_rows = []
         if kind == "monia" and page.get("csv_url"):
             try:
-                csv_payload = _fetch_text(str(page["csv_url"]), referer=page_url)
-                csv_rows = _bam_monia_csv_rows(csv_payload)
+                csv_rows = _bam_monia_csv_rows(_fetch_text(str(page["csv_url"]), referer=page_url))
             except Exception:
+                # The official HTML table remains the supported fallback when CSV export is blocked.
                 csv_rows = []
-        if csv_rows:
+        if kind == "monia" and csv_rows:
             parser.rows = csv_rows
             visible_text = ""
+        elif kind == "monia":
+            block_id = str(page.get("block_id") or "").strip()
+            offsets = page.get("page_offsets") or [0]
+            if not isinstance(offsets, list):
+                offsets = [0]
+            all_text_parts: list[str] = []
+            for offset in offsets:
+                try:
+                    table_url = _bam_monia_page_url(page_url, block_id, int(offset)) if block_id else page_url
+                    html_body = _fetch_text(table_url, referer=page_url)
+                except (TypeError, ValueError):
+                    continue
+                page_parser = _BAMPageExtractor()
+                page_parser.feed(html_body)
+                parser.rows.extend(page_parser.rows)
+                all_text_parts.extend(page_parser.text_parts)
+            visible_text = clean_text(" ".join(all_text_parts))
         else:
             html_body = _fetch_text(page_url, referer=page_url)
             parser.feed(html_body)
@@ -1519,22 +1967,32 @@ def collect_bank_al_maghrib_api(source: dict) -> list[dict]:
 
 
 def collect_world_bank_api(source: dict) -> list[dict]:
-    """Fetch Morocco time series from the World Bank Indicators API."""
+    """Fetch Morocco time series and retain per-indicator collection diagnostics."""
     base_url = str(source.get("url") or "https://api.worldbank.org/v2/country/MAR/indicator/").rstrip("/") + "/"
     specs = source.get("indicators") or []
     max_items = int(source.get("max_items", len(specs) or 10))
+    history_points = max(1, min(int(source.get("history_points", 12)), 100))
     items: list[dict] = []
+    warnings: list[str] = []
+
     for spec in specs[:max_items]:
         code = str(spec.get("code") or "").strip()
         if not code:
+            warnings.append("Indicateur Banque mondiale ignoré : code absent dans la configuration.")
             continue
-        endpoint = f"{base_url}{code}?format=json&per_page=12"
+
+        endpoint = f"{base_url}{code}?format=json&per_page={history_points}"
         try:
             payload = json.loads(_fetch_text(endpoint))
-        except Exception:
+        except Exception as exc:
+            warnings.append(f"{code} : erreur de requête ({type(exc).__name__}: {clean_text(str(exc))[:180]}).")
             continue
+
         if not isinstance(payload, list) or len(payload) < 2 or not isinstance(payload[1], list):
+            message = payload[0].get("message") if isinstance(payload, list) and payload and isinstance(payload[0], dict) else None
+            warnings.append(f"{code} : réponse API vide ou non conforme{(': ' + clean_text(message)[:160]) if message else '.'}")
             continue
+
         history = []
         for row in payload[1]:
             if not isinstance(row, dict) or row.get("value") is None:
@@ -1547,7 +2005,9 @@ def collect_world_bank_api(source: dict) -> list[dict]:
             history.append({"year": year, "value": value})
         history.sort(key=lambda point: point["year"])
         if not history:
+            warnings.append(f"{code} : aucune observation numérique disponible pour le Maroc sur la période demandée.")
             continue
+
         latest = history[-1]
         previous = history[-2] if len(history) > 1 else None
         label = clean_text(spec.get("label_fr") or code)
@@ -1588,8 +2048,15 @@ def collect_world_bank_api(source: dict) -> list[dict]:
             "statistics_series": series,
             "source_lang_hint": "fr",
         })
-    return items
 
+    if warnings:
+        # The pipeline consumes these diagnostics even when no indicator could
+        # be collected; this makes missing series visible in source health data.
+        items.append({
+            "statistics_collection_warnings": warnings,
+            "source_lang_hint": "fr",
+        })
+    return items
 
 
 def _mef_number(raw: str) -> float | None:
@@ -1762,8 +2229,8 @@ def _xlsx_cell_column(reference: str) -> int:
     return value - 1
 
 
-def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
-    """Read XLSX worksheet values using only the Python standard library."""
+def _xlsx_read_sheets(payload: bytes) -> list[tuple[str, list[list[str]]]]:
+    """Read XLSX worksheets with their names, preserving each sheet as an independent table."""
     with zipfile.ZipFile(io.BytesIO(payload)) as archive:
         names = set(archive.namelist())
         shared = []
@@ -1773,7 +2240,7 @@ def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
             for item in root.findall("x:si", ns):
                 shared.append("".join(node.text or "" for node in item.findall(".//x:t", ns)))
 
-        sheet_paths = []
+        sheet_paths: list[tuple[str, str]] = []
         if "xl/workbook.xml" in names and "xl/_rels/workbook.xml.rels" in names:
             workbook = ET.fromstring(archive.read("xl/workbook.xml"))
             rels_root = ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
@@ -1789,14 +2256,22 @@ def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
                 if target:
                     path = target.lstrip("/") if target.startswith("/") else posixpath.normpath(posixpath.join("xl", target))
                     if path in names:
-                        sheet_paths.append(path)
+                        sheet_name = str(sheet.attrib.get("name") or f"Feuille {len(sheet_paths) + 1}")
+                        sheet_paths.append((sheet_name, path))
         if not sheet_paths:
-            sheet_paths = sorted(name for name in names if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", name))
+            sheet_paths = [
+                (f"Feuille {index + 1}", path)
+                for index, path in enumerate(sorted(
+                    name for name in names
+                    if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", name)
+                ))
+            ]
 
-        all_rows = []
+        all_sheets: list[tuple[str, list[list[str]]]] = []
         ns = {"x": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
-        for sheet_path in sheet_paths[:8]:
+        for sheet_name, sheet_path in sheet_paths[:8]:
             root = ET.fromstring(archive.read(sheet_path))
+            sheet_rows = []
             for row_node in root.findall(".//x:sheetData/x:row", ns):
                 cells = {}
                 for cell in row_node.findall("x:c", ns):
@@ -1816,10 +2291,20 @@ def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
                     row = [""] * (max(cells) + 1)
                     for col, value in cells.items():
                         row[col] = value
-                    all_rows.append(row)
-            if all_rows:
-                all_rows.append([])
-        return all_rows
+                    sheet_rows.append(row)
+            if sheet_rows:
+                all_sheets.append((sheet_name, sheet_rows))
+        return all_sheets
+
+
+def _xlsx_read_rows(payload: bytes) -> list[list[str]]:
+    """Read XLSX worksheet values as rows, retaining blank separators between sheets."""
+    rows: list[list[str]] = []
+    for _, sheet_rows in _xlsx_read_sheets(payload):
+        if rows:
+            rows.append([])
+        rows.extend(sheet_rows)
+    return rows
 
 
 _BAM_MONTHS = {
@@ -1842,6 +2327,17 @@ def _bam_ckan_period(value: str) -> str | None:
     text = clean_text(str(value or "")).casefold().replace("_", " ").strip()
     if not text:
         return None
+    semester = re.search(r"(20\d{2})\s*[-/]?\s*s\s*([12])", text)
+    if semester:
+        return f"{semester.group(1)}-S{semester.group(2)}"
+    semester = re.search(r"([12])\s*(?:er|e|ème|eme)?\s*semestre\s*(20\d{2})", text)
+    if not semester:
+        semester = re.search(r"semestre\s*([12])\s*(20\d{2})", text)
+    if not semester:
+        semester = re.search(r"s\s*([12])\s*(20\d{2})", text)
+    if semester:
+        return f"{semester.group(2)}-S{semester.group(1)}"
+
     quarter = re.search(r"(20\d{2})\s*[-/]?\s*(?:t|trimestre|q)\s*([1-4])", text)
     if not quarter:
         quarter = re.search(r"(?:t|trimestre|q)\s*([1-4])\s*[-/]?\s*(20\d{2})", text)
@@ -1895,24 +2391,53 @@ def _bam_ckan_period(value: str) -> str | None:
 
 
 def _bam_ckan_number(value: str) -> float | None:
-    text = str(value or "").strip().replace("\u00a0", "").replace(" ", "")
+    """Parse numeric cells and French/English formatted text without shifting decimals."""
+    text = str(value or "").strip()
     if not text or text.casefold() in {"-", "—", "n.d.", "nd", "na", "n/a", "…"}:
         return None
+
     negative = text.startswith("(") and text.endswith(")")
-    text = text.strip("()").replace("%", "").replace("٬", "").replace("٫", ".")
-    if "," in text and "." not in text:
-        text = text.replace(",", ".")
-    else:
-        text = text.replace(",", "")
-    text = re.sub(r"[^0-9.+-]", "", text)
-    if text in {"", ".", "+", "-"}:
+    text = text.strip("()")
+    text = (
+        text.replace("\u00a0", "")
+        .replace("\u202f", "")
+        .replace(" ", "")
+        .replace("٬", "")
+        .replace("٫", ".")
+        .replace("−", "-")
+        .replace("%", "")
+        .replace("’", "")
+        .replace("'", "")
+    )
+    # The right-most separator is decimal when both French and English
+    # grouping conventions are present: 1.234,56 and 1,234.56.
+    if "," in text and "." in text:
+        if text.rfind(",") > text.rfind("."):
+            text = text.replace(".", "").replace(",", ".")
+        else:
+            text = text.replace(",", "")
+    elif "," in text:
+        groups = text.split(",")
+        if len(groups) > 2 and all(len(group) == 3 for group in groups[1:]):
+            text = "".join(groups)
+        else:
+            text = ".".join(groups)
+    elif text.count(".") > 1:
+        groups = text.split(".")
+        if all(len(group) == 3 for group in groups[1:]):
+            text = "".join(groups)
+        else:
+            text = "".join(groups[:-1]) + "." + groups[-1]
+
+    if not re.fullmatch(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", text):
         return None
     try:
         number = float(text)
+        if not math.isfinite(number):
+            return None
         return -number if negative else number
-    except ValueError:
+    except (TypeError, ValueError, OverflowError):
         return None
-
 
 
 def _bam_ckan_is_numeric(value: str) -> bool:
@@ -1926,7 +2451,28 @@ def _bam_ckan_slug(value: str) -> str:
     return (text[:70] or "SERIE")
 
 
-def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: dict) -> list[dict]:
+def _split_xlsx_sheets(rows: list[list[str]]) -> list[list[list[str]]]:
+    """Restore worksheet boundaries from the blank separators emitted by _xlsx_read_rows."""
+    sheets: list[list[list[str]]] = []
+    current: list[list[str]] = []
+    for row in rows:
+        if not row:
+            if current:
+                sheets.append(current)
+                current = []
+            continue
+        current.append(row)
+    if current:
+        sheets.append(current)
+    return sheets
+
+
+def _bam_ckan_series_from_rows(
+    rows: list[list[str]],
+    dataset: dict,
+    resource: dict,
+    sheet_name: str = "Feuille 1",
+) -> list[dict]:
     """Recognize common official workbook layouts: periods across columns or down rows."""
     if not rows:
         return []
@@ -1960,7 +2506,8 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
     if header_candidates:
         _, header_index, period_columns = max(header_candidates, key=lambda item: item[0])
         first_period_col = period_columns[0][0]
-        for row in rows[header_index + 1:]:
+        section_context: list[str] = []
+        for row_index, row in enumerate(rows[header_index + 1:], start=header_index + 1):
             if not row:
                 continue
             labels = [clean_text(cell) for cell in row[:first_period_col] if clean_text(cell)]
@@ -1975,7 +2522,16 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
                 if value is not None:
                     points.append({"year": period, "value": value})
             if len(points) >= 2:
-                _append_bam_ckan_series(output, label, points, title, f"{notes} {unit_hint}", resource_url, resource_name)
+                context_fr = " / ".join(section_context[-3:])
+                _append_bam_ckan_series(
+                    output, label, points, title, f"{notes} {unit_hint}",
+                    resource_url, resource_name, sheet_name,
+                    source_position=f"L{row_index + 1}", context_fr=context_fr,
+                )
+            elif not points and len(labels) == 1:
+                # Keep nearby non-numeric section headings to disambiguate repeated labels.
+                if label.casefold() not in {"indicateur", "indicators", "libellé", "libelle", "source", "unité", "unite"}:
+                    section_context = [label]
 
     if output:
         return output
@@ -2021,7 +2577,11 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
                     if value is not None:
                         points.append({"year": period, "value": value})
                 if len(points) >= 2:
-                    _append_bam_ckan_series(output, header, points, title, f"{notes} {unit_hint}", resource_url, resource_name)
+                    _append_bam_ckan_series(
+                        output, header, points, title, f"{notes} {unit_hint}",
+                        resource_url, resource_name, sheet_name,
+                        source_position=f"L{header_index + 1}C{col + 1}",
+                    )
             if output:
                 break
         if output:
@@ -2029,12 +2589,24 @@ def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: d
     return output
 
 
-def _append_bam_ckan_series(output: list, label: str, points: list[dict], dataset_title: str, notes: str, resource_url: str, resource_name: str) -> None:
+def _append_bam_ckan_series(
+    output: list,
+    label: str,
+    points: list[dict],
+    dataset_title: str,
+    notes: str,
+    resource_url: str,
+    resource_name: str,
+    sheet_name: str,
+    source_position: str,
+    context_fr: str = "",
+) -> None:
     unique = {str(point["year"]): point for point in points}
     history = sorted(unique.values(), key=lambda point: str(point["year"]))
     if len(history) < 2:
         return
-    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(label)}"
+    context_slug = _bam_ckan_slug(context_fr) if context_fr else "SECTION"
+    code = f"BAM_CKAN_{_bam_ckan_slug(dataset_title)}_{_bam_ckan_slug(sheet_name)}_{context_slug}_{_bam_ckan_slug(source_position)}_{_bam_ckan_slug(label)}"
     unit_match = re.search(r"[(\[]([^()\[\]]{1,40})[)\]]", label)
     unit_match_global = re.search(r"(MMDH|MDH|KDH|Nombre|%)", notes, re.IGNORECASE)
     label_unit = clean_text(unit_match.group(1)) if unit_match else ""
@@ -2058,6 +2630,9 @@ def _append_bam_ckan_series(output: list, label: str, points: list[dict], datase
         "source_url": resource_url,
         "dataset_name": dataset_title,
         "resource_name": resource_name,
+        "sheet_name": sheet_name,
+        "source_position": source_position,
+        "context_fr": context_fr,
         "reference_period": history[-1]["year"],
         "last_updated": None,
     }
@@ -2095,13 +2670,19 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
             and resource.get("url")
         ]
         if not resources:
-            return [], None
+            title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
+            return [], f"{title}: aucune ressource XLSX active dans le catalogue CKAN."
         resources.sort(key=lambda item: str(item.get("last_modified") or item.get("created") or ""), reverse=True)
         resource = resources[0]
         try:
             workbook = _fetch_bytes(str(resource["url"]), timeout=timeout, max_bytes=max_bytes)
-            rows = _xlsx_read_rows(workbook)
-            extracted = _bam_ckan_series_from_rows(rows, dataset, resource)
+            sheets = _xlsx_read_sheets(workbook)
+            rows = [row for _, sheet_rows in sheets for row in sheet_rows]
+            extracted = []
+            for sheet_name, sheet_rows in sheets:
+                extracted.extend(
+                    _bam_ckan_series_from_rows(sheet_rows, dataset, resource, sheet_name=sheet_name)
+                )
             if not extracted:
                 title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
                 preview = " || ".join(" | ".join(clean_text(cell) for cell in row[:8] if clean_text(cell)) for row in rows[:12] if row)
@@ -2132,6 +2713,78 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
     return output
 
 
+
+def collect_hcp_social_indicators(source: dict) -> list[dict]:
+    """Collect selected national indicators from the HCP 2026 social compendium."""
+    pdf_url = str(source.get("pdf_url") or source.get("url") or "").strip()
+    if not pdf_url:
+        return [{
+            "statistics_collection_warnings": [
+                "HCP indicateurs sociaux : URL du rapport PDF absente de la configuration."
+            ],
+            "source_lang_hint": "fr",
+        }]
+
+    try:
+        payload = _fetch_pdf_bytes(
+            pdf_url,
+            referer=str(source.get("referer") or "https://www.hcp.ma/downloads/Les-indicateurs-sociaux_t22430.html"),
+        )
+        reader = PdfReader(io.BytesIO(payload))
+        pages = []
+        for page in reader.pages:
+            try:
+                page_text = page.extract_text(extraction_mode="layout") or ""
+            except TypeError:
+                page_text = page.extract_text() or ""
+            pages.append(page_text)
+        extracted_text = "\n".join(pages)
+        series, warnings = parse_hcp_social_indicators(extracted_text, source_url=pdf_url)
+        regional_series, regional_warnings = parse_hcp_social_regional_indicators(extracted_text, source_url=pdf_url)
+        warnings.extend(regional_warnings)
+    except Exception as exc:
+        return [{
+            "statistics_collection_warnings": [
+                f"HCP indicateurs sociaux : erreur de lecture du rapport ({type(exc).__name__}: {clean_text(str(exc))[:220]})."
+            ],
+            "source_lang_hint": "fr",
+        }]
+
+    items = [{
+        "title": f"{item['label_fr']} — Maroc",
+        "abstract": item["description_fr"],
+        "authors": ["Haut-Commissariat au Plan"],
+        "venue": "Les indicateurs sociaux du Maroc — édition 2026",
+        "keywords": ["Maroc", "indicateur social", item["indicator_code"], item["category"]],
+        "published_date": "2026-07-27",
+        "url": pdf_url,
+        "doi": None,
+        "espace": "chiffres",
+        "pole": "societe_developpement_humain",
+        "default_doc_type": "statistique",
+        "statistics_series": item,
+        "source_lang_hint": "fr",
+    } for item in series]
+
+    if items and regional_series:
+        # Regional social series are kept separate from the national dashboard.
+        items[0]["regional_statistics"] = regional_series
+
+    if warnings:
+        items.append({
+            "statistics_collection_warnings": warnings,
+            "source_lang_hint": "fr",
+        })
+    if not items:
+        items.append({
+            "statistics_collection_warnings": [
+                "HCP indicateurs sociaux : aucune série exploitable extraite du rapport 2026."
+            ],
+            "source_lang_hint": "fr",
+        })
+    return items
+
+
 def collect_from_source(source: dict) -> list[dict]:
     stype = (source.get("type") or "").lower()
     if stype == "openalex":
@@ -2146,6 +2799,8 @@ def collect_from_source(source: dict) -> list[dict]:
         return collect_bank_al_maghrib_ckan(source)
     if stype == "hcp_labour_statistics":
         return collect_hcp_labour_statistics(source)
+    if stype == "hcp_social_indicators_pdf":
+        return collect_hcp_social_indicators(source)
     if stype == "bank_al_maghrib":
         return collect_bank_al_maghrib(source)
     if stype == "bank_al_maghrib_api":

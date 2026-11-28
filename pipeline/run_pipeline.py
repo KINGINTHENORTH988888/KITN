@@ -1,5 +1,6 @@
 import hashlib
 import json
+import math
 import re
 import shutil
 import os
@@ -14,8 +15,11 @@ from pipeline.config import (
     PUBLIC_INDEX_FILE,
     SOURCES_FILE,
     SOURCES_HEALTH_FILE,
+    PUBLIC_SOURCES_HEALTH_FILE,
     STATISTICS_FILE,
     PUBLIC_STATISTICS_FILE,
+    REGIONAL_STATISTICS_FILE,
+    PUBLIC_REGIONAL_STATISTICS_FILE,
 )
 from pipeline.collectors import collect_crossref_by_doi, collect_from_source
 from pipeline.processors import clean_text, normalize_doi, process_raw_item, resolve_space, sanitize_url
@@ -219,26 +223,237 @@ def _sync_public_index(src_file: Path, dst_file: Path) -> None:
 
 
 
+
+def _is_superseded_legacy_bam_series(previous: dict, current_series: dict) -> bool:
+    """Drop pre-sheet-ID BAM entries when the same dataset/label now has sheet-specific IDs."""
+    code = str(previous.get("indicator_code") or "")
+    if not code.startswith("BAM_CKAN_") or previous.get("source_position"):
+        return False
+    dataset_name = clean_text(previous.get("dataset_name") or "")
+    label = clean_text(previous.get("label_fr") or "")
+    if not dataset_name or not label:
+        return False
+    return any(
+        str(series.get("indicator_code") or "").startswith("BAM_CKAN_")
+        and bool(series.get("sheet_name"))
+        and bool(series.get("source_position"))
+        and clean_text(series.get("dataset_name") or "") == dataset_name
+        and clean_text(series.get("label_fr") or "") == label
+        for series in current_series.values()
+        if isinstance(series, dict)
+    )
+
+
+
 def _is_valid_statistics_series(series: dict) -> bool:
-    """Reject legacy BAM XLSX series with impossible years or footnote-only units."""
+    """Reject BAM CKAN series with unusable units, periods or numeric observations."""
     code = str(series.get("indicator_code") or "")
     if not code.startswith("BAM_CKAN_"):
         return True
+
     unit = clean_text(series.get("unit_fr") or series.get("unit_ar") or "")
-    if unit in {"*", "**", "Unité publiée par BAM"}:
+    if unit in {"", "*", "**", "Unité publiée par BAM", "Unité non précisée"}:
         return False
+
     current_year = datetime.now(timezone.utc).year
     points = list(series.get("history") or [])
-    latest = series.get("latest")
-    if isinstance(latest, dict):
-        points.append(latest)
+    for field in ("previous", "latest"):
+        point = series.get(field)
+        if isinstance(point, dict):
+            points.append(point)
+
+    valid_periods = set()
     for point in points:
-        if not isinstance(point, dict):
-            continue
-        match = re.match(r"(\d{4})", str(point.get("year") or ""))
-        if match and int(match.group(1)) > current_year:
+        if not isinstance(point, dict) or point.get("year") is None or point.get("value") is None:
             return False
-    return True
+
+        period = str(point.get("year") or "").strip()
+        year_match = re.match(r"^(20\d{2}|19\d{2})", period)
+        if not year_match or int(year_match.group(1)) > current_year:
+            return False
+
+        try:
+            value = float(point["value"])
+        except (TypeError, ValueError, OverflowError):
+            return False
+        if not math.isfinite(value):
+            return False
+
+        if re.fullmatch(r"(?:19|20)\d{2}", period):
+            pass
+        elif re.fullmatch(r"(?:19|20)\d{2}-(?:0[1-9]|1[0-2])", period):
+            pass
+        elif re.fullmatch(r"(?:19|20)\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])", period):
+            try:
+                datetime.strptime(period, "%Y-%m-%d")
+            except ValueError:
+                return False
+        elif re.fullmatch(r"(?:19|20)\d{2}-T[1-4]", period, re.IGNORECASE):
+            pass
+        elif re.fullmatch(r"(?:19|20)\d{2}-S[12]", period, re.IGNORECASE):
+            pass
+        else:
+            return False
+
+        valid_periods.add(period)
+
+    return len(valid_periods) >= 2
+
+
+
+
+def _statistics_period_sort_key(period: str, collected_at: str) -> tuple:
+    """Return a chronological key for the period formats used by KITN collectors."""
+    raw = str(period or "").strip()
+    parsed = None
+
+    for pattern, fmt in (
+        (r"(?:19|20)\d{2}-\d{2}-\d{2}", "%Y-%m-%d"),
+        (r"(?:19|20)\d{2}-\d{2}", "%Y-%m"),
+        (r"(?:19|20)\d{2}", "%Y"),
+    ):
+        if re.fullmatch(pattern, raw):
+            try:
+                parsed = datetime.strptime(raw, fmt)
+            except ValueError:
+                parsed = None
+            break
+
+    semester = re.fullmatch(r"((?:19|20)\d{2})-S([12])", raw, re.IGNORECASE)
+    if semester:
+        parsed = datetime(int(semester.group(1)), 1 if semester.group(2) == "1" else 7, 1)
+
+    quarter = re.fullmatch(r"((?:19|20)\d{2})-T([1-4])", raw, re.IGNORECASE)
+    if quarter:
+        parsed = datetime(int(quarter.group(1)), (int(quarter.group(2)) - 1) * 3 + 1, 1)
+    else:
+        quarter = re.fullmatch(r"T([1-4])[-/]((?:19|20)\d{2})", raw, re.IGNORECASE)
+        if quarter:
+            parsed = datetime(int(quarter.group(2)), (int(quarter.group(1)) - 1) * 3 + 1, 1)
+
+    normalized = raw.casefold().replace("’", "'")
+    try:
+        anchor = datetime.strptime(str(collected_at)[:10], "%Y-%m-%d")
+    except ValueError:
+        anchor = datetime.now(timezone.utc).replace(tzinfo=None)
+    if normalized in ("aujourd'hui", "aujourdhui", "today"):
+        parsed = anchor
+    elif normalized in ("veille", "hier", "yesterday"):
+        parsed = anchor - timedelta(days=1)
+
+    if parsed is not None:
+        return (0, parsed.strftime("%Y-%m-%d"), raw)
+    return (1, raw, raw)
+
+
+def _merge_statistics_series(existing: dict | None, incoming: dict, collected_at: str) -> dict:
+    """Merge a newly collected series with its history without losing older observations."""
+    merged = dict(existing) if isinstance(existing, dict) else {}
+    incoming = dict(incoming) if isinstance(incoming, dict) else {}
+
+    for key, value in incoming.items():
+        if key in ("history", "latest", "previous"):
+            continue
+        if value is not None and value != "":
+            merged[key] = value
+
+    old_history = merged.get("history") if isinstance(merged.get("history"), list) else []
+    new_history = incoming.get("history") if isinstance(incoming.get("history"), list) else []
+    points_by_period: dict[str, dict] = {}
+    for point in old_history + new_history:
+        if not isinstance(point, dict) or point.get("year") is None or point.get("value") is None:
+            continue
+        # Incoming observations are processed last and replace revised values
+        # for the same period while preserving every other historical point.
+        points_by_period[str(point["year"])] = dict(point)
+
+    for field in ("previous", "latest"):
+        point = incoming.get(field)
+        if isinstance(point, dict) and point.get("year") is not None and point.get("value") is not None:
+            points_by_period[str(point["year"])] = dict(point)
+
+    if points_by_period:
+        merged["history"] = [
+            points_by_period[key]
+            for key in sorted(points_by_period, key=lambda period: _statistics_period_sort_key(period, collected_at))
+        ]
+        # Derive the displayed latest value from the chronological history.
+        # This prevents an older response from replacing a newer observation.
+        merged["latest"] = merged["history"][-1]
+        if len(merged["history"]) > 1:
+            merged["previous"] = merged["history"][-2]
+        elif isinstance(incoming.get("previous"), dict):
+            merged["previous"] = incoming["previous"]
+    elif old_history or new_history:
+        merged["history"] = old_history or new_history
+        if isinstance(incoming.get("latest"), dict):
+            merged["latest"] = incoming["latest"]
+        if isinstance(incoming.get("previous"), dict):
+            merged["previous"] = incoming["previous"]
+    else:
+        if isinstance(incoming.get("latest"), dict):
+            merged["latest"] = incoming["latest"]
+        if isinstance(incoming.get("previous"), dict):
+            merged["previous"] = incoming["previous"]
+
+    merged["last_successful_collection_at"] = collected_at
+    merged["collection_status"] = "collected"
+    return merged
+
+
+def _merge_valid_statistics_series(existing: dict | None, incoming: dict, collected_at: str) -> dict | None:
+    """Merge a candidate series only when its new data and resulting history pass quality checks."""
+    if not _is_valid_statistics_series(incoming):
+        return None
+    merged = _merge_statistics_series(existing, incoming, collected_at)
+    if not _is_valid_statistics_series(merged):
+        return None
+    return merged
+
+
+
+def _merge_regional_statistics_series(
+    existing: dict | None,
+    incoming: dict,
+    collected_at: str,
+) -> dict | None:
+    """Merge one regional indicator while preserving earlier annual or quarterly observations."""
+    key = str(incoming.get("series_key") or incoming.get("id") or "").strip()
+    history = incoming.get("history")
+    if not key or not isinstance(history, list) or not history:
+        return None
+
+    merged = dict(existing or {})
+    for field, value in incoming.items():
+        if field != "history" and value is not None:
+            merged[field] = value
+
+    points_by_period: dict[str, dict] = {}
+    existing_history = (existing or {}).get("history")
+    if isinstance(existing_history, list):
+        for point in existing_history:
+            if isinstance(point, dict) and point.get("year"):
+                points_by_period[str(point["year"])] = dict(point)
+    for point in history:
+        if isinstance(point, dict) and point.get("year"):
+            value = point.get("value")
+            if value is not None and not isinstance(value, (int, float)):
+                return None
+            if isinstance(value, (int, float)) and not math.isfinite(float(value)):
+                return None
+            points_by_period[str(point["year"])] = dict(point)
+
+    if not points_by_period:
+        return None
+    merged_history = sorted(
+        points_by_period.values(),
+        key=lambda point: _statistics_period_sort_key(point.get("year"), collected_at),
+    )
+    merged["history"] = merged_history
+    merged["latest"] = merged_history[-1]
+    merged["last_successful_collection_at"] = collected_at
+    merged["collection_status"] = "collected"
+    return merged
 
 
 def run() -> dict:
@@ -332,14 +547,18 @@ def run() -> dict:
     total_updated = 0
     health_records: list[dict] = []
     statistics_series: dict[str, dict] = {}
+    regional_statistics: dict[str, dict] = {}
 
     for src in active_sources:
         sid = str(src.get("id") or "unknown")
         fetched_count = 0
         accepted_count = 0
         statistics_count = 0
+        regional_statistics_count = 0
         statistics_codes: list[str] = []
         statistics_warnings: list[str] = []
+        configured_statistics_codes: list[str] = []
+        missing_statistics_codes: list[str] = []
         status = "ok"
         stage = "collecte_effectuee"
         error_msg = None
@@ -353,12 +572,48 @@ def run() -> dict:
                     warnings = raw.get("statistics_collection_warnings")
                     if isinstance(warnings, list):
                         statistics_warnings.extend(str(warning) for warning in warnings if warning)
+                regional_items = raw.get("regional_statistics") if isinstance(raw, dict) else None
+                if isinstance(regional_items, list):
+                    for regional in regional_items:
+                        if not isinstance(regional, dict):
+                            continue
+                        regional_key = str(regional.get("series_key") or regional.get("id") or "").strip()
+                        merged_regional = _merge_regional_statistics_series(
+                            regional_statistics.get(regional_key), regional, now_iso
+                        )
+                        if merged_regional is None:
+                            statistics_warnings.append(
+                                f"Série régionale HCP rejetée : {regional_key or 'identifiant absent'}."
+                            )
+                            continue
+                        regional_statistics[regional_key] = merged_regional
+                        regional_statistics_count += 1
+
                 series = raw.get("statistics_series") if isinstance(raw, dict) else None
                 if isinstance(series, dict) and series.get("indicator_code"):
                     code = str(series["indicator_code"])
-                    statistics_series[code] = series
+                    merged_series = _merge_valid_statistics_series(
+                        statistics_series.get(code), series, now_iso
+                    )
+                    if merged_series is None:
+                        statistics_warnings.append(
+                            f"Série statistique {code} rejetée : unité, période ou observations non conformes."
+                        )
+                        continue
+                    statistics_series[code] = merged_series
                     statistics_count += 1
                     statistics_codes.append(code)
+            configured_statistics_codes = sorted({
+                str(indicator.get("code") or "").strip()
+                for indicator in (src.get("indicators") or [])
+                if isinstance(indicator, dict) and str(indicator.get("code") or "").strip()
+            })
+            missing_statistics_codes = sorted(set(configured_statistics_codes) - set(statistics_codes))
+            for missing_code in missing_statistics_codes:
+                statistics_warnings.append(
+                    f"{missing_code} : indicateur configuré mais aucune série collectée lors de cette exécution."
+                )
+            statistics_warnings = sorted(set(statistics_warnings))
             if not raw_items:
                 status = "warning"
                 stage = "aucun_contenu"
@@ -400,16 +655,21 @@ def run() -> dict:
                     total_added += 1
 
             if fetched_count > 0 and accepted_count == 0:
-                if statistics_count > 0:
+                if statistics_count > 0 or statistics_warnings:
                     # Statistical series are valid data outputs even when they are
                     # intentionally not indexed as documentary notices.
                     status = "warning" if statistics_warnings else "ok"
                     stage = "collecte_statistique_partielle" if statistics_warnings else "series_statistiques_collectees"
-                    error_msg = f"{len(statistics_warnings)} ressource(s) BAM non exploitable(s)." if statistics_warnings else None
+                    error_msg = "; ".join(statistics_warnings[:3]) if statistics_warnings else None
                 else:
                     status = "warning"
                     stage = "aucun_document_pertinent"
                     error_msg = "Des éléments ont été collectés, mais aucun n'a passé les contrôles de pertinence."
+
+            if statistics_warnings and status == "ok":
+                status = "warning"
+                stage = "collecte_statistique_partielle"
+                error_msg = "; ".join(statistics_warnings[:3])
 
         except Exception as exc:
             status = "error"
@@ -427,8 +687,12 @@ def run() -> dict:
             "stage": stage,
             "fetched": fetched_count,
             "accepted": accepted_count,
+            "statistics_configured": len(configured_statistics_codes),
+            "statistics_configured_indicators": configured_statistics_codes,
             "statistics_collected": statistics_count,
+            "regional_statistics_collected": regional_statistics_count,
             "statistics_indicators": sorted(set(statistics_codes)),
+            "statistics_missing_indicators": missing_statistics_codes,
             "statistics_warnings": statistics_warnings,
             "error": error_msg,
             "checked_at": now_iso,
@@ -530,14 +794,28 @@ def run() -> dict:
         "sources": health_records,
     }
     SOURCES_HEALTH_FILE.write_text(json.dumps(health_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _sync_public_index(SOURCES_HEALTH_FILE, PUBLIC_SOURCES_HEALTH_FILE)
 
     _sync_public_index(INDEX_FILE, PUBLIC_INDEX_FILE)
     if STATISTICS_FILE.exists():
         try:
             previous_statistics = json.loads(STATISTICS_FILE.read_text(encoding="utf-8"))
             for previous in previous_statistics.get("indicators", []):
-                if isinstance(previous, dict) and previous.get("indicator_code"):
-                    statistics_series.setdefault(str(previous["indicator_code"]), previous)
+                if not isinstance(previous, dict) or not previous.get("indicator_code"):
+                    continue
+                code = str(previous["indicator_code"])
+                if _is_superseded_legacy_bam_series(previous, statistics_series):
+                    continue
+                if code in statistics_series:
+                    # Merge the prior published history into the current collection;
+                    # the new observation wins if the source revised the same period.
+                    statistics_series[code] = _merge_statistics_series(
+                        previous, statistics_series[code], now_iso
+                    )
+                else:
+                    carried = dict(previous)
+                    carried["collection_status"] = "carried_forward"
+                    statistics_series[code] = carried
         except (OSError, json.JSONDecodeError, AttributeError):
             pass
     statistics_series = {
@@ -559,6 +837,145 @@ def run() -> dict:
     STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)
     STATISTICS_FILE.write_text(json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     _sync_public_index(STATISTICS_FILE, PUBLIC_STATISTICS_FILE)
+
+    # Regional series are stored separately so they do not flood the national indicator dashboard.
+    previous_regional: list[dict] = []
+    if REGIONAL_STATISTICS_FILE.exists():
+        try:
+            previous_payload = json.loads(REGIONAL_STATISTICS_FILE.read_text(encoding="utf-8"))
+            previous_regional = previous_payload.get("series", []) if isinstance(previous_payload, dict) else []
+        except (OSError, json.JSONDecodeError, AttributeError):
+            previous_regional = []
+
+    for previous in previous_regional:
+        if not isinstance(previous, dict):
+            continue
+        key = str(previous.get("series_key") or previous.get("id") or "").strip()
+        if not key:
+            continue
+        if key in regional_statistics:
+            merged = _merge_regional_statistics_series(previous, regional_statistics[key], now_iso)
+            if merged is not None:
+                regional_statistics[key] = merged
+        else:
+            carried = dict(previous)
+            carried["collection_status"] = "carried_forward"
+            regional_statistics[key] = carried
+
+    regional_series = sorted(
+        regional_statistics.values(),
+        key=lambda item: (
+            str(item.get("indicator_code") or ""),
+            str(item.get("residence_scope") or ""),
+            str(item.get("geography_code") or ""),
+        ),
+    )
+    regional_payload = {
+        "generated_at": now_iso,
+        "source": "Sources officielles du HCP — EMO et indicateurs sociaux du Maroc, édition 2026",
+        "series_count": len(regional_series),
+        "series": regional_series,
+    }
+    REGIONAL_STATISTICS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    REGIONAL_STATISTICS_FILE.write_text(
+        json.dumps(regional_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    _sync_public_index(REGIONAL_STATISTICS_FILE, PUBLIC_REGIONAL_STATISTICS_FILE)
+
+    # Promote the national "Ensemble" values from HCP's EMO regional tables
+    # into the national dashboard. This keeps the same official source and
+    # methodology while making the HCP social indicators discoverable beside
+    # the other national statistics.
+    promoted_hcp_count = 0
+    for regional in regional_series:
+        if (
+            regional.get("geography_code") != "MAR"
+            or regional.get("residence_scope") != "all"
+        ):
+            continue
+        code = str(regional.get("indicator_code") or "").strip()
+        raw_history = regional.get("history")
+        if not code or not isinstance(raw_history, list) or not raw_history:
+            continue
+        history = [
+            dict(point) for point in raw_history
+            if isinstance(point, dict)
+            and point.get("year") is not None
+            and point.get("value") is not None
+        ]
+        if not history:
+            continue
+        latest = regional.get("latest") if isinstance(regional.get("latest"), dict) else history[-1]
+        if latest.get("value") is None:
+            # Do not promote an older observation as the current value when
+            # the HCP has suppressed the latest national result.
+            continue
+        numeric_history = [
+            point for point in history
+            if isinstance(point.get("value"), (int, float))
+            and math.isfinite(float(point["value"]))
+        ]
+        if not numeric_history:
+            continue
+        latest = dict(latest)
+        previous = numeric_history[-2] if len(numeric_history) > 1 else None
+        projected = {
+            "id": code,
+            "indicator_code": code,
+            "label_fr": regional.get("label_fr") or code,
+            "label_ar": regional.get("label_ar") or regional.get("label_fr") or code,
+            "description_fr": (
+                f"{regional.get('label_fr') or code} — valeur nationale (ensemble), "
+                "issue de l’Enquête sur la main-d’œuvre 2026 du HCP."
+            ),
+            "description_ar": (
+                f"{regional.get('label_ar') or regional.get('label_fr') or code} — "
+                "القيمة الوطنية (المجموع)، وفق بحث اليد العاملة 2026 للمندوبية السامية للتخطيط."
+            ),
+            "unit_fr": regional.get("unit_fr") or "%",
+            "unit_ar": regional.get("unit_ar") or "%",
+            "scale_divisor": 1,
+            "precision": 1,
+            "category": "societe_developpement_humain",
+            "pole": "societe_developpement_humain",
+            "frequency": regional.get("frequency") or "quarterly",
+            "latest": latest,
+            "previous": previous,
+            "history": numeric_history,
+            "source_name": regional.get("source_name") or "Haut-Commissariat au Plan — Enquête sur la main-d’œuvre",
+            "source_name_ar": regional.get("source_name_ar") or "المندوبية السامية للتخطيط — بحث اليد العاملة",
+            "source_url": regional.get("source_url") or "",
+            "last_updated": regional.get("last_updated") or latest.get("year"),
+            "last_successful_collection_at": regional.get("last_successful_collection_at") or "",
+            "collection_status": regional.get("collection_status") or "carried_forward",
+            "comparability_group": regional.get("comparability_group") or "HCP_EMO_2026",
+            "methodology_break": bool(regional.get("methodology_break", True)),
+            "methodology_note_fr": regional.get("methodology_note_fr") or "",
+            "methodology_note_ar": regional.get("methodology_note_ar") or "",
+        }
+        statistics_series[code] = projected
+        promoted_hcp_count += 1
+
+    if promoted_hcp_count:
+        statistics_sources = sorted({
+            str(item.get("source_name") or "")
+            for item in statistics_series.values()
+            if item.get("source_name")
+        })
+        statistics_payload = {
+            "generated_at": now_iso,
+            "source": "Sources officielles — " + " et ".join(statistics_sources) if statistics_sources else "Aucune source statistique disponible",
+            "sources": statistics_sources,
+            "indicator_count": len(statistics_series),
+            "indicators": list(statistics_series.values()),
+        }
+        STATISTICS_FILE.write_text(
+            json.dumps(statistics_payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        _sync_public_index(STATISTICS_FILE, PUBLIC_STATISTICS_FILE)
+
     return index_payload
 
 

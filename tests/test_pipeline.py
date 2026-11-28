@@ -23,7 +23,7 @@ from pipeline.run_pipeline import _content_fingerprint, _doi_key, _merge_preserv
 
 class TestPipelineProcessors(unittest.TestCase):
     def test_hcp_labour_statistics_extracts_latest_official_indicators(self):
-        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>'
+        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Lire la suite</a>'
         article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
         <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
         <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
@@ -45,6 +45,49 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertEqual(values["HCP_EMO_WOMEN_UNDERUTILIZATION"], 28.5)
         self.assertEqual(items[0]["statistics_series"]["latest"]["year"], "T3/2026")
 
+
+    def test_hcp_labour_statistics_maps_respectively_values_to_named_category_order(self):
+        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>'
+        article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
+        <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 28,5% chez les femmes et 44,5% chez les jeunes de 15-24 ans.</p>
+        <p>Le taux de chômage strict s’élève respectivement à 16,7% et 30,5% pour ces deux catégories.</p>
+        </body></html>"""
+        source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
+
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+            items = collect_from_source(source)
+
+        values = {
+            item["statistics_series"]["indicator_code"]: item["statistics_series"]["latest"]["value"]
+            for item in items
+        }
+        self.assertEqual(values["HCP_EMO_YOUTH_UNEMPLOYMENT"], 30.5)
+        self.assertEqual(values["HCP_EMO_WOMEN_UNEMPLOYMENT"], 16.7)
+        self.assertEqual(values["HCP_EMO_YOUTH_UNDERUTILIZATION"], 44.5)
+        self.assertEqual(values["HCP_EMO_WOMEN_UNDERUTILIZATION"], 28.5)
+
+    def test_hcp_labour_statistics_does_not_guess_categories_from_respectively_alone(self):
+        listing = '<a href="/Situation-du-marche-du-travail-au-Maroc-au-troisieme-trimestre-2026_a4364.html">Situation du marché du travail au Maroc au troisième trimestre 2026</a>'
+        article = """<html><head><meta property="og:title" content="Situation du marché du travail au Maroc au troisième trimestre 2026"/></head><body>
+        <p>Au troisième trimestre 2026, la main-d’œuvre s’établit à 11,7 millions de personnes, tandis que le nombre de personnes en emploi contre revenu atteint 10,5 millions.</p>
+        <p>Le taux composite de la sous-utilisation de la main-d’œuvre atteint 19,6%. Le taux de chômage strict s’établit à 10,5%.</p>
+        <p>Le taux de chômage strict s’élève respectivement à 30,5% et 16,7% pour ces deux catégories.</p>
+        </body></html>"""
+        source = {"id":"hcp_labour_statistics","type":"hcp_labour_statistics","url":"https://www.hcp.ma/","listing_urls":["/Actualite-marche-du-travail_r424.html"]}
+
+        with patch("pipeline.collectors._fetch_text", side_effect=[listing, article]):
+            items = collect_from_source(source)
+
+        codes = {item["statistics_series"]["indicator_code"] for item in items}
+        self.assertEqual(len(items), 4)
+        self.assertFalse(any(code in codes for code in {
+            "HCP_EMO_YOUTH_UNEMPLOYMENT",
+            "HCP_EMO_WOMEN_UNEMPLOYMENT",
+            "HCP_EMO_YOUTH_UNDERUTILIZATION",
+            "HCP_EMO_WOMEN_UNDERUTILIZATION",
+        }))
 
     def test_mef_tand_statistics_extracts_public_finance_monetary_and_real_indicators(self):
         html = """<table>
@@ -631,8 +674,10 @@ class TestPipelineProcessors(unittest.TestCase):
                 "indicators": [{"code": "BAD"}, {"code": "GOOD", "label_fr": "Indicateur"}],
                 "max_items": 2,
             })
-        self.assertEqual(len(items), 1)
+        self.assertEqual(len(items), 2)
         self.assertEqual(items[0]["statistics_series"]["indicator_code"], "GOOD")
+        self.assertIn("BAD", items[1]["statistics_collection_warnings"][0])
+        self.assertIn("temporary outage", items[1]["statistics_collection_warnings"][0])
 
     def test_collect_html_links_mocked(self):
         sample_html = """
@@ -929,9 +974,12 @@ class TestPipelineProcessors(unittest.TestCase):
             manual_path = data_dir / "manual_contributions.json"
             index_path = index_dir / "search-index.json"
             health_path = data_dir / "sources-health.json"
+            public_health = public_dir / "sources-health.json"
             statistics_path = data_dir / "statistics.json"
+            regional_statistics_path = data_dir / "regional-statistics.json"
             public_index = public_dir / "index" / "search-index.json"
             public_statistics = public_dir / "statistics.json"
+            public_regional_statistics = public_dir / "regional-statistics.json"
             sources_path.write_text(json.dumps([{
                 "id": "mef_test",
                 "name": "MEF — statistiques",
@@ -940,6 +988,7 @@ class TestPipelineProcessors(unittest.TestCase):
                 "type": "mef_tand_statistics",
                 "enabled": True,
                 "default_doc_type": "statistique",
+                "indicators": [{"code": "MEF_GDP_CONSTANT"}, {"code": "MEF_MISSING_TEST"}],
             }]), encoding="utf-8")
             manual_path.write_text(json.dumps({"items": []}), encoding="utf-8")
             index_path.write_text(json.dumps({"items": []}), encoding="utf-8")
@@ -956,6 +1005,14 @@ class TestPipelineProcessors(unittest.TestCase):
                     "source_name": "MEF",
                     "source_url": "https://finances.gov.ma/statistiques/pib",
                 },
+                "regional_statistics": [{
+                    "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+                    "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+                    "indicator_code": "HCP_EMO_REGIONAL_TEST",
+                    "geography_code": "MAR",
+                    "residence_scope": "all",
+                    "history": [{"year": "T3/2026", "value": 41.8, "quality_flag": "standard"}],
+                }],
             }]
 
             with (
@@ -965,25 +1022,46 @@ class TestPipelineProcessors(unittest.TestCase):
                 patch("pipeline.run_pipeline.INDEX_FILE", index_path),
                 patch("pipeline.run_pipeline.PUBLIC_INDEX_FILE", public_index),
                 patch("pipeline.run_pipeline.SOURCES_HEALTH_FILE", health_path),
+                patch("pipeline.run_pipeline.PUBLIC_SOURCES_HEALTH_FILE", public_health),
                 patch("pipeline.run_pipeline.STATISTICS_FILE", statistics_path),
                 patch("pipeline.run_pipeline.PUBLIC_STATISTICS_FILE", public_statistics),
+                patch("pipeline.run_pipeline.REGIONAL_STATISTICS_FILE", regional_statistics_path),
+                patch("pipeline.run_pipeline.PUBLIC_REGIONAL_STATISTICS_FILE", public_regional_statistics),
                 patch("pipeline.run_pipeline.collect_from_source", return_value=statistical_items),
                 patch("pipeline.run_pipeline.process_raw_item", return_value=None),
             ):
                 run()
 
             health = json.loads(health_path.read_text(encoding="utf-8"))
+            public_health_data = json.loads(public_health.read_text(encoding="utf-8"))
+            self.assertEqual(public_health_data, health)
             source_health = health["sources"][0]
-            self.assertEqual(source_health["status"], "ok")
-            self.assertEqual(source_health["stage"], "series_statistiques_collectees")
+            self.assertEqual(source_health["status"], "warning")
+            self.assertEqual(source_health["stage"], "collecte_statistique_partielle")
+            self.assertEqual(source_health["statistics_configured"], 2)
+            self.assertEqual(source_health["statistics_configured_indicators"], ["MEF_GDP_CONSTANT", "MEF_MISSING_TEST"])
+            self.assertEqual(source_health["statistics_missing_indicators"], ["MEF_MISSING_TEST"])
+            self.assertTrue(any("MEF_MISSING_TEST" in warning for warning in source_health["statistics_warnings"]))
             self.assertEqual(source_health["fetched"], 1)
             self.assertEqual(source_health["accepted"], 0)
             self.assertEqual(source_health["statistics_collected"], 1)
+            self.assertEqual(source_health["regional_statistics_collected"], 1)
             self.assertEqual(source_health["statistics_indicators"], ["MEF_GDP_CONSTANT"])
             statistics = json.loads(statistics_path.read_text(encoding="utf-8"))
             self.assertEqual(statistics["indicators"][0]["indicator_code"], "MEF_GDP_CONSTANT")
-            self.assertEqual(statistics["indicator_count"], 1)
+            self.assertEqual(statistics["indicator_count"], 2)
+            hcp_national = next(
+                item for item in statistics["indicators"]
+                if item["indicator_code"] == "HCP_EMO_REGIONAL_TEST"
+            )
+            self.assertEqual(hcp_national["pole"], "societe_developpement_humain")
+            self.assertEqual(hcp_national["latest"], {"year": "T3/2026", "value": 41.8, "quality_flag": "standard"})
+            self.assertEqual(hcp_national["collection_status"], "collected")
             self.assertTrue(public_statistics.exists())
+            regional = json.loads(regional_statistics_path.read_text(encoding="utf-8"))
+            self.assertEqual(regional["series_count"], 1)
+            self.assertEqual(regional["series"][0]["geography_code"], "MAR")
+            self.assertTrue(public_regional_statistics.exists())
 
 
 
@@ -1018,11 +1096,48 @@ class TestPipelineProcessors(unittest.TestCase):
         )
         self.assertEqual(len(items), 1)
         series = items[0]["statistics_series"]
-        self.assertEqual(series["indicator_code"], "BAM_CKAN_AGR_GATS_DE_MONNAIE_MASSE_MON_TAIRE_M3_MDH")
+        self.assertEqual(series["indicator_code"], "BAM_CKAN_AGR_GATS_DE_MONNAIE_FEUILLE_1_SECTION_L2_MASSE_MON_TAIRE_M3_MDH")
+        self.assertEqual(series["sheet_name"], "Feuille 1")
         self.assertEqual(series["latest"], {"year": "2025-02", "value": 1020.0})
         self.assertEqual(len(series["history"]), 3)
         self.assertEqual(series["unit_fr"], "MDH")
         self.assertEqual(series["source_url"], "https://data.gov.ma/resource.xlsx")
+
+    def test_xlsx_reader_preserves_worksheet_names(self):
+        import io
+        import zipfile
+        from pipeline.collectors import _xlsx_read_sheets
+
+        workbook = """<?xml version="1.0" encoding="UTF-8"?>
+        <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+                  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+          <sheets>
+            <sheet name="Actif" sheetId="1" r:id="rId1"/>
+            <sheet name="Passif" sheetId="2" r:id="rId2"/>
+          </sheets>
+        </workbook>"""
+        relationships = """<?xml version="1.0" encoding="UTF-8"?>
+        <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+          <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+          <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>
+        </Relationships>"""
+        sheet_one = """<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>
+          <row r="1"><c r="A1" t="inlineStr"><is><t>Actif total</t></is></c></row>
+        </sheetData></worksheet>"""
+        sheet_two = """<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>
+          <row r="1"><c r="A1" t="inlineStr"><is><t>Passif total</t></is></c></row>
+        </sheetData></worksheet>"""
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr("xl/workbook.xml", workbook)
+            archive.writestr("xl/_rels/workbook.xml.rels", relationships)
+            archive.writestr("xl/worksheets/sheet1.xml", sheet_one)
+            archive.writestr("xl/worksheets/sheet2.xml", sheet_two)
+
+        sheets = _xlsx_read_sheets(buffer.getvalue())
+        self.assertEqual([name for name, _ in sheets], ["Actif", "Passif"])
+        self.assertEqual(sheets[0][1][0][0], "Actif total")
+        self.assertEqual(sheets[1][1][0][0], "Passif total")
 
     def test_bam_ckan_collector_discovers_and_downloads_latest_xlsx(self):
         from pipeline.collectors import collect_bank_al_maghrib_ckan
@@ -1044,11 +1159,11 @@ class TestPipelineProcessors(unittest.TestCase):
         with patch("pipeline.collectors._fetch_text", return_value=json.dumps(package_payload)), patch(
             "pipeline.collectors._fetch_bytes", return_value=b"PK-test"
         ) as download, patch(
-            "pipeline.collectors._xlsx_read_rows",
-            return_value=[
+            "pipeline.collectors._xlsx_read_sheets",
+            return_value=[("Feuille monétaire", [
                 ["Indicateur", "Décembre 2024", "Janvier 2025", "Février 2025"],
                 ["Masse monétaire M3 (MDH)", "1000", "1010", "1020"],
-            ],
+            ])],
         ):
             items = collect_bank_al_maghrib_ckan({
                 "api_base": "https://data.gov.ma/data/api/3/action",
@@ -1057,6 +1172,9 @@ class TestPipelineProcessors(unittest.TestCase):
             })
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["statistics_series"]["latest"]["value"], 1020.0)
+        self.assertEqual(items[0]["statistics_series"]["sheet_name"], "Feuille monétaire")
+        self.assertIn("FEUILLE_MON_TAIRE_SECTION_L2", items[0]["statistics_series"]["indicator_code"])
+        self.assertEqual(items[0]["statistics_series"]["source_position"], "L2")
         download.assert_called_once_with(
             "https://data.gov.ma/resource.xlsx", timeout=30, max_bytes=8000000
         )
@@ -1158,6 +1276,23 @@ class TestPipelineProcessors(unittest.TestCase):
             **valid,
             "unit_fr": "*",
         }
+        unknown_unit = {
+            **valid,
+            "unit_fr": "Unité non précisée",
+        }
+        non_finite = {
+            **valid,
+            "latest": {"year": "2026-08", "value": float("inf")},
+        }
+        invalid_month = {
+            **valid,
+            "latest": {"year": "2026-13", "value": 100.0},
+        }
+        duplicate_periods = {
+            **valid,
+            "history": [{"year": "2026-08", "value": 90.0}],
+            "latest": {"year": "2026-08", "value": 100.0},
+        }
         non_bam = {
             "indicator_code": "NY.GDP.MKTP.CD",
             "latest": {"year": "2098", "value": 100.0},
@@ -1165,6 +1300,10 @@ class TestPipelineProcessors(unittest.TestCase):
         self.assertTrue(_is_valid_statistics_series(valid))
         self.assertFalse(_is_valid_statistics_series(impossible_year))
         self.assertFalse(_is_valid_statistics_series(footnote_unit))
+        self.assertFalse(_is_valid_statistics_series(unknown_unit))
+        self.assertFalse(_is_valid_statistics_series(non_finite))
+        self.assertFalse(_is_valid_statistics_series(invalid_month))
+        self.assertFalse(_is_valid_statistics_series(duplicate_periods))
         self.assertTrue(_is_valid_statistics_series(non_bam))
 
 

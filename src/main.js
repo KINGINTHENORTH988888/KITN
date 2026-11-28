@@ -1568,10 +1568,28 @@ function renderModal() {
   document.body.appendChild(modal);
   document.getElementById("close-modal")?.focus();
   modal.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
-    event.preventDefault();
-    activeModalItem = null;
-    renderModal();
+    if (event.key === "Escape") {
+      event.preventDefault();
+      activeModalItem = null;
+      renderModal();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = [...modal.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter((element) => element.getAttribute("aria-hidden") !== "true" && element.getClientRects().length);
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+      event.preventDefault();
+      first.focus();
+    }
   });
   modal.querySelectorAll("[data-related-item]").forEach((btn) => {
     btn.addEventListener("click", () => {

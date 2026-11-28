@@ -4,7 +4,7 @@ from urllib.parse import parse_qs, urlsplit
 from unittest.mock import patch
 from urllib.error import HTTPError
 
-from pipeline.collectors import collect_openalex
+from pipeline.collectors import _openalex_cursor_url, collect_openalex
 
 
 def _work(title):
@@ -18,6 +18,15 @@ def _work(title):
 
 
 class TestOpenAlexPagination(unittest.TestCase):
+    def test_cursor_url_uses_api_key_query_parameter_without_duplicates(self):
+        url = "https://api.openalex.org/works?search=Morocco&api_key=old&per-page=5"
+        result = _openalex_cursor_url(url, "*", 10, api_key="new-secret")
+        query = parse_qs(urlsplit(result).query)
+        self.assertEqual(query["api_key"], ["new-secret"])
+        self.assertEqual(query["per-page"], ["10"])
+        self.assertEqual(query["cursor"], ["*"])
+        self.assertEqual(query["search"], ["Morocco"])
+
     def test_collects_multiple_cursor_pages_up_to_source_limit(self):
         pages = [
             {
@@ -131,4 +140,4 @@ class TestOpenAlexPagination(unittest.TestCase):
 
         self.assertEqual(len(items), 1)
         fetch.assert_called_once()
-        self.assertIsNone(fetch.call_args.kwargs["extra_headers"])
+        self.assertNotIn("extra_headers", fetch.call_args.kwargs)

@@ -2190,3 +2190,54 @@ textarea {
     gap: 0.2rem;
   }
 }
+
+
+.related-knowledge {
+  margin: 1.5rem 0;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface-alt);
+}
+.related-knowledge-heading h2 {
+  margin: .3rem 0;
+  font-size: 1.15rem;
+}
+.related-knowledge-heading p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.related-knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: .75rem;
+  margin-top: .9rem;
+}
+.related-knowledge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .5rem;
+  min-width: 0;
+  padding: .9rem;
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  background: var(--surface);
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.related-knowledge-card:hover,
+.related-knowledge-card:focus-visible {
+  border-color: var(--accent, currentColor);
+  transform: translateY(-1px);
+}
+.related-knowledge-card span,
+.related-knowledge-card small {
+  color: var(--muted);
+  font-size: .78rem;
+}
+.related-knowledge-card strong {
+  line-height: 1.45;
+}

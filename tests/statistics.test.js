@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
   filterStatisticsHistory,
+  isFiniteStatisticValue,
   getStatisticsCategory,
   getLocalizedStatisticField,
   parseStatisticsPeriod,
@@ -113,4 +114,14 @@ test("five-year view excludes future observations even when they are last in the
     filterStatisticsHistory(history, "5", "2026-11-27T04:00:00Z"),
     history.slice(0, 2),
   );
+});
+
+
+test("statistic values reject blanks, nulls and booleans instead of coercing them to zero", () => {
+  for (const value of ["", "   ", null, undefined, true, false, NaN, Infinity]) {
+    assert.equal(isFiniteStatisticValue(value), false, String(value));
+  }
+  assert.equal(isFiniteStatisticValue(0), true);
+  assert.equal(isFiniteStatisticValue("0"), true);
+  assert.equal(isFiniteStatisticValue("-2.5"), true);
 });

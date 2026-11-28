@@ -9,6 +9,7 @@ import json
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+import time
 
 from pipeline.collectors import collect_bank_al_maghrib_ckan
 from pipeline.run_pipeline import _is_valid_statistics_series
@@ -28,7 +29,49 @@ def main() -> int:
     if not source:
         raise RuntimeError("La source bank_al_maghrib_ckan est absente de data/sources.json.")
 
-    raw_items = collect_bank_al_maghrib_ckan(source)
+    raw_items = None
+    collection_error = None
+    for attempt in range(2):
+        try:
+            raw_items = collect_bank_al_maghrib_ckan(source)
+            collection_error = None
+            break
+        except Exception as exc:
+            collection_error = exc
+            if attempt == 0:
+                print(f"BAM CKAN transient collection error; retrying once: {str(exc)[:220]}")
+                time.sleep(5)
+
+    if raw_items is None:
+        # A live source outage must be visible in the artifact, but must not
+        # prevent the remaining independent MONIA/HCP validations from running.
+        preview = {
+            "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "source_id": source["id"],
+            "source_name": source.get("name"),
+            "catalogue": "data.gov.ma — organisation bank-al-maghrib",
+            "status": "unavailable",
+            "error": str(collection_error)[:500] if collection_error else "Collecte indisponible",
+            "summary": {
+                "candidate_series": 0,
+                "valid_series": 0,
+                "rejected_series": 0,
+                "duplicate_indicator_codes": 0,
+                "distinct_datasets": 0,
+                "warnings": 1,
+            },
+            "warnings": [
+                "Validation live non réalisée : le catalogue BAM CKAN n'a pas répondu après une nouvelle tentative."
+            ],
+            "indicators": [],
+        }
+        OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        OUTPUT_FILE.write_text(json.dumps(preview, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+        print("BAM CKAN LIVE STATUS: unavailable")
+        print("BAM CKAN LIVE ERROR:", preview["error"])
+        print("BAM CKAN PREVIEW WRITTEN:", OUTPUT_FILE.relative_to(ROOT))
+        return 0
+
     candidates = [
         item["statistics_series"]
         for item in raw_items

@@ -14,6 +14,12 @@ export function isSourceHealthStale(updatedAt, now = Date.now()) {
 }
 
 function nonNegativeCount(value) {
+  // JSON booleans are not counters: Number(true) would otherwise become 1.
+  // Keep numeric strings for compatibility with source reports, but reject
+  // empty strings and non-numeric JSON types rather than coercing them.
+  if (typeof value === "boolean" || value == null) return 0;
+  if (typeof value === "string" && !value.trim()) return 0;
+  if (typeof value !== "number" && typeof value !== "string") return 0;
   const count = Number(value);
   return Number.isFinite(count) && count > 0 ? count : 0;
 }

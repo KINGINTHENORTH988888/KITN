@@ -91,7 +91,9 @@ Les notices scientifiques incomplètes disposant d'un DOI peuvent être enrichie
 
 La veille académique combine HAL, Crossref et OpenAlex, avec des recherches thématiques distinctes : gouvernance et administration, économie et finances publiques, sécurité, développement humain, relations internationales et géopolitique. Les résultats restent soumis aux contrôles de pertinence Maroc et de dédoublonnage (DOI canonique, puis titre/date et URL lorsque le DOI manque).
 
-La collecte OpenAlex utilise une pagination par curseur avec un plafond par source. Pour dépasser la première page, le workflow de collecte doit disposer du secret GitHub Actions `OPENALEX_API_KEY` (clé gratuite OpenAlex activée). Sans ce secret, le collecteur conserve volontairement le fonctionnement sans clé sur la première page et ne tente pas une pagination qui échouerait. La clé est transmise via l'en-tête Bearer et n'est jamais inscrite dans le dépôt.
+Pour l'indice MONIA, le collecteur privilégie le tableau HTML public de Bank Al-Maghrib et lit les cinq premières pages (50 observations récentes). L'export CSV reste un chemin facultatif lorsqu'il répond, mais n'est pas requis pour la collecte planifiée : l'export direct peut être refusé alors que le tableau officiel reste accessible.
+
+La collecte OpenAlex utilise une pagination par curseur avec un plafond par source. Le workflow doit disposer du secret GitHub Actions `OPENALEX_API_KEY` (clé gratuite OpenAlex activée), à configurer dans Settings → Secrets and variables → Actions du dépôt. La clé est transmise dans le paramètre documenté `api_key` des requêtes, jamais dans les fichiers suivis par Git. Sans secret, le collecteur limite volontairement chaque source à sa première page. OpenAlex indique que les requêtes sans clé partagent un budget quotidien de 0,10 $ par adresse IP, tandis qu'une clé gratuite dispose de son propre budget de 1 $/jour ; une erreur 429 sans clé peut donc venir de l'épuisement du quota partagé, même si KITN émet peu de requêtes. La clé reste facultative pour un test ponctuel, mais recommandée pour l'automatisation.
 
 ## Environnements et déploiement
 

@@ -289,3 +289,10 @@ test("homepage space cards explain the purpose of all five spaces in French and 
   assert.ok(source.includes('<p>${escapeHtml(SPACE_DESCRIPTIONS[lang][sp.id] || "")}</p>'));
   assert.match(styles, /\.home-space-card p\s*\{/);
 });
+
+test("all document search fields use accent-insensitive normalized matching", () => {
+  assert.match(source, /import \{ matchesSearchQuery, normalizeSearchText \} from "\.\/search\.js";/);
+  assert.match(source, /return matchesSearchQuery\(searchable, q\);/);
+  assert.match(source, /matchesSearchQuery\(authorsForFilter, authorQuery\)/);
+  assert.match(source, /matchesSearchQuery\(disciplineText, disciplineQuery\)/);
+});

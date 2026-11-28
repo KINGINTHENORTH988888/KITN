@@ -19,6 +19,12 @@ function periodSortKey(value) {
   const year = Number(dated[1]);
   const month = Number(dated[2] || 1);
   const day = Number(dated[3] || 1);
+  const calendarDate = new Date(Date.UTC(year, month - 1, day));
+  if (
+    calendarDate.getUTCFullYear() !== year ||
+    calendarDate.getUTCMonth() !== month - 1 ||
+    calendarDate.getUTCDate() !== day
+  ) return Number.MAX_SAFE_INTEGER;
   return year * 10000 + month * 100 + day;
 }
 

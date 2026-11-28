@@ -106,6 +106,15 @@ test("boolean, empty and non-numeric source counters are never coerced into coun
   assert.equal(rows[0].accepted, 0);
 });
 
+test("fractional source counters are rejected because fetched and accepted values are counts", () => {
+  const rows = reconcileSourceHealth(
+    [{ id: "fractional", name: "Compteurs fractionnaires", enabled: true }],
+    [{ source_id: "fractional", status: "ok", fetched: 2.5, accepted: "3.25" }],
+  );
+  assert.equal(rows[0].fetched, 0);
+  assert.equal(rows[0].accepted, 0);
+});
+
 test("numeric source counters are normalized without losing valid values", () => {
   const rows = reconcileSourceHealth(
     [{ id: "valid_counts", name: "Compteurs valides", enabled: true }],

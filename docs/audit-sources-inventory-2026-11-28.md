@@ -147,3 +147,16 @@ Contrôle en lecture seule des mêmes URL sur les deux environnements :
 Cette comparaison confirme un écart de déploiement entre production et prévisualisation, ainsi qu'un rapport de santé valide mais antérieur à l'état actuel du registre (22 sources activées). Elle ne permet pas d'affirmer que les deux sources absentes ont échoué : leur collecte n'est simplement pas démontrée dans ce rapport.
 
 Aucune modification de configuration Cloudflare, aucun lancement de collecte, aucun merge et aucun déploiement de production n'ont été effectués pendant cette revalidation.
+
+
+## Correctif d'affichage des sources non vérifiées — 28 novembre 2026
+
+- Le tableau Veille rapproche désormais le registre versionné `data/sources.json` du dernier rapport `sources-health.json` au lieu de compter uniquement les lignes présentes dans ce dernier.
+- Chaque source activée sans entrée dans le rapport apparaît avec le statut explicite **« Non vérifiée »** ; elle n'est ni comptée comme opérationnelle, ni présentée à tort comme un échec.
+- Les sources désactivées restent exclues du dénominateur. Les erreurs et avertissements déjà présents dans le rapport conservent leur statut et leur diagnostic.
+- Ajout de tests unitaires couvrant les sources manquantes, les sources désactivées et la conservation des statuts d'erreur/avertissement.
+- Vérification du rendu HTML sur la prévisualisation Cloudflare Pages du commit `e5d510f` : **12/22 sources opérationnelles**, **10 à surveiller**, dont les deux entrées absentes du rapport marquées « Non vérifiée ».
+- Prévisualisation : `https://fc17e506.kitn.pages.dev/veille`.
+- Le rapport source lui-même reste daté du 27 novembre 2026 à 16:33:58 UTC ; ce correctif améliore la transparence de l'interface et ne remplace pas une nouvelle collecte.
+- Les tests Python du commit `e5d510f` ont réussi. La validation complète frontend et les contrôles live HCP/BAM étaient encore en cours lors de cette note. Le déploiement Cloudflare Pages de prévisualisation a réussi.
+- Aucun changement dans `main`, aucune fusion et aucun déploiement de production.

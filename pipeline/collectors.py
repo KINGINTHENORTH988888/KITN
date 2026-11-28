@@ -740,7 +740,7 @@ def _collect_hcp_page(page_url: str, source: dict, strict_tokens: bool = True) -
         if not is_doc_file and not is_article_page:
             continue
 
-        combined_probe = f"{anchor_text.lower()} {path_lower}"
+        combined_probe = re.sub(r"[-_]+", " ", f"{anchor_text.lower()} {path_lower}")
         if strict_tokens and not is_doc_file:
             if not any(tok in combined_probe for tok in _HCP_RELEVANT_TOKENS):
                 continue

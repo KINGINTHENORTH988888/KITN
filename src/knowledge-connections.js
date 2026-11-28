@@ -14,7 +14,7 @@ const GENERIC_TERMS = new Set([
   "avant", "selon", "cette", "celui", "celle", "leurs", "notamment", "également",
   "egalement", "ainsi", "être", "etre", "avoir", "fait", "faire", "tout", "tous",
   "toute", "toutes", "comme", "dont", "mais", "donc", "alors", "sans", "vers",
-  "chez", "depuis", "lors", "parmi", "suite", "année", "annee", "années", "annees",
+  "chez", "depuis", "lors", "parmi", "suite", "année", "annee", "années", "annees", "rencontre", "novembre", "decembre", "janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "premier", "premiere", "deuxieme", "troisieme", "edition", "salon", "aujourdhui",
   "اليوم", "المغرب", "المغربية", "المغربي", "تقرير", "تقارير", "دراسة", "دراسات",
   "وثيقة", "وثائق", "منشور", "منشورات", "مصدر", "مصادر", "وطني", "الوطنية",
   "الوطني", "العمومي", "العمومية", "الاجتماعي", "الاقتصادي", "التنمية",

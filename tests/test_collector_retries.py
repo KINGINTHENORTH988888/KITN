@@ -67,6 +67,30 @@ class TestCollectorRetries(unittest.TestCase):
         self.assertEqual([call.args[0] for call in sleep.call_args_list], [2.0, 4.0, 8.0])
 
 
+    def test_openalex_per_second_429_respects_retry_after_and_retries(self):
+        headers = Message()
+        headers["Retry-After"] = "1"
+        error = HTTPError(
+            "https://api.openalex.org/works",
+            429,
+            "Too Many Requests",
+            headers,
+            __import__("io").BytesIO(b'{"reason":"requests_per_second"}'),
+        )
+        with (
+            patch.object(collectors, "_OPENALEX_RATE_LIMITED_UNTIL", 0),
+            patch.object(collectors, "_OPENALEX_LAST_REQUEST_AT", 0),
+            patch("pipeline.collectors.time.monotonic", return_value=100.0),
+            patch("pipeline.collectors.urlopen", side_effect=[error, FakeResponse()]) as mocked,
+            patch("pipeline.collectors.time.sleep") as sleep,
+            patch("pipeline.collectors.random.uniform", return_value=0),
+        ):
+            result = _fetch_text("https://api.openalex.org/works?search=Morocco")
+
+        self.assertEqual(result, '{"ok": true}')
+        self.assertEqual(mocked.call_count, 2)
+        sleep.assert_called_once_with(1.0)
+
     def test_openalex_429_opens_circuit_and_skips_later_sources(self):
         error = HTTPError(
             "https://api.openalex.org/works",

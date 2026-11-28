@@ -1574,6 +1574,28 @@ function renderResults() {
   const poleBanner = document.getElementById("active-pole-banner");
   if (!container || !countBadge) return;
 
+  if (activeSpace === "chiffres") {
+    if (statisticsView === "regional") {
+      countBadge.textContent = regionalStatisticsLoading
+        ? (lang === "ar" ? "جارٍ التحميل…" : "Chargement…")
+        : regionalStatisticsData?.series_count
+          ? `${regionalStatisticsData.series_count.toLocaleString(lang === "ar" ? "ar-MA" : "fr-MA")} ${lang === "ar" ? "سلسلة جهوية" : "séries régionales"}`
+          : (regionalStatisticsLoadFailed ? (lang === "ar" ? "تعذر التحميل" : "Chargement impossible") : "—");
+    } else {
+      countBadge.textContent = statisticsLoading
+        ? (lang === "ar" ? "جارٍ التحميل…" : "Chargement…")
+        : statisticsData?.indicators?.length
+          ? `${statisticsData.indicators.length.toLocaleString(lang === "ar" ? "ar-MA" : "fr-MA")} ${lang === "ar" ? "مؤشر" : "indicateurs"}`
+          : (statisticsLoadFailed ? (lang === "ar" ? "تعذر التحميل" : "Chargement impossible") : "—");
+    }
+    if (poleBanner) {
+      poleBanner.style.display = "none";
+      poleBanner.innerHTML = "";
+    }
+    container.innerHTML = "";
+    return;
+  }
+
   const filterKey = JSON.stringify([
     activeSpace, searchQuery, selectedPolesFilter, selectedSinglePoleFilter,
     selectedTypeFilter, selectedConfidenceFilter, selectedDocLangFilter,

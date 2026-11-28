@@ -63,11 +63,13 @@ export function findRelatedKnowledgeItems(items, item, {
       return {
         item: candidate,
         sharedTerms,
+        sharedPrimary,
+        sharedContext,
         crossSpace,
         score: sharedPrimary.length * 4 + sharedContext.length + (samePole ? 2 : 0) + (crossSpace ? 8 : 0)
       };
     })
-    .filter((entry) => entry.sharedTerms.length > 0 && (entry.sharedTerms.length >= 2 || entry.sharedTerms.some((term) => term.length >= 7)))
+    .filter((entry) => entry.sharedPrimary.length > 0 || entry.sharedContext.length >= 2)
     .sort((a, b) =>
       Number(b.crossSpace) - Number(a.crossSpace) ||
       b.score - a.score ||

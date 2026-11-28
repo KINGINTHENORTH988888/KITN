@@ -2617,7 +2617,6 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
         resource = resources[0]
         try:
             workbook = _fetch_bytes(str(resource["url"]), timeout=timeout, max_bytes=max_bytes)
-            rows = _xlsx_read_rows(workbook)
             sheets = _xlsx_read_sheets(workbook)
             rows = [row for _, sheet_rows in sheets for row in sheet_rows]
             extracted = []

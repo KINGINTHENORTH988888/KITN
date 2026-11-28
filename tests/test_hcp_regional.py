@@ -302,6 +302,31 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
                     _merge_regional_statistics_series(None, incoming, "2026-11-27T14:00:00Z")
                 )
 
+    def test_pipeline_merge_removes_invalid_values_from_carried_forward_history(self):
+        existing = {
+            "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "history": [
+                {"year": "T1/2026", "value": True},
+                {"year": "T2/2026", "value": 42.2},
+                {"year": "T2/2026-invalid", "value": "42,3"},
+            ],
+        }
+        incoming = {
+            "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "history": [{"year": "T3/2026", "value": 41.8}],
+        }
+
+        merged = _merge_regional_statistics_series(
+            existing, incoming, "2026-11-28T12:00:00Z"
+        )
+
+        self.assertEqual(
+            [(point["year"], point["value"]) for point in merged["history"]],
+            [("T2/2026", 42.2), ("T3/2026", 41.8)],
+        )
+
     def test_ignores_pages_without_a_supported_period_header_or_indicator(self):
         self.assertEqual(
             parse_hcp_emo_regional_tables(

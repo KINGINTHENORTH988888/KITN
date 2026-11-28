@@ -1,13 +1,8 @@
+import { safeExternalUrl } from "./url-safety.js";
+
 export function getLibraryQualitySummary(items, isFutureDate = () => false) {
   const documents = Array.isArray(items) ? items.filter((item) => item && !isFutureDate(item)) : [];
-  const isHttpUrl = (value) => {
-    try {
-      const url = new URL(String(value || "").trim());
-      return url.protocol === "http:" || url.protocol === "https:";
-    } catch {
-      return false;
-    }
-  };
+  const isHttpUrl = (value) => Boolean(safeExternalUrl(value));
   const normalizeDoi = (value) => {
     const doi = String(value || "").trim()
       .replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")
@@ -17,13 +12,10 @@ export function getLibraryQualitySummary(items, isFutureDate = () => false) {
   const documentIdentity = (item) => {
     const doi = normalizeDoi(item.doi) || normalizeDoi(item.url_publication);
     if (doi) return `doi:${doi}`;
-    try {
-      const url = new URL(String(item.url_publication || "").trim());
-      if (url.protocol !== "http:" && url.protocol !== "https:") return "";
-      return `url:${url.origin.toLowerCase()}${url.pathname.replace(/\/$/, "").toLowerCase()}`;
-    } catch {
-      return "";
-    }
+    const safeUrl = safeExternalUrl(item.url_publication);
+    if (!safeUrl) return "";
+    const url = new URL(safeUrl);
+    return `url:${url.origin.toLowerCase()}${url.pathname.replace(/\/$/, "").toLowerCase()}`;
   };
 
   const seenIdentities = new Set();

@@ -364,6 +364,8 @@ const COPY = {
     academyDeadlineLabel: "Échéance / Repère",
     academySheetLabel: "Fiche de révision",
     academyMethodLabel: "Méthodologie & anciens sujets",
+    academyObjectivesLabel: "Compétences à maîtriser",
+    academyPlanLabel: "Parcours de révision conseillé",
     academyQuizLabel: "QCM d'entraînement",
     methodEyebrow: "Notre approche",
     methodTitle: "La connaissance commence par une bonne question.",
@@ -480,6 +482,8 @@ const COPY = {
     academyDeadlineLabel: "الآجال / معلم",
     academySheetLabel: "بطاقة مراجعة",
     academyMethodLabel: "المنهجية والمواضيع السابقة",
+    academyObjectivesLabel: "الكفاءات المطلوب إتقانها",
+    academyPlanLabel: "مسار المراجعة المقترح",
     academyQuizLabel: "اختبار تفاعلي",
     methodEyebrow: "مقاربتنا",
     methodTitle: "المعرفة تبدأ بسؤال جيد.",
@@ -1906,6 +1910,8 @@ function render() {
             ${activeTrack.deadline ? `<p><strong>${escapeHtml(c.academyDeadlineLabel)} :</strong> ${escapeHtml(activeTrack.deadline)}</p>` : ""}
             ${activeTrack.methodology ? `<p><strong>${escapeHtml(c.academyMethodLabel)} :</strong> ${escapeHtml(activeTrack.methodology)}</p>` : ""}
             ${Array.isArray(activeTrack.past_topics) && activeTrack.past_topics.length ? `<p>${escapeHtml(activeTrack.past_topics.join(" · "))}</p>` : ""}
+            ${Array.isArray(activeTrack.learning_objectives) && activeTrack.learning_objectives.length ? `<div class="academy-learning-block"><h4>${escapeHtml(c.academyObjectivesLabel)}</h4><ul>${activeTrack.learning_objectives.map((objective) => `<li>${escapeHtml(objective)}</li>`).join("")}</ul></div>` : ""}
+            ${Array.isArray(activeTrack.study_plan) && activeTrack.study_plan.length ? `<div class="academy-learning-block"><h4>${escapeHtml(c.academyPlanLabel)}</h4><ol>${activeTrack.study_plan.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol></div>` : ""}
           </div>
           <div>
             <span class="mini-label">${escapeHtml(c.academyQuizLabel)}</span>

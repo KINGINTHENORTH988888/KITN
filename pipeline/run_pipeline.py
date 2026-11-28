@@ -227,7 +227,7 @@ def _sync_public_index(src_file: Path, dst_file: Path) -> None:
 def _is_superseded_legacy_bam_series(previous: dict, current_series: dict) -> bool:
     """Drop pre-sheet-ID BAM entries when the same dataset/label now has sheet-specific IDs."""
     code = str(previous.get("indicator_code") or "")
-    if not code.startswith("BAM_CKAN_") or previous.get("sheet_name"):
+    if not code.startswith("BAM_CKAN_") or previous.get("source_position"):
         return False
     dataset_name = clean_text(previous.get("dataset_name") or "")
     label = clean_text(previous.get("label_fr") or "")
@@ -236,6 +236,7 @@ def _is_superseded_legacy_bam_series(previous: dict, current_series: dict) -> bo
     return any(
         str(series.get("indicator_code") or "").startswith("BAM_CKAN_")
         and bool(series.get("sheet_name"))
+        and bool(series.get("source_position"))
         and clean_text(series.get("dataset_name") or "") == dataset_name
         and clean_text(series.get("label_fr") or "") == label
         for series in current_series.values()

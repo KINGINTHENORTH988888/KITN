@@ -4,7 +4,7 @@ export const SOURCE_HEALTH_FUTURE_TOLERANCE_MS = 5 * 60 * 1000;
 function parseSourceHealthTimestamp(value) {
   if (typeof value !== "string") return null;
   const normalized = value.trim();
-  const match = normalized.match(/^(\\d{4})-(\\d{2})-(\\d{2})(?:T(\\d{2}):(\\d{2}):(\\d{2})(?:\\.\\d+)?(Z|[+-]\\d{2}:\\d{2}))?$/);
+  const match = normalized.match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2}))?$/);
   if (!match) return null;
 
   const [, yearText, monthText, dayText, hourText, minuteText, secondText, timezone] = match;

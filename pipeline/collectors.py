@@ -2223,7 +2223,7 @@ def _xlsx_read_sheets(payload: bytes) -> list[tuple[str, list[list[str]]]]:
                 (f"Feuille {index + 1}", path)
                 for index, path in enumerate(sorted(
                     name for name in names
-                    if re.fullmatch(r"xl/worksheets/sheet\\d+\\.xml", name)
+                    if re.fullmatch(r"xl/worksheets/sheet\d+\.xml", name)
                 ))
             ]
 

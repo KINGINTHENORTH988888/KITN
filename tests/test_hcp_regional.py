@@ -327,6 +327,24 @@ class HcpEmoRegionalParserTests(unittest.TestCase):
             [("T2/2026", 42.2), ("T3/2026", 41.8)],
         )
 
+    def test_pipeline_merge_rejects_empty_incoming_history_even_when_old_history_exists(self):
+        existing = {
+            "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "history": [{"year": "T2/2026", "value": 42.2}],
+        }
+        incoming = {
+            "id": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "series_key": "HCP_EMO_REGIONAL_TEST:all:MAR",
+            "history": [{"year": "", "value": 43.1}, None],
+        }
+
+        self.assertIsNone(
+            _merge_regional_statistics_series(
+                existing, incoming, "2026-11-28T12:00:00Z"
+            )
+        )
+
     def test_ignores_pages_without_a_supported_period_header_or_indicator(self):
         self.assertEqual(
             parse_hcp_emo_regional_tables(

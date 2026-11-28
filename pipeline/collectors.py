@@ -2352,6 +2352,22 @@ def _bam_ckan_slug(value: str) -> str:
     return (text[:70] or "SERIE")
 
 
+def _split_xlsx_sheets(rows: list[list[str]]) -> list[list[list[str]]]:
+    """Restore worksheet boundaries from the blank separators emitted by _xlsx_read_rows."""
+    sheets: list[list[list[str]]] = []
+    current: list[list[str]] = []
+    for row in rows:
+        if not row:
+            if current:
+                sheets.append(current)
+                current = []
+            continue
+        current.append(row)
+    if current:
+        sheets.append(current)
+    return sheets
+
+
 def _bam_ckan_series_from_rows(rows: list[list[str]], dataset: dict, resource: dict) -> list[dict]:
     """Recognize common official workbook layouts: periods across columns or down rows."""
     if not rows:
@@ -2527,7 +2543,10 @@ def collect_bank_al_maghrib_ckan(source: dict) -> list[dict]:
         try:
             workbook = _fetch_bytes(str(resource["url"]), timeout=timeout, max_bytes=max_bytes)
             rows = _xlsx_read_rows(workbook)
-            extracted = _bam_ckan_series_from_rows(rows, dataset, resource)
+            sheets = _split_xlsx_sheets(rows)
+            extracted = []
+            for sheet_rows in sheets:
+                extracted.extend(_bam_ckan_series_from_rows(sheet_rows, dataset, resource))
             if not extracted:
                 title = clean_text(dataset.get("title") or dataset.get("name") or "Jeu BAM")
                 preview = " || ".join(" | ".join(clean_text(cell) for cell in row[:8] if clean_text(cell)) for row in rows[:12] if row)

@@ -187,7 +187,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/index/search-index.json data/sources-health.json data/statistics.json data/regional-statistics.json public/data/index/search-index.json public/data/statistics.json public/data/regional-statistics.json public/data/academy/academy.json
+          git add -- data/index/search-index.json data/sources-health.json data/statistics.json data/regional-statistics.json public/data/index/search-index.json public/data/sources-health.json public/data/statistics.json public/data/regional-statistics.json public/data/academy/academy.json
           if ! git diff --staged --quiet; then
             git commit -m "chore(data): mise à jour automatique de la veille KITN"
             branch="$GITHUB_REF_NAME"

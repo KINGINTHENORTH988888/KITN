@@ -81,3 +81,22 @@ test("observed source failures and warnings remain visible even when the report 
   assert.equal(getEffectiveSourceStatus("error", "stale"), "error");
   assert.equal(getEffectiveSourceStatus("warning", "unknown"), "warning");
 });
+
+
+test("invalid, negative and non-finite source counters are normalized to zero", () => {
+  const rows = reconcileSourceHealth(
+    [{ id: "bad_counts", name: "Compteurs invalides", enabled: true }],
+    [{ source_id: "bad_counts", status: "ok", fetched: "not-a-number", accepted: -4 }],
+  );
+  assert.equal(rows[0].fetched, 0);
+  assert.equal(rows[0].accepted, 0);
+});
+
+test("numeric source counters are normalized without losing valid values", () => {
+  const rows = reconcileSourceHealth(
+    [{ id: "valid_counts", name: "Compteurs valides", enabled: true }],
+    [{ source_id: "valid_counts", status: "ok", fetched: "12", accepted: 8 }],
+  );
+  assert.equal(rows[0].fetched, 12);
+  assert.equal(rows[0].accepted, 8);
+});

@@ -2454,11 +2454,15 @@ function render() {
         }
         const imported = mergeAcademyProgress({}, payload.answers, ACADEMY_TRACKS[lang]);
         const importedCount = Object.keys(imported).length;
-        quizAnswers = mergeAcademyProgress(quizAnswers, imported, ACADEMY_TRACKS[lang]);
-        saveJsonStorage(ACADEMY_PROGRESS_KEY, quizAnswers);
-        academyProgressNotice = lang === "ar"
-          ? `تم استيراد ${importedCount} إجابة.`
-          : `${importedCount} réponse(s) récupérée(s) depuis la sauvegarde.`;
+        const nextAnswers = mergeAcademyProgress(quizAnswers, imported, ACADEMY_TRACKS[lang]);
+        if (!saveJsonStorage(ACADEMY_PROGRESS_KEY, nextAnswers)) {
+          academyProgressNotice = c.manualStorageErrorMsg;
+        } else {
+          quizAnswers = nextAnswers;
+          academyProgressNotice = lang === "ar"
+            ? `تم استيراد ${importedCount} إجابة.`
+            : `${importedCount} réponse(s) récupérée(s) depuis la sauvegarde.`;
+        }
       } catch {
         academyProgressNotice = lang === "ar"
           ? "تعذر قراءة النسخة. تحقق من الملف."
@@ -2495,11 +2499,16 @@ function render() {
   document.querySelectorAll("[data-quiz-reset]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const trackId = ACADEMY_TRACKS[lang][selectedAcademyIndex]?.id || "default";
-      quizAnswers = Object.fromEntries(
+      const nextAnswers = Object.fromEntries(
         Object.entries(quizAnswers).filter(([key]) => !key.startsWith(`${trackId}:`))
       );
-      saveJsonStorage(ACADEMY_PROGRESS_KEY, quizAnswers);
-      selectedQuizQuestionIndex = 0;
+      if (!saveJsonStorage(ACADEMY_PROGRESS_KEY, nextAnswers)) {
+        academyProgressNotice = c.manualStorageErrorMsg;
+      } else {
+        quizAnswers = nextAnswers;
+        academyProgressNotice = "";
+        selectedQuizQuestionIndex = 0;
+      }
       render();
     });
   });
@@ -2507,8 +2516,16 @@ function render() {
   document.querySelectorAll("[data-quiz-opt]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const trackId = ACADEMY_TRACKS[lang][selectedAcademyIndex]?.id || "default";
-      quizAnswers[`${trackId}:${selectedQuizQuestionIndex}`] = Number(btn.getAttribute("data-quiz-opt"));
-      saveJsonStorage(ACADEMY_PROGRESS_KEY, quizAnswers);
+      const nextAnswers = {
+        ...quizAnswers,
+        [`${trackId}:${selectedQuizQuestionIndex}`]: Number(btn.getAttribute("data-quiz-opt"))
+      };
+      if (!saveJsonStorage(ACADEMY_PROGRESS_KEY, nextAnswers)) {
+        academyProgressNotice = c.manualStorageErrorMsg;
+      } else {
+        quizAnswers = nextAnswers;
+        academyProgressNotice = "";
+      }
       render();
     });
   });

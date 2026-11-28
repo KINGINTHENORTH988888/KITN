@@ -1510,7 +1510,7 @@ function renderResults() {
   const globalStatisticMatches = activeSpace === "all" && globalQuery
     ? (Array.isArray(statisticsData?.indicators) ? statisticsData.indicators : []).filter((indicator) => {
         const searchable = normalizeSearchText([indicator.label_fr, indicator.label_ar, getLocalizedStatisticField(indicator, "label", "ar"), indicator.description_fr, indicator.description_ar, getLocalizedStatisticField(indicator, "description", "ar"), indicator.source_name, indicator.unit_fr, indicator.unit_ar, getLocalizedStatisticField(indicator, "unit", "ar"), indicator.indicator_code].filter(Boolean).join(" "));
-        return searchable.includes(globalQuery);
+        return matchesSearchQuery(searchable, globalQuery);
       }).slice(0, 12)
     : [];
   const combinedCount = filtered.length + globalStatisticMatches.length;

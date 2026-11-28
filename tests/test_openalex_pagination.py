@@ -3,8 +3,10 @@ import unittest
 from urllib.parse import parse_qs, urlsplit
 from unittest.mock import patch
 from urllib.error import HTTPError
+from email.message import Message
+from io import BytesIO
 
-from pipeline.collectors import _openalex_cursor_url, collect_openalex
+from pipeline.collectors import _fetch_text, _openalex_cursor_url, collect_openalex
 
 
 def _work(title):
@@ -105,6 +107,27 @@ class TestOpenAlexPagination(unittest.TestCase):
         self.assertEqual(len(items), 2)
         self.assertEqual(fetch.call_count, 2)
 
+
+    def test_inactive_api_key_returns_actionable_error_without_leaking_key(self):
+        headers = Message()
+        body = json.dumps({
+            "error": "Forbidden",
+            "code": "key_not_activated",
+            "message": "Verify your email to activate this key",
+        }).encode("utf-8")
+        error = HTTPError(
+            "https://api.openalex.org/works",
+            403,
+            "Forbidden",
+            headers,
+            BytesIO(body),
+        )
+        with (
+            patch("pipeline.collectors._wait_for_openalex_slot"),
+            patch("pipeline.collectors.urlopen", side_effect=error),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "n'est pas activée"):
+                _fetch_text("https://api.openalex.org/works")
 
     def test_rate_limit_without_key_reports_required_secret(self):
         source = {

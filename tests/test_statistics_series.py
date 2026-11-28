@@ -2,7 +2,7 @@ import unittest
 
 from pipeline.run_pipeline import _merge_statistics_series, _merge_valid_statistics_series, _statistics_period_sort_key
 from pipeline.collectors import _bam_ckan_number, _bam_ckan_period, _bam_ckan_series_from_rows, _split_xlsx_sheets
-from pipeline.run_pipeline import _is_valid_statistics_series
+from pipeline.run_pipeline import _is_superseded_legacy_bam_series, _is_valid_statistics_series
 
 
 class TestStatisticsSeriesMerge(unittest.TestCase):
@@ -188,6 +188,30 @@ class TestStatisticsSeriesMerge(unittest.TestCase):
         )
         self.assertEqual(merged["latest"], {"year": "Aujourd'hui", "value": 10.5})
         self.assertEqual(merged["previous"], {"year": "Veille", "value": 10.4})
+
+    def test_legacy_bam_series_is_replaced_by_sheet_specific_series(self):
+        legacy = {
+            "indicator_code": "BAM_CKAN_COMPTE_ACTIF",
+            "dataset_name": "Compte de patrimoine des OPCVM",
+            "label_fr": "Autres sociétés financières",
+        }
+        current = {
+            "BAM_CKAN_COMPTE_ACTIF_SHEET_1": {
+                "indicator_code": "BAM_CKAN_COMPTE_ACTIF_SHEET_1",
+                "dataset_name": "Compte de patrimoine des OPCVM",
+                "label_fr": "Autres sociétés financières",
+                "sheet_name": "Actif",
+            },
+            "BAM_CKAN_COMPTE_ACTIF_SHEET_2": {
+                "indicator_code": "BAM_CKAN_COMPTE_ACTIF_SHEET_2",
+                "dataset_name": "Compte de patrimoine des OPCVM",
+                "label_fr": "Autres sociétés financières",
+                "sheet_name": "Passif",
+            },
+        }
+        self.assertTrue(_is_superseded_legacy_bam_series(legacy, current))
+        self.assertFalse(_is_superseded_legacy_bam_series({**legacy, "sheet_name": "Actif"}, current))
+        self.assertFalse(_is_superseded_legacy_bam_series({**legacy, "label_fr": "Banques"}, current))
 
     def test_bam_ckan_parser_recognizes_semester_periods(self):
         self.assertEqual(_bam_ckan_period("1er semestre 2023"), "2023-S1")

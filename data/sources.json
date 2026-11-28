@@ -1203,7 +1203,8 @@
       {
         "kind": "monia",
         "url": "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-monetaire/Indice-monia-moroccan-overnight-index-average",
-        "csv_url": "https://www.bkam.ma/export/blockcsv/566622/30551c1667f5f2004fb0019220d41795/4734c7b73113d8d72895a19090974066?block=4734c7b73113d8d72895a19090974066"
+        "block_id": "4734c7b73113d8d72895a19090974066",
+        "page_offsets": [0, 10, 20, 30, 40]
       }
     ]
   },

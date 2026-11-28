@@ -11,5 +11,6 @@ export function normalizeSearchText(value) {
 export function matchesSearchQuery(text, query) {
   const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) return true;
-  return normalizeSearchText(text).includes(normalizedQuery);
+  const normalizedText = normalizeSearchText(text);
+  return normalizedQuery.split(" ").every((term) => normalizedText.includes(term));
 }

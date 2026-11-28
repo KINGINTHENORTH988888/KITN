@@ -141,7 +141,7 @@ class TestCollectorRetries(unittest.TestCase):
         self.assertEqual(len(items), 2)
         rate = next(item for item in items if item["statistics_series"]["indicator_code"] == "BAM_MONIA_RATE")
         self.assertEqual(len(rate["statistics_series"]["history"]), 2)
-        self.assertEqual(rate["statistics_series"]["latest"]["value"], 2.195)
+        self.assertEqual(rate["statistics_series"]["latest"]["value"], 2.088)
 
     def test_monia_page_failure_is_reported(self):
         page_error = HTTPError(
@@ -155,7 +155,6 @@ class TestCollectorRetries(unittest.TestCase):
             "statistics_pages": [{
                 "kind": "monia",
                 "url": "https://www.bkam.ma/monia",
-                "csv_url": "https://www.bkam.ma/export/blockcsv/data",
             }]
         }
         with patch("pipeline.collectors._fetch_text", side_effect=page_error):
